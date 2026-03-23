@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - FinovRelance{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="mail" class="me-2"></i>
+                    {{ title }}
+                </h5>
+            </div>
+
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.name.label(class="form-label") }}
+                                {{ form.name(class="form-control") }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.name.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.subject.label(class="form-label") }}
+                                {{ form.subject(class="form-control") }}
+                                {% if form.subject.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.subject.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        {{ form.content.label(class="form-label") }}
+                        
+                        <!-- Variables disponibles -->
+                        <div class="alert alert-info mb-3">
+                            <h6 class="mb-3">
+                                <i data-feather="code" class="me-2" style="width: 16px; height: 16px;"></i>
+                                Variables disponibles - Cliquez pour insérer
+                            </h6>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-1">
+                                        <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_name}">
+                                            <i data-feather="user" style="width: 12px; height: 12px;"></i> Nom du client
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_code}">
+                                            <i data-feather="hash" style="width: 12px; height: 12px;"></i> Code client
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_email}">
+                                            <i data-feather="mail" style="width: 12px; height: 12px;"></i> Courriel client
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_phone}">
+                                            <i data-feather="phone" style="width: 12px; height: 12px;"></i> Téléphone client
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_payment_terms}">
+                                            <i data-feather="credit-card" style="width: 12px; height: 12px;"></i> Termes de paiement
+                                        </button>
+                                        <button type="button" class="btn btn-outline-warning btn-sm variable-btn" data-variable="{client_total_outstanding}">
+                                            <i data-feather="dollar-sign" style="width: 12px; height: 12px;"></i> Montant total dû
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-1">
+                                        <button type="button" class="btn btn-outline-success btn-sm variable-btn" data-variable="{company_name}">
+                                            <i data-feather="briefcase" style="width: 12px; height: 12px;"></i> Nom entreprise
+                                        </button>
+                                        <button type="button" class="btn btn-outline-success btn-sm variable-btn" data-variable="{company_email}">
+                                            <i data-feather="mail" style="width: 12px; height: 12px;"></i> Courriel entreprise
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info btn-sm variable-btn" data-variable="{today_date}">
+                                            <i data-feather="calendar" style="width: 12px; height: 12px;"></i> Date aujourd'hui
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info btn-sm variable-btn" data-variable="{user_name}">
+                                            <i data-feather="user-check" style="width: 12px; height: 12px;"></i> Votre nom
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <small class="text-muted d-block">
+                                <i data-feather="info" style="width: 14px; height: 14px;"></i>
+                                Ces variables seront automatiquement remplacées lors de l'envoi
+                            </small>
+                        </div>
+                        
+                        <div id="editor" style="height: 300px;"></div>
+                        {{ form.content(class="form-control", rows="10", id="content", style="display:none;") }}
+                        {% if form.content.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.content.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-check mb-3">
+                        {{ form.is_active(class="form-check-input") }}
+                        {{ form.is_active.label(class="form-check-label") }}
+                    </div>
+
+                    <!-- Champs de visibilité (seulement pour admin et super admin) -->
+                    {% if form.is_shared %}
+                    <div class="card border-light mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i data-feather="users" class="me-2" style="width: 16px; height: 16px;"></i>
+                                Partage avec l'équipe
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check mb-3">
+                                {{ form.is_shared(class="form-check-input") }}
+                                {{ form.is_shared.label(class="form-check-label") }}
+                                <div class="form-text">
+                                    Si coché, ce modèle sera visible par tous les membres de l'équipe.
+                                </div>
+                            </div>
+                            
+                            {% if form.is_editable_by_team %}
+                            <div class="form-check" id="editable-by-team-group" style="display: none;">
+                                {{ form.is_editable_by_team(class="form-check-input") }}
+                                {{ form.is_editable_by_team.label(class="form-check-label") }}
+                                <div class="form-text">
+                                    Si coché, les autres administrateurs pourront modifier ce modèle.
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="{{ url_for('email.templates') }}" class="btn btn-outline-secondary">
+                        <i data-feather="arrow-left" class="me-1"></i>
+                        Retour aux modèles
+                    </a>
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Quill rich text editor -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<style>
+#editor {
+    background-color: white;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Quill rich text editor -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Quill editor with standardized configuration
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'Rédigez le contenu de votre courriel...',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'align': [] }],
+                ['link'],
+                ['clean']
+            ]
+        }
+    });
+
+    // Load existing content if any
+    const contentField = document.getElementById('content');
+    if (contentField.value) {
+        quill.root.innerHTML = contentField.value;
+    }
+
+    // Update hidden field when content changes
+    quill.on('text-change', function() {
+        contentField.value = quill.root.innerHTML;
+    });
+
+    // Handle form submission
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function() {
+        contentField.value = quill.root.innerHTML;
+    });
+
+    // Handle variable button clicks
+    const variableButtons = document.querySelectorAll('.variable-btn');
+    variableButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const variable = this.getAttribute('data-variable');
+            const range = quill.getSelection();
+            if (range) {
+                quill.insertText(range.index, variable);
+            } else {
+                quill.insertText(quill.getLength(), variable);
+            }
+            quill.focus();
+        });
+    });
+
+    // Handle sharing options visibility
+    const isSharedCheckbox = document.getElementById('is_shared');
+    const editableByTeamGroup = document.getElementById('editable-by-team-group');
+    
+    if (isSharedCheckbox && editableByTeamGroup) {
+        function toggleEditableByTeam() {
+            if (isSharedCheckbox.checked) {
+                editableByTeamGroup.style.display = 'block';
+            } else {
+                editableByTeamGroup.style.display = 'none';
+                // Uncheck the editable by team option if sharing is disabled
+                const editableByTeamCheckbox = document.getElementById('is_editable_by_team');
+                if (editableByTeamCheckbox) {
+                    editableByTeamCheckbox.checked = false;
+                }
+            }
+        }
+        
+        // Set initial state
+        toggleEditableByTeam();
+        
+        // Add event listener
+        isSharedCheckbox.addEventListener('change', toggleEditableByTeam);
+    }
+
+    // Initialize Feather icons
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+});
+</script>
+{% endblock %}

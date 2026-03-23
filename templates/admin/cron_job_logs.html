@@ -1,0 +1,281 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Logs Cron Jobs - Administration{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-clock me-2"></i>Logs Cron Jobs
+                </h1>
+                <a href="{{ url_for('admin.user_audit_logs') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-user-clock me-1"></i>Logs Utilisateurs
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0">{{ stats.total }}</h4>
+                    <small>Total exécutions</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0">{{ stats.last_24h }}</h4>
+                    <small>24 dernières heures</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0">{{ stats.success }}</h4>
+                    <small>Succès</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <h4 class="mb-0">{{ stats.warning }}</h4>
+                    <small>Avertissements</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0">{{ stats.failed }}</h4>
+                    <small>Échecs</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-secondary text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0">{{ stats.running }}</h4>
+                    <small>En cours</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if job_stats %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-chart-bar me-1"></i>Statistiques par job (7 derniers jours)
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Job</th>
+                            <th class="text-center">Exécutions</th>
+                            <th class="text-center">Succès</th>
+                            <th class="text-center">Échecs</th>
+                            <th class="text-center">Taux succès</th>
+                            <th class="text-center">Durée moy.</th>
+                            <th class="text-center">Durée max.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job_name, job_stat in job_stats.items() %}
+                        <tr>
+                            <td><code>{{ job_name }}</code></td>
+                            <td class="text-center">{{ job_stat.total }}</td>
+                            <td class="text-center text-success">{{ job_stat.success_count }}</td>
+                            <td class="text-center text-danger">{{ job_stat.failed_count }}</td>
+                            <td class="text-center">
+                                {% if job_stat.success_rate >= 90 %}
+                                <span class="badge bg-success">{{ job_stat.success_rate }}%</span>
+                                {% elif job_stat.success_rate >= 70 %}
+                                <span class="badge bg-warning text-dark">{{ job_stat.success_rate }}%</span>
+                                {% else %}
+                                <span class="badge bg-danger">{{ job_stat.success_rate }}%</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">{{ job_stat.avg_duration }}s</td>
+                            <td class="text-center">{{ job_stat.max_duration }}s</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i>Filtres
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Job</label>
+                    <select name="job_name" class="form-select form-select-sm">
+                        <option value="">Tous</option>
+                        {% for job in unique_jobs %}
+                        <option value="{{ job }}" {% if job_filter == job %}selected{% endif %}>{{ job }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Statut</label>
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="">Tous</option>
+                        <option value="success" {% if status_filter == 'success' %}selected{% endif %}>Succès</option>
+                        <option value="warning" {% if status_filter == 'warning' %}selected{% endif %}>Avertissement</option>
+                        <option value="failed" {% if status_filter == 'failed' %}selected{% endif %}>Échec</option>
+                        <option value="running" {% if status_filter == 'running' %}selected{% endif %}>En cours</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Date début</label>
+                    <input type="date" name="date_from" class="form-control form-control-sm" value="{{ date_from or '' }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Date fin</label>
+                    <input type="date" name="date_to" class="form-control form-control-sm" value="{{ date_to or '' }}">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary btn-sm me-2">
+                        <i class="fas fa-search me-1"></i>Filtrer
+                    </button>
+                    <a href="{{ url_for('admin.cron_job_logs') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-times me-1"></i>Réinitialiser
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-list me-1"></i>Historique des exécutions ({{ logs.total }} résultats)
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width: 150px;">Date</th>
+                            <th>Job</th>
+                            <th class="text-center">Statut</th>
+                            <th class="text-center">Durée</th>
+                            <th class="text-center">Traités</th>
+                            <th class="text-center">Échecs</th>
+                            <th>Erreur</th>
+                            <th style="width: 80px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs.items %}
+                        <tr>
+                            <td class="small">
+                                {{ log.started_at.strftime('%d/%m/%Y %H:%M:%S') }}
+                            </td>
+                            <td>
+                                <code>{{ log.job_name }}</code>
+                            </td>
+                            <td class="text-center">
+                                {% if log.status == 'success' %}
+                                <span class="badge bg-success"><i class="fas fa-check"></i> Succès</span>
+                                {% elif log.status == 'warning' %}
+                                <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle"></i> Avertissement</span>
+                                {% elif log.status == 'failed' %}
+                                <span class="badge bg-danger"><i class="fas fa-times"></i> Échec</span>
+                                {% elif log.status == 'running' %}
+                                <span class="badge bg-info"><i class="fas fa-spinner fa-spin"></i> En cours</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ log.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if log.duration_seconds is not none %}
+                                {{ "%.2f"|format(log.duration_seconds) }}s
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if log.items_processed is not none %}
+                                <span class="text-success">{{ log.items_processed }}</span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if log.items_failed is not none and log.items_failed > 0 %}
+                                <span class="text-danger">{{ log.items_failed }}</span>
+                                {% elif log.items_failed is not none %}
+                                0
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="small">
+                                {% if log.error_message %}
+                                <span class="text-danger" title="{{ log.error_message }}">
+                                    {{ log.error_message[:50] }}{% if log.error_message|length > 50 %}...{% endif %}
+                                </span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('admin.cron_job_log_detail', log_id=log.id) }}" class="btn btn-sm btn-outline-primary" title="Détails">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                Aucune exécution trouvée
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if logs.pages > 1 %}
+        <div class="card-footer">
+            <nav aria-label="Pagination">
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    {% if logs.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.cron_job_logs', page=logs.prev_num, job_name=job_filter, status=status_filter, date_from=date_from, date_to=date_to) }}">Précédent</a>
+                    </li>
+                    {% endif %}
+                    {% for page_num in logs.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                        <li class="page-item {% if page_num == logs.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('admin.cron_job_logs', page=page_num, job_name=job_filter, status=status_filter, date_from=date_from, date_to=date_to) }}">{{ page_num }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if logs.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.cron_job_logs', page=logs.next_num, job_name=job_filter, status=status_filter, date_from=date_from, date_to=date_to) }}">Suivant</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

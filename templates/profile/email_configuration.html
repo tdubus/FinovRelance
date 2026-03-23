@@ -1,0 +1,1016 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion Courriel - FinovRelance{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-envelope-square me-2"></i>
+                    Connexion Courriel - {{ company.name }}
+                </h1>
+            </div>
+
+            <!-- Configuration courriel -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-envelope me-2"></i>
+                        Configuration des adresses de courriel
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card border-primary">
+                                    <div class="card-header bg-primary text-white">
+                                        <h6 class="mb-0">
+                                            <i class="fab fa-microsoft me-2"></i>
+                                            Outlook / Exchange
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            {{ form.outlook_email.label(class="form-label") }}
+                                            {{ form.outlook_email(class="form-control", placeholder="exemple@outlook.com") }}
+                                            {% if form.outlook_email.errors %}
+                                                <div class="text-danger small mt-1">
+                                                    {% for error in form.outlook_email.errors %}
+                                                        <div>{{ error }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Statut de connexion OAuth -->
+                                        {% if email_config %}
+                                            {% set status = email_config.get_outlook_connection_status() %}
+                                            {% if status == 'connecte' %}
+                                                <div class="alert alert-success py-2 mb-3">
+                                                    <i class="fas fa-check-circle me-2"></i>
+                                                    <strong>Connecté</strong> - {{ email_config.outlook_email }}
+                                                    <small class="d-block text-muted">
+                                                        Connecté le {{ (email_config.outlook_oauth_connected_at | to_local_timezone).strftime('%d/%m/%Y à %H:%M') if email_config.outlook_oauth_connected_at }}
+                                                    </small>
+                                                </div>
+                                                <div class="d-grid gap-2 d-md-flex">
+                                                    <a href="{{ url_for('profile.outlook_connect') }}" 
+                                                       class="btn btn-outline-primary btn-sm">
+                                                        <i class="fas fa-sync-alt me-1"></i>
+                                                        Reconnecter
+                                                    </a>
+                                                    <a href="javascript:void(0)" 
+                                                       onclick="if(confirm('Êtes-vous sûr de vouloir déconnecter Microsoft ? Cela supprimera votre configuration courriel.')) { 
+                                                           var form = document.createElement('form'); 
+                                                           form.method = 'POST'; 
+                                                           form.action = '{{ url_for('profile.outlook_disconnect') }}'; 
+                                                           var csrf = document.createElement('input'); 
+                                                           csrf.type = 'hidden'; 
+                                                           csrf.name = 'csrf_token'; 
+                                                           csrf.value = '{{ csrf_token() }}'; 
+                                                           form.appendChild(csrf); 
+                                                           document.body.appendChild(form); 
+                                                           form.submit(); 
+                                                       }"
+                                                       class="btn btn-outline-danger btn-sm">
+                                                        <i class="fas fa-unlink me-1"></i>
+                                                        Déconnecter
+                                                    </a>
+                                                </div>
+                                            {% elif status == 'expire' %}
+                                                <div class="alert alert-warning py-2 mb-3">
+                                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                                    <strong>Connexion expirée</strong> - Reconnexion requise
+                                                </div>
+                                                {% if form.outlook_email.data %}
+                                                    <div class="d-grid">
+                                                        <a href="{{ url_for('profile.outlook_connect') }}" 
+                                                           class="btn btn-warning btn-sm">
+                                                            <i class="fas fa-sync-alt me-1"></i>
+                                                            Reconnecter Microsoft
+                                                        </a>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="alert alert-secondary py-2">
+                                                        <i class="fas fa-envelope me-2"></i>
+                                                        <small>Saisissez votre adresse Outlook puis sauvegardez pour pouvoir vous reconnecter</small>
+                                                    </div>
+                                                {% endif %}
+                                            {% else %}
+                                                <div class="alert alert-info py-2 mb-3">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <strong>Non connecté</strong>
+                                                    <small class="d-block text-muted">
+                                                        Connectez votre compte Microsoft pour envoyer des courriels
+                                                    </small>
+                                                </div>
+                                                {% if form.outlook_email.data %}
+                                                    <div class="d-grid">
+                                                        <a href="{{ url_for('profile.outlook_connect') }}" 
+                                                           class="btn btn-primary btn-sm">
+                                                            <i class="fab fa-microsoft me-1"></i>
+                                                            Connecter Outlook
+                                                        </a>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="alert alert-secondary py-2">
+                                                        <i class="fas fa-envelope me-2"></i>
+                                                        <small>Saisissez votre adresse Outlook puis sauvegardez pour activer la connexion</small>
+                                                    </div>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="alert alert-secondary py-2">
+                                                <i class="fas fa-envelope me-2"></i>
+                                                <small>Saisissez votre adresse Outlook pour activer la connexion OAuth</small>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card border-danger">
+                                    <div class="card-header bg-danger text-white">
+                                        <h6 class="mb-0">
+                                            <i class="fab fa-google me-2"></i>
+                                            Gmail
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            {{ form.gmail_email.label(class="form-label") }}
+                                            {{ form.gmail_email(class="form-control", placeholder="exemple@gmail.com") }}
+                                            {% if form.gmail_email.errors %}
+                                                <div class="text-danger small mt-1">
+                                                    {% for error in form.gmail_email.errors %}
+                                                        <div>{{ error }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Configuration SMTP Gmail -->
+                                        {% if email_config %}
+                                            {% set gmail_status = email_config.get_gmail_connection_status() %}
+                                            {% if gmail_status == 'connecte' %}
+                                                <div class="alert alert-success py-2 mb-3">
+                                                    <i class="fas fa-check-circle me-2"></i>
+                                                    <strong>Connecté via SMTP</strong> - {{ email_config.gmail_email }}
+                                                </div>
+                                                <div class="d-grid gap-2">
+                                                    <a href="javascript:void(0)" 
+                                                       onclick="if(confirm('Êtes-vous sûr de vouloir déconnecter Gmail ?')) { 
+                                                           var form = document.createElement('form'); 
+                                                           form.method = 'POST'; 
+                                                           form.action = '{{ url_for('profile.gmail_disconnect') }}'; 
+                                                           var csrf = document.createElement('input'); 
+                                                           csrf.type = 'hidden'; 
+                                                           csrf.name = 'csrf_token'; 
+                                                           csrf.value = '{{ csrf_token() }}'; 
+                                                           form.appendChild(csrf); 
+                                                           document.body.appendChild(form); 
+                                                           form.submit(); 
+                                                       }"
+                                                       class="btn btn-outline-danger btn-sm">
+                                                        <i class="fas fa-unlink me-1"></i>
+                                                        Déconnecter
+                                                    </a>
+                                                </div>
+                                            {% else %}
+                                                <div class="alert alert-info py-2 mb-3">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <strong>Configuration SMTP Gmail</strong>
+                                                    <small class="d-block text-muted mt-1">
+                                                        Saisissez votre mot de passe d'application Gmail.
+                                                        <a href="https://myaccount.google.com/apppasswords" target="_blank" class="text-decoration-none">
+                                                            <i class="fas fa-external-link-alt me-1"></i>Créer un mot de passe d'application
+                                                        </a>
+                                                    </small>
+                                                </div>
+                                                {% if form.gmail_email.data and not email_config.is_outlook_connected() %}
+                                                    <div class="mb-2">
+                                                        <input type="password" 
+                                                               id="gmail_app_password_input"
+                                                               class="form-control form-control-sm" 
+                                                               placeholder="Mot de passe d'application (16 caractères)"
+                                                               onkeypress="if(event.key === 'Enter') { event.preventDefault(); connectGmailSMTP(); }">
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-shield-alt me-1"></i>
+                                                            Format: xxxx xxxx xxxx xxxx (espaces optionnels)
+                                                        </small>
+                                                    </div>
+                                                    <div class="d-grid">
+                                                        <button type="button" 
+                                                                onclick="connectGmailSMTP()"
+                                                                class="btn btn-danger btn-sm">
+                                                            <i class="fab fa-google me-1"></i>
+                                                            Connecter Gmail SMTP
+                                                        </button>
+                                                    </div>
+                                                {% elif email_config.is_outlook_connected() %}
+                                                    <div class="alert alert-warning py-2">
+                                                        <small>Déconnectez Outlook d'abord pour connecter Gmail</small>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="alert alert-secondary py-2">
+                                                        <i class="fas fa-envelope me-2"></i>
+                                                        <small>Saisissez votre adresse Gmail puis sauvegardez pour activer la connexion SMTP</small>
+                                                    </div>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="alert alert-secondary py-2">
+                                                <i class="fas fa-envelope me-2"></i>
+                                                <small>Saisissez votre adresse Gmail pour activer la connexion SMTP</small>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                         <!-- Signature Courriel - Moved outside of Gmail card -->
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-signature me-2"></i>
+                                            Signature Courriel
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+<div class="mb-3">
+                                            <!-- Onglets pour Templates et Éditeur -->
+                                            <ul class="nav nav-tabs mb-3" id="signature-tabs" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="templates-tab" data-bs-toggle="tab" data-bs-target="#templates-pane" type="button" role="tab">
+                                                        <i class="fas fa-th-large me-1"></i> Templates
+                                                    </button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link active" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor-pane" type="button" role="tab">
+                                                        <i class="fas fa-edit me-1"></i> Éditeur
+                                                    </button>
+                                                </li>
+                                            </ul>
+
+                                            <div class="tab-content" id="signature-tab-content">
+                                                <!-- Onglet Templates -->
+                                                <div class="tab-pane fade" id="templates-pane" role="tabpanel">
+                                                    <div class="row g-3">
+                                                        <!-- Template 1 -->
+                                                        <div class="col-md-6">
+                                                            <div class="card signature-template" onclick="selectTemplate('template1', event)" style="cursor: pointer;">
+                                                                <div class="card-header bg-primary text-white">
+                                                                    <h6 class="mb-0">Template 1</h6>
+                                                                </div>
+                                                                <div class="card-body p-3" style="background-color: #f8f9fa;">
+                                                                    <div class="d-flex align-items-start">
+                                                                        <div class="me-3">
+                                                                            <div style="width: 60px; height: 40px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                                                <i class="fas fa-image text-muted"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="flex-grow-1">
+                                                                            <div style="width: 100%; height: 8px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 80%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 70%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 8px;"></div>
+                                                                            <div class="d-flex gap-2">
+                                                                                <div style="width: 12px; height: 12px; background-color: #17a2b8; border-radius: 50%;"></div>
+                                                                                <div style="width: 12px; height: 12px; background-color: #17a2b8; border-radius: 50%;"></div>
+                                                                                <div style="width: 12px; height: 12px; background-color: #17a2b8; border-radius: 50%;"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="text-success">
+                                                                            <i class="fas fa-check-circle fa-lg"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Template 2 -->
+                                                        <div class="col-md-6">
+                                                            <div class="card signature-template" onclick="selectTemplate('template2', event)" style="cursor: pointer;">
+                                                                <div class="card-header bg-primary text-white">
+                                                                    <h6 class="mb-0">Template 2</h6>
+                                                                </div>
+                                                                <div class="card-body p-3" style="background-color: #f8f9fa;">
+                                                                    <div class="d-flex align-items-start">
+                                                                        <div class="flex-grow-1 me-3">
+                                                                            <div style="width: 100%; height: 8px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 85%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 75%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 8px;"></div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div style="width: 50px; height: 35px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                                                                                <i class="fas fa-image text-muted"></i>
+                                                                            </div>
+                                                                            <div class="d-flex gap-1 justify-content-center">
+                                                                                <div style="width: 8px; height: 8px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                                <div style="width: 8px; height: 8px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                                <div style="width: 8px; height: 8px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Template 3 -->
+                                                        <div class="col-md-6">
+                                                            <div class="card signature-template" onclick="selectTemplate('template3', event)" style="cursor: pointer;">
+                                                                <div class="card-header bg-primary text-white">
+                                                                    <h6 class="mb-0">Template 3</h6>
+                                                                </div>
+                                                                <div class="card-body p-3" style="background-color: #f8f9fa;">
+                                                                    <div class="d-flex align-items-start">
+                                                                        <div class="me-3">
+                                                                            <div style="width: 50px; height: 35px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                                                <i class="fas fa-image text-muted"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="flex-grow-1">
+                                                                            <div style="width: 100%; height: 8px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 90%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 60%; height: 4px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 8px;"></div>
+                                                                            <div class="d-flex gap-1">
+                                                                                <div style="width: 10px; height: 10px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                                <div style="width: 10px; height: 10px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                                <div style="width: 10px; height: 10px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Template 4 -->
+                                                        <div class="col-md-6">
+                                                            <div class="card signature-template" onclick="selectTemplate('template4', event)" style="cursor: pointer;">
+                                                                <div class="card-header bg-primary text-white">
+                                                                    <h6 class="mb-0">Template 4</h6>
+                                                                </div>
+                                                                <div class="card-body p-3" style="background-color: #f8f9fa;">
+                                                                    <div class="d-flex align-items-start">
+                                                                        <div class="flex-grow-1 me-3">
+                                                                            <div style="width: 70%; height: 8px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 100%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 85%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 8px;"></div>
+                                                                            <div class="d-flex gap-1">
+                                                                                <div style="width: 10px; height: 10px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                                <div style="width: 10px; height: 10px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                                <div style="width: 10px; height: 10px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div style="width: 45px; height: 32px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                                                <i class="fas fa-image text-muted"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Onglet Éditeur TinyMCE -->
+                                                <div class="tab-pane fade show active" id="editor-pane" role="tabpanel">
+                                                    <textarea id="signature-editor" name="signature_content"></textarea>
+                                                </div>
+                                            </div>
+
+                                            {{ form.email_signature(style="display: none;") }}
+
+                                            <!-- Indicateur de taille et bouton de sauvegarde -->
+                                            <div class="mt-3">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-info-circle me-1"></i>
+                                                        Taille: <span id="signature-size">0 KB</span> / 2.5 MB max
+                                                    </small>
+                                                    <div class="progress" style="width: 200px; height: 6px;">
+                                                        <div id="signature-progress" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+<!-- TinyMCE CSS et JS -->
+<script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
+
+<style>
+.signature-template:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.signature-template {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.signature-template.selected {
+    border-color: #8475EC;
+    box-shadow: 0 4px 12px rgba(132, 117, 236, 0.25);
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.icon-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.card-header h6 {
+    font-weight: 600;
+}
+</style>
+
+<script>
+// Variables globales
+let tinymceEditor;
+let signatureField;
+
+// Templates HTML prédéfinis
+const templates = {
+    template1: `
+        <table style="font-family: Arial, sans-serif; border-collapse: collapse; max-width: 500px; border: none;">
+            <tr>
+                <td style="padding-right: 15px; vertical-align: top; border: none;">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60' viewBox='0 0 80 60'%3E%3Crect width='80' height='60' fill='%23e9ecef'/%3E%3Ctext x='40' y='35' text-anchor='middle' fill='%23495057' font-size='12'%3ELOGO%3C/text%3E%3C/svg%3E" 
+                         alt="Logo" style="width: 80px; height: 60px; border-radius: 4px;">
+                </td>
+                <td style="vertical-align: top; border: none;">
+                    <div style="margin-bottom: 8px;">
+                        <strong style="font-size: 16px; color: #333;">Nom Prénom</strong>
+                    </div>
+                    <div style="margin-bottom: 4px; color: #666; font-size: 14px;">Titre du poste</div>
+                    <div style="margin-bottom: 4px; color: #666; font-size: 14px;">Nom de l'entreprise</div>
+                    <div style="margin-bottom: 12px;">
+                        <div style="margin-bottom: 4px;">
+                            <a href="tel:+33123456789" style="color: #007bff; text-decoration: none; display: inline-flex; align-items: center; margin-right: 15px;">
+                                <span style="margin-right: 6px; font-size: 14px;">📞</span>
+                                +33 1 23 45 67 89
+                            </a>
+                            <a href="mailto:email@entreprise.com" style="color: #007bff; text-decoration: none; display: inline-flex; align-items: center;">
+                                <span style="margin-right: 6px; font-size: 14px;">✉️</span>
+                                email@entreprise.com
+                            </a>
+                        </div>
+                        <div>
+                            <a href="https://linkedin.com" style="color: #0077b5; text-decoration: none; display: inline-flex; align-items: center;">
+                                <span style="margin-right: 6px; font-size: 14px; color: #0077b5;">🔗</span>
+                                LinkedIn
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    `,
+    template2: `
+        <table style="font-family: Arial, sans-serif; border-collapse: collapse; max-width: 500px; border: none;">
+            <tr>
+                <td style="vertical-align: top; padding-right: 15px; border: none;">
+                    <div style="margin-bottom: 8px;">
+                        <strong style="font-size: 16px; color: #333;">Nom Prénom</strong>
+                    </div>
+                    <div style="margin-bottom: 4px; color: #666; font-size: 14px;">Titre du poste</div>
+                    <div style="margin-bottom: 4px; color: #666; font-size: 14px;">Nom de l'entreprise</div>
+                    <div style="margin-bottom: 8px; color: #666; font-size: 14px; display: flex; align-items: center;">
+                        <span style="margin-right: 6px; font-size: 12px;">📍</span>
+                        123 Rue Example, 75001 Paris
+                    </div>
+                </td>
+                <td style="text-align: right; vertical-align: top; border: none;">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='50' viewBox='0 0 70 50'%3E%3Crect width='70' height='50' fill='%23e9ecef'/%3E%3Ctext x='35' y='30' text-anchor='middle' fill='%23495057' font-size='10'%3ELOGO%3C/text%3E%3C/svg%3E" 
+                         alt="Logo" style="width: 70px; height: 50px; border-radius: 4px; margin-bottom: 8px;">
+                    <div style="text-align: center; display: flex; gap: 8px; justify-content: center;">
+                        <a href="tel:+33123456789" style="color: #007bff; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background-color: #f8f9fa;">
+                            <span style="font-size: 14px;">📞</span>
+                        </a>
+                        <a href="mailto:email@entreprise.com" style="color: #007bff; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background-color: #f8f9fa;">
+                            <span style="font-size: 14px;">✉️</span>
+                        </a>
+                        <a href="https://linkedin.com" style="color: #0077b5; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background-color: #f8f9fa;">
+                            <span style="font-size: 14px; color: #0077b5;">🔗</span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    `,
+    template3: `
+        <table style="font-family: Arial, sans-serif; border-collapse: collapse; max-width: 500px; border: none;">
+            <tr>
+                <td style="padding-right: 15px; vertical-align: top; border: none;">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='50' viewBox='0 0 70 50'%3E%3Crect width='70' height='50' fill='%23e9ecef'/%3E%3Ctext x='35' y='30' text-anchor='middle' fill='%23495057' font-size='10'%3ELOGO%3C/text%3E%3C/svg%3E" 
+                         alt="Logo" style="width: 70px; height: 50px; border-radius: 4px;">
+                </td>
+                <td style="vertical-align: top; border: none;">
+                    <div style="margin-bottom: 8px;">
+                        <strong style="font-size: 16px; color: #333;">Nom Prénom</strong>
+                    </div>
+                    <div style="margin-bottom: 4px; color: #666; font-size: 14px;">Titre du poste | Nom de l'entreprise</div>
+                    <div style="margin-bottom: 4px; color: #666; font-size: 12px; display: flex; align-items: center; gap: 15px;">
+                        <span style="display: flex; align-items: center;">
+                            <span style="margin-right: 4px; font-size: 12px;">📞</span>
+                            +33 1 23 45 67 89
+                        </span>
+                        <span style="display: flex; align-items: center;">
+                            <span style="margin-right: 4px; font-size: 12px;">✉️</span>
+                            email@entreprise.com
+                        </span>
+                    </div>
+                    <div style="margin-top: 8px; display: flex; gap: 10px;">
+                        <a href="https://linkedin.com" style="color: #0077b5; text-decoration: none; display: inline-flex; align-items: center;">
+                            <span style="font-size: 16px; color: #0077b5;">🔗</span>
+                        </a>
+                        <a href="https://twitter.com" style="color: #1da1f2; text-decoration: none; display: inline-flex; align-items: center;">
+                            <span style="font-size: 16px; color: #1da1f2;">🐦</span>
+                        </a>
+                        <a href="https://instagram.com" style="color: #e4405f; text-decoration: none; display: inline-flex; align-items: center;">
+                            <span style="font-size: 16px; color: #e4405f;">📸</span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    `,
+    template4: `
+        <table style="font-family: Arial, sans-serif; border-collapse: collapse; max-width: 500px; border: none;">
+            <tr>
+                <td style="vertical-align: top; padding-right: 15px; border: none;">
+                    <div style="margin-bottom: 6px;">
+                        <strong style="font-size: 16px; color: #333;">Nom Prénom</strong>
+                    </div>
+                    <div style="margin-bottom: 4px; color: #666; font-size: 14px;">Titre du poste</div>
+                    <div style="margin-bottom: 4px; color: #666; font-size: 14px;">Nom de l'entreprise</div>
+                    <div style="margin-bottom: 8px; color: #666; font-size: 14px; display: flex; align-items: center;">
+                        <span style="margin-right: 6px; font-size: 12px;">📍</span>
+                        123 Rue Example, 75001 Paris
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <a href="tel:+33123456789" style="color: #007bff; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background-color: #f8f9fa;">
+                            <span style="font-size: 16px;">📞</span>
+                        </a>
+                        <a href="mailto:email@entreprise.com" style="color: #007bff; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background-color: #f8f9fa;">
+                            <span style="font-size: 16px;">✉️</span>
+                        </a>
+                        <a href="https://linkedin.com" style="color: #0077b5; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background-color: #f8f9fa;">
+                            <span style="font-size: 16px; color: #0077b5;">🔗</span>
+                        </a>
+                    </div>
+                </td>
+                <td style="text-align: right; vertical-align: top; border: none;">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='45' viewBox='0 0 65 45'%3E%3Crect width='65' height='45' fill='%23e9ecef'/%3E%3Ctext x='32' y='27' text-anchor='middle' fill='%23495057' font-size='9'%3ELOGO%3C/text%3E%3C/svg%3E" 
+                         alt="Logo" style="width: 65px; height: 45px; border-radius: 4px;">
+                </td>
+            </tr>
+        </table>
+    `
+};
+
+// Fonction pour sélectionner un template
+function selectTemplate(templateId, event) {
+    console.log('Sélection template:', templateId);
+
+    // Retirer la sélection des autres templates
+    document.querySelectorAll('.signature-template').forEach(card => {
+        card.classList.remove('selected');
+    });
+
+    // Ajouter la classe selected au template cliqué
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('selected');
+    }
+
+    // Charger le template dans l'éditeur TinyMCE
+    if (tinymceEditor && templates[templateId]) {
+        tinymceEditor.setContent(templates[templateId]);
+        updateSignatureField();
+
+        // Passer automatiquement à l'onglet éditeur
+        const editorTab = document.getElementById('editor-tab');
+        if (editorTab) {
+            const tab = new bootstrap.Tab(editorTab);
+            tab.show();
+        }
+
+        console.log('Template chargé avec succès !');
+    } else {
+        console.error('Erreur: TinyMCE non initialisé ou template non trouvé');
+    }
+}
+
+// Fonction pour mettre à jour le champ caché avec validation de taille
+function updateSignatureField() {
+    if (tinymceEditor && signatureField) {
+        const content = tinymceEditor.getContent();
+        const contentSize = new Blob([content]).size;
+        const maxSize = 2.5 * 1024 * 1024; // 2.5MB limit
+
+        // Mettre à jour l'indicateur de taille
+        updateSizeIndicator(contentSize, maxSize);
+
+        if (contentSize > maxSize) {
+            alert('La signature est trop volumineuse (max 2.5MB). Veuillez réduire le nombre ou la taille des images.');
+            return false;
+        }
+
+        // Mettre à jour le champ caché avec un log détaillé
+        signatureField.value = content;
+        console.log('Signature mise à jour dans le champ caché:', content.length, 'caractères');
+        console.log('Aperçu signature:', content.substring(0, 100) + (content.length > 100 ? '...' : ''));
+        return true;
+    }
+    return false;
+}
+
+// Fonction pour mettre à jour l'indicateur de taille
+function updateSizeIndicator(currentSize, maxSize) {
+    const sizeElement = document.getElementById('signature-size');
+    const progressElement = document.getElementById('signature-progress');
+
+    if (sizeElement && progressElement) {
+        // Convertir en KB
+        const sizeKB = (currentSize / 1024).toFixed(1);
+        sizeElement.textContent = sizeKB + ' KB';
+
+        // Calculer le pourcentage
+        const percentage = (currentSize / maxSize) * 100;
+        progressElement.style.width = percentage + '%';
+
+        // Changer la couleur selon le pourcentage
+        if (percentage < 50) {
+            progressElement.className = 'progress-bar bg-success';
+        } else if (percentage < 80) {
+            progressElement.className = 'progress-bar bg-warning';
+        } else {
+            progressElement.className = 'progress-bar bg-danger';
+        }
+    }
+}
+
+// Rendre les fonctions globales
+window.selectTemplate = selectTemplate;
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initialisation du système de templates de signature...');
+
+    signatureField = document.getElementById('email_signature');
+    
+    // Nettoyer le champ signature s'il contient le texte par défaut
+    if (signatureField && signatureField.value) {
+        const currentValue = signatureField.value.trim();
+        if (currentValue.includes('Sélectionnez un template') || 
+            currentValue.includes('<p>Sélectionnez un template') ||
+            currentValue.length < 20) {
+            console.log('Nettoyage du texte par défaut dans la signature');
+            signatureField.value = '';
+        }
+    }
+
+    // Initialiser TinyMCE avec système d'image sécurisé
+    tinymce.init({
+        selector: '#signature-editor',
+        height: 300,
+        language: 'fr_FR',
+        language_url: '/static/js/tinymce/langs/fr_FR.js',
+        menubar: false,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'charmap',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'table', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | bullist numlist outdent indent | removeformat | customimage link | forecolor backcolor',
+        placeholder: 'Sélectionnez un template dans l\'onglet Templates pour commencer, ou créez votre signature personnalisée ici...',
+        content_style: `
+            body { 
+                font-family: Arial, sans-serif; 
+                font-size: 14px; 
+                margin: 0; 
+                padding: 10px; 
+                line-height: 1.4;
+            }
+            body[data-mce-placeholder]:not([data-mce-placeholder=""]):before {
+                content: attr(data-mce-placeholder);
+                color: #999;
+                font-style: italic;
+                position: absolute;
+                top: 16px;
+                left: 16px;
+                margin: 0;
+                padding: 0;
+                line-height: 1.4;
+                pointer-events: none;
+                z-index: 1;
+            }
+            table { 
+                border-collapse: collapse; 
+                border: none !important; 
+                max-width: 100%; 
+                width: auto !important; 
+            }
+            td, th { 
+                border: none !important; 
+                padding: 5px; 
+                vertical-align: top; 
+            }
+            img { 
+                max-width: 100%; 
+                height: auto; 
+                display: block; 
+            }
+            .signature-table {
+                width: auto !important;
+                max-width: 500px;
+            }
+        `,
+
+        // Configuration sécurisée pour les images
+        automatic_uploads: false,
+        paste_data_images: false,
+        promotion: false,
+        branding: false,
+        statusbar: false,
+        resize: false,
+        convert_urls: false,
+        relative_urls: false,
+        remove_script_host: false,
+
+        // Table settings pour préserver les bordures
+        table_default_attributes: {
+            'border': '0'
+        },
+        table_default_styles: {
+            'border-collapse': 'collapse'
+        },
+        setup: function (editor) {
+            // Bouton d'upload personnalisé sécurisé
+            editor.ui.registry.addButton('customimage', {
+                text: '📷 Image',
+                tooltip: 'Ajouter une image (optimisée automatiquement)',
+                onAction: function () {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.style.display = 'none';
+
+                    input.onchange = function(e) {
+                        const file = e.target.files[0];
+                        if (!file) return;
+
+                        // Vérifier taille initiale
+                        if (file.size > 10 * 1024 * 1024) { // 10MB max
+                            alert('Fichier trop volumineux (max 10MB)');
+                            return;
+                        }
+
+                        const img = new Image();
+                        img.onload = function() {
+                            try {
+                                const canvas = document.createElement('canvas');
+                                const ctx = canvas.getContext('2d');
+
+                                // Redimensionner (max 400px)
+                                let { width, height } = img;
+                                const maxSize = 400;
+
+                                if (width > maxSize || height > maxSize) {
+                                    if (width > height) {
+                                        height = (height * maxSize) / width;
+                                        width = maxSize;
+                                    } else {
+                                        width = (width * maxSize) / height;
+                                        height = maxSize;
+                                    }
+                                }
+
+                                canvas.width = width;
+                                canvas.height = height;
+                                ctx.drawImage(img, 0, 0, width, height);
+
+                                // Compression JPEG
+                                const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                                const finalSize = dataUrl.length * 0.75;
+
+                                if (finalSize > 1.5 * 1024 * 1024) { // 1.5MB max final
+                                    alert('Image trop volumineuse après optimisation. Utilisez une image plus petite.');
+                                    return;
+                                }
+
+                                // Insérer dans éditeur
+                                const imgHtml = `<img src="${dataUrl}" style="max-width: 100%; height: auto;" alt="Logo">`;
+                                editor.insertContent(imgHtml);
+
+                                console.log('Image ajoutée:', Math.round(finalSize/1024) + 'KB');
+
+                            } catch (e) {
+                                console.error('Erreur:', e);
+                                alert('Erreur lors du traitement de l\'image');
+                            }
+                        };
+
+                        const reader = new FileReader();
+                        reader.onload = function() {
+                            img.src = reader.result;
+                        };
+                        reader.readAsDataURL(file);
+                    };
+
+                    document.body.appendChild(input);
+                    input.click();
+                    document.body.removeChild(input);
+                }
+            });
+
+            tinymceEditor = editor;
+            // Rendre l'éditeur accessible globalement
+            window.tinymceEditor = editor;
+            window.currentEditor = editor;
+
+            // Synchroniser le contenu à chaque changement
+            editor.on('change keyup paste', function () {
+                updateSignatureField();
+            });
+
+            // Charger le contenu existant seulement s'il s'agit d'une vraie signature
+            editor.on('init', function () {
+                console.log('TinyMCE initialisé');
+                if (signatureField && signatureField.value && signatureField.value.trim() !== '') {
+                    let content = signatureField.value;
+                    // Filtrer le texte par défaut - ne pas le charger comme contenu réel
+                    if (content.includes('Sélectionnez un template') || 
+                        content.includes('<p>Sélectionnez un template') ||
+                        content.trim().length < 20) {
+                        // Laisser l'éditeur vide pour éviter que ce texte apparaisse dans les emails
+                        editor.setContent('');
+                    } else if (content.includes('<table') && !content.includes('data:image/svg+xml,%3Csvg')) {
+                        // Charger seulement les vraies signatures
+                        editor.setContent(content);
+                    } else {
+                        // Éditeur vide par défaut
+                        editor.setContent('');
+                    }
+                } else {
+                    // Éditeur vide par défaut - le placeholder sera affiché automatiquement
+                    editor.setContent('');
+                }
+                updateSignatureField();
+            });
+        }
+    });
+
+    console.log('Système de templates initialisé avec succès');
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Validation globale avant soumission du formulaire principal
+    const mainForm = document.querySelector('form');
+    if (mainForm) {
+        mainForm.addEventListener('submit', function(e) {
+            console.log('=== SOUMISSION DU FORMULAIRE ===');
+            
+            if (tinymceEditor && signatureField) {
+                // Forcer la synchronisation de la signature
+                const content = tinymceEditor.getContent();
+                const contentSize = new Blob([content]).size;
+                const maxSize = 2.5 * 1024 * 1024; // 2.5MB
+
+                console.log('Contenu TinyMCE avant soumission:', content.length, 'caractères');
+                console.log('Taille du contenu:', contentSize, 'bytes');
+
+                if (contentSize > maxSize) {
+                    e.preventDefault();
+                    alert('Signature trop volumineuse (max 2.5MB). Réduisez la taille des images avant de sauvegarder.');
+                    return false;
+                }
+
+                // FORCER la mise à jour du champ caché
+                signatureField.value = content;
+                console.log('Champ caché final avant envoi:', signatureField.value.length, 'caractères');
+                console.log('Valeur champ caché:', signatureField.value.substring(0, 100) + '...');
+            } else {
+                console.log('TinyMCE ou champ signature non disponible');
+            }
+            
+            console.log('=== FIN SOUMISSION ===');
+        });
+    }
+});
+</script>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-end">
+                                {{ form.submit(class="btn btn-primary", value="Sauvegarder la configuration") }}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Quill Editor -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<style>
+.connection-card {
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+}
+
+.connection-logo {
+    flex-shrink: 0;
+}
+
+/* Custom Quill editor styling */
+.ql-editor {
+    min-height: 150px;
+    font-family: inherit;
+}
+
+.ql-toolbar.ql-snow {
+    border-top: 1px solid #ced4da;
+    border-left: 1px solid #ced4da;
+    border-right: 1px solid #ced4da;
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+}
+
+.ql-container.ql-snow {
+    border-bottom: 1px solid #ced4da;
+    border-left: 1px solid #ced4da;
+    border-right: 1px solid #ced4da;
+    border-bottom-left-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+}
+
+#signature-editor {
+    border: none !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Le JavaScript pour les signatures est maintenant dans email_signature_new.html -->
+<script>
+function connectGmailSMTP() {
+    var password = document.getElementById('gmail_app_password_input').value;
+    
+    if (!password || password.trim() === '') {
+        alert('Veuillez saisir votre mot de passe d\'application Gmail.');
+        return;
+    }
+    
+    // Créer et soumettre le formulaire dynamiquement
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ url_for('profile.gmail_connect') }}';
+    
+    var csrf = document.createElement('input');
+    csrf.type = 'hidden';
+    csrf.name = 'csrf_token';
+    csrf.value = '{{ csrf_token() }}';
+    form.appendChild(csrf);
+    
+    var passwordInput = document.createElement('input');
+    passwordInput.type = 'hidden';
+    passwordInput.name = 'gmail_app_password';
+    passwordInput.value = password;
+    form.appendChild(passwordInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>
+{% endblock %}

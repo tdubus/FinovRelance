@@ -1,0 +1,416 @@
+{% extends "base.html" %}
+
+{% block title %}Mapping des Champs Business Central - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exchange-alt me-2"></i>Configuration du Mapping des Champs Business Central
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Interface améliorée:</strong> Sélectionnez les champs Business Central correspondant à chaque champ FinovRelance dans les listes déroulantes.
+                        Les champs marqués d'un <span class="text-danger">*</span> sont obligatoires.
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('company.business_central_save_mapping') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        
+                        <!-- Section Clients -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-users me-2"></i>Mapping des Clients</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Code Client -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Code Client FinovRelance</strong> <span class="text-danger">*</span>
+                                            <small class="text-muted d-block">Identifiant unique du client</small>
+                                        </label>
+                                        <select class="form-select" name="client_code" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_code') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Nom Client -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Nom Client FinovRelance</strong> <span class="text-danger">*</span>
+                                            <small class="text-muted d-block">Nom ou raison sociale</small>
+                                        </label>
+                                        <select class="form-select" name="client_name" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_name') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Email -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Email FinovRelance</strong>
+                                            <small class="text-muted d-block">Adresse email principale</small>
+                                        </label>
+                                        <select class="form-select" name="client_email">
+                                            <option value="">-- Aucun (optionnel) --</option>
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_email') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Téléphone -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Téléphone FinovRelance</strong>
+                                            <small class="text-muted d-block">Numéro de téléphone principal</small>
+                                        </label>
+                                        <select class="form-select" name="client_phone">
+                                            <option value="">-- Aucun (optionnel) --</option>
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_phone') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Adresse (spécial - peut combiner plusieurs champs) -->
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label">
+                                            <strong>Adresse FinovRelance</strong>
+                                            <small class="text-muted d-block">Pour une adresse complète, utilisez: Address,Address_2,City,Post_Code,County,Country_Region_Code</small>
+                                        </label>
+                                        <input type="text" class="form-control" name="client_address" 
+                                               value="{{ field_mapping.get('client_address', 'Address,Address_2,City,Post_Code,County,Country_Region_Code') }}"
+                                               placeholder="Address,Address_2,City,Post_Code,County,Country_Region_Code">
+                                        <small class="form-text text-muted">
+                                            <strong>Conseil:</strong> Séparez plusieurs champs par des virgules pour les concaténer automatiquement
+                                        </small>
+                                    </div>
+                                    
+                                    <!-- Représentant -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Représentant FinovRelance</strong>
+                                            <small class="text-muted d-block">Code du vendeur ou représentant</small>
+                                        </label>
+                                        <select class="form-select" name="client_representative">
+                                            <option value="">-- Aucun (optionnel) --</option>
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_representative') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Conditions de paiement -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Conditions de Paiement FinovRelance</strong>
+                                            <small class="text-muted d-block">Code des termes de paiement</small>
+                                        </label>
+                                        <select class="form-select" name="client_payment_terms">
+                                            <option value="">-- Aucun (optionnel) --</option>
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_payment_terms') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Code Parent -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Code Parent FinovRelance</strong>
+                                            <small class="text-muted d-block">Client parent (hiérarchie)</small>
+                                        </label>
+                                        <select class="form-select" name="client_parent_code">
+                                            <option value="">-- Aucun (optionnel) --</option>
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_parent_code') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Langue -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Langue FinovRelance</strong>
+                                            <small class="text-muted d-block">Code langue (défaut: fr)</small>
+                                        </label>
+                                        <select class="form-select" name="client_language">
+                                            <option value="">-- Défaut (fr) --</option>
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_language') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Filtre OData Clients -->
+                                <div class="mt-4 p-3 bg-light rounded">
+                                    <h6><i class="fas fa-filter me-2"></i>Filtrage des Clients</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Filtre OData pour limiter les clients (optionnel)</label>
+                                        <input type="text" class="form-control" name="customers_filter" 
+                                               value="{{ bc_config.customers_filter or '' }}"
+                                               placeholder="ex: startswith(No, 'CUST') or Balance_LCY gt 100">
+                                        <small class="form-text text-muted">
+                                            Filtre OData V4 pour ne synchroniser que certains clients
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Section Factures -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Mapping des Factures</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Code Client (dans la facture) -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Référence Client dans Facture</strong> <span class="text-danger">*</span>
+                                            <small class="text-muted d-block">Lien vers le client dans la facture</small>
+                                        </label>
+                                        <select class="form-select" name="invoice_customer_code" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('invoice_customer_code') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Numéro Facture -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Numéro de Facture</strong> <span class="text-danger">*</span>
+                                            <small class="text-muted d-block">Identifiant unique de la facture</small>
+                                        </label>
+                                        <select class="form-select" name="invoice_number" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('invoice_number') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Date Émission -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Date d'Émission</strong> <span class="text-danger">*</span>
+                                            <small class="text-muted d-block">Date de création de la facture</small>
+                                        </label>
+                                        <select class="form-select" name="invoice_date" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('invoice_date') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Date Échéance -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Date d'Échéance</strong> <span class="text-danger">*</span>
+                                            <small class="text-muted d-block">Date limite de paiement</small>
+                                        </label>
+                                        <select class="form-select" name="invoice_due_date" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('invoice_due_date') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Solde Restant à Payer (OBLIGATOIRE) -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Solde Restant à Payer</strong> <span class="text-danger">*</span>
+                                            <small class="text-muted d-block">Montant impayé de la facture</small>
+                                        </label>
+                                        <select class="form-select" name="invoice_balance" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('invoice_balance') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Montant Total (optionnel) -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Montant Total de la Facture</strong>
+                                            <small class="text-muted d-block">Montant original avant paiements (optionnel)</small>
+                                        </label>
+                                        <select class="form-select" name="invoice_amount">
+                                            <option value="">-- Aucun (optionnel) --</option>
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('invoice_amount') == field_value %}selected{% endif %}>
+                                                {{ field_desc }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Filtre OData Factures -->
+                                <div class="mt-4 p-3 bg-light rounded">
+                                    <h6><i class="fas fa-filter me-2"></i>Filtrage des Factures</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Filtre OData pour limiter les factures (optionnel)</label>
+                                        <input type="text" class="form-control" name="invoices_filter" 
+                                               value="{{ bc_config.invoices_filter or '' }}"
+                                               placeholder="ex: Document_Date gt 2023-01-01 and Amount_Including_VAT gt 500">
+                                        <small class="form-text text-muted">
+                                            Filtre OData V4 pour ne synchroniser que certaines factures
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Exemples de filtres -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Exemples de Filtres OData V4</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Filtres Clients:</h6>
+                                        <ul class="small mb-0">
+                                            <li><code>startswith(No, 'CUST')</code> - Codes commençant par 'CUST'</li>
+                                            <li><code>Balance_LCY gt 1000</code> - Solde supérieur à 1000</li>
+                                            <li><code>Credit_Limit_LCY ne null</code> - Avec limite de crédit</li>
+                                            <li><code>Language_Code eq 'FR'</code> - Clients francophones</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Filtres Factures:</h6>
+                                        <ul class="small mb-0">
+                                            <li><code>Document_Date gt 2023-01-01</code> - Après le 01/01/2023</li>
+                                            <li><code>Amount_Including_VAT gt 500</code> - Montant > 500</li>
+                                            <li><code>Due_Date lt now()</code> - Factures échues</li>
+                                            <li><code>Remaining_Amount gt 0</code> - Non totalement payées</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Boutons d'action -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Enregistrer le Mapping
+                            </button>
+                            <a href="{{ url_for('company.business_central_config') }}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Retour à la Configuration
+                            </a>
+                        </div>
+                    </form>
+                    
+                    <!-- Aperçu du mapping (si données disponibles) -->
+                    {% if customer_headers and customer_headers.sample_data %}
+                    <div class="card mt-4">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="fas fa-eye me-2"></i>Aperçu des Données Business Central</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            {% for field in customer_headers.sample_data[0].keys() %}
+                                            <th class="text-nowrap">{{ field }}</th>
+                                            {% endfor %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in customer_headers.sample_data[:3] %}
+                                        <tr>
+                                            {% for value in row.values() %}
+                                            <td class="text-nowrap small">{{ value or '-' }}</td>
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <small class="text-muted">Aperçu des 3 premiers enregistrements clients</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-select {
+    font-size: 0.95rem;
+}
+.form-label strong {
+    color: #2c3e50;
+}
+.text-muted {
+    font-size: 0.85rem;
+}
+.card-header h5, .card-header h6 {
+    color: #495057;
+}
+</style>
+{% endblock %}

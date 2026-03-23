@@ -1,0 +1,292 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Supervision Webhooks Stripe - PHASE 5{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">📡 Supervision Webhooks Stripe</h1>
+        <span class="badge badge-success">PHASE 5 - Enterprise Grade</span>
+    </div>
+
+    <!-- Statistiques générales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Total Webhooks</h5>
+                            <h3 class="mb-0">{{ stats.total_webhooks or 0 }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-satellite-dish fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Taux de Succès</h5>
+                            <h3 class="mb-0">{{ "%.1f"|format(stats.success_rate or 0) }}%</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Échecs</h5>
+                            <h3 class="mb-0">{{ stats.failed_webhooks or 0 }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Période</h5>
+                            <h3 class="mb-0">{{ stats.period_days or 30 }} jours</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Types d'événements -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar"></i> Événements par Type</h5>
+                </div>
+                <div class="card-body">
+                    {% if webhook_types_stats %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Type d'Événement</th>
+                                    <th>Total</th>
+                                    <th>Succès</th>
+                                    <th>Échecs</th>
+                                    <th>Durée Moy.</th>
+                                    <th>Taux</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for stat in webhook_types_stats %}
+                                <tr>
+                                    <td>
+                                        <code>{{ stat.webhook_type }}</code>
+                                    </td>
+                                    <td>{{ stat.total }}</td>
+                                    <td>
+                                        <span class="badge badge-success">{{ stat.success or 0 }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-danger">{{ stat.failed or 0 }}</span>
+                                    </td>
+                                    <td>{{ (stat.avg_duration or 0)|format_duration }}</td>
+                                    <td>
+                                        {% set success_rate = (stat.success / stat.total * 100) if stat.total > 0 else 0 %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-success" role="progressbar" 
+                                                 style="width: {{ success_rate }}%">
+                                                {{ "%.1f"|format(success_rate) }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>Aucun webhook traité récemment</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tools"></i> Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('webhook_admin.webhook_events') }}" class="btn btn-primary">
+                            <i class="fas fa-list"></i> Voir Tous les Événements
+                        </a>
+                        
+                        <a href="{{ url_for('webhook_admin.webhook_events', status='failed') }}" class="btn btn-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Webhooks Échoués
+                        </a>
+                        
+                        <button class="btn btn-info" onclick="refreshStats()">
+                            <i class="fas fa-sync"></i> Actualiser Stats
+                        </button>
+                        
+                        <button class="btn btn-secondary" onclick="cleanupOldLogs()">
+                            <i class="fas fa-trash"></i> Nettoyer Anciens Logs
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {% if failed_webhooks %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6><i class="fas fa-exclamation-circle"></i> Échecs Récents</h6>
+                </div>
+                <div class="card-body">
+                    {% for webhook in failed_webhooks[:5] %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <small class="text-muted">{{ webhook.processed_at.strftime('%H:%M') }}</small><br>
+                            <code style="font-size: 0.8em;">{{ webhook.webhook_type }}</code>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('webhook_admin.webhook_event_detail', event_id=webhook.id) }}" 
+                               class="btn btn-sm btn-outline-danger">
+                                Voir
+                            </a>
+                        </div>
+                    </div>
+                    {% if not loop.last %}<hr class="my-2">{% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Webhooks récents -->
+    {% if recent_webhooks %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-history"></i> Activité Récente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Type</th>
+                                    <th>Entreprise</th>
+                                    <th>Statut</th>
+                                    <th>Durée</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for webhook in recent_webhooks %}
+                                <tr>
+                                    <td>
+                                        <small>{{ webhook.processed_at.strftime('%d/%m %H:%M:%S') }}</small>
+                                    </td>
+                                    <td>
+                                        <code style="font-size: 0.85em;">{{ webhook.webhook_type }}</code>
+                                    </td>
+                                    <td>
+                                        {% if webhook.company %}
+                                            {{ webhook.company.name }}
+                                        {% else %}
+                                            <em class="text-muted">Global</em>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-{{ webhook.processing_status|webhook_status_color }}">
+                                            {{ webhook.processing_status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ webhook.processing_duration_ms|format_duration }}</td>
+                                    <td>
+                                        <a href="{{ url_for('webhook_admin.webhook_event_detail', event_id=webhook.id) }}" 
+                                           class="btn btn-sm btn-outline-info">
+                                            Détails
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function refreshStats() {
+    // Actualiser les statistiques via AJAX
+    fetch('/admin/webhooks/api/stats')
+        .then(response => response.json())
+        .then(data => {
+            location.reload(); // Simplification pour la démo
+        })
+        .catch(error => {
+            console.error('Erreur actualisation stats:', error);
+            alert('Erreur lors de l\'actualisation');
+        });
+}
+
+function cleanupOldLogs() {
+    if (!confirm('Supprimer les logs de webhooks de plus de 90 jours ?')) return;
+    
+    fetch('/admin/webhooks/cleanup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({days: 90})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Erreur nettoyage:', error);
+        alert('Erreur lors du nettoyage');
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}Choisir votre forfait - {{ super() }}{% endblock %}
+
+{% block head %}
+<style>
+.plan-card {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.plan-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0,123,255,0.15);
+}
+
+.plan-card.recommended {
+    border-color: #28a745;
+    position: relative;
+}
+
+.plan-card.recommended::before {
+    content: "Recommandé";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #28a745;
+    color: white;
+    padding: 4px 16px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.plan-card.current {
+    border-color: #6c757d;
+    background-color: #f8f9fa;
+}
+
+.plan-price {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+}
+
+.plan-features li {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.plan-features li:last-child {
+    border-bottom: none;
+}
+
+.feature-check {
+    color: #28a745;
+    margin-right: 8px;
+}
+
+.feature-cross {
+    color: #dc3545;
+    margin-right: 8px;
+}
+
+.quantity-selector {
+    max-width: 100px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h1 class="h3 mb-0">Choisir votre forfait</h1>
+                                <p class="text-muted mb-0">Entreprise : {{ company.name }}</p>
+                            </div>
+                            <a href="{{ url_for('company.settings') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Retour
+                            </a>
+                        </div>
+
+                        {% if not has_active_subscription and company.plan_id %}
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Onboarding en cours :</strong> Votre entreprise a un plan assigné mais l'abonnement Stripe n'est pas encore activé. 
+                            Sélectionnez votre plan ci-dessous pour compléter la configuration du paiement.
+                        </div>
+                        {% endif %}
+
+                        {% if plans %}
+                        <div class="row g-4">
+                            {% for plan in plans %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card plan-card {% if plan.id == current_plan_id %}current{% elif plan.name == 'relance_plus' %}recommended{% endif %}">
+                                    <div class="card-body p-4">
+                                        <div class="text-center mb-4">
+                                            <h4 class="card-title mb-2">{{ plan.display_name }}</h4>
+                                            {% if plan.id == current_plan_id %}
+                                                <span class="badge bg-secondary">Plan actuel</span>
+                                            {% endif %}
+                                            
+                                            {% if plan.is_free %}
+                                                <div class="plan-price">Gratuit</div>
+                                                <small class="text-muted">Pour commencer</small>
+                                            {% else %}
+                                                {% set pricing = plan.pricing_info %}
+                                                {% if pricing.amount and pricing.amount > 0 %}
+                                                    <div class="plan-price">
+                                                        {{ "%.2f"|format(pricing.amount) }}{{ pricing.currency_symbol }}
+                                                    </div>
+                                                    <small class="text-muted">par {{ pricing.interval_display }} et par licence</small>
+                                                {% else %}
+                                                    <div class="plan-price">Sur mesure</div>
+                                                    <small class="text-muted">Contactez-nous</small>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+
+                                        {% if plan.description %}
+                                        <p class="text-muted small mb-3">{{ plan.description }}</p>
+                                        {% endif %}
+
+                                        <ul class="plan-features">
+                                            <li>
+                                                {% if plan.max_clients %}
+                                                    <i class="fas fa-check feature-check"></i>
+                                                    Jusqu'à {{ plan.max_clients }} clients
+                                                {% else %}
+                                                    <i class="fas fa-check feature-check"></i>
+                                                    Clients illimités
+                                                {% endif %}
+                                            </li>
+                                            <li>
+                                                {% if plan.allows_email_sending %}
+                                                    <i class="fas fa-check feature-check"></i>
+                                                {% else %}
+                                                    <i class="fas fa-times feature-cross"></i>
+                                                {% endif %}
+                                                Envoi d'emails automatisé
+                                            </li>
+                                            <li>
+                                                {% if plan.allows_email_connection %}
+                                                    <i class="fas fa-check feature-check"></i>
+                                                {% else %}
+                                                    <i class="fas fa-times feature-cross"></i>
+                                                {% endif %}
+                                                Connexion email Outlook
+                                            </li>
+                                            <li>
+                                                {% if plan.allows_accounting_connection %}
+                                                    <i class="fas fa-check feature-check"></i>
+                                                {% else %}
+                                                    <i class="fas fa-times feature-cross"></i>
+                                                {% endif %}
+                                                Intégration comptable
+                                            </li>
+                                            <li>
+                                                {% if plan.allows_team_management %}
+                                                    <i class="fas fa-check feature-check"></i>
+                                                {% else %}
+                                                    <i class="fas fa-times feature-cross"></i>
+                                                {% endif %}
+                                                Gestion d'équipe
+                                            </li>
+                                            <li>
+                                                {% if plan.allows_email_templates %}
+                                                    <i class="fas fa-check feature-check"></i>
+                                                {% else %}
+                                                    <i class="fas fa-times feature-cross"></i>
+                                                {% endif %}
+                                                Modèles d'emails personnalisés
+                                            </li>
+                                        </ul>
+
+                                        <div class="mt-4">
+                                            {% if plan.id == current_plan_id %}
+                                                <button class="btn btn-outline-secondary w-100" disabled>
+                                                    Plan actuel
+                                                </button>
+                                            {% else %}
+                                                <form action="{{ url_for('stripe_checkout_v2.create_checkout_session') }}" method="POST">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                    <input type="hidden" name="plan_id" value="{{ plan.id }}">
+                                                    
+                                                    {% if not plan.is_free %}
+                                                    <div class="mb-3">
+                                                        <label for="quantity_{{ plan.id }}" class="form-label small">Nombre de licences :</label>
+                                                        <select name="quantity_licenses" id="quantity_{{ plan.id }}" class="form-select quantity-selector">
+                                                            {% for i in range(1, 21) %}
+                                                                <option value="{{ i }}"{% if i == 1 %} selected{% endif %}>{{ i }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    {% else %}
+                                                        <input type="hidden" name="quantity_licenses" value="1">
+                                                    {% endif %}
+                                                    
+                                                    <button type="submit" class="btn {% if plan.name == 'relance_plus' %}btn-success{% else %}btn-primary{% endif %} w-100">
+                                                        {% if plan.is_free %}
+                                                            Activer gratuitement
+                                                        {% else %}
+                                                            Choisir ce plan
+                                                        {% endif %}
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mt-5 p-4 bg-light rounded">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5>Besoin d'aide pour choisir ?</h5>
+                                    <p class="mb-0">
+                                        Contactez notre équipe pour une démonstration personnalisée et des conseils sur le forfait le plus adapté à vos besoins.
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <a href="mailto:support@finov-relance.com" class="btn btn-outline-primary">
+                                        <i class="fas fa-envelope me-2"></i>Nous contacter
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% else %}
+                        <div class="alert alert-warning">
+                            <h5><i class="fas fa-exclamation-triangle me-2"></i>Aucun forfait disponible</h5>
+                            <p class="mb-0">Aucun forfait n'est actuellement disponible. Contactez l'administrateur pour plus d'informations.</p>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Mise à jour du prix total en temps réel
+document.querySelectorAll('select[name="quantity_licenses"]').forEach(function(select) {
+    select.addEventListener('change', function() {
+        // Logique pour mettre à jour l'affichage du prix total si nécessaire
+        // Pour l'instant, Stripe Checkout gère cela automatiquement
+    });
+});
+</script>
+{% endblock %}

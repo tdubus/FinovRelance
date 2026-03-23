@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Clients - FinovRelance{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i data-feather="user" class="me-2"></i>
+                        {{ title }}
+                    </h5>
+                    <a href="{{ url_for('client.list_clients') }}" class="btn btn-outline-secondary">
+                        <i data-feather="arrow-left" class="me-1"></i>
+                        Retour à la liste
+                    </a>
+                </div>
+            </div>
+            
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="card-body">
+                    <!-- Basic Information -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                {{ form.code_client.label(class="form-label") }}
+                                {{ form.code_client(class="form-control", placeholder="Ex: CLI001") }}
+                                {% if form.code_client.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.code_client.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Code unique pour identifier le client</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.name.label(class="form-label") }}
+                                {{ form.name(class="form-control form-control-lg", placeholder="Nom complet du client") }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.name.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <h6 class="border-bottom pb-2 mb-3">
+                        <i data-feather="phone" class="me-2"></i>
+                        Informations de contact
+                    </h6>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.email.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i data-feather="mail"></i>
+                                    </span>
+                                    {{ form.email(class="form-control", placeholder="client@exemple.com") }}
+                                </div>
+                                {% if form.email.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.email.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.phone.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i data-feather="phone"></i>
+                                    </span>
+                                    {{ form.phone(class="form-control", type="tel", placeholder="(514) 555-0123") }}
+                                </div>
+                                {% if form.phone.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.phone.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        {{ form.address.label(class="form-label") }}
+                        {{ form.address(class="form-control", rows="3", placeholder="Adresse complète du client...") }}
+                        {% if form.address.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.address.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Business Information -->
+                    <h6 class="border-bottom pb-2 mb-3">
+                        <i data-feather="briefcase" class="me-2"></i>
+                        Informations commerciales
+                    </h6>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.collector_id.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i data-feather="user-check"></i>
+                                    </span>
+                                    {{ form.collector_id(class="form-select") }}
+                                </div>
+                                {% if form.collector_id.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.collector_id.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Membre de l'équipe responsable du recouvrement</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.parent_client_id.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i data-feather="git-branch"></i>
+                                    </span>
+                                    {{ form.parent_client_id(class="form-select") }}
+                                </div>
+                                {% if form.parent_client_id.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.parent_client_id.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Compte parent pour la hiérarchie d'entreprise</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.representative_name.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i data-feather="users"></i>
+                                    </span>
+                                    {{ form.representative_name(class="form-control", placeholder="Nom du représentant commercial") }}
+                                </div>
+                                {% if form.representative_name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.representative_name.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Représentant des ventes</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.payment_terms.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i data-feather="calendar"></i>
+                                    </span>
+                                    {{ form.payment_terms(class="form-control", placeholder="Net 30, COD, Comptant, etc.") }}
+                                </div>
+                                {% if form.payment_terms.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.payment_terms.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Conditions de paiement convenues</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.language.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i data-feather="globe"></i>
+                                    </span>
+                                    {{ form.language(class="form-select") }}
+                                </div>
+                                {% if form.language.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.language.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Langue pour les rapports et communications</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="{{ url_for('client.list_clients') }}" class="btn btn-outline-secondary">
+                        <i data-feather="x" class="me-1"></i>
+                        Annuler
+                    </a>
+                    <div>
+                        {% if client %}
+                        <a href="{{ url_for('client.detail_client', id=client.id) }}" class="btn btn-outline-info me-2">
+                            <i data-feather="eye" class="me-1"></i>
+                            Voir détails
+                        </a>
+                        {% endif %}
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Form Help -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i data-feather="info" class="me-2"></i>
+                    Aide pour le formulaire
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Informations obligatoires</h6>
+                        <ul class="small text-muted">
+                            <li><strong>Nom du client :</strong> Dénomination sociale ou nom complet</li>
+                            <li><strong>Statut :</strong> Active par défaut, désactivez si nécessaire</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Informations optionnelles</h6>
+                        <ul class="small text-muted">
+                            <li><strong>Email/Téléphone :</strong> Pour les communications</li>
+                            <li><strong>Collecteur :</strong> Responsable du recouvrement</li>
+                            <li><strong>Représentant :</strong> Contact commercial principal</li>
+                            <li><strong>Termes de paiement :</strong> Conditions convenues</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-focus on name field
+    const nameField = document.querySelector('#name');
+    if (nameField && !nameField.value) {
+        nameField.focus();
+    }
+    
+    // Form validation feedback
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const requiredFields = form.querySelectorAll('[required]');
+        let hasErrors = false;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                hasErrors = true;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (hasErrors) {
+            e.preventDefault();
+            window.FinovaAR.showAlert('Veuillez remplir tous les champs obligatoires.', 'danger');
+        }
+    });
+});
+</script>
+{% endblock %}

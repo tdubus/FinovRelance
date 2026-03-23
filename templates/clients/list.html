@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Clients - FinovRelance{% endblock %}
+
+{% block extra_head %}
+<meta name="user-read-only" content="{{ 'true' if current_user.is_read_only() else 'false' }}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Clients</h1>
+        <p class="text-muted">Gestion de vos clients et contacts</p>
+    </div>
+    <div>
+        {% if not current_user.is_read_only() %}
+        <a href="{{ url_for('main.new_client') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>
+            Nouveau client
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label for="searchInput" class="form-label">Rechercher</label>
+                <input type="text" id="searchInput" class="form-control" 
+                       placeholder="Nom ou code client..." value="{{ search }}">
+                <small class="form-text text-muted">La recherche se fait automatiquement</small>
+            </div>
+            <div class="col-md-2">
+                <label for="balanceFilter" class="form-label">Filtre par solde</label>
+                <select id="balanceFilter" class="form-select">
+                    <option value="">Tous</option>
+                    <option value="with_balance" {% if balance_filter == 'with_balance' %}selected{% endif %}>Avec solde</option>
+                    <option value="without_balance" {% if balance_filter == 'without_balance' %}selected{% endif %}>Sans solde</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="collectorFilter" class="form-label">Collecteur</label>
+                <select id="collectorFilter" class="form-select">
+                    <option value="">Tous les collecteurs</option>
+                    <option value="unassigned" {% if collector_filter == 'unassigned' %}selected{% endif %}>Non assigné</option>
+                    {% for collector in collectors %}
+                    <option value="{{ collector.id }}" {% if collector_filter == collector.id|string %}selected{% endif %}>{{ collector.full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-flex gap-2">
+                    <button type="button" id="clearFilters" class="btn btn-outline-secondary flex-grow-1">
+                        <i class="fas fa-times me-1"></i>
+                        Effacer
+                    </button>
+                    <button type="button" id="exportExcel" class="btn btn-success" title="Exporter en Excel">
+                        <i class="fas fa-file-excel"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Clients Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-users me-2"></i>
+            Liste des clients
+            <span class="badge bg-secondary ms-2" id="totalCount">0</span>
+        </h5>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-outline-danger" id="delete-selected" style="display: none;" onclick="deleteSelectedClients()">
+                <i class="fas fa-trash me-1"></i>
+                Supprimer sélectionnés
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body" id="clientsContainer">
+        <!-- Initial loading state -->
+        <div id="initialLoader" class="text-center py-5">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+            <p class="text-muted">Chargement des clients...</p>
+        </div>
+        
+        <!-- Table structure - will be shown after first load -->
+        {% if not current_user.is_read_only() %}
+        <div id="batch-actions" class="alert alert-info" style="display: none;">
+            <strong>Actions en lot :</strong>
+            <button type="button" class="btn btn-sm btn-danger ms-2" onclick="deleteSelectedClients()">
+                <i data-feather="trash-2"></i> Supprimer sélectionnés
+            </button>
+        </div>
+        {% endif %}
+        
+        <div class="table-responsive" id="clientsTableWrapper" style="display: none;">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        {% if not current_user.is_read_only() %}
+                        <th width="50">
+                            <input type="checkbox" id="select-all" onchange="toggleAll()" class="form-check-input">
+                        </th>
+                        {% endif %}
+                        <th>Code client</th>
+                        <th>Nom du client</th>
+                        <th>Contact</th>
+                        <th>Collecteur</th>
+                        <th>Représentant</th>
+                        <th>Solde à recevoir</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsTableBody">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination container - will be populated by JavaScript -->
+    <div class="card-footer" id="paginationContainer">
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ 'js/utils.js'|asset_url }}"></script>
+<script src="{{ 'js/client_state_manager.js'|asset_url }}"></script>
+<script src="{{ 'js/clients.js'|asset_url }}"></script>
+<script>
+function deleteClient(clientId, clientName) {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer le client "${clientName}" ?\n\nCette action supprimera également toutes les factures et notes associées.`)) {
+        fetch(`/clients/${clientId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Erreur: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de la suppression: ' + error.message);
+        });
+    }
+}
+
+function getCsrfToken() {
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    return metaTag ? metaTag.getAttribute('content') : '';
+}
+
+function deleteSelectedClients() {
+    const checkboxes = document.querySelectorAll('input[name="client_ids"]:checked');
+    if (checkboxes.length === 0) {
+        alert('Veuillez sélectionner au moins un client.');
+        return;
+    }
+
+    if (confirm(`Êtes-vous sûr de vouloir supprimer ${checkboxes.length} client(s) sélectionné(s) ?\n\nCette action supprimera également toutes les factures et notes associées.`)) {
+        const formData = new FormData();
+        checkboxes.forEach(cb => formData.append('client_ids', cb.value));
+        
+        // Ajouter le token CSRF
+        formData.append('csrf_token', getCsrfToken());
+
+        fetch('/clients/delete-batch', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Erreur: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de la suppression');
+        });
+    }
+}
+
+// Gestion de la sélection multiple
+function toggleAll() {
+    const masterCheckbox = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('input[name="client_ids"]');
+    checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+    updateBatchActions();
+}
+
+function updateBatchActions() {
+    const checkedBoxes = document.querySelectorAll('input[name="client_ids"]:checked');
+    const batchActions = document.getElementById('batch-actions');
+    const deleteButton = document.getElementById('delete-selected');
+    
+    if (batchActions) {
+        batchActions.style.display = checkedBoxes.length > 0 ? 'block' : 'none';
+    }
+    if (deleteButton) {
+        deleteButton.style.display = checkedBoxes.length > 0 ? 'inline-block' : 'none';
+    }
+}
+
+// Ajouter les événements après le chargement
+document.addEventListener('DOMContentLoaded', function() {
+    const clientCheckboxes = document.querySelectorAll('input[name="client_ids"]');
+    clientCheckboxes.forEach(cb => {
+        cb.addEventListener('change', updateBatchActions);
+    });
+});
+</script>
+{% endblock %}

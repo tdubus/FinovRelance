@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - FinovRelance</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ 'favicon.ico'|asset_url }}">
+    <link rel="icon" type="image/x-icon" href="{{ 'favicon.ico'|asset_url }}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ 'favicon.png'|asset_url }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ 'favicon-32x32.png'|asset_url }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ 'favicon-16x16.png'|asset_url }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ 'apple-touch-icon.png'|asset_url }}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Feather Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+    
+    <style>
+        :root {
+            /* Modern Vibrant Color Palette - Nouvelle palette violet */
+            --primary: 250 75% 69%; /* #8475EC - Violet principal */
+            --primary-light: 260 95% 97%; /* #EDE9FE - Violet pale */
+            --primary-dark: 250 45% 55%; /* #6B5DC0 - Violet fonce */
+            --secondary: 250 75% 69%; /* #8475EC - Violet */
+            --surface: 0 0% 100%; /* #FFFFFF */
+            --background: 0 0% 99%; /* #FCFCFC - Blanc */
+            --border: 210 40% 88%; /* #CBD5E1 */
+            --text-primary: 220 14% 11%; /* #161819 - Noir pour titres */
+            --text-secondary: 220 10% 40%; /* #1A1C21 - Gris noir pour paragraphes */
+            --text-muted: 215 16% 75%; /* #94A3B8 - Light gray */
+            --radius-lg: 0.5rem;
+        }
+        
+        body {
+            background: linear-gradient(135deg, hsl(var(--primary-light)) 0%, hsl(var(--background)) 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: hsl(var(--text-primary));
+        }
+        
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0 120px 0;
+        }
+        
+        .card {
+            border-radius: var(--radius-lg);
+            border: none;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-control {
+            border-radius: var(--radius-lg);
+            border: 2px solid hsl(var(--border));
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: hsl(var(--primary));
+            box-shadow: 0 0 0 0.25rem hsl(var(--primary) / 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%);
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid hsl(var(--border));
+            padding: 1rem 0;
+            text-align: center;
+            z-index: 1000;
+        }
+        
+        .text-primary {
+            color: hsl(var(--primary)) !important;
+        }
+        
+        /* Responsive logo handling */
+        .logo-full {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            max-height: 80px;
+            object-fit: contain;
+        }
+        
+        .logo-insigne {
+            display: none;
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+        
+        /* Mobile: show insigne, hide full logo */
+        @media (max-width: 576px) {
+            .logo-full {
+                display: none;
+            }
+            .logo-insigne {
+                display: block;
+                margin: 0 auto;
+            }
+            .card-body {
+                padding: 1.5rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card">
+                        <div class="card-body p-5">
+                            <div class="text-center mb-4">
+                                <div class="mb-3">
+                                    <img src="{{ url_for('static', filename='logo-vertical.png') }}" 
+                                         alt="FinovRelance" 
+                                         class="logo-full">
+                                    <img src="{{ url_for('static', filename='logo-insigne.png') }}" 
+                                         alt="FinovRelance" 
+                                         class="logo-insigne">
+                                </div>
+                            </div>
+                            
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                            {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+                            
+                            <form method="POST" action="{{ url_for('auth.login') }}">
+                                {{ form.hidden_tag() }}
+                                
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Courriel</label>
+                                    {{ form.email(class="form-control form-control-lg", placeholder="Entrez votre adresse courriel") }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in form.email.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    {{ form.password.label(class="form-label") }}
+                                    {{ form.password(class="form-control form-control-lg", placeholder="Entrez votre mot de passe") }}
+                                    {% if form.password.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in form.password.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    {{ form.submit(class="btn btn-primary btn-lg") }}
+                                </div>
+                            </form>
+                            
+                            <div class="text-center mt-4">
+                                <p class="mb-1">
+                                    <a href="{{ url_for('auth.forgot_password') }}" class="text-decoration-none small">
+                                        <i data-feather="help-circle" style="width: 16px; height: 16px;"></i>
+                                        Mot de passe oublié ?
+                                    </a>
+                                </p>
+                                
+                                <p class="mb-0">
+                                    <small class="text-muted">
+                                        Pas encore de compte ? 
+                                        <a href="{{ url_for('marketing.tarifs') }}" class="text-decoration-none">
+                                            S'inscrire
+                                        </a>
+                                    </small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <div class="container">
+            <p class="mb-1 text-muted">&copy; {{ now().year }} FinovRelance - Gestion des Comptes à Recevoir</p>
+            <div class="d-flex justify-content-center gap-3 mt-2">
+                <a href="https://finov-relance.com/legal/cgu" class="text-muted text-decoration-none small">
+                    Conditions Générales d'Utilisation
+                </a>
+                <span class="text-muted">|</span>
+                <a href="https://finov-relance.com/legal/confidentialite" class="text-muted text-decoration-none small">
+                    Politique de Confidentialité
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Feather Icons activation -->
+    <script>
+        feather.replace();
+    </script>
+
+    <!-- Protection anti-double-soumission du formulaire de connexion -->
+    <script>
+        (function() {
+            var form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    var btn = form.querySelector('button[type="submit"], input[type="submit"]');
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.textContent = 'Connexion en cours...';
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

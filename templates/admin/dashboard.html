@@ -1,0 +1,252 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}Tableau de bord{% endblock %}
+{% block page_subtitle %}Vue d'ensemble de votre plateforme SaaS{% endblock %}
+
+{% block content %}
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_companies }}</div>
+            <div class="stat-label">Entreprises totales</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">Utilisateurs totaux</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-value">{{ subscription_health.active }}</div>
+            <div class="stat-label">Abonnements actifs</div>
+        </div>
+    </div>
+</div>
+
+<!-- Subscription Health Cards -->
+<div class="row mb-4">
+    <div class="col-md-2 mb-3">
+        <div class="stat-card stat-success">
+            <div class="stat-value">{{ subscription_health.active }}</div>
+            <div class="stat-label">Actifs</div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="stat-card stat-warning">
+            <div class="stat-value">{{ subscription_health.pending_cancellation }}</div>
+            <div class="stat-label">Annulation en attente</div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="stat-card stat-danger">
+            <div class="stat-value">{{ subscription_health.canceled }}</div>
+            <div class="stat-label">Annulés</div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="stat-card stat-info">
+            <div class="stat-value">{{ subscription_health.grace_period }}</div>
+            <div class="stat-label">Période grâce active</div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">Actions rapides</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{{ url_for('admin.create_company') }}" class="btn btn-admin-primary">
+                        <i class="fas fa-plus me-2"></i>Créer une entreprise
+                    </a>
+                    <a href="{{ url_for('admin.subscription_management') }}" class="btn btn-warning">
+                        <i class="fas fa-credit-card me-2"></i>Gestion abonnements
+                    </a>
+                    <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-info">
+                        <i class="fas fa-history me-2"></i>Logs d'audit
+                    </a>
+                    <a href="{{ url_for('admin.create_user') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-user-plus me-2"></i>Ajouter un utilisateur
+                    </a>
+                    <a href="{{ url_for('admin.create_plan') }}" class="btn btn-outline-success">
+                        <i class="fas fa-tag me-2"></i>Nouveau forfait
+                    </a>
+                    <a href="{{ url_for('admin.create_user_company') }}" class="btn btn-outline-info">
+                        <i class="fas fa-link me-2"></i>Associer utilisateur
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Companies at Risk Alert -->
+{% if companies_at_risk %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-card-header bg-warning">
+                <h5 class="admin-card-title text-white">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Entreprises à risque
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-admin mb-0">
+                        <thead>
+                            <tr>
+                                <th>Entreprise</th>
+                                <th>Statut</th>
+                                <th>Forfait</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for company in companies_at_risk %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-2" style="background: var(--admin-warning);">
+                                            {{ company.name[0] }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">{{ company.name }}</div>
+                                            <small class="text-muted">{{ company.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if company.subscription_status == 'pending_cancellation' %}
+                                        <span class="badge bg-warning">Annulation en attente</span>
+                                    {% elif company.subscription_status == 'expired' %}
+                                        <span class="badge bg-danger">Expiré</span>
+                                    {% else %}
+                                        <span class="badge bg-info">Période de grâce</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge {% if company.is_free_account %}badge-plan-free{% else %}badge-plan-paid{% endif %}">
+                                        {{ company.get_plan_display_name() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('admin.subscription_management', search=company.name) }}" 
+                                       class="btn btn-sm btn-outline-primary">Voir détails</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent Activity -->
+<div class="row">
+    <!-- Recent Companies -->
+    <div class="col-md-6 mb-3">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">Entreprises récentes</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-admin mb-0">
+                        <thead>
+                            <tr>
+                                <th>Entreprise</th>
+                                <th>Forfait</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for company in recent_companies %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-2" style="background: var(--admin-secondary);">
+                                            {{ company.name[0] }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">{{ company.name }}</div>
+                                            <small class="text-muted">{{ company.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge {% if company.is_free_account %}badge-plan-free{% else %}badge-plan-paid{% endif %}">
+                                        {{ company.get_plan_display_name() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ company.created_at.strftime('%d/%m/%Y') }}</small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Users -->
+    <div class="col-md-6 mb-3">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">Utilisateurs récents</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-admin mb-0">
+                        <thead>
+                            <tr>
+                                <th>Utilisateur</th>
+                                <th>Statut</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recent_users %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-2">
+                                            {{ user.first_name[0] }}{{ user.last_name[0] }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">{{ user.first_name }} {{ user.last_name }}</div>
+                                            <small class="text-muted">{{ user.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if user.is_superuser %}
+                                        <span class="badge bg-warning">Super Admin</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Utilisateur</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ user.created_at.strftime('%d/%m/%Y') }}</small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

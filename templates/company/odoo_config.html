@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Configuration Odoo - {{ company.nom }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>
+                <i class="fas fa-cube"></i> Configuration Odoo
+            </h2>
+            <p class="text-muted">Connectez votre instance Odoo pour synchroniser vos clients et factures</p>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informations de connexion Odoo</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('company.odoo_save') }}" id="odooConfigForm">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="mb-3">
+                            <label for="odoo_url" class="form-label">URL du serveur Odoo *</label>
+                            <input type="url" class="form-control" id="odoo_url" name="odoo_url" 
+                                   value="{{ connection.odoo_url if connection else '' }}" 
+                                   placeholder="https://votre-entreprise.odoo.com" required>
+                            <small class="form-text text-muted">
+                                L'URL complète de votre serveur Odoo (incluant https://)
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="odoo_database" class="form-label">Nom de la base de données *</label>
+                            <input type="text" class="form-control" id="odoo_database" name="odoo_database" 
+                                   value="{{ connection.odoo_database if connection else '' }}" 
+                                   placeholder="ma-base-odoo" required>
+                            <small class="form-text text-muted">
+                                Le nom de votre base de données Odoo
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="odoo_username" class="form-label">Nom d'utilisateur *</label>
+                            <input type="text" class="form-control" id="odoo_username" name="odoo_username" 
+                                   value="{{ connection.company_id_external if connection else '' }}" 
+                                   placeholder="admin" required>
+                            <small class="form-text text-muted">
+                                Votre nom d'utilisateur Odoo (généralement votre email)
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="odoo_api_key" class="form-label">Clé API *</label>
+                            <input type="password" class="form-control" id="odoo_api_key" name="odoo_api_key" 
+                                   placeholder="Entrez votre clé API Odoo" required>
+                            <small class="form-text text-muted">
+                                Votre clé API Odoo (générée dans : Mon profil → Sécurité du compte → Nouvelle clé API)
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_sandbox" name="is_sandbox"
+                                       {{ 'checked' if connection and connection.is_sandbox else '' }}>
+                                <label class="form-check-label" for="is_sandbox">
+                                    Mode Développement
+                                </label>
+                            </div>
+                            <small class="form-text text-muted">
+                                Activez cette option si vous utilisez une instance Odoo de test/développement
+                            </small>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-secondary" id="testConnectionBtn">
+                                <i class="fas fa-plug"></i> Tester la connexion
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="saveConfigBtn" disabled>
+                                <i class="fas fa-save"></i> Sauvegarder et configurer le mapping
+                            </button>
+                            <a href="{{ url_for('company.settings') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                        </div>
+
+                        <div id="connectionStatus" class="mt-3" style="display: none;"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Comment obtenir votre clé API Odoo ?
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li>Connectez-vous à votre instance Odoo</li>
+                        <li>Cliquez sur votre nom en haut à droite</li>
+                        <li>Sélectionnez "Mon profil"</li>
+                        <li>Allez dans l'onglet "Sécurité du compte"</li>
+                        <li>Cliquez sur "Nouvelle clé API"</li>
+                        <li>Donnez un nom à la clé (ex: "Finov Relance")</li>
+                        <li>Copiez la clé générée et collez-la ci-dessus</li>
+                    </ol>
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>Note :</strong> Les clés API Odoo n'expirent pas automatiquement. 
+                        Conservez-la en lieu sûr !
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-shield-alt"></i> Sécurité
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="small mb-0">
+                        <i class="fas fa-lock"></i> Votre clé API est stockée de manière chiffrée (AES-256) 
+                        dans notre base de données. Nous ne pouvons pas la voir en clair.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const testBtn = document.getElementById('testConnectionBtn');
+    const saveBtn = document.getElementById('saveConfigBtn');
+    const statusDiv = document.getElementById('connectionStatus');
+    const form = document.getElementById('odooConfigForm');
+
+    testBtn.addEventListener('click', function() {
+        const url = document.getElementById('odoo_url').value;
+        const database = document.getElementById('odoo_database').value;
+        const username = document.getElementById('odoo_username').value;
+        const apiKey = document.getElementById('odoo_api_key').value;
+        const isSandbox = document.getElementById('is_sandbox').checked;
+
+        if (!url || !database || !username || !apiKey) {
+            alert('Veuillez remplir tous les champs requis');
+            return;
+        }
+
+        testBtn.disabled = true;
+        testBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Test en cours...';
+        statusDiv.style.display = 'none';
+
+        const formData = new FormData();
+        formData.append('csrf_token', '{{ csrf_token() }}');
+        formData.append('odoo_url', url);
+        formData.append('odoo_database', database);
+        formData.append('odoo_username', username);
+        formData.append('odoo_api_key', apiKey);
+        formData.append('is_sandbox', isSandbox);
+
+        fetch('{{ url_for("company.odoo_test") }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            testBtn.disabled = false;
+            testBtn.innerHTML = '<i class="fas fa-plug"></i> Tester la connexion';
+            
+            if (data.success) {
+                statusDiv.className = 'alert alert-success mt-3';
+                statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + (data.message || 'Connexion réussie !');
+                statusDiv.style.display = 'block';
+                saveBtn.disabled = false;
+            } else {
+                statusDiv.className = 'alert alert-danger mt-3';
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + (data.error || data.message || 'Erreur de connexion');
+                statusDiv.style.display = 'block';
+                saveBtn.disabled = true;
+            }
+        })
+        .catch(error => {
+            testBtn.disabled = false;
+            testBtn.innerHTML = '<i class="fas fa-plug"></i> Tester la connexion';
+            statusDiv.className = 'alert alert-danger mt-3';
+            statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erreur: ' + error.message;
+            statusDiv.style.display = 'block';
+            saveBtn.disabled = true;
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Créer une campagne - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('campaign.list_campaigns') }}">Campagnes</a></li>
+                    <li class="breadcrumb-item active">Nouvelle campagne</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-primary rounded-pill me-3">1</span>
+                        <div>
+                            <h5 class="mb-0">Configuration de la campagne</h5>
+                            <small class="text-muted">Étape 1 sur 3 : Paramètres de ciblage</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('campaign.create_campaign') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <div class="mb-4">
+                            <label for="name" class="form-label fw-semibold">Nom de la campagne <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required 
+                                   placeholder="Ex: Relance Décembre 2024">
+                        </div>
+
+                        <hr class="my-4">
+                        <h6 class="text-muted mb-3"><i class="fas fa-filter me-2"></i>Filtres de ciblage</h6>
+                        
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Par défaut :</strong> Seuls les clients ayant un solde positif (factures impayées) sont inclus.
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="filter_collector_id" class="form-label">Collecteur</label>
+                                <select class="form-select" id="filter_collector_id" name="filter_collector_id">
+                                    <option value="">Tous les collecteurs</option>
+                                    <option value="unassigned">Non assigné</option>
+                                    {% for collector in collectors %}
+                                    <option value="{{ collector.id }}">{{ collector.display_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    « Non assigné » = clients sans collecteur attribué.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="filter_age_days" class="form-label">Âge minimum des factures</label>
+                                <select class="form-select" id="filter_age_days" name="filter_age_days">
+                                    <option value="0">Tous (inclus Courant)</option>
+                                    <option value="1">1 jour et plus</option>
+                                    <option value="31">31 jours et plus</option>
+                                    <option value="61">61 jours et plus</option>
+                                    <option value="91">91 jours et plus</option>
+                                    <option value="121">121 jours et plus</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="filter_without_notes" name="filter_without_notes">
+                                    <label class="form-check-label" for="filter_without_notes">
+                                        <i class="fas fa-comment-slash me-1"></i> Sans note uniquement
+                                    </label>
+                                    <div class="form-text">
+                                        Si coché, seuls les clients n'ayant aucune note de communication seront inclus.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="filter_representative" class="form-label">Représentant</label>
+                            <select class="form-select" id="filter_representative" name="filter_representative">
+                                <option value="">Tous les représentants</option>
+                                {% for rep in representatives %}
+                                <option value="{{ rep }}">{{ rep }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <hr class="my-4">
+                        <h6 class="text-muted mb-3"><i class="fas fa-sitemap me-2"></i>Paramètres parent/enfants</h6>
+
+                        <div class="form-check form-switch mb-4">
+                            <input class="form-check-input" type="checkbox" id="include_children" name="include_children" checked>
+                            <label class="form-check-label" for="include_children">
+                                Inclure les comptes enfants dans le relevé du parent
+                            </label>
+                            <div class="form-text">
+                                Si activé, les enfants seront exclus de la liste des destinataires pour éviter les doublons.
+                                Sinon, chaque client (parent et enfants) recevra son propre courriel.
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h6 class="text-muted mb-3"><i class="fas fa-envelope me-2"></i>Paramètres destinataire</h6>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Adresses courriel à utiliser</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="recipient_type" id="recipient_primary" value="primary" checked>
+                                    <label class="form-check-label" for="recipient_primary">
+                                        Courriel principal uniquement
+                                        <small class="text-muted d-block">Utilise le courriel de la fiche client</small>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="recipient_type" id="recipient_contacts" value="campaign_contacts">
+                                    <label class="form-check-label" for="recipient_contacts">
+                                        Contacts autorisés uniquement
+                                        <small class="text-muted d-block">Utilise les contacts avec "Campagne autorisé" activé</small>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="recipient_type" id="recipient_both" value="both">
+                                    <label class="form-check-label" for="recipient_both">
+                                        Les deux
+                                        <small class="text-muted d-block">Courriel principal + contacts autorisés</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="filter_contact_language" class="form-label">Langue des contacts</label>
+                                <select class="form-select" id="filter_contact_language" name="filter_contact_language">
+                                    <option value="">Toutes les langues</option>
+                                    <option value="fr">Français uniquement</option>
+                                    <option value="en">Anglais uniquement</option>
+                                </select>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Si une langue est sélectionnée, seuls les clients ayant au moins un contact dans cette langue seront inclus.
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h6 class="text-muted mb-3"><i class="fas fa-paperclip me-2"></i>Pièces jointes</h6>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="attach_pdf" name="attach_pdf" checked>
+                                    <label class="form-check-label" for="attach_pdf">
+                                        <i class="fas fa-file-pdf text-danger me-1"></i> Relevé de compte PDF
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="attach_excel" name="attach_excel">
+                                    <label class="form-check-label" for="attach_excel">
+                                        <i class="fas fa-file-excel text-success me-1"></i> Relevé de compte Excel
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-secondary mb-4">
+                            <i class="fas fa-language me-2"></i>
+                            <strong>Langue des pièces jointes :</strong> déterminée automatiquement selon la langue du contact ou du client.
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('campaign.list_campaigns') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Continuer<i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

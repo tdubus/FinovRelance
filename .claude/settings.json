@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose:*)",
+      "Bash(docker build:*)",
+      "Bash(flask db:*)",
+      "Bash(pip install:*)",
+      "Bash(python scripts/*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(git:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)*",
+      "Bash(curl:*:--upload-file)*"
+    ]
+  }
+}

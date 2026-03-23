@@ -1,0 +1,232 @@
+
+{% extends "base.html" %}
+
+{% block title %}Comptes à recevoir{% endblock %}
+
+{% block head %}
+<meta name="user-read-only" content="{{ 'true' if current_user.is_read_only() else 'false' }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Comptes à recevoir</h1>
+        <a href="{{ url_for('receivable.export_excel') }}" class="btn btn-success">
+            <i data-feather="download" class="me-2"></i>
+            Exporter Excel
+        </a>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="receivables-stats mb-4">
+        <div class="stats-row">
+            <div class="stat-card total">
+                <div class="stat-value">{{ format_currency(total_outstanding) }}</div>
+                <div class="stat-label">Total à recevoir</div>
+            </div>
+            <div class="stat-card current">
+                <div class="stat-value">{{ format_currency(total_current) }}</div>
+                <div class="stat-label">Courant</div>
+                <div class="stat-percentage">{{ percentage_current }}%</div>
+            </div>
+            <div class="stat-card aging-0-30">
+                <div class="stat-value">{{ format_currency(total_0_30) }}</div>
+                <div class="stat-label">0-30 jours</div>
+                <div class="stat-percentage">{{ percentage_0_30 }}%</div>
+            </div>
+            <div class="stat-card aging-31-60">
+                <div class="stat-value">{{ format_currency(total_31_60) }}</div>
+                <div class="stat-label">31-60 jours</div>
+                <div class="stat-percentage">{{ percentage_31_60 }}%</div>
+            </div>
+            <div class="stat-card aging-61-90">
+                <div class="stat-value">{{ format_currency(total_61_90) }}</div>
+                <div class="stat-label">61-90 jours</div>
+                <div class="stat-percentage">{{ percentage_61_90 }}%</div>
+            </div>
+            <div class="stat-card aging-90-plus">
+                <div class="stat-value">{{ format_currency(total_90_plus) }}</div>
+                <div class="stat-label">90+ jours</div>
+                <div class="stat-percentage">{{ percentage_90_plus }}%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="searchInput" class="form-label">Rechercher</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="searchInput" 
+                           placeholder="Nom du client...">
+                    <small class="form-text text-muted">La recherche se fait automatiquement</small>
+                </div>
+                <div class="col-md-3">
+                    <label for="collector_id" class="form-label">Collecteur</label>
+                    <select class="form-select" id="collector_id">
+                        <option value="">Tous les collecteurs</option>
+                        <option value="unassigned">Non assigné</option>
+                        {% for collector in collectors %}
+                        <option value="{{ collector.id }}">
+                            {{ collector.full_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" id="clearFilters" class="btn btn-outline-secondary w-100">
+                        <i data-feather="x" class="me-1"></i>
+                        Effacer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receivables Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                Comptes à recevoir
+                <span class="badge bg-primary ms-2" id="totalCount">0</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Loading indicator -->
+            <div id="initialLoader" class="text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="text-muted">Chargement des comptes à recevoir...</p>
+            </div>
+            
+            <!-- Table wrapper (hidden initially) -->
+            <div id="receivablesTableWrapper" class="d-none">
+                <div id="receivablesContainer" class="table-responsive">
+                    <table class="table table-hover align-middle receivables-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="sortable-column" data-sort-column="name">
+                                    Client
+                                    <span class="sort-indicator"></span>
+                                </th>
+                                <th class="sortable-column" data-sort-column="collector">
+                                    Collecteur
+                                    <span class="sort-indicator"></span>
+                                </th>
+                                <th class="text-end sortable-column" data-sort-column="current">
+                                    Courant
+                                    <span class="sort-indicator"></span>
+                                </th>
+                                <th class="text-end sortable-column" data-sort-column="30_days">
+                                    0-30 jours
+                                    <span class="sort-indicator"></span>
+                                </th>
+                                <th class="text-end sortable-column" data-sort-column="60_days">
+                                    31-60 jours
+                                    <span class="sort-indicator"></span>
+                                </th>
+                                <th class="text-end sortable-column" data-sort-column="90_days">
+                                    61-90 jours
+                                    <span class="sort-indicator"></span>
+                                </th>
+                                <th class="text-end sortable-column" data-sort-column="over_90_days">
+                                    90+ jours
+                                    <span class="sort-indicator"></span>
+                                </th>
+                                <th class="text-end sortable-column" data-sort-column="total">
+                                    Total
+                                    <span class="sort-indicator"></span>
+                                </th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receivablesTableBody">
+                            <!-- Data loaded dynamically by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div id="paginationContainer" class="mt-3">
+                    <!-- Pagination controls loaded dynamically by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ajout de Note -->
+<div class="modal fade" id="addNoteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i data-feather="message-square" class="me-2"></i>
+                    Ajouter une note - <span id="modalClientName"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="noteForm" method="POST" action="">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="note_type">Type de note</label>
+                            <select class="form-select" id="note_type" name="note_type" required>
+                                <option value="general">Général</option>
+                                <option value="call">Appel téléphonique</option>
+                                <option value="email">Courriel</option>
+                                <option value="meeting">Rencontre</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="note_date">Date</label>
+                            <input type="date" class="form-control" id="note_date" name="note_date" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="note_text">Note</label>
+                        <textarea class="form-control" id="note_text" name="note_text" rows="4" placeholder="Ajoutez vos notes et commentaires..." required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="reminder_date">Date de rappel</label>
+                            <input type="date" class="form-control" id="reminder_date" name="reminder_date">
+                        </div>
+                        <div class="form-text">
+                            <i data-feather="bell" class="icon-sm"></i>
+                            Optionnel - Laissez vide si aucun rappel n'est nécessaire
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Ajouter la note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Load utility functions first -->
+<script src="{{ 'js/utils.js'|asset_url }}"></script>
+
+<!-- Load AR state manager (must load before receivables.js) -->
+<script src="{{ 'js/ar_state_manager.js'|asset_url }}"></script>
+
+<!-- Pass project feature config to JavaScript -->
+<script>
+    window.projectFeatureEnabled = {{ 'true' if project_feature_enabled else 'false' }};
+    window.projectLabel = {{ project_label|tojson if project_label else 'null' }};
+</script>
+
+<!-- Load receivables lazy loading script -->
+<script src="{{ 'js/receivables.js'|asset_url }}"></script>
+{% endblock %}

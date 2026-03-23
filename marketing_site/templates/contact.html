@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WZ7KQJ2F');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact – FinovRelance | Parlons de votre projet</title>
+    <meta name="description" content="Contactez l'équipe FinovRelance. Nous répondons sous 24 heures ouvrables.">
+    
+    <!-- Balise canonique SEO -->
+    <link rel="canonical" href="https://finov-relance.com/contact">
+    
+    <!-- Favicon pour tous les navigateurs et Google -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260316">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png?v=20260316">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=20260316">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=20260316">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260316">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/marketing-static/css/marketing.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "FinovRelance",
+        "url": "https://finov-relance.com",
+        "logo": "https://finov-relance.com/marketing-static/images/logo.png",
+        "email": "support@finov-relance.com",
+        "sameAs": ["https://www.linkedin.com/company/solutions-finova/"]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ContactPage",
+        "name": "Contact FinovRelance",
+        "description": "Contactez l'équipe FinovRelance pour toute question sur notre logiciel de gestion des comptes à recevoir",
+        "url": "https://finov-relance.com/contact"
+    }
+    </script>
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WZ7KQJ2F"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/" class="logo"><img src="/marketing-static/images/logo.png" alt="FinovRelance - Logiciel de gestion des comptes à recevoir" style="height: 60px;"></a>
+                
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">Accueil</a></li>
+                    <li><a href="/fonctionnalites" class="nav-link">Fonctionnalités</a></li>
+                    <li><a href="/tarifs" class="nav-link">Tarifs</a></li>
+                    <li><a href="/cas-usage" class="nav-link">Cas d'usage</a></li>
+                    <li><a href="/guide" class="nav-link">Guide</a></li>
+                    <li><a href="/contact" class="nav-link">Contact</a></li>
+                    
+                    <div class="nav-cta">
+                        <a href="/auth/login" class="btn btn-secondary">Connexion</a>
+                    </div>
+                </ul>
+                
+                <button class="burger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" style="min-height: 30vh;">
+        <div class="container">
+            <div class="section-header">
+                <h1>Contactez-nous</h1>
+                <p>Notre équipe vous répond sous 24 heures ouvrables</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div style="margin-bottom: 2rem;">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" style="padding: 1rem; border-radius: 8px; margin-bottom: 1rem; {% if category == 'success' %}background-color: #D1FAE5; color: #065F46; border: 1px solid #10B981;{% else %}background-color: #FEE2E2; color: #991B1B; border: 1px solid #EF4444;{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 4rem; align-items: start;">
+                <!-- Formulaire de contact -->
+                <div>
+                    <h2 class="mb-6">Envoyez-nous un message</h2>
+                    <form id="contact-form" method="POST" action="/contact">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <input type="hidden" name="form_loaded_at" value="{{ form_timestamp }}"/>
+                        <div style="position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;width:0;overflow:hidden;" aria-hidden="true" tabindex="-1">
+                            <label for="website_url">Ne pas remplir ce champ</label>
+                            <input type="text" name="website_url" id="website_url" value="" autocomplete="off" tabindex="-1">
+                        </div>
+                        <div class="form-group">
+                            <label for="name" class="form-label">Nom complet *</label>
+                            <input type="text" id="name" name="name" class="form-input" required>
+                            <div id="name-error" class="form-error" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email" class="form-label">Adresse email *</label>
+                            <input type="email" id="email" name="email" class="form-input" required>
+                            <div id="email-error" class="form-error" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="company" class="form-label">Entreprise</label>
+                            <input type="text" id="company" name="company" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject" class="form-label">Sujet *</label>
+                            <select id="subject" name="subject" class="form-select" required>
+                                <option value="">Choisissez un sujet</option>
+                                <option value="commercial">Demande commerciale</option>
+                                <option value="technique">Question technique</option>
+                                <option value="support">Support</option>
+                                <option value="partenaire">Programme partenaire</option>
+                                <option value="autre">Autre</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message" class="form-label">Message *</label>
+                            <textarea id="message" name="message" class="form-textarea" rows="6" required></textarea>
+                            <div id="message-error" class="form-error" style="display: none;"></div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-large btn-block">Envoyer le message</button>
+                        <p class="form-helper text-center">Nous vous répondons généralement en moins de 24 heures</p>
+                    </form>
+                </div>
+                
+                <!-- Informations de contact -->
+                <div>
+                    <div class="card">
+                        <h3 class="mb-6">Coordonnées</h3>
+                        
+                        <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div style="width: 40px; height: 40px; background-color: var(--primary-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fas fa-envelope" style="color: var(--primary);"></i>
+                            </div>
+                            <div>
+                                <h5 style="margin-bottom: 0.25rem;">Email</h5>
+                                <a href="mailto:support@finov-relance.com" style="color: var(--gray-700);">support@finov-relance.com</a>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div style="width: 40px; height: 40px; background-color: var(--primary-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fas fa-clock" style="color: var(--primary);"></i>
+                            </div>
+                            <div>
+                                <h5 style="margin-bottom: 0.25rem;">Horaires</h5>
+                                <p style="margin: 0; color: var(--gray-700);">Lundi - Vendredi<br>9h00 - 17h00 (HNE)</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                            <div style="width: 40px; height: 40px; background-color: var(--primary-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fas fa-map-marker-alt" style="color: var(--primary);"></i>
+                            </div>
+                            <div>
+                                <h5 style="margin-bottom: 0.25rem;">Localisation</h5>
+                                <p style="margin: 0; color: var(--gray-700);">Québec, Canada</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-6">
+                        <h4 class="mb-4">Besoin d'aide rapide ?</h4>
+                        <p style="margin-bottom: 1rem;">Consultez notre guide d'utilisation pour des réponses immédiates aux questions courantes.</p>
+                        <a href="/guide" class="btn btn-secondary btn-block">Accéder au guide</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Produit</h4>
+                    <ul class="footer-links">
+                        <li><a href="/fonctionnalites">Fonctionnalités</a></li>
+                        <li><a href="/tarifs">Tarifs</a></li>
+                        <li><a href="/cas-usage">Cas d'usage</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Ressources</h4>
+                    <ul class="footer-links">
+                        <li><a href="/guide">Guide d'utilisation</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul class="footer-links">
+                        <li><a href="mailto:support@finov-relance.com">support@finov-relance.com</a></li>
+                        <li><a href="https://finov-relance.com/legal/confidentialite" target="_blank" rel="noopener noreferrer">Politique de confidentialité</a></li>
+                        <li><a href="https://finov-relance.com/legal/cgu" target="_blank" rel="noopener noreferrer">Conditions d'utilisation</a></li>
+                        <li><a href="https://finov-relance.com/legal/cookies" target="_blank" rel="noopener noreferrer">Politique de cookies</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Réseaux sociaux</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://www.linkedin.com/company/solutions-finova/" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin" style="font-size: 1.5rem; margin-right: 0.5rem;"></i>LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p style="color: #ffffff;">&copy; <span id="year"></span> FinovRelance. Tous droits réservés.</p>
+                <p style="margin-top: 0.5rem; color: #ffffff;">Développé et vendu par <a href="https://finova-solutions.com/" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: none;">Finova Solutions</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookieConsent" class="cookie-consent" style="display: none;">
+        <div class="cookie-consent-content">
+            <div class="cookie-consent-text">
+                <p><strong>🍪 Nous utilisons des cookies</strong></p>
+                <p>Nous utilisons des cookies essentiels pour assurer le bon fonctionnement de notre site. En continuant à naviguer, vous acceptez notre <a href="https://finov-relance.com/legal/cookies">politique de cookies</a>.</p>
+            </div>
+            <div class="cookie-consent-actions">
+                <button id="acceptCookies" class="btn btn-primary">Accepter</button>
+                <button id="declineCookies" class="btn btn-secondary">Refuser</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/marketing-static/js/marketing.js"></script>
+    <script src="/marketing-static/js/cookie-consent.js"></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+    
+    <style>
+        @media (max-width: 1024px) {
+            .container > div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,658 @@
+{% extends "base.html" %}
+
+{% block title %}{{ campaign.name }} - Campagnes{% endblock %}
+
+{% block extra_css %}
+<style>
+    .email-preview-modal .modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    .email-content-preview {
+        white-space: pre-wrap;
+        font-family: inherit;
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('campaign.list_campaigns') }}">Campagnes</a></li>
+            <li class="breadcrumb-item active">{{ campaign.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-0">{{ campaign.name }}</h1>
+            <span class="badge bg-{{ campaign.status_class }} mt-2">{{ campaign.status_display }}</span>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if campaign.status.value == 'in_progress' %}
+            <button type="button" class="btn btn-danger me-2" id="emergencyStopBtn">
+                <i class="fas fa-stop-circle me-2"></i>ARRÊT D'URGENCE
+            </button>
+            <button class="btn btn-secondary" disabled>
+                <span class="spinner-border spinner-border-sm me-2"></span>Envoi en cours...
+            </button>
+            {% elif campaign.status.value in ['ready', 'stopped'] and campaign.has_emails_to_send %}
+            <button type="button" class="btn btn-success" id="sendAllBtn">
+                <i class="fas fa-paper-plane me-2"></i>{% if campaign.emails_sent > 0 %}Reprendre l'envoi{% else %}Envoyer tous les courriels{% endif %}
+            </button>
+            {% elif campaign.status.value == 'draft' %}
+            <a href="{{ url_for('campaign.configure_email', campaign_id=campaign.id) }}" class="btn btn-primary">
+                <i class="fas fa-edit me-2"></i>Continuer la configuration
+            </a>
+            {% elif campaign.status.value == 'processing' %}
+            <button class="btn btn-secondary" disabled>
+                <span class="spinner-border spinner-border-sm me-2"></span>Génération en cours...
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary mb-0" id="statTotal">{{ campaign.total_emails }}</h3>
+                    <small class="text-muted">Total courriels</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success mb-0" id="statSent">{{ campaign.emails_sent }}</h3>
+                    <small class="text-muted">Envoyés</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-danger mb-0" id="statFailed">{{ campaign.emails_failed }}</h3>
+                    <small class="text-muted">Échecs</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="progress mb-2" style="height: 25px;">
+                        {% if campaign.status.value == 'ready' and campaign.emails_sent == 0 %}
+                        {# Campagne prête mais pas encore envoyée = génération 100% #}
+                        <div class="progress-bar bg-success" role="progressbar" id="progressBar"
+                             style="width: 100%">
+                            <span id="progressText">100%</span>
+                        </div>
+                        {% else %}
+                        <div class="progress-bar bg-success" role="progressbar" id="progressBar"
+                             style="width: {{ campaign.progress_percentage }}%">
+                            <span id="progressText">{{ campaign.progress_percentage }}%</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <small class="text-muted">{% if campaign.status.value == 'ready' and campaign.emails_sent == 0 %}Génération{% else %}Progression{% endif %}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h5 class="mb-0">Courriels de la campagne</h5>
+                <div class="d-flex gap-2 align-items-center">
+                    <select class="form-select form-select-sm" id="statusFilter" style="width: auto;">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Tous les statuts</option>
+                        <option value="generated" {% if status_filter == 'generated' %}selected{% endif %}>Prêts</option>
+                        <option value="sent" {% if status_filter == 'sent' %}selected{% endif %}>Envoyés (batch)</option>
+                        <option value="sent_manually" {% if status_filter == 'sent_manually' %}selected{% endif %}>Envoyés manuellement</option>
+                        <option value="failed" {% if status_filter == 'failed' %}selected{% endif %}>Échecs</option>
+                        <option value="skipped" {% if status_filter == 'skipped' %}selected{% endif %}>Ignorés</option>
+                    </select>
+                    {% if campaign.status.value in ['ready', 'in_progress'] and campaign.has_emails_to_send %}
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="sendSelectedBtn" disabled>
+                        <i class="fas fa-paper-plane me-1"></i>Envoyer sélection
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-warning" id="skipSelectedBtn" disabled>
+                        <i class="fas fa-ban me-1"></i>Ignorer sélection
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            {% if emails.items %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            {% if campaign.status.value in ['ready', 'in_progress'] and campaign.has_emails_to_send %}
+                            <th style="width: 40px;">
+                                <input type="checkbox" class="form-check-input" id="selectAllEmails">
+                            </th>
+                            {% endif %}
+                            <th>Client</th>
+                            <th>Destinataires</th>
+                            <th>Objet</th>
+                            <th class="text-end">Solde</th>
+                            <th>Statut</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for email in emails.items %}
+                        <tr>
+                            {% if campaign.status.value in ['ready', 'in_progress'] and campaign.has_emails_to_send %}
+                            <td>
+                                {% if email.status.value == 'generated' %}
+                                <input type="checkbox" class="form-check-input email-checkbox" value="{{ email.id }}">
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                            <td>
+                                <strong>{{ email.client_code }}</strong><br>
+                                <small class="text-muted">{{ email.client_name }}</small>
+                            </td>
+                            <td>
+                                {% for e in email.get_to_emails_list()[:2] %}
+                                <span class="badge bg-light text-dark">{{ e }}</span>
+                                {% endfor %}
+                                {% if email.get_to_emails_list()|length > 2 %}
+                                <span class="badge bg-secondary">+{{ email.get_to_emails_list()|length - 2 }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="text-truncate d-inline-block" style="max-width: 250px;" title="{{ email.email_subject }}">
+                                    {{ email.email_subject }}
+                                </span>
+                            </td>
+                            <td class="text-end">{{ format_currency(email.client_balance or 0) }}</td>
+                            <td>
+                                <span class="badge bg-{{ email.status_class }}">{{ email.status_display }}</span>
+                                {% if email.error_message %}
+                                <i class="fas fa-exclamation-circle text-danger ms-1" 
+                                   title="{{ email.error_message }}" data-bs-toggle="tooltip"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary btn-preview" 
+                                            data-email-id="{{ email.id }}" title="Prévisualiser">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    {% if campaign.attach_pdf_statement and email.get_invoice_ids_snapshot_list() %}
+                                    <a href="{{ url_for('campaign.download_attachment', campaign_id=campaign.id, email_id=email.id, attachment_type='pdf') }}" 
+                                       class="btn btn-outline-danger" title="PDF" target="_blank">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if campaign.attach_excel_statement and email.get_invoice_ids_snapshot_list() %}
+                                    <a href="{{ url_for('campaign.download_attachment', campaign_id=campaign.id, email_id=email.id, attachment_type='excel') }}" 
+                                       class="btn btn-outline-success" title="Excel">
+                                        <i class="fas fa-file-excel"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if emails.pages > 1 %}
+            <nav class="p-3">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if emails.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('campaign.view_campaign', campaign_id=campaign.id, page=emails.prev_num, email_status=status_filter) }}">Précédent</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page in emails.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page %}
+                        <li class="page-item {{ 'active' if page == emails.page else '' }}">
+                            <a class="page-link" href="{{ url_for('campaign.view_campaign', campaign_id=campaign.id, page=page, email_status=status_filter) }}">{{ page }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if emails.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('campaign.view_campaign', campaign_id=campaign.id, page=emails.next_num, email_status=status_filter) }}">Suivant</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Aucun courriel</h5>
+                <p class="text-muted mb-0">
+                    {% if campaign.status.value == 'processing' %}
+                    La génération des courriels est en cours...
+                    {% elif campaign.status.value == 'draft' %}
+                    La campagne n'a pas encore été configurée.
+                    {% else %}
+                    Aucun courriel ne correspond aux critères.
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade email-preview-modal" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Prévisualisation du courriel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Client</label>
+                    <p class="mb-0"><strong id="previewClientCode"></strong> - <span id="previewClientName"></span></p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Destinataires</label>
+                    <div id="previewRecipients"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Objet</label>
+                    <p class="mb-0 fw-semibold" id="previewSubject"></p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Contenu</label>
+                    <div class="email-content-preview" id="previewContent"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Pièces jointes</label>
+                    <div id="previewAttachments"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                {% if campaign.status.value in ['ready', 'in_progress'] %}
+                <button type="button" class="btn btn-success" id="sendSingleBtn">
+                    <i class="fas fa-paper-plane me-1"></i>Envoyer ce courriel
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmSendModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-paper-plane me-2"></i>Confirmer l'envoi</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Vous êtes sur le point d'envoyer <strong id="sendCount">0</strong> courriel(s).</p>
+                <p class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-success" id="confirmSendBtn">
+                    <i class="fas fa-paper-plane me-1"></i>Confirmer l'envoi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="emergencyStopModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-stop-circle me-2"></i>ARRÊT D'URGENCE</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger mb-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Attention :</strong> Cette action va immédiatement arrêter l'envoi des courriels.
+                </div>
+                <p>Les courriels déjà envoyés resteront envoyés.</p>
+                <p>Les courriels non encore traités pourront être relancés ultérieurement.</p>
+                <p class="mb-0"><strong>Êtes-vous sûr de vouloir arrêter cette campagne ?</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" id="confirmStopBtn">
+                    <i class="fas fa-stop-circle me-1"></i>Confirmer l'arrêt
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const campaignId = {{ campaign.id }};
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    
+    const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+    const confirmSendModal = new bootstrap.Modal(document.getElementById('confirmSendModal'));
+    
+    const emergencyStopModalEl = document.getElementById('emergencyStopModal');
+    const emergencyStopModal = emergencyStopModalEl ? new bootstrap.Modal(emergencyStopModalEl) : null;
+    
+    let currentEmailId = null;
+    let emailsToSend = [];
+    let sendAll = false;
+    
+    // Arrêt d'urgence
+    const emergencyStopBtn = document.getElementById('emergencyStopBtn');
+    if (emergencyStopBtn && emergencyStopModal) {
+        emergencyStopBtn.addEventListener('click', function() {
+            emergencyStopModal.show();
+        });
+    }
+    
+    const confirmStopBtn = document.getElementById('confirmStopBtn');
+    if (confirmStopBtn) {
+        confirmStopBtn.addEventListener('click', function() {
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Arrêt en cours...';
+            
+            fetch(`/campaigns/${campaignId}/stop`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    emergencyStopModal.hide();
+                    alert('Arrêt d\'urgence demandé. La campagne va s\'arrêter sous peu.');
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Erreur lors de l\'arrêt');
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-stop-circle me-1"></i>Confirmer l\'arrêt';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erreur lors de l\'arrêt d\'urgence');
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-stop-circle me-1"></i>Confirmer l\'arrêt';
+            });
+        });
+    }
+    
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    document.getElementById('statusFilter').addEventListener('change', function() {
+        const status = this.value;
+        window.location.href = `{{ url_for('campaign.view_campaign', campaign_id=campaign.id) }}?email_status=${status}`;
+    });
+    
+    document.querySelectorAll('.btn-preview').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const emailId = this.dataset.emailId;
+            currentEmailId = emailId;
+            
+            fetch(`/campaigns/${campaignId}/email/${emailId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('previewClientCode').textContent = data.client_code;
+                    document.getElementById('previewClientName').textContent = data.client_name;
+                    document.getElementById('previewSubject').textContent = data.subject;
+                    document.getElementById('previewContent').innerHTML = data.content;
+                    
+                    const recipientsDiv = document.getElementById('previewRecipients');
+                    recipientsDiv.innerHTML = data.to_emails.map(e => 
+                        `<span class="badge bg-primary me-1">${e}</span>`
+                    ).join('');
+                    
+                    const attachmentsDiv = document.getElementById('previewAttachments');
+                    let attachments = [];
+                    if (data.has_pdf) attachments.push('<span class="badge bg-danger"><i class="fas fa-file-pdf me-1"></i>PDF</span>');
+                    if (data.has_excel) attachments.push('<span class="badge bg-success"><i class="fas fa-file-excel me-1"></i>Excel</span>');
+                    attachmentsDiv.innerHTML = attachments.length ? attachments.join(' ') : '<span class="text-muted">Aucune</span>';
+                    
+                    previewModal.show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Erreur lors du chargement de la prévisualisation');
+                });
+        });
+    });
+    
+    const selectAllEmails = document.getElementById('selectAllEmails');
+    const emailCheckboxes = document.querySelectorAll('.email-checkbox');
+    const sendSelectedBtn = document.getElementById('sendSelectedBtn');
+    const skipSelectedBtn = document.getElementById('skipSelectedBtn');
+    
+    function updateSelectedButtons() {
+        const checked = document.querySelectorAll('.email-checkbox:checked').length;
+        if (sendSelectedBtn) sendSelectedBtn.disabled = checked === 0;
+        if (skipSelectedBtn) skipSelectedBtn.disabled = checked === 0;
+    }
+    
+    if (selectAllEmails) {
+        selectAllEmails.addEventListener('change', function() {
+            emailCheckboxes.forEach(cb => cb.checked = this.checked);
+            updateSelectedButtons();
+        });
+    }
+    
+    emailCheckboxes.forEach(cb => {
+        cb.addEventListener('change', updateSelectedButtons);
+    });
+    
+    const sendAllBtn = document.getElementById('sendAllBtn');
+    if (sendAllBtn) {
+        sendAllBtn.addEventListener('click', function() {
+            sendAll = true;
+            emailsToSend = [];
+            document.getElementById('sendCount').textContent = '{{ campaign.total_emails - campaign.emails_sent }}';
+            confirmSendModal.show();
+        });
+    }
+    
+    if (sendSelectedBtn) {
+        sendSelectedBtn.addEventListener('click', function() {
+            sendAll = false;
+            emailsToSend = Array.from(document.querySelectorAll('.email-checkbox:checked')).map(cb => parseInt(cb.value));
+            document.getElementById('sendCount').textContent = emailsToSend.length;
+            confirmSendModal.show();
+        });
+    }
+    
+    const sendSingleBtn = document.getElementById('sendSingleBtn');
+    if (sendSingleBtn) {
+        sendSingleBtn.addEventListener('click', function() {
+            previewModal.hide();
+            sendAll = false;
+            emailsToSend = [parseInt(currentEmailId)];
+            document.getElementById('sendCount').textContent = '1';
+            confirmSendModal.show();
+        });
+    }
+    
+    document.getElementById('confirmSendBtn').addEventListener('click', function() {
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Envoi en cours...';
+        
+        fetch(`/campaigns/${campaignId}/send`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                send_all: sendAll,
+                email_ids: emailsToSend
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            confirmSendModal.hide();
+            if (data.success) {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert(data.error || 'Erreur lors de l\'envoi');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de l\'envoi');
+        })
+        .finally(() => {
+            const btn = document.getElementById('confirmSendBtn');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane me-1"></i>Confirmer l\'envoi';
+        });
+    });
+    
+    if (skipSelectedBtn) {
+        skipSelectedBtn.addEventListener('click', function() {
+            const selectedIds = Array.from(document.querySelectorAll('.email-checkbox:checked')).map(cb => parseInt(cb.value));
+            
+            if (!confirm(`Êtes-vous sûr de vouloir ignorer ${selectedIds.length} courriel(s) ?`)) {
+                return;
+            }
+            
+            fetch(`/campaigns/${campaignId}/skip`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    email_ids: selectedIds
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Erreur');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erreur');
+            });
+        });
+    }
+    
+    // ========== POLLING DE PROGRESSION EN TEMPS RÉEL ==========
+    let statusPolling = null;
+    const campaignStatus = '{{ campaign.status.value }}';
+    
+    function updateProgressDisplay(data) {
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const progressLabel = document.querySelector('.col-md-3:last-child .text-muted');
+        
+        // Mettre à jour les compteurs
+        document.getElementById('statTotal').textContent = data.total_emails;
+        document.getElementById('statSent').textContent = data.emails_sent;
+        document.getElementById('statFailed').textContent = data.emails_failed;
+        
+        // Si en phase de génération, afficher la progression de génération
+        if (data.is_generating) {
+            progressBar.classList.remove('bg-success');
+            progressBar.classList.add('bg-info');
+            progressBar.style.width = data.generation_percent + '%';
+            progressText.textContent = data.generation_percent + '%';
+            if (progressLabel) {
+                progressLabel.textContent = 'Génération en cours...';
+            }
+        } else {
+            // Phase d'envoi normale
+            progressBar.classList.remove('bg-info');
+            progressBar.classList.add('bg-success');
+            progressBar.style.width = data.progress_percent + '%';
+            progressText.textContent = data.progress_percent + '%';
+            if (progressLabel) {
+                progressLabel.textContent = 'Progression';
+            }
+        }
+        
+        // Si génération terminée (passé à READY), rafraîchir la page
+        if (data.is_generation_complete && campaignStatus === 'processing') {
+            stopPolling();
+            setTimeout(() => window.location.reload(), 1000);
+        }
+        
+        // Si terminé ou arrêté, rafraîchir la page
+        if (data.is_completed) {
+            stopPolling();
+            setTimeout(() => window.location.reload(), 1500);
+        }
+    }
+    
+    function pollStatus() {
+        fetch(`/campaigns/${campaignId}/status`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    updateProgressDisplay(data);
+                }
+            })
+            .catch(error => {
+                console.error('Polling error:', error);
+            });
+    }
+    
+    function startPolling() {
+        if (!statusPolling) {
+            statusPolling = setInterval(pollStatus, 2000); // Toutes les 2 secondes
+            pollStatus(); // Premier appel immédiat
+        }
+    }
+    
+    function stopPolling() {
+        if (statusPolling) {
+            clearInterval(statusPolling);
+            statusPolling = null;
+        }
+    }
+    
+    // Démarrer le polling si la campagne est en cours ou en génération
+    if (campaignStatus === 'in_progress' || campaignStatus === 'processing') {
+        startPolling();
+    }
+    
+    // Démarrer le polling après le lancement d'un envoi
+    const originalConfirmSendBtn = document.getElementById('confirmSendBtn');
+    if (originalConfirmSendBtn) {
+        const originalClickHandler = originalConfirmSendBtn.onclick;
+        originalConfirmSendBtn.addEventListener('click', function() {
+            // Démarrer le polling après un court délai
+            setTimeout(startPolling, 1000);
+        });
+    }
+});
+</script>
+{% endblock %}

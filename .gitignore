@@ -1,0 +1,54 @@
+# Environnement
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+venv/
+.venv/
+
+# Replit
+.replit
+replit.nix
+.upm/
+.cache/
+.config/
+.local/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Securite - ne jamais commiter
+*.sql
+*.dump
+*.backup
+*.bak
+*.pem
+*.key
+*.crt
+secrets.json
+
+# Logs
+*.log
+
+# Database files (local)
+*.sqlite3
+*.db
+
+# Docker
+docker-compose.override.yml
+
+# Claude Code (fichiers locaux, ne pas commiter)
+.claude/settings.local.json
+
+# Agents
+.agents/

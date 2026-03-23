@@ -1,0 +1,351 @@
+{% extends "base.html" %}
+
+{% block title %}Verification - FinovRelance{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Verification
+                    </h4>
+                </div>
+                <div class="card-body">
+
+                    <!-- ========== MODE PRINCIPAL ========== -->
+                    <div id="mode-main">
+                        {% if session.get('2fa_totp_only') %}
+                        <div class="text-center mb-4">
+                            <div class="mb-3">
+                                <i class="fas fa-mobile-alt text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="text-muted">Authentification TOTP</h5>
+                            <p class="text-muted">
+                                Entrez le code de votre application d'authentification.
+                            </p>
+                        </div>
+                        {% elif session.get('2fa_email_failed') %}
+                        <div class="text-center mb-4">
+                            <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                            <h5 class="text-warning mt-2">Courriel indisponible</h5>
+                            <p class="text-muted">
+                                Le systeme de courriel est temporairement indisponible.<br>
+                                Utilisez un autre moyen d'authentification.
+                            </p>
+                        </div>
+                        {% else %}
+                        <div class="text-center mb-4">
+                            <div class="mb-3">
+                                <i class="fas fa-envelope-open-text text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="text-muted">Code de verification envoye</h5>
+                            <p class="text-muted">
+                                Un code de verification a ete envoye a<br>
+                                <strong>{{ user.email }}</strong>
+                            </p>
+                        </div>
+                        {% endif %}
+
+                        {% if not session.get('2fa_email_failed') %}
+                        <form method="POST" id="form-main">
+                            {{ form.hidden_tag() }}
+                            <div class="mb-3">
+                                <label class="form-label" for="code">Code de verification</label>
+                                <input type="text"
+                                       class="form-control form-control-lg text-center"
+                                       id="code" name="code"
+                                       placeholder="000000"
+                                       maxlength="6"
+                                       autocomplete="one-time-code"
+                                       inputmode="numeric"
+                                       style="letter-spacing: 0.3em; font-family: monospace;">
+                                {% if form.code.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.code.errors %}
+                                    <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">Verifier</button>
+                            </div>
+                        </form>
+
+                        {% if not session.get('2fa_totp_only') %}
+                        <div class="text-center mt-3">
+                            <form method="POST" action="{{ url_for('auth.resend_2fa') }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit" class="btn btn-link text-muted btn-sm" id="btn-resend">
+                                    <i class="fas fa-redo me-1"></i>Renvoyer le code
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                        {% endif %}
+
+                        <hr class="my-3">
+                        <div class="text-center">
+                            <a href="#" id="btn-show-alternatives" class="btn btn-link text-muted btn-sm">
+                                <i class="fas fa-ellipsis-h me-1"></i>
+                                Autre moyen d'authentification
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- ========== MODE ALTERNATIVES ========== -->
+                    <div id="mode-alternatives" style="display: none;">
+                        <div class="text-center mb-4">
+                            <h5 class="text-muted">Choisir un autre moyen</h5>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {% if session.get('2fa_totp_only') %}
+                            <button class="btn btn-outline-primary" id="btn-switch-email">
+                                <i class="fas fa-envelope me-2"></i>Recevoir un code par courriel
+                            </button>
+                            {% endif %}
+                            <button class="btn btn-outline-warning" id="btn-switch-recovery">
+                                <i class="fas fa-key me-2"></i>Utiliser un code de recuperation
+                            </button>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <a href="#" id="btn-back-main" class="btn btn-link text-muted btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>Retour
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- ========== MODE EMAIL (depuis TOTP) ========== -->
+                    <div id="mode-email" style="display: none;">
+                        <div class="text-center mb-4">
+                            <div class="mb-3">
+                                <i class="fas fa-envelope-open-text text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="text-muted">Code par courriel</h5>
+                            <p class="text-muted small">
+                                Un code de verification va etre envoye a votre adresse courriel.
+                            </p>
+                        </div>
+
+                        <form method="POST" action="{{ url_for('auth.resend_2fa') }}" id="form-send-email" class="mb-3">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary" id="btn-send-email">
+                                    <i class="fas fa-paper-plane me-2"></i>Envoyer le code
+                                </button>
+                            </div>
+                        </form>
+
+                        <form method="POST" id="form-email-code" style="display: none;">
+                            {{ form.hidden_tag() }}
+                            <div class="mb-3">
+                                <label class="form-label">Code recu par courriel</label>
+                                <input type="text"
+                                       class="form-control form-control-lg text-center"
+                                       id="email-code" name="code"
+                                       placeholder="000000"
+                                       maxlength="6"
+                                       autocomplete="one-time-code"
+                                       inputmode="numeric"
+                                       style="letter-spacing: 0.3em; font-family: monospace;">
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">Verifier</button>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-3">
+                            <a href="#" id="btn-back-from-email" class="btn btn-link text-muted btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>Retour
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- ========== MODE RECUPERATION ========== -->
+                    <div id="mode-recovery" style="display: none;">
+                        <div class="text-center mb-4">
+                            <div class="mb-3">
+                                <i class="fas fa-key text-warning" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="text-muted">Code de recuperation</h5>
+                            <p class="text-muted small">
+                                Entrez un de vos codes de secours a usage unique.
+                            </p>
+                        </div>
+
+                        <form method="POST" id="form-recovery">
+                            {{ form.hidden_tag() }}
+                            <div class="mb-3">
+                                <label class="form-label">Code de secours</label>
+                                <input type="text"
+                                       class="form-control form-control-lg text-center"
+                                       id="recovery-code" name="code"
+                                       placeholder="XXXX-XXXX"
+                                       maxlength="9"
+                                       autocomplete="off"
+                                       style="letter-spacing: 0.3em; font-family: monospace;">
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-warning btn-lg">
+                                    <i class="fas fa-unlock me-2"></i>Verifier
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-3">
+                            <a href="#" id="btn-back-from-recovery" class="btn btn-link text-muted btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>Retour
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- ========== RETOUR CONNEXION (toujours visible) ========== -->
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-link text-muted">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Retour a la connexion
+                        </a>
+                    </div>
+
+                </div>
+                <div class="card-footer text-center text-muted">
+                    <small>
+                        <i class="fas fa-clock me-1"></i>
+                        Le code expire dans 10 minutes
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-control:focus { border-color: #8475EC; box-shadow: 0 0 0 0.2rem rgba(132, 117, 236, 0.25); }
+.card { border: none; border-radius: 10px; }
+.card-header { border-radius: 10px 10px 0 0 !important; }
+.btn-primary { background-color: #8475EC; border-color: #8475EC; }
+.btn-primary:hover { background-color: #6B5DC0; border-color: #6B5DC0; }
+.btn-link { font-size: 0.9rem; }
+.text-primary { color: #8475EC !important; }
+.bg-primary { background-color: #8475EC !important; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var modeMain = document.getElementById('mode-main');
+    var modeAlts = document.getElementById('mode-alternatives');
+    var modeEmail = document.getElementById('mode-email');
+    var modeRecovery = document.getElementById('mode-recovery');
+    var codeInput = document.getElementById('code');
+    var formSubmitted = false;
+
+    function safeSubmit(form) {
+        if (formSubmitted) return;
+        formSubmitted = true;
+        form.submit();
+    }
+
+    function showMode(mode) {
+        [modeMain, modeAlts, modeEmail, modeRecovery].forEach(function(m) {
+            if (m) m.style.display = 'none';
+        });
+        mode.style.display = 'block';
+    }
+
+    // Auto-focus main input
+    if (codeInput) codeInput.focus();
+
+    // Auto-submit on 6 digits (main form)
+    if (codeInput) {
+        codeInput.addEventListener('input', function() {
+            if (/^\d{6}$/.test(this.value)) {
+                setTimeout(function() { safeSubmit(codeInput.form); }, 400);
+            }
+        });
+        codeInput.form.addEventListener('submit', function() { formSubmitted = true; });
+    }
+
+    // Auto-submit recovery code
+    var recoveryInput = document.getElementById('recovery-code');
+    if (recoveryInput) {
+        recoveryInput.addEventListener('input', function() {
+            if (/^[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}$/.test(this.value)) {
+                setTimeout(function() { safeSubmit(recoveryInput.form); }, 400);
+            }
+        });
+        recoveryInput.form.addEventListener('submit', function() { formSubmitted = true; });
+    }
+
+    // Auto-submit email code
+    var emailCodeInput = document.getElementById('email-code');
+    if (emailCodeInput) {
+        emailCodeInput.addEventListener('input', function() {
+            if (/^\d{6}$/.test(this.value)) {
+                setTimeout(function() { safeSubmit(emailCodeInput.form); }, 400);
+            }
+        });
+        emailCodeInput.form.addEventListener('submit', function() { formSubmitted = true; });
+    }
+
+    // Show alternatives
+    var btnAlts = document.getElementById('btn-show-alternatives');
+    if (btnAlts) btnAlts.addEventListener('click', function(e) { e.preventDefault(); showMode(modeAlts); });
+
+    // Back to main
+    document.querySelectorAll('#btn-back-main, #btn-back-from-email, #btn-back-from-recovery').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showMode(modeMain);
+            if (codeInput) codeInput.focus();
+        });
+    });
+
+    // Switch to email
+    var btnEmail = document.getElementById('btn-switch-email');
+    if (btnEmail) {
+        btnEmail.addEventListener('click', function() {
+            showMode(modeEmail);
+        });
+    }
+
+    // After email sent, show code field
+    var formSendEmail = document.getElementById('form-send-email');
+    if (formSendEmail) {
+        formSendEmail.addEventListener('submit', function() {
+            var btn = document.getElementById('btn-send-email');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Envoi en cours...';
+            // The form will POST and redirect; on return the email code field appears via flash
+        });
+    }
+
+    // Switch to recovery
+    var btnRecovery = document.getElementById('btn-switch-recovery');
+    if (btnRecovery) {
+        btnRecovery.addEventListener('click', function() {
+            showMode(modeRecovery);
+            if (recoveryInput) recoveryInput.focus();
+        });
+    }
+
+    // Resend button loading
+    var btnResend = document.getElementById('btn-resend');
+    if (btnResend) {
+        btnResend.closest('form').addEventListener('submit', function() {
+            btnResend.disabled = true;
+            btnResend.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Envoi en cours...';
+        });
+    }
+
+    {% if session.get('2fa_email_failed') %}
+    // Auto-show alternatives if email is down
+    showMode(modeAlts);
+    {% endif %}
+});
+</script>
+{% endblock %}

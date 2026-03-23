@@ -1,0 +1,2974 @@
+{% extends "base.html" %}
+
+{% block title %}{{ client.name }} - Clients - FinovRelance{% endblock %}
+
+{% block head %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqk1w27LlSSB7NwXz4dn7e7oI2hSy5kl1eZhPp0rQ2ViR8TZ/qXhCN5/6bMR5x1jXvFYb3vSA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('client.list_clients') }}">Clients</a></li>
+                <li class="breadcrumb-item active">{{ client.name }}</li>
+            </ol>
+        </nav>
+        <h1 class="h3 mb-1">{{ client.name }} <span class="badge bg-secondary ms-2">{{ client.code_client }}</span></h1>
+    </div>
+    <div class="d-flex gap-2">
+        <!-- Menu Actions -->
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i data-feather="more-horizontal" class="me-1"></i>
+                Actions
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ url_for('receivable.overview') }}">
+                    <i data-feather="arrow-left" class="me-2"></i>
+                    Comptes à recevoir
+                </a></li>
+                {% if not current_user.is_read_only() %}
+                <li><a class="dropdown-item" href="{{ url_for('main.edit_client', id=client.id) }}">
+                    <i data-feather="edit" class="me-2"></i>
+                    Modifier
+                </a></li>
+                {% endif %}
+                <li><a class="dropdown-item" href="{{ url_for('receivable.client_statement', client_id=client.id, view_filter=view_filter) }}" download>
+                    <i data-feather="download" class="me-2"></i>
+                    Export PDF{% if view_filter == 'parent_children' %} (Parent + Enfants){% endif %}
+                </a></li>
+                {% if has_project_invoices %}
+                <li><hr class="dropdown-divider"></li>
+                {% if group_by_project %}
+                <li><a class="dropdown-item" href="{{ url_for('client.detail_client', id=client.id, view_filter=view_filter) }}">
+                    <i data-feather="list" class="me-2"></i>
+                    Afficher en liste
+                </a></li>
+                {% else %}
+                <li><a class="dropdown-item" href="{{ url_for('client.detail_client', id=client.id, view_filter=view_filter, group_by_project='true') }}">
+                    <i data-feather="folder" class="me-2"></i>
+                    Grouper par {{ project_label or 'projet' }}
+                </a></li>
+                {% endif %}
+                {% endif %}
+            </ul>
+        </div>
+
+        {% if not current_user.is_read_only() %}
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#sendEmailModal">
+            <i data-feather="mail" class="me-1"></i>
+            Envoyer courriel
+        </button>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Filtre global unique -->
+{% if client.is_parent %}
+<div class="d-flex justify-content-center mb-3">
+    <div class="btn-group" role="group">
+        <a href="{{ url_for('client.detail_client', id=client.id, view_filter='parent_only') }}"
+           class="btn {{ 'btn-primary' if view_filter == 'parent_only' else 'btn-outline-primary' }}">
+            Parent seul
+        </a>
+        <a href="{{ url_for('client.detail_client', id=client.id, view_filter='parent_children') }}"
+           class="btn {{ 'btn-primary' if view_filter == 'parent_children' else 'btn-outline-primary' }}">
+            Parent + enfants
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Client Information -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="user" class="me-2"></i>
+                    Informations du client
+                </h5>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Nom</label>
+                            <div class="fw-bold">{{ client.name }}</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Code client</label>
+                            <div class="fw-bold">{{ client.code_client }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Courriel</label>
+                            <div>
+                                {% if client.email %}
+                                    <a href="mailto:{{ client.email }}" class="text-decoration-none">
+                                        {{ client.email }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">Non défini</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Téléphone</label>
+                            <div>
+                                {% if client.phone %}
+                                    <a href="tel:{{ client.phone }}" class="text-decoration-none">
+                                        {{ client.phone }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">Non défini</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Langue</label>
+                            <div>
+                                <span class="badge text-{{ 'success' if client.language == 'fr' else 'info' }} border border-{{ 'success' if client.language == 'fr' else 'info' }}" style="background-color: transparent;">
+                                    {{ 'Français' if client.language == 'fr' else 'English' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if client.address %}
+                <div class="mb-3">
+                    <label class="text-muted small">Adresse</label>
+                    <div>{{ client.address }}</div>
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Collecteur</label>
+                            <div>
+                                {% if client.collector_name %}
+                                    <span class="badge bg-secondary">{{ client.collector_name }}</span>
+                                {% else %}
+                                    <span class="text-muted">Non assigné</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Représentant</label>
+                            <div>
+                                {% if client.representative_name %}
+                                    {{ client.representative_name }}
+                                {% else %}
+                                    <span class="text-muted">Non défini</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if client.payment_terms %}
+                <div class="mb-0">
+                    <label class="text-muted small">Termes de paiement</label>
+                    <div>{{ client.payment_terms }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="pie-chart" class="me-2"></i>
+                    Résumé
+                </h5>
+
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="row flex-grow-1">
+                    <!-- Left Column: Total and Aging Details -->
+                    <div class="col-lg-7 d-flex flex-column justify-content-center">
+                        <!-- Total Outstanding -->
+                        <div class="mb-4">
+                            <div class="h3 mb-1 text-primary fw-bold">{{ format_currency(total_outstanding_filtered) }}</div>
+                            <div class="text-muted">Total à recevoir</div>
+                        </div>
+
+                        <!-- Aging Breakdown -->
+                        <div class="aging-list">
+                            <div class="aging-row d-flex justify-content-between align-items-center py-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="aging-dot me-3" style="background-color: #28a745;"></div>
+                                    <span>Courant</span>
+                                </div>
+                                <span class="fw-bold">{{ format_currency(aged_balances['current']) }}</span>
+                            </div>
+                            <div class="aging-row d-flex justify-content-between align-items-center py-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="aging-dot me-3" style="background-color: #ffc107;"></div>
+                                    <span>1 - 30 jours</span>
+                                </div>
+                                <span class="fw-bold">{{ format_currency(aged_balances['30_days']) }}</span>
+                            </div>
+                            <div class="aging-row d-flex justify-content-between align-items-center py-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="aging-dot me-3" style="background-color: #fd7e14;"></div>
+                                    <span>31 - 60 jours</span>
+                                </div>
+                                <span class="fw-bold">{{ format_currency(aged_balances['60_days']) }}</span>
+                            </div>
+                            <div class="aging-row d-flex justify-content-between align-items-center py-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="aging-dot me-3" style="background-color: #dc3545;"></div>
+                                    <span>61 - 90 jours</span>
+                                </div>
+                                <span class="fw-bold">{{ format_currency(aged_balances['90_days']) }}</span>
+                            </div>
+                            <div class="aging-row d-flex justify-content-between align-items-center py-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="aging-dot me-3" style="background-color: #6c757d;"></div>
+                                    <span>90+ jours</span>
+                                </div>
+                                <span class="fw-bold">{{ format_currency(aged_balances['over_90_days']) }}</span>
+                            </div>
+                        </div>
+
+                        <!-- DMP client -->
+                        <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center text-muted">
+                                <i data-feather="file-text" class="me-2" style="width:16px;height:16px;"></i>
+                                <span>DMP / Date facture</span>
+                            </div>
+                            {% if client_dmp_invoice is not none %}
+                                {% if client_dmp_invoice < 0 %}
+                                    <span class="fw-bold text-success" title="Ce client paie en moyenne {{ '%.1f'|format(client_dmp_invoice|abs) }} j avant la date de facture">{{ "%.1f"|format(client_dmp_invoice|abs) }} j en avance</span>
+                                {% else %}
+                                    <span class="fw-bold text-info">{{ "%.1f"|format(client_dmp_invoice) }} jours</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </div>
+                        <div class="mt-2 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center text-muted">
+                                <i data-feather="clock" class="me-2" style="width:16px;height:16px;"></i>
+                                <span>DMP / Date échéance</span>
+                            </div>
+                            {% if client_dmp_due is not none %}
+                                {% if client_dmp_due < 0 %}
+                                    <span class="fw-bold text-success" title="Ce client paie en moyenne {{ '%.1f'|format(client_dmp_due|abs) }} j avant la date d'échéance">{{ "%.1f"|format(client_dmp_due|abs) }} j en avance</span>
+                                {% else %}
+                                    <span class="fw-bold text-warning">{{ "%.1f"|format(client_dmp_due) }} jours</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Chart -->
+                    <div class="col-lg-5 d-flex align-items-center">
+                        <div class="donut-chart-container w-100">
+                            {% set total = aged_balances['current'] + aged_balances['30_days'] + aged_balances['60_days'] + aged_balances['90_days'] + aged_balances['over_90_days'] %}
+                            {% if total > 0 %}
+                                <div class="chart-with-legend">
+                                    <svg width="160" height="160" viewBox="0 0 160 160" class="donut-chart">
+                                    <!-- Background circle -->
+                                    <circle cx="80" cy="80" r="60" fill="none" stroke="#f8f9fa" stroke-width="20"></circle>
+
+                                    {% set radius = 60 %}
+                                    {% set circumference = radius * 2 * 3.14159 %}
+                                    {% set current_offset = 0 %}
+                                    {% set total_float = total|float %}
+
+                                    <!-- Current segment -->
+                                    {% if aged_balances['current'] > 0 %}
+                                        {% set segment_length = (aged_balances['current']|float / total_float) * circumference %}
+                                        <circle cx="80" cy="80" r="{{ radius }}" fill="none" 
+                                                stroke="#28a745" stroke-width="20"
+                                                stroke-dasharray="{{ segment_length }} {{ circumference }}"
+                                                stroke-dashoffset="{{ -current_offset }}"
+                                                transform="rotate(-90 80 80)">
+                                            <title>Courant: {{ format_currency(aged_balances['current']) }}</title>
+                                        </circle>
+                                        {% set current_offset = current_offset + segment_length %}
+                                    {% endif %}
+
+                                    <!-- 1-30 days segment -->
+                                    {% if aged_balances['30_days'] > 0 %}
+                                        {% set segment_length = (aged_balances['30_days']|float / total_float) * circumference %}
+                                        <circle cx="80" cy="80" r="{{ radius }}" fill="none" 
+                                                stroke="#ffc107" stroke-width="20"
+                                                stroke-dasharray="{{ segment_length }} {{ circumference }}"
+                                                stroke-dashoffset="{{ -current_offset }}"
+                                                transform="rotate(-90 80 80)">
+                                            <title>1-30 jours: {{ format_currency(aged_balances['30_days']) }}</title>
+                                        </circle>
+                                        {% set current_offset = current_offset + segment_length %}
+                                    {% endif %}
+
+                                    <!-- 31-60 days segment -->
+                                    {% if aged_balances['60_days'] > 0 %}
+                                        {% set segment_length = (aged_balances['60_days']|float / total_float) * circumference %}
+                                        <circle cx="80" cy="80" r="{{ radius }}" fill="none" 
+                                                stroke="#fd7e14" stroke-width="20"
+                                                stroke-dasharray="{{ segment_length }} {{ circumference }}"
+                                                stroke-dashoffset="{{ -current_offset }}"
+                                                transform="rotate(-90 80 80)">
+                                            <title>31-60 jours: {{ format_currency(aged_balances['60_days']) }}</title>
+                                        </circle>
+                                        {% set current_offset = current_offset + segment_length %}
+                                    {% endif %}
+
+                                    <!-- 61-90 days segment -->
+                                    {% if aged_balances['90_days'] > 0 %}
+                                        {% set segment_length = (aged_balances['90_days']|float / total_float) * circumference %}
+                                        <circle cx="80" cy="80" r="{{ radius }}" fill="none" 
+                                                stroke="#dc3545" stroke-width="20"
+                                                stroke-dasharray="{{ segment_length }} {{ circumference }}"
+                                                stroke-dashoffset="{{ -current_offset }}"
+                                                transform="rotate(-90 80 80)">
+                                            <title>61-90 jours: {{ format_currency(aged_balances['90_days']) }}</title>
+                                        </circle>
+                                        {% set current_offset = current_offset + segment_length %}
+                                    {% endif %}
+
+                                    <!-- 90+ days segment -->
+                                    {% if aged_balances['over_90_days'] > 0 %}
+                                        {% set segment_length = (aged_balances['over_90_days']|float / total_float) * circumference %}
+                                        <circle cx="80" cy="80" r="{{ radius }}" fill="none" 
+                                                stroke="#6c757d" stroke-width="20"
+                                                stroke-dasharray="{{ segment_length }} {{ circumference }}"
+                                                stroke-dashoffset="{{ -current_offset }}"
+                                                transform="rotate(-90 80 80)">
+                                            <title>90+ jours: {{ format_currency(aged_balances['over_90_days']) }}</title>
+                                        </circle>
+                                    {% endif %}
+
+
+                                    </svg>
+
+                                    <!-- Chart legend with percentages -->
+                                    <div class="chart-legend mt-2">
+                                        {% if aged_balances['current'] > 0 %}
+                                        <div class="legend-item">
+                                            <div class="legend-color" style="background-color: #28a745;"></div>
+                                            <span class="legend-text">{{ ((aged_balances['current']|float / (total|float)) * 100)|round|int }}%</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if aged_balances['30_days'] > 0 %}
+                                        <div class="legend-item">
+                                            <div class="legend-color" style="background-color: #ffc107;"></div>
+                                            <span class="legend-text">{{ ((aged_balances['30_days']|float / (total|float)) * 100)|round|int }}%</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if aged_balances['60_days'] > 0 %}
+                                        <div class="legend-item">
+                                            <div class="legend-color" style="background-color: #fd7e14;"></div>
+                                            <span class="legend-text">{{ ((aged_balances['60_days']|float / (total|float)) * 100)|round|int }}%</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if aged_balances['90_days'] > 0 %}
+                                        <div class="legend-item">
+                                            <div class="legend-color" style="background-color: #dc3545;"></div>
+                                            <span class="legend-text">{{ ((aged_balances['90_days']|float / (total|float)) * 100)|round|int }}%</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if aged_balances['over_90_days'] > 0 %}
+                                        <div class="legend-item">
+                                            <div class="legend-color" style="background-color: #6c757d;"></div>
+                                            <span class="legend-text">{{ ((aged_balances['over_90_days']|float / (total|float)) * 100)|round|int }}%</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="text-center text-muted">
+                                    <svg width="160" height="160" viewBox="0 0 160 160">
+                                        <circle cx="80" cy="80" r="60" fill="none" stroke="#e9ecef" stroke-width="20"></circle>
+                                        <text x="80" y="80" text-anchor="middle" dominant-baseline="middle" fill="#6c757d" font-size="14">Aucune donnée</text>
+                                    </svg>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section Hiérarchie des comptes en pleine largeur -->
+{% if client.has_parent or client.is_parent %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="git-branch" class="me-2"></i>
+                    Hiérarchie des comptes
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if client.has_parent %}
+                <div class="mb-4">
+                    <h6 class="text-muted mb-2">Compte parent</h6>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <a href="{{ url_for('client.detail_client', id=client.parent_client.id) }}" class="text-decoration-none">
+                                <div class="p-3 border rounded">
+                                    <strong>{{ client.parent_client.code_client }}</strong> - {{ client.parent_client.name }}
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 bg-light rounded">
+                                <strong>{{ format_currency(client.parent_client.get_total_outstanding()) }}</strong>
+                                <small class="text-muted d-block">Total à recevoir</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if client.is_parent %}
+                <div id="children-content">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                        <p class="text-muted mt-2">Chargement des comptes enfants...</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Section Ventilation par Projet -->
+{% if is_project_enabled %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="folder" class="me-2"></i>
+                    Ventilation par {{ project_label or 'projet' }}
+                    {% if include_children %}
+                        <span class="badge bg-info ms-2">Parent + Enfants</span>
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="projects-content">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                        <p class="text-muted mt-2">Chargement de la ventilation par {{ project_label or 'projet' }}...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Section Contacts -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="users" class="me-2"></i>
+                    Contacts
+                    {% if include_children %}
+                        <span class="badge bg-info ms-2">Parent + Enfants</span>
+                    {% endif %}
+                </h5>
+                {% if not current_user.is_read_only() %}
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addContactModal">
+                    <i data-feather="plus" class="me-1"></i>
+                    Ajouter un contact
+                </button>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% set all_contacts = [] %}
+                {% if include_children %}
+                    {% for contact in client.contacts %}
+                        {% set _ = all_contacts.append(contact) %}
+                    {% endfor %}
+                    {% if client.is_parent %}
+                        {% for child in client.child_clients %}
+                            {% for contact in child.contacts %}
+                                {% set _ = all_contacts.append(contact) %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                {% else %}
+                    {% for contact in client.contacts %}
+                        {% set _ = all_contacts.append(contact) %}
+                    {% endfor %}
+                {% endif %}
+
+                {% if all_contacts %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Courriel</th>
+                                <th>Téléphone</th>
+                                <th>Fonction</th>
+                                <th>Langue</th>
+                                {% if include_children %}
+                                <th>Client</th>
+                                {% endif %}
+                                <th>Principal</th>
+                                <th>Campagne</th>
+                                {% if not current_user.is_read_only() %}
+                                <th>Actions</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contact in all_contacts %}
+                            <tr>
+                                <td>
+                                    {{ contact.full_name }}
+                                    <span class="badge badge-outline ms-1 text-{{ 'success' if contact.language == 'fr' else 'info' }}">
+                                        {{ contact.language|upper or 'FR' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="mailto:{{ contact.email }}" class="text-decoration-none">
+                                        {{ contact.email }}
+                                    </a>
+                                </td>
+                                <td>{{ contact.phone or '-' }}</td>
+                                <td>{{ contact.position or '-' }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if contact.language == 'fr' else 'info' }}">
+                                        {{ 'Français' if contact.language == 'fr' else 'English' }}
+                                    </span>
+                                </td>
+                                {% if include_children %}
+                                <td>
+                                    <a href="{{ url_for('client.detail_client', id=contact.client.id) }}" class="text-decoration-none">
+                                        {{ contact.client.name }}
+                                    </a>
+                                </td>
+                                {% endif %}
+                                <td>
+                                    {% if contact.is_primary %}
+                                        <span class="badge bg-primary">Principal</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if contact.campaign_allowed %}
+                                        <span class="badge bg-success"><i class="fas fa-bullhorn me-1"></i>Autorisé</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                {% if not current_user.is_read_only() and contact.client_id == client.id %}
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('client.edit_contact_form', client_id=client.id, contact_id=contact.id) }}" 
+                                           class="btn btn-outline-primary btn-sm" 
+                                           title="Modifier">
+                                            <i data-feather="edit-2" class="small"></i>
+                                        </a>
+                                        <form method="POST" action="/clients/{{ client.id }}/contact/{{ contact.id }}/delete" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer le contact {{ contact.full_name }} ?')">
+                                                <i data-feather="trash-2" class="small"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                                {% elif not current_user.is_read_only() %}
+                                <td>-</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i data-feather="users" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                    <p class="text-muted mb-3">Aucun contact enregistré</p>
+                    {% if not current_user.is_read_only() %}
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addContactModal">
+                        <i data-feather="plus" class="me-1"></i>
+                        Ajouter le premier contact
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notes Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="message-square" class="me-2"></i>
+                    Notes de communication
+                    {% if notes %}
+                        <span class="badge bg-secondary ms-2">{{ notes|length }}</span>
+                    {% endif %}
+                </h5>
+                <div class="d-flex gap-2">
+                    <!-- Bouton de synchronisation des courriels (Outlook uniquement) -->
+                    <button type="button" class="btn btn-sm btn-outline-info" 
+                            onclick="syncClientEmails({{ client.id }})" 
+                            id="syncEmailsBtn"
+                            title="Récupérer les réponses et transferts depuis Outlook">
+                        <i data-feather="refresh-cw" class="me-1"></i>
+                        <span class="sync-text">Actualiser échanges</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                    
+                    {% if notes %}
+                    <a href="{{ url_for('main.export_notes_excel', id=client.id, view_filter=view_filter, date_from=date_from or '', date_to=date_to or '') }}" class="btn btn-sm btn-outline-success">
+                        <i data-feather="download" class="me-1"></i>
+                        Export Excel
+                    </a>
+                    {% endif %}
+
+                    <form method="GET" class="d-flex align-items-center gap-2" id="notesFilterForm">
+                        <input type="hidden" name="view_filter" value="{{ view_filter }}">
+                        <input type="date" class="form-control form-control-sm" name="date_from" value="{{ date_from or '' }}" placeholder="Date de">
+                        <input type="date" class="form-control form-control-sm" name="date_to" value="{{ date_to or '' }}" placeholder="Date à">
+                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                            <i data-feather="filter"></i>
+                        </button>
+                        {% if date_from or date_to %}
+                        <a href="{{ url_for('client.detail_client', id=client.id, view_filter=view_filter) }}" class="btn btn-sm btn-outline-secondary">
+                            <i data-feather="x"></i>
+                        </a>
+                        {% endif %}
+                    </form>
+
+                    {% if not current_user.is_read_only() %}
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+                        Ajouter note
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="notes-content">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                        <p class="text-muted mt-2">Chargement des notes de communication...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoices Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" data-section="invoices">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="file-text" class="me-2"></i>
+                    Factures
+                    <span id="invoice-count-badge" class="badge bg-secondary ms-2" style="display:none;"></span>
+                </h5>
+                <div class="d-flex gap-2" id="invoice-actions" style="display:none;">
+                    <a href="{{ url_for('main.export_invoices_excel', id=client.id, view_filter=view_filter) }}" class="btn btn-sm btn-outline-success">
+                        <i data-feather="download" class="me-1"></i>
+                        Export Excel{% if view_filter == 'parent_children' %} (Parent + Enfants){% endif %}
+                    </a>
+                    {% if not current_user.is_read_only() %}
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addInvoiceModal">
+                        <i data-feather="plus" class="me-1"></i>
+                        Ajouter facture
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <div id="invoices-content">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                        <p class="text-muted mt-2">Chargement des factures...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Lazy Loading -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const clientId = {{ client.id|tojson }};
+    const viewFilter = '{{ view_filter }}';
+    const dateFrom = '{{ date_from or '' }}';
+    const dateTo = '{{ date_to or '' }}';
+    
+    // Build query parameters
+    const params = new URLSearchParams();
+    params.set('view_filter', viewFilter);
+    if (dateFrom) params.set('date_from', dateFrom);
+    if (dateTo) params.set('date_to', dateTo);
+    
+    // Load children hierarchy (if client is parent)
+    {% if client.is_parent %}
+    fetch(`/api/clients/${clientId}/children?${params.toString()}`)
+        .then(response => response.text())
+        .then(html => {
+            const childrenContent = document.getElementById('children-content');
+            if (childrenContent && html.trim()) {
+                childrenContent.innerHTML = html;
+                feather.replace();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading children:', error);
+            const childrenContent = document.getElementById('children-content');
+            if (childrenContent) {
+                childrenContent.innerHTML = '<div class="alert alert-danger">Erreur lors du chargement des comptes enfants</div>';
+            }
+        });
+    {% endif %}
+    
+    // Load project receivables (if project feature is enabled)
+    {% if is_project_enabled %}
+    fetch(`/api/clients/${clientId}/projects?${params.toString()}`)
+        .then(response => response.text())
+        .then(html => {
+            const projectsContent = document.getElementById('projects-content');
+            if (projectsContent && html.trim()) {
+                projectsContent.innerHTML = html;
+                feather.replace();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading projects:', error);
+            const projectsContent = document.getElementById('projects-content');
+            if (projectsContent) {
+                projectsContent.innerHTML = '<div class="alert alert-danger">Erreur lors du chargement des {{ project_label or "projets" }}</div>';
+            }
+        });
+    {% endif %}
+    
+    // Load notes
+    fetch(`/api/clients/${clientId}/notes?${params.toString()}`)
+        .then(response => response.text())
+        .then(html => {
+            const notesContent = document.getElementById('notes-content');
+            if (notesContent) {
+                notesContent.innerHTML = html;
+                feather.replace();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading notes:', error);
+            const notesContent = document.getElementById('notes-content');
+            if (notesContent) {
+                notesContent.innerHTML = '<div class="alert alert-danger">Erreur lors du chargement des notes</div>';
+            }
+        });
+    
+    // Load invoices
+    function loadInvoices(additionalParams = {}) {
+        const invoiceParams = new URLSearchParams(params);
+        Object.keys(additionalParams).forEach(key => {
+            if (additionalParams[key]) {
+                invoiceParams.set(key, additionalParams[key]);
+            }
+        });
+        
+        fetch(`/api/clients/${clientId}/invoices?${invoiceParams.toString()}`)
+            .then(response => response.text())
+            .then(html => {
+                const invoicesContent = document.getElementById('invoices-content');
+                if (invoicesContent) {
+                    invoicesContent.innerHTML = html;
+                    feather.replace();
+                    attachInvoiceHandlers();
+                }
+            })
+            .catch(error => {
+                console.error('Error loading invoices:', error);
+                const invoicesContent = document.getElementById('invoices-content');
+                if (invoicesContent) {
+                    invoicesContent.innerHTML = '<div class="alert alert-danger">Erreur lors du chargement des factures</div>';
+                }
+            });
+    }
+    
+    // Attach event handlers for invoice pagination and search
+    function attachInvoiceHandlers() {
+        // Handle pagination clicks
+        document.querySelectorAll('#invoices-content .pagination-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.getAttribute('data-page');
+                const searchParam = document.querySelector('input[name="search_invoice"]')?.value || '';
+                loadInvoices({ page: page, search_invoice: searchParam });
+            });
+        });
+        
+        // Handle search form submission
+        const searchForm = document.getElementById('invoiceSearchForm');
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const searchValue = this.querySelector('input[name="search_invoice"]').value;
+                loadInvoices({ search_invoice: searchValue, page: 1 });
+            });
+        }
+    }
+    
+    // Initial invoice load
+    loadInvoices();
+});
+</script>
+
+<!-- Modals Section -->
+
+<!-- Modal Ajout de Note -->
+<div class="modal fade" id="addNoteModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i data-feather="message-square" class="me-2"></i>
+                    Ajouter une note
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addNoteForm">
+                {{ note_form.hidden_tag() }}
+                <input type="hidden" name="client_id" value="{{ client.id }}">
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ note_form.note_type.label(class="form-label") }}
+                            {{ note_form.note_type(class="form-select") }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ note_form.note_date.label(class="form-label") }}
+                            {{ note_form.note_date(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ note_form.note_text.label(class="form-label") }}
+                        {{ note_form.note_text(class="form-control", rows="4", placeholder="Ajoutez vos notes et commentaires...") }}
+
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="col-md-6">
+                            {{ note_form.reminder_date.label(class="form-label") }}
+                            {{ note_form.reminder_date(class="form-control", type="date") }}
+                        </div>
+                        <div class="form-text">
+                            <i data-feather="bell" class="icon-sm"></i>
+                            Optionnel - Laissez vide si aucun rappel n'est nécessaire
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Modification de Note -->
+<div class="modal fade" id="editNoteModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i data-feather="edit" class="me-2"></i>
+                    Modifier la note
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editNoteForm">
+                <input type="hidden" id="editNoteId" name="note_id">
+                <input type="hidden" id="editNoteClientId" name="client_id" value="{{ client.id }}">
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="editNoteType" class="form-label">Type de note</label>
+                            <select id="editNoteType" name="note_type" class="form-select" required>
+                                <option value="general">Général</option>
+                                <option value="call">Appel téléphonique</option>
+                                <option value="email">Courriel</option>
+                                <option value="meeting">Rencontre</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editNoteDate" class="form-label">Date</label>
+                            <input type="date" id="editNoteDate" name="note_date" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editNoteText" class="form-label">Contenu</label>
+                        <textarea id="editNoteText" name="note_text" class="form-control" rows="4" placeholder="Ajoutez vos notes et commentaires..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="col-md-6">
+                            <label for="editNoteReminder" class="form-label">Date de rappel (optionnel)</label>
+                            <input type="date" id="editNoteReminder" name="reminder_date" class="form-control">
+                        </div>
+                        <div class="form-text">
+                            <i data-feather="bell" class="icon-sm"></i>
+                            Optionnel - Laissez vide si aucun rappel n'est nécessaire
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Edit Email Note (Hybrid - Read-only email + Editable note) -->
+<div class="modal fade" id="editEmailNoteModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i data-feather="mail" class="me-2"></i>
+                    Courriel envoyé
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Email Details (Read-only) -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0"><i data-feather="info" class="me-2"></i>Détails du courriel</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <strong>Client :</strong>
+                                <span id="emailNoteClient"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Date :</strong>
+                                <span id="emailNoteDate"></span>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Expéditeur :</strong>
+                            <span id="emailNoteFrom"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Destinataires :</strong>
+                            <span id="emailNoteTo"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Sujet :</strong>
+                            <span id="emailNoteSubject" class="fw-bold"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Message :</strong>
+                            <div id="emailNoteBody" class="mt-2 p-3 bg-light rounded" style="max-height: 300px; overflow-y: auto;"></div>
+                        </div>
+                        <div id="emailNoteAttachments" class="mb-2" style="display: none;">
+                            <strong>Pièces jointes :</strong>
+                            <ul id="emailNoteAttachmentsList" class="list-unstyled ms-3"></ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Editable Section -->
+                <form id="editEmailNoteForm">
+                    <input type="hidden" id="editEmailNoteId">
+                    
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0"><i data-feather="edit" class="me-2"></i>Notes et rappel (modifiable)</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="emailNoteAdditional" class="form-label">Note additionnelle</label>
+                                <textarea id="emailNoteAdditional" name="additional_note" class="form-control" rows="3" placeholder="Ajoutez une note..."></textarea>
+                                <small class="form-text text-muted">Informations complémentaires sur cet envoi</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="emailNoteReminder" class="form-label">Date de rappel</label>
+                                <input type="date" id="emailNoteReminder" name="reminder_date" class="form-control">
+                                <small class="form-text text-muted">Optionnel - Pour programmer un suivi</small>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="saveEmailNote()">
+                    <i data-feather="save" class="me-1"></i>
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Invoice Modal -->
+<div class="modal fade" id="addInvoiceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i data-feather="file-text" class="me-2"></i>
+                    Ajouter une facture
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('main.add_invoice', id=client.id) }}">
+                {{ invoice_form.hidden_tag() }}
+                {{ invoice_form.client_id() }}
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ invoice_form.invoice_number.label(class="form-label") }}
+                                {{ invoice_form.invoice_number(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ invoice_form.original_amount.label(class="form-label") }}
+                                {{ invoice_form.original_amount(class="form-control", data_currency="true", placeholder="Optionnel") }}
+                                <small class="form-text text-muted">Montant total initial de la facture</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ invoice_form.amount.label(class="form-label") }}
+                                {{ invoice_form.amount(class="form-control", data_currency="true") }}
+                                <small class="form-text text-muted">Solde impayé actuel</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ invoice_form.invoice_date.label(class="form-label") }}
+                                {{ invoice_form.invoice_date(class="form-control") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ invoice_form.due_date.label(class="form-label") }}
+                                {{ invoice_form.due_date(class="form-control") }}
+                            </div>
+                        </div>
+                        {% if is_project_enabled %}
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="project_name" class="form-label">{{ project_label }}</label>
+                                {{ invoice_form.project_name(class="form-control", placeholder="Optionnel") }}
+                                <small class="form-text text-muted">Optionnel - Pour regrouper les factures par {{ project_label|lower }}</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <!-- Le statut est calculé automatiquement selon la date d'échéance -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    {{ invoice_form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Contact Modal -->
+<div class="modal fade" id="addContactModal" tabindex="-1" aria-labelledby="addContactModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addContactModalLabel">Ajouter un contact</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="/clients/{{ client.id }}/contact/add">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">Prénom</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Nom</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Courriel</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Téléphone</label>
+                                <input type="text" class="form-control" id="phone" name="phone">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="position" class="form-label">Fonction</label>
+                                <input type="text" class="form-control" id="position" name="position">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="language" class="form-label">Langue</label>
+                                <select class="form-control" id="language" name="language">
+                                    <option value="fr">Français</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_primary" name="is_primary">
+                                <label class="form-check-label" for="is_primary">
+                                    Contact principal
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="campaign_allowed" name="campaign_allowed">
+                                <label class="form-check-label" for="campaign_allowed">
+                                    <i class="fas fa-bullhorn text-muted me-1"></i>Campagne autorisée
+                                </label>
+                                <div class="form-text small">Inclure dans les envois de campagnes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Contact edit modals removed - using separate edit page like notes -->
+
+<!-- Send Email Modal -->
+<div class="modal fade" id="sendEmailModal" tabindex="-1" aria-labelledby="sendEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sendEmailModalLabel">
+                    <i data-feather="send" class="me-2"></i>
+                    Envoyer un courriel à {{ client.name }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="sendEmailForm" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="modal-body">
+                    <!-- Template Selection -->
+                    <div class="mb-3">
+                        <label for="email_template_id" class="form-label">Modèle de courriel</label>
+                        <select class="form-select" id="email_template_id" name="template_id">
+                            <option value="">Sélectionner un modèle...</option>
+                        </select>
+                    </div>
+
+                    <!-- Recipients -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="email_to" class="form-label">Destinataires</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="email_to" name="to_emails" 
+                                       placeholder="exemple@courriel.com; autre@courriel.com" required>
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                                        data-bs-toggle="dropdown" aria-expanded="false" id="toContactsBtn">
+                                    <i data-feather="users" style="width: 16px; height: 16px;"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" id="toContactsDropdown"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email_cc" class="form-label">Copie (CC)</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="email_cc" name="cc_emails" 
+                                       placeholder="copie1@courriel.com; copie2@courriel.com (optionnel)">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                                        data-bs-toggle="dropdown" aria-expanded="false" id="ccContactsBtn">
+                                    <i data-feather="users" style="width: 16px; height: 16px;"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" id="ccContactsDropdown"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subject -->
+                    <div class="mb-3">
+                        <label for="email_subject" class="form-label">Objet</label>
+                        <input type="text" class="form-control" id="email_subject" name="subject" required>
+                    </div>
+
+                    <!-- Email Options -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i data-feather="settings" class="me-2"></i>
+                                Options
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="email_high_importance" name="high_importance">
+                                        <label class="form-check-label" for="email_high_importance">
+                                            Importance haute
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="email_read_receipt" name="read_receipt">
+                                        <label class="form-check-label" for="email_read_receipt">
+                                            Accusé de lecture
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="email_delivery_receipt" name="delivery_receipt">
+                                        <label class="form-check-label" for="email_delivery_receipt">
+                                            Accusé de réception
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                <i data-feather="info" style="width: 14px; height: 14px;"></i>
+                                Les accusés de réception sont optionnels pour le destinataire
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Content with Variables -->
+                    <div class="mb-3">
+                        <label for="email_content" class="form-label">Contenu</label>
+                        
+                        <!-- Variables disponibles -->
+                        <div class="alert alert-info mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">
+                                    <i data-feather="code" style="width: 16px; height: 16px;"></i>
+                                    Variables disponibles
+                                </h6>
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="toggleVariables">
+                                    <i data-feather="chevron-up" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            </div>
+                            <div id="variablesPanel" class="mt-2" style="display: block;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="d-grid gap-1">
+                                            <button type="button" class="btn btn-sm btn-outline-primary text-start variable-btn" 
+                                                    data-variable="{client_name}" data-value="{{ client.name }}">
+                                                <i data-feather="user" style="width: 12px; height: 12px;"></i>
+                                                <strong>{client_name}</strong> : {{ client.name }}
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary text-start variable-btn" 
+                                                    data-variable="{client_code}" data-value="{{ client.code_client }}">
+                                                <i data-feather="hash" style="width: 12px; height: 12px;"></i>
+                                                <strong>{client_code}</strong> : {{ client.code_client }}
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary text-start variable-btn" 
+                                                    data-variable="{client_email}" data-value="{{ client.email or 'Non renseigné' }}">
+                                                <i data-feather="mail" style="width: 12px; height: 12px;"></i>
+                                                <strong>{client_email}</strong> : {{ client.email or "Non renseigné" }}
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary text-start variable-btn" 
+                                                    data-variable="{client_phone}" data-value="{{ client.phone or 'Non renseigné' }}">
+                                                <i data-feather="phone" style="width: 12px; height: 12px;"></i>
+                                                <strong>{client_phone}</strong> : {{ client.phone or "Non renseigné" }}
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary text-start variable-btn" 
+                                                    data-variable="{client_payment_terms}" data-value="{{ client.payment_terms or 'Non renseigné' }}">
+                                                <i data-feather="credit-card" style="width: 12px; height: 12px;"></i>
+                                                <strong>{client_payment_terms}</strong> : {{ client.payment_terms or "Non renseigné" }}
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-warning text-start variable-btn" 
+                                                    data-variable="{client_total_outstanding}" data-value="{{ total_outstanding_formatted }}">
+                                                <i data-feather="dollar-sign" style="width: 12px; height: 12px;"></i>
+                                                <strong>{client_total_outstanding}</strong> : {{ total_outstanding_formatted }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-grid gap-1">
+                                            <button type="button" class="btn btn-sm btn-outline-success text-start variable-btn" 
+                                                    data-variable="{company_name}" data-value="{{ company.name }}">
+                                                <i data-feather="briefcase" style="width: 12px; height: 12px;"></i>
+                                                <strong>{company_name}</strong> : {{ company.name }}
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-success text-start variable-btn" 
+                                                    data-variable="{company_email}" data-value="{{ company.email or 'Non renseigné' }}">
+                                                <i data-feather="mail" style="width: 12px; height: 12px;"></i>
+                                                <strong>{company_email}</strong> : {{ company.email or "Non renseigné" }}
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-info text-start variable-btn" 
+                                                    data-variable="{today_date}" data-value="{{ today_date }}">
+                                                <i data-feather="calendar" style="width: 12px; height: 12px;"></i>
+                                                <strong>{today_date}</strong> : {{ today_date }}
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-info text-start variable-btn" 
+                                                    data-variable="{user_name}" data-value="{{ user_full_name }}">
+                                                <i data-feather="user-check" style="width: 12px; height: 12px;"></i>
+                                                <strong>{user_name}</strong> : {{ user_full_name }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <small class="text-muted d-block mt-2">
+                                    <i data-feather="info" style="width: 14px; height: 14px;"></i>
+                                    Cliquez sur une variable pour l'insérer avec sa valeur réelle dans le contenu
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div id="email_editor_container">
+                            <div id="email_editor" style="height: 250px;"></div>
+                        </div>
+                        <textarea class="form-control" id="email_content" name="content" rows="8" required style="display: none;"></textarea>
+                    </div>
+
+                    <!-- Attachments -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i data-feather="paperclip" class="me-2"></i>
+                                Pièces jointes
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="email_attach_pdf" name="attach_pdf">
+                                        <label class="form-check-label" for="email_attach_pdf">
+                                            Relevé PDF
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="email_attach_excel" name="attach_excel">
+                                        <label class="form-check-label" for="email_attach_excel">
+                                            Liste des factures Excel
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="email_attachment_language" class="form-label small">Langue</label>
+                                    <select class="form-select form-select-sm" id="email_attachment_language" name="attachment_language">
+                                        <option value="fr">Français</option>
+                                        <option value="en">English</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            {% if client.is_parent %}
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="email_include_children" name="include_children">
+                                        <label class="form-check-label" for="email_include_children">
+                                            <i data-feather="users" class="me-1" style="width: 14px; height: 14px;"></i>
+                                            Inclure les enfants
+                                            <i data-feather="info" class="ms-1 text-info" style="width: 14px; height: 14px; cursor: help;" 
+                                               data-bs-toggle="tooltip" data-bs-placement="top" 
+                                               title="Les pièces jointes (PDF, Excel) incluront les factures et montants du client parent ET de tous ses clients enfants"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if has_accounting_connection and accounting_system_type in ['quickbooks', 'xero', 'odoo', 'business_central'] %}
+                            <div class="row mb-3" id="invoiceCopiesSection">
+                                <div class="col-md-12">
+                                    <p class="small text-muted mb-2 fw-semibold">
+                                        <i data-feather="file-text" style="width:13px;height:13px;" class="me-1"></i>Copies de factures
+                                    </p>
+                                    <div class="input-group input-group-sm mb-2">
+                                        <input type="text" id="invoiceSearchInput" class="form-control form-control-sm"
+                                               placeholder="Rechercher par numéro de facture…" autocomplete="off">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" id="invoiceSearchBtn">
+                                            <i data-feather="search" style="width:13px;height:13px;"></i>
+                                        </button>
+                                    </div>
+                                    <ul id="invoiceSuggestList" class="list-group list-group-flush small mb-2" style="display:none; max-height:160px; overflow-y:auto; border:1px solid #dee2e6; border-radius:4px;"></ul>
+                                    <div id="selectedInvoicesList" class="d-flex flex-wrap gap-1 mb-2"></div>
+                                    <button type="button" id="prefetchInvoicesBtn" class="btn btn-sm btn-outline-primary d-none">
+                                        <span id="prefetchSpinner" class="spinner-border spinner-border-sm me-1 d-none"></span>
+                                        <i data-feather="download-cloud" style="width:13px;height:13px;" class="me-1" id="prefetchIcon"></i>Télécharger les copies sélectionnées
+                                    </button>
+                                    <div id="invoicePdfError" class="text-danger small mt-1" style="display:none;"></div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label for="email_external_files" class="form-label">Fichiers externes</label>
+                                    
+                                    <!-- Drag and Drop Zone -->
+                                    <div id="emailDropZone" class="drop-zone">
+                                        <div class="drop-zone-content">
+                                            <i data-feather="upload-cloud" style="width: 48px; height: 48px;" class="mb-3 text-primary"></i>
+                                            <p class="mb-2"><strong>Glissez-déposez des fichiers ici</strong></p>
+                                            <p class="text-muted small mb-2">ou</p>
+                                            <label for="email_external_files" class="btn btn-outline-primary btn-sm">
+                                                <i data-feather="folder" style="width: 14px; height: 14px;" class="me-1"></i>
+                                                Sélectionner des fichiers
+                                            </label>
+                                            <input type="file" class="d-none" id="email_external_files" name="external_files" multiple 
+                                                   accept=".pdf,.xlsx,.csv,.doc,.docx">
+                                        </div>
+                                        <div class="drop-zone-overlay">
+                                            <i data-feather="download" style="width: 48px; height: 48px;"></i>
+                                            <p class="mt-2"><strong>Déposez les fichiers ici</strong></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-text">
+                                        <small class="text-muted">
+                                            <i data-feather="info" style="width: 14px; height: 14px;"></i>
+                                            Formats acceptés : PDF, Excel, CSV, Word (20 Mo max au total)
+                                        </small>
+                                    </div>
+                                    
+                                    <div id="filesListDisplay" class="mt-3" style="display: none;">
+                                        <strong class="d-block mb-2">Fichiers sélectionnés :</strong>
+                                        <ul id="filesListItems" class="list-group small"></ul>
+                                        <div class="mt-2">
+                                            <small id="filesTotalSize" class="text-muted fw-bold"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reminder Date -->
+                    <div class="mb-3">
+                        <label for="email_reminder_date" class="form-label">
+                            <i data-feather="bell" class="me-1" style="width: 16px; height: 16px;"></i>
+                            Date de rappel (optionnel)
+                        </label>
+                        <input type="date" class="form-control" id="email_reminder_date" name="reminder_date" 
+                               min="{{ today }}" placeholder="Sélectionner une date de rappel">
+                        <small class="form-text text-muted">
+                            Si vous ajoutez une date, un rappel sera créé automatiquement après l'envoi du courriel.
+                        </small>
+                    </div>
+                    
+                    <div id="emailErrorDisplay" class="alert alert-danger" style="display: none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="sendEmailBtn">
+                        <i data-feather="send" class="me-1"></i>
+                        Envoyer le courriel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Success Toast for Email Sent -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 11000">
+    <div id="emailSuccessToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i data-feather="check-circle" class="me-2"></i>
+                <span id="emailSuccessMessage">Courriel envoyé avec succès!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<!-- Quill rich text editor -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<style>
+/* Drag and Drop Styles */
+.drop-zone {
+    position: relative;
+    border: 2px dashed #cbd5e0;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    text-align: center;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.drop-zone:hover {
+    border-color: #4299e1;
+    background-color: #ebf8ff;
+}
+
+.drop-zone.drag-over {
+    border-color: #3182ce;
+    background-color: #bee3f8;
+    border-style: solid;
+}
+
+.drop-zone-content {
+    pointer-events: none;
+}
+
+.drop-zone-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(66, 153, 225, 0.9);
+    border-radius: 0.5rem;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+    pointer-events: none;
+}
+
+.drop-zone.drag-over .drop-zone-overlay {
+    display: flex;
+}
+
+.drop-zone.drag-over .drop-zone-content {
+    opacity: 0;
+}
+
+#filesListItems .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+}
+
+#filesListItems .list-group-item .file-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+#filesListItems .list-group-item .file-icon {
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+}
+
+#filesListItems .list-group-item .file-details {
+    flex: 1;
+}
+
+#filesListItems .list-group-item .file-name {
+    font-weight: 500;
+    word-break: break-word;
+}
+
+#filesListItems .list-group-item .file-size {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+#filesListItems .list-group-item .btn-remove {
+    margin-left: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Quill rich text editor -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+<!-- Utility Functions -->
+<script src="{{ 'js/utils.js'|asset_url }}"></script>
+
+<!-- Drag and Drop Files -->
+<script src="{{ 'js/drag-drop-files.js'|asset_url }}"></script>
+
+<!-- DOMPurify for XSS protection -->
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
+<script>
+/**
+ * Sanitize HTML content using DOMPurify to prevent XSS attacks
+ * @param {string} html - The HTML content to sanitize
+ * @returns {string} - Sanitized HTML safe for innerHTML
+ */
+function sanitizeHTML(html) {
+    if (!html) return '';
+    
+    // Check if DOMPurify is available
+    if (typeof DOMPurify === 'undefined') {
+        console.error('DOMPurify is not loaded. Falling back to textContent.');
+        const div = document.createElement('div');
+        div.textContent = html;
+        return div.innerHTML;
+    }
+    
+    // Configure DOMPurify to allow common formatting tags and images
+    const config = {
+        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'b', 'i', 'ul', 'ol', 'li', 'a', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'pre', 'code', 'img', 'hr', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
+        ALLOWED_ATTR: ['href', 'target', 'style', 'class', 'src', 'alt', 'width', 'height', 'title', 'colspan', 'rowspan'],
+        ALLOW_DATA_ATTR: false,
+        SAFE_FOR_JQUERY: true
+    };
+    
+    return DOMPurify.sanitize(html, config);
+}
+
+// Notes functionality specific to this page
+function toggleNoteEdit(noteId) {
+    const noteDiv = document.getElementById('note-' + noteId);
+    if (noteDiv) {
+        const displayDiv = noteDiv.querySelector('.note-display');
+        const editDiv = noteDiv.querySelector('.note-edit');
+        
+        if (displayDiv && editDiv) {
+            displayDiv.style.display = displayDiv.style.display === 'none' ? 'block' : 'none';
+            editDiv.style.display = editDiv.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+}
+
+// Get CSRF token
+function getCSRFToken() {
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    return metaTag ? metaTag.getAttribute('content') : '';
+}
+
+// Edit note - dispatches to appropriate modal based on note type
+function editNote(noteId) {
+    fetch(`/notes/${noteId}`, {
+        headers: {
+            'X-CSRF-Token': getCSRFToken(),
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+        
+        // Check if this is a real sent email (has email_subject or email_body)
+        if (data.is_real_email) {
+            openEditEmailNoteModal(data);
+        } else {
+            openEditNormalNoteModal(data);
+        }
+    })
+    .catch(error => {
+        console.error('Error loading note for edit:', error);
+        alert('Erreur lors du chargement de la note');
+    });
+}
+
+// Open edit modal for normal notes (including manual email-type notes)
+function openEditNormalNoteModal(data) {
+    document.getElementById('editNoteId').value = data.id;
+    document.getElementById('editNoteType').value = data.note_type;
+    document.getElementById('editNoteDate').value = data.note_date;
+    document.getElementById('editNoteText').value = data.note_text || '';
+    
+    if (data.reminder_date) {
+        document.getElementById('editNoteReminder').value = data.reminder_date;
+    } else {
+        document.getElementById('editNoteReminder').value = '';
+    }
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('editNoteModal'));
+    modal.show();
+    
+    // Reinitialize feather icons in modal
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+}
+
+// Open hybrid modal for real sent emails (read-only email + editable note/reminder)
+function openEditEmailNoteModal(data) {
+    // Populate read-only email fields
+    document.getElementById('emailNoteClient').textContent = data.client_display || `${data.client_code} - ${data.client_name}`;
+    document.getElementById('emailNoteDate').textContent = data.created_at;
+    document.getElementById('emailNoteFrom').textContent = data.email_from || 'N/A';
+    document.getElementById('emailNoteTo').textContent = data.email_to || 'N/A';
+    document.getElementById('emailNoteSubject').textContent = data.email_subject || 'Sans sujet';
+    
+    // Populate email body (use HTML version if available, sanitized to prevent XSS)
+    const bodyDiv = document.getElementById('emailNoteBody');
+    if (data.email_body_html) {
+        bodyDiv.innerHTML = sanitizeHTML(data.email_body_html);
+    } else if (data.email_body) {
+        bodyDiv.textContent = data.email_body;
+    } else {
+        bodyDiv.textContent = 'Aucun contenu';
+    }
+    
+    // Populate attachments if present
+    const attachmentsContainer = document.getElementById('emailNoteAttachments');
+    const attachmentsList = document.getElementById('emailNoteAttachmentsList');
+    
+    if (data.attachments && data.attachments.length > 0) {
+        attachmentsList.innerHTML = '';
+        data.attachments.forEach(att => {
+            const li = document.createElement('li');
+            // Use filename or name (fallback for different storage formats)
+            const attachmentName = att.filename || att.name || 'Pièce jointe';
+            li.innerHTML = `<i data-feather="paperclip" class="me-1"></i>${attachmentName} <small class="text-muted">(${formatFileSize(att.size)})</small>`;
+            attachmentsList.appendChild(li);
+        });
+        attachmentsContainer.style.display = 'block';
+    } else {
+        attachmentsContainer.style.display = 'none';
+    }
+    
+    // Populate editable fields
+    document.getElementById('editEmailNoteId').value = data.id;
+    document.getElementById('emailNoteAdditional').value = data.note_text || '';
+    document.getElementById('emailNoteReminder').value = data.reminder_date || '';
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('editEmailNoteModal'));
+    modal.show();
+    
+    // Reinitialize feather icons in modal
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+}
+
+// Save email note (hybrid modal - only additional_note and reminder_date)
+function saveEmailNote() {
+    const noteId = document.getElementById('editEmailNoteId').value;
+    const formData = new FormData(document.getElementById('editEmailNoteForm'));
+    
+    if (!noteId) {
+        alert('ID de note manquant');
+        return;
+    }
+    
+    fetch(`/notes/${noteId}/edit`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-Token': getCSRFToken(),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editEmailNoteModal'));
+            modal.hide();
+            
+            // Reload notes section
+            const clientId = {{ client.id }};
+            const params = new URLSearchParams(window.location.search);
+            fetch(`/api/clients/${clientId}/notes?${params.toString()}`)
+                .then(response => response.text())
+                .then(html => {
+                    const notesContent = document.getElementById('notes-content');
+                    if (notesContent) {
+                        notesContent.innerHTML = html;
+                        // Reinitialize feather icons
+                        if (typeof feather !== 'undefined') {
+                            feather.replace();
+                        }
+                    }
+                });
+        } else {
+            alert(data.error || 'Erreur lors de la modification');
+        }
+    })
+    .catch(error => {
+        console.error('Error saving email note:', error);
+        alert('Erreur lors de l\'enregistrement');
+    });
+}
+
+// Add and edit note handlers
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle add note form submission
+    const addNoteForm = document.getElementById('addNoteForm');
+    if (addNoteForm) {
+        addNoteForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('/notes/new', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': getCSRFToken(),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addNoteModal'));
+                    modal.hide();
+                    
+                    // Reset form
+                    addNoteForm.reset();
+                    
+                    // Reload notes section
+                    const clientId = {{ client.id }};
+                    const params = new URLSearchParams(window.location.search);
+                    fetch(`/api/clients/${clientId}/notes?${params.toString()}`)
+                        .then(response => response.text())
+                        .then(html => {
+                            const notesContent = document.getElementById('notes-content');
+                            if (notesContent) {
+                                notesContent.innerHTML = html;
+                                // Reinitialize feather icons
+                                if (typeof feather !== 'undefined') {
+                                    feather.replace();
+                                }
+                            }
+                        });
+                } else {
+                    alert(data.error || 'Erreur lors de l\'ajout de la note');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding note:', error);
+                alert('Erreur lors de l\'ajout de la note');
+            });
+        });
+    }
+    
+    // Handle edit note form submission
+    const editNoteForm = document.getElementById('editNoteForm');
+    if (editNoteForm) {
+        editNoteForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const noteId = document.getElementById('editNoteId').value;
+            const formData = new FormData(this);
+            
+            fetch(`/notes/${noteId}/edit`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': getCSRFToken(),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editNoteModal'));
+                    modal.hide();
+                    
+                    // Reload notes section
+                    const clientId = {{ client.id }};
+                    const params = new URLSearchParams(window.location.search);
+                    fetch(`/api/clients/${clientId}/notes?${params.toString()}`)
+                        .then(response => response.text())
+                        .then(html => {
+                            const notesContent = document.getElementById('notes-content');
+                            if (notesContent) {
+                                notesContent.innerHTML = html;
+                                // Reinitialize feather icons
+                                if (typeof feather !== 'undefined') {
+                                    feather.replace();
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error reloading notes:', error);
+                        });
+                } else {
+                    alert(data.error || 'Erreur lors de la modification de la note');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving note:', error);
+                alert('Erreur lors de l\'enregistrement de la note');
+            });
+        });
+    }
+    
+    // Reset form when modal is closed
+    const addNoteModalElement = document.getElementById('addNoteModal');
+    if (addNoteModalElement) {
+        addNoteModalElement.addEventListener('hidden.bs.modal', function() {
+            const addNoteForm = document.getElementById('addNoteForm');
+            if (addNoteForm) {
+                addNoteForm.reset();
+            }
+        });
+    }
+    
+    // Reset edit note form when modal is closed
+    const editNoteModalElement = document.getElementById('editNoteModal');
+    if (editNoteModalElement) {
+        editNoteModalElement.addEventListener('hidden.bs.modal', function() {
+            const editNoteForm = document.getElementById('editNoteForm');
+            if (editNoteForm) {
+                editNoteForm.reset();
+            }
+        });
+    }
+});
+
+// Contact functionality - using separate edit page like notes
+
+// Auto-open addNote modal if URL contains #addNote anchor
+if (window.location.hash === '#addNote') {
+    const addNoteModalElement = document.getElementById('addNoteModal');
+    if (addNoteModalElement) {
+        const addNoteModal = new bootstrap.Modal(addNoteModalElement);
+        addNoteModal.show();
+        // Clean URL after opening modal
+        history.replaceState(null, null, window.location.pathname);
+    }
+}
+
+// Confirm single invoice deletion
+function confirmSingleDelete(invoiceNumber) {
+    return confirm('Êtes-vous sûr de vouloir supprimer la facture "' + invoiceNumber + '" ?\n\nCette action est irréversible.');
+}
+
+// ========== EMAIL MODAL FUNCTIONALITY - GLOBAL CONTROLLER ==========
+(function() {
+    'use strict';
+    
+    // Guard: Initialize only once
+    if (window.emailModalController) {
+        console.log('[Email Modal] Controller already initialized, skipping');
+        return;
+    }
+    
+    console.log('[Email Modal] Initializing global controller');
+    
+    // Global state
+    const controller = {
+        modal: null,
+        modalElement: null,
+        quillEditor: null,
+        templates: [],
+        contacts: [],
+        clientId: {{ client.id|tojson }},
+        initialized: false
+    };
+    
+    // Helper: Get CSRF token
+    function getCsrfToken() {
+        const metaTag = document.querySelector('meta[name="csrf-token"]');
+        return metaTag ? metaTag.getAttribute('content') : '';
+    }
+    
+    // Helper: Fetch with proper headers
+    function fetchJSON(url) {
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCsrfToken()
+            },
+            credentials: 'same-origin'
+        }).then(response => {
+            console.log(`[Email Modal] Fetch ${url} - Status:`, response.status, 'Content-Type:', response.headers.get('Content-Type'));
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        });
+    }
+    
+    // Load email templates
+    function loadEmailTemplates() {
+        console.log('[Email Modal] Loading templates...');
+        fetchJSON('/emails/api/templates/list')
+            .then(data => {
+                controller.templates = data.templates || [];
+                console.log('[Email Modal] Templates loaded:', controller.templates.length);
+                
+                const select = document.getElementById('email_template_id');
+                select.innerHTML = '<option value="">Sélectionner un modèle...</option>';
+                controller.templates.forEach(template => {
+                    const option = document.createElement('option');
+                    option.value = template.id;
+                    option.textContent = template.name;
+                    select.appendChild(option);
+                });
+            })
+            .catch(err => {
+                console.error('[Email Modal] Error loading templates:', err);
+                alert('Erreur lors du chargement des modèles: ' + err.message);
+            });
+    }
+    
+    // Load client contacts
+    function loadEmailContacts() {
+        console.log('[Email Modal] Loading contacts for client:', controller.clientId);
+        fetchJSON(`/notes/api/client-contacts/${controller.clientId}`)
+            .then(data => {
+                controller.contacts = data.contacts || [];
+                console.log('[Email Modal] Contacts loaded:', controller.contacts.length);
+                populateContactDropdowns();
+            })
+            .catch(err => {
+                console.error('[Email Modal] Error loading contacts:', err);
+                alert('Erreur lors du chargement des contacts: ' + err.message);
+            });
+    }
+    
+    // Initialize Quill editor (called once modal is shown)
+    function initializeQuill() {
+        if (controller.quillEditor) {
+            console.log('[Email Modal] Quill already initialized');
+            return;
+        }
+        
+        console.log('[Email Modal] Initializing Quill editor...');
+        setTimeout(() => {
+            try {
+                controller.quillEditor = new Quill('#email_editor', {
+                    theme: 'snow',
+                    placeholder: 'Rédigez le contenu de votre courriel...',
+                    modules: {
+                        toolbar: [
+                            [{ 'header': [1, 2, 3, false] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'color': [] }, { 'background': [] }],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            [{ 'align': [] }],
+                            ['blockquote', 'code-block'],
+                            ['link'],
+                            ['clean']
+                        ]
+                    }
+                });
+                
+                controller.quillEditor.on('text-change', function() {
+                    document.getElementById('email_content').value = controller.quillEditor.root.innerHTML;
+                });
+                
+                console.log('[Email Modal] Quill initialized successfully');
+            } catch (error) {
+                console.error('[Email Modal] Error initializing Quill:', error);
+            }
+        }, 100);
+    }
+    
+    // Initialize modal and event listeners
+    function initialize() {
+        controller.modalElement = document.getElementById('sendEmailModal');
+        if (!controller.modalElement) {
+            console.log('[Email Modal] Modal element not found, skipping');
+            return;
+        }
+        
+        controller.modal = new bootstrap.Modal(controller.modalElement);
+        
+        // Event: Modal shown (after animation complete)
+        controller.modalElement.addEventListener('shown.bs.modal', function() {
+            console.log('[Email Modal] Modal shown - loading data and initializing Quill');
+            initializeQuill();
+            loadEmailTemplates();
+            loadEmailContacts();
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+            // Initialize Bootstrap tooltips
+            const tooltipTriggerList = [].slice.call(controller.modalElement.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+        
+        // Event: Modal hidden (after closing) - Reset everything
+        controller.modalElement.addEventListener('hidden.bs.modal', function() {
+            console.log('[Email Modal] Modal hidden - resetting form');
+            
+            // Reset form fields
+            const form = document.getElementById('sendEmailForm');
+            if (form) {
+                form.reset();
+            }
+            
+            // Clear text fields explicitly
+            const emailTo = document.getElementById('email_to');
+            const emailCc = document.getElementById('email_cc');
+            const emailSubject = document.getElementById('email_subject');
+            if (emailTo) emailTo.value = '';
+            if (emailCc) emailCc.value = '';
+            if (emailSubject) emailSubject.value = '';
+            
+            // Clear Quill editor content
+            if (controller.quillEditor) {
+                controller.quillEditor.setText('');
+                document.getElementById('email_content').value = '';
+            }
+            
+            // Clear file input and display
+            const fileInput = document.getElementById('email_external_files');
+            if (fileInput) {
+                fileInput.value = '';
+            }
+            const filesDisplay = document.getElementById('filesListDisplay');
+            if (filesDisplay) {
+                filesDisplay.style.display = 'none';
+            }
+            const filesList = document.getElementById('filesListItems');
+            if (filesList) {
+                filesList.innerHTML = '';
+            }
+            
+            // Reset checkboxes to default state (correct IDs)
+            document.getElementById('email_attach_pdf')?.setAttribute('checked', 'checked');
+            document.getElementById('email_attach_excel')?.removeAttribute('checked');
+            document.getElementById('email_include_children')?.removeAttribute('checked');
+            document.getElementById('email_high_importance')?.removeAttribute('checked');
+            document.getElementById('email_read_receipt')?.removeAttribute('checked');
+            document.getElementById('email_delivery_receipt')?.removeAttribute('checked');
+            
+            // Reset template selector
+            const templateSelect = document.getElementById('email_template_id');
+            if (templateSelect) {
+                templateSelect.value = '';
+            }
+            
+            // Hide error display
+            const errorDisplay = document.getElementById('emailErrorDisplay');
+            if (errorDisplay) {
+                errorDisplay.style.display = 'none';
+            }
+            
+            console.log('[Email Modal] Reset complete');
+        });
+        
+        // Template selection handler (idempotent)
+        const templateSelect = document.getElementById('email_template_id');
+        if (templateSelect && !templateSelect.dataset.listenerAttached) {
+            templateSelect.addEventListener('change', function() {
+                const templateId = this.value;
+                if (templateId) {
+                    const template = controller.templates.find(t => t.id == templateId);
+                    if (template && controller.quillEditor) {
+                        document.getElementById('email_subject').value = template.subject || '';
+                        controller.quillEditor.root.innerHTML = template.content || '';
+                        document.getElementById('email_content').value = template.content || '';
+                    }
+                }
+            });
+            templateSelect.dataset.listenerAttached = 'true';
+        }
+        
+        // Variable buttons (idempotent)
+        document.querySelectorAll('.variable-btn').forEach(btn => {
+            if (!btn.dataset.listenerAttached) {
+                btn.addEventListener('click', function() {
+                    const variable = this.getAttribute('data-variable');
+                    const realValue = this.getAttribute('data-value');
+                    
+                    if (controller.quillEditor) {
+                        const range = controller.quillEditor.getSelection();
+                        const index = range ? range.index : controller.quillEditor.getLength();
+                        // Insert real value instead of placeholder
+                        controller.quillEditor.insertText(index, realValue || variable);
+                        controller.quillEditor.focus();
+                    }
+                });
+                btn.dataset.listenerAttached = 'true';
+            }
+        });
+        
+        // Toggle variables panel (idempotent)
+        const toggleBtn = document.getElementById('toggleVariables');
+        if (toggleBtn && !toggleBtn.dataset.listenerAttached) {
+            toggleBtn.addEventListener('click', function() {
+                const panel = document.getElementById('variablesPanel');
+                const icon = this.querySelector('i');
+                if (panel.style.display === 'none') {
+                    panel.style.display = 'block';
+                    icon.setAttribute('data-feather', 'chevron-up');
+                } else {
+                    panel.style.display = 'none';
+                    icon.setAttribute('data-feather', 'chevron-down');
+                }
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            });
+            toggleBtn.dataset.listenerAttached = 'true';
+        }
+        
+        // Initialize drag and drop for files (idempotent)
+        const dropZone = document.getElementById('emailDropZone');
+        if (dropZone && !dropZone.dataset.dragDropInitialized) {
+            const emailDropZoneAPI = initializeDragAndDrop(
+                'emailDropZone',
+                'email_external_files',
+                'filesListDisplay',
+                'filesListItems',
+                'filesTotalSize'
+            );
+            
+            // Store API on the modal (not global)
+            const sendEmailModal = document.getElementById('sendEmailModal');
+            if (sendEmailModal && emailDropZoneAPI) {
+                sendEmailModal._dragDropAPI = emailDropZoneAPI;
+            }
+            
+            dropZone.dataset.dragDropInitialized = 'true';
+        }
+        
+        // Form submission (idempotent)
+        const form = document.getElementById('sendEmailForm');
+        if (form && !form.dataset.listenerAttached) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (controller.quillEditor) {
+                    document.getElementById('email_content').value = controller.quillEditor.root.innerHTML;
+                }
+                sendEmailAjax();
+            });
+            form.dataset.listenerAttached = 'true';
+        }
+        
+        controller.initialized = true;
+        console.log('[Email Modal] Controller initialized successfully');
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialize);
+    } else {
+        initialize();
+    }
+    
+    // Export controller
+    window.emailModalController = controller;
+})();
+
+// ========== HELPER FUNCTIONS FOR EMAIL MODAL ==========
+
+function populateContactDropdowns() {
+    const controller = window.emailModalController;
+    if (!controller) return;
+    
+    const toDropdown = document.getElementById('toContactsDropdown');
+    const ccDropdown = document.getElementById('ccContactsDropdown');
+    
+    toDropdown.innerHTML = '';
+    ccDropdown.innerHTML = '';
+    
+    controller.contacts.forEach(contact => {
+        const toItem = createContactDropdownItem(contact, 'to');
+        const ccItem = createContactDropdownItem(contact, 'cc');
+        toDropdown.appendChild(toItem);
+        ccDropdown.appendChild(ccItem);
+    });
+}
+
+function createContactDropdownItem(contact, fieldType) {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.className = 'dropdown-item';
+    a.href = '#';
+    
+    // Language badge
+    const language = (contact.language || 'fr').toUpperCase();
+    const badgeClass = language === 'FR' ? 'success' : 'info';
+    const languageBadge = `<span class="badge bg-${badgeClass} ms-2">${language}</span>`;
+    
+    a.innerHTML = `<div class="fw-bold">${contact.full_name}${languageBadge}</div><small class="text-muted">${contact.email}</small>`;
+    a.addEventListener('click', function(e) {
+        e.preventDefault();
+        addEmailToField(fieldType === 'to' ? 'email_to' : 'email_cc', contact.email);
+    });
+    li.appendChild(a);
+    return li;
+}
+
+function addEmailToField(fieldId, email) {
+    const field = document.getElementById(fieldId);
+    const currentValue = field.value.trim();
+    
+    if (currentValue === '') {
+        field.value = email;
+    } else {
+        const emails = currentValue.split(';').map(e => e.trim());
+        if (!emails.includes(email)) {
+            field.value = currentValue + '; ' + email;
+        }
+    }
+}
+
+// displaySelectedFiles removed - now handled by drag-drop-files.js
+
+// ---- Copies de factures (PDF) ----
+(function() {
+    const CLIENT_ID = {{ client.id|tojson }};
+    let addedInvoices = [];        // [{id, invoice_number}]
+    let downloadedIds = new Set(); // IDs déjà en cache serveur
+
+    function renderAddedInvoices() {
+        const container = document.getElementById('selectedInvoicesList');
+        const btn = document.getElementById('prefetchInvoicesBtn');
+        const errDiv = document.getElementById('invoicePdfError');
+        if (!container) return;
+        container.innerHTML = '';
+        addedInvoices.forEach(inv => {
+            const isOk = downloadedIds.has(inv.id);
+            const badge = document.createElement('span');
+            badge.className = 'badge rounded-pill d-inline-flex align-items-center gap-1 '
+                + (isOk ? 'bg-success-subtle text-success-emphasis border border-success-subtle'
+                         : 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle');
+            badge.innerHTML = (isOk ? '<i data-feather="check-circle" style="width:11px;height:11px;"></i>' : '<i data-feather="clock" style="width:11px;height:11px;"></i>')
+                + ` ${inv.invoice_number} `
+                + `<span style="cursor:pointer;" data-id="${inv.id}">&times;</span>`;
+            badge.querySelector('[data-id]').addEventListener('click', function() {
+                const rid = parseInt(this.dataset.id);
+                addedInvoices = addedInvoices.filter(x => x.id !== rid);
+                downloadedIds.delete(rid);
+                renderAddedInvoices();
+            });
+            container.appendChild(badge);
+        });
+        feather.replace();
+        if (btn) {
+            btn.classList.toggle('d-none', addedInvoices.length === 0);
+        }
+        if (errDiv) errDiv.style.display = 'none';
+    }
+
+    function addInvoice(inv) {
+        if (addedInvoices.find(x => x.id === inv.id)) return;
+        addedInvoices.push({id: inv.id, invoice_number: inv.invoice_number});
+        renderAddedInvoices();
+        const btn = document.getElementById('prefetchInvoicesBtn');
+        if (btn) btn.classList.remove('d-none');
+    }
+
+    function setupInvoiceSearch() {
+        const input = document.getElementById('invoiceSearchInput');
+        const btn = document.getElementById('invoiceSearchBtn');
+        const list = document.getElementById('invoiceSuggestList');
+        if (!input || !list) return;
+
+        let searchTimeout;
+        function doSearch() {
+            const q = input.value.trim();
+            fetch(`/invoices/api/search?client_id=${CLIENT_ID}&q=${encodeURIComponent(q)}`, {
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (!Array.isArray(data)) { list.style.display = 'none'; return; }
+                list.innerHTML = '';
+                if (data.length === 0) { list.style.display = 'none'; return; }
+                data.forEach(inv => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item list-group-item-action py-1 px-2 small' + (inv.is_paid ? ' text-muted' : '');
+                    li.style.cursor = 'pointer';
+                    li.textContent = inv.invoice_number + (inv.is_paid ? ' (payée)' : '');
+                    li.addEventListener('click', () => {
+                        addInvoice(inv);
+                        input.value = '';
+                        list.style.display = 'none';
+                    });
+                    list.appendChild(li);
+                });
+                list.style.display = 'block';
+            })
+            .catch(() => { list.style.display = 'none'; });
+        }
+
+        input.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(doSearch, 250);
+        });
+        if (btn) btn.addEventListener('click', doSearch);
+        document.addEventListener('click', (e) => {
+            if (!input.contains(e.target) && !list.contains(e.target)) list.style.display = 'none';
+        });
+    }
+
+    function setupPrefetchBtn() {
+        const btn = document.getElementById('prefetchInvoicesBtn');
+        const spinner = document.getElementById('prefetchSpinner');
+        const icon = document.getElementById('prefetchIcon');
+        const errDiv = document.getElementById('invoicePdfError');
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+            const pending = addedInvoices.filter(x => !downloadedIds.has(x.id));
+            if (pending.length === 0) return;
+            btn.disabled = true;
+            if (spinner) spinner.classList.remove('d-none');
+            if (icon) icon.style.display = 'none';
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            fetch('/invoices/api/prefetch-pdfs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({invoice_ids: pending.map(x => x.id)})
+            })
+            .then(r => r.json())
+            .then(data => {
+                const results = data.results || {};
+                const errors = [];
+                Object.entries(results).forEach(([id, res]) => {
+                    if (res.success) downloadedIds.add(parseInt(id));
+                    else errors.push(`${id}: ${res.error}`);
+                });
+                renderAddedInvoices();
+                if (errors.length && errDiv) {
+                    errDiv.textContent = 'Erreur(s) : ' + errors.join('; ');
+                    errDiv.style.display = 'block';
+                }
+            })
+            .catch(() => {
+                if (errDiv) { errDiv.textContent = 'Erreur de connexion.'; errDiv.style.display = 'block'; }
+            })
+            .finally(() => {
+                btn.disabled = false;
+                if (spinner) spinner.classList.add('d-none');
+                if (icon) icon.style.display = '';
+            });
+        });
+    }
+
+    function resetInvoicePdfState() {
+        addedInvoices = [];
+        downloadedIds = new Set();
+        const container = document.getElementById('selectedInvoicesList');
+        if (container) container.innerHTML = '';
+        const btn = document.getElementById('prefetchInvoicesBtn');
+        if (btn) btn.classList.add('d-none');
+        const errDiv = document.getElementById('invoicePdfError');
+        if (errDiv) errDiv.style.display = 'none';
+        const list = document.getElementById('invoiceSuggestList');
+        if (list) list.style.display = 'none';
+        const input = document.getElementById('invoiceSearchInput');
+        if (input) input.value = '';
+    }
+
+    window._invoicePdfState = {
+        getAddedInvoices: () => addedInvoices,
+        getDownloadedIds: () => downloadedIds,
+        reset: resetInvoicePdfState
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        setupInvoiceSearch();
+        setupPrefetchBtn();
+
+        const emailModal = document.getElementById('sendEmailModal');
+        if (emailModal) {
+            emailModal.addEventListener('hidden.bs.modal', resetInvoicePdfState);
+        }
+    });
+})();
+// ---- fin Copies de factures ----
+
+function sendEmailAjax() {
+    const controller = window.emailModalController;
+    if (!controller) return;
+    
+    const form = document.getElementById('sendEmailForm');
+    const formData = new FormData(form);
+    const submitBtn = document.getElementById('sendEmailBtn');
+    const errorDisplay = document.getElementById('emailErrorDisplay');
+
+    // Validation : toutes les factures ajoutées doivent être téléchargées
+    if (window._invoicePdfState) {
+        const added = window._invoicePdfState.getAddedInvoices();
+        const downloaded = window._invoicePdfState.getDownloadedIds();
+        const pending = added.filter(x => !downloaded.has(x.id));
+        if (pending.length > 0) {
+            errorDisplay.textContent = 'Veuillez télécharger les copies de factures avant d\'envoyer le courriel.';
+            errorDisplay.style.display = 'block';
+            return;
+        }
+        // Ajouter les IDs des factures au FormData
+        downloaded.forEach(id => formData.append('invoice_pdf_ids', id));
+    }
+    
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Envoi en cours...';
+    errorDisplay.style.display = 'none';
+    
+    fetch(`/emails/send_ajax/${controller.clientId}`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': controller.modal._element ? controller.modal._element.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '' : ''
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Close modal
+            controller.modal.hide();
+            
+            // Show success toast
+            const toast = new bootstrap.Toast(document.getElementById('emailSuccessToast'), {
+                autohide: true,
+                delay: 3000
+            });
+            document.getElementById('emailSuccessMessage').textContent = data.message || 'Courriel envoyé avec succès!';
+            toast.show();
+            
+            // Reset form
+            form.reset();
+            
+            // Reset drag-and-drop files
+            const sendEmailModal = document.getElementById('sendEmailModal');
+            if (sendEmailModal && sendEmailModal._dragDropAPI) {
+                sendEmailModal._dragDropAPI.reset();
+            }
+            
+            // Reload notes section
+            setTimeout(() => {
+                const notesContent = document.getElementById('notes-content');
+                if (notesContent) {
+                    const params = new URLSearchParams();
+                    params.set('view_filter', '{{ view_filter }}');
+                    fetch(`/api/clients/${controller.clientId}/notes?${params.toString()}`)
+                        .then(response => response.text())
+                        .then(html => {
+                            notesContent.innerHTML = html;
+                            feather.replace();
+                        });
+                }
+            }, 500);
+        } else {
+            errorDisplay.textContent = data.error || 'Erreur lors de l\'envoi du courriel';
+            if (data.errors) {
+                errorDisplay.innerHTML += '<ul class="mb-0 mt-2">' + data.errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
+            }
+            errorDisplay.style.display = 'block';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        errorDisplay.textContent = 'Erreur de connexion lors de l\'envoi du courriel';
+        errorDisplay.style.display = 'block';
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i data-feather="send" class="me-1"></i>Envoyer le courriel';
+        feather.replace();
+    });
+}
+
+// ========== END EMAIL MODAL FUNCTIONALITY ==========
+
+// AJAX Invoice Search and Pagination
+function loadInvoices(searchTerm, pageNum) {
+    const clientId = {{ client.id|tojson }};
+    const viewFilter = '{{ view_filter }}';
+    const dateFrom = '{{ date_from if date_from else '' }}';
+    const dateTo = '{{ date_to if date_to else '' }}';
+    const perPage = {{ per_page|default(20)|tojson }};
+    
+    // Build URL with all parameters
+    const params = new URLSearchParams({
+        view_filter: viewFilter,
+        per_page: perPage
+    });
+    
+    if (searchTerm) params.append('search_invoice', searchTerm);
+    if (pageNum) params.append('page', pageNum);
+    if (dateFrom) params.append('date_from', dateFrom);
+    if (dateTo) params.append('date_to', dateTo);
+    
+    const url = `/api/clients/${clientId}/invoices?${params.toString()}`;
+    
+    // Show loading state
+    const container = document.getElementById('invoiceTableContainer');
+    container.style.opacity = '0.5';
+    container.style.pointerEvents = 'none';
+    
+    // Fetch new content
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Erreur réseau');
+            return response.text();
+        })
+        .then(html => {
+            container.innerHTML = html;
+            container.style.opacity = '1';
+            container.style.pointerEvents = 'auto';
+            
+            // Reinitialize Feather icons
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+            
+            // Reattach pagination click handlers
+            attachPaginationHandlers();
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            container.style.opacity = '1';
+            container.style.pointerEvents = 'auto';
+            alert('Erreur lors du chargement des factures. Veuillez réessayer.');
+        });
+}
+
+// Attach click handlers to pagination links
+function attachPaginationHandlers() {
+    const paginationLinks = document.querySelectorAll('.pagination-link');
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const pageNum = this.getAttribute('data-page');
+            const searchInput = document.querySelector('input[name="search_invoice"]');
+            const searchTerm = searchInput ? searchInput.value : '';
+            loadInvoices(searchTerm, pageNum);
+        });
+    });
+}
+
+// Synchroniser les courriels du client depuis Outlook
+function syncClientEmails(clientId) {
+    const btn = document.getElementById('syncEmailsBtn');
+    const syncText = btn.querySelector('.sync-text');
+    const spinner = btn.querySelector('.spinner-border');
+    const icon = btn.querySelector('[data-feather="refresh-cw"]');
+    
+    // Show loading state
+    btn.disabled = true;
+    syncText.textContent = 'Synchronisation...';
+    spinner.classList.remove('d-none');
+    if (icon) icon.style.display = 'none';
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                      document.querySelector('input[name="csrf_token"]')?.value;
+    
+    fetch(`/emails/api/sync/client/${clientId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        btn.disabled = false;
+        syncText.textContent = 'Actualiser échanges';
+        spinner.classList.add('d-none');
+        if (icon) icon.style.display = '';
+        
+        if (data.success) {
+            // Show success message
+            let message = `Synchronisation terminée: ${data.synced_count || 0} nouveau(x) message(s) récupéré(s)`;
+            if (data.conversations_processed) {
+                message += ` (${data.conversations_processed} conversation(s) analysée(s))`;
+            }
+            showToast(message, 'success');
+            
+            // Reload notes section via lazy load
+            reloadNotesSection();
+        } else {
+            // Show error message
+            let errorMsg = data.error || 'Erreur lors de la synchronisation';
+            if (data.error === 'oauth_required') {
+                errorMsg = 'Veuillez connecter votre compte Outlook dans les paramètres du profil pour utiliser cette fonctionnalité.';
+            }
+            showToast(errorMsg, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Sync error:', error);
+        btn.disabled = false;
+        syncText.textContent = 'Actualiser échanges';
+        spinner.classList.add('d-none');
+        if (icon) icon.style.display = '';
+        showToast('Erreur de connexion lors de la synchronisation', 'error');
+    });
+}
+
+// Delete note via AJAX (no page reload)
+function deleteNoteAjax(noteId, clientId) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) {
+        return;
+    }
+    
+    fetch(`/notes/${noteId}/delete`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-Token': getCSRFToken(),
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Note supprimée avec succès', 'success');
+            reloadNotesSection();
+        } else {
+            showToast(data.error || 'Erreur lors de la suppression', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting note:', error);
+        showToast('Erreur lors de la suppression de la note', 'error');
+    });
+}
+
+// Toggle conversation accordion for client detail page
+function toggleClientConversation(noteId) {
+    const collapseEl = document.getElementById('conv-' + noteId);
+    const chevron = document.querySelector('.conv-chevron-' + noteId);
+    if (!collapseEl) return;
+    
+    // Toggle using Bootstrap Collapse
+    const collapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+    const isCurrentlyShown = collapseEl.classList.contains('show');
+    collapse.toggle();
+    
+    // Update chevron immediately (more responsive feel)
+    if (chevron) {
+        chevron.style.transform = isCurrentlyShown ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+    
+    // Reinit feather icons after expand
+    if (!isCurrentlyShown) {
+        setTimeout(function() {
+            if (typeof feather !== 'undefined') feather.replace();
+        }, 150);
+    }
+}
+
+// Reload the notes section after sync or deletion
+function reloadNotesSection() {
+    const notesContent = document.getElementById('notes-content');
+    if (!notesContent) return;
+    
+    // Show loading spinner
+    notesContent.innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+            <p class="text-muted mt-2">Actualisation des notes...</p>
+        </div>
+    `;
+    
+    const clientId = {{ client.id|tojson }};
+    const viewFilter = '{{ view_filter }}';
+    const dateFrom = '{{ date_from or '' }}';
+    const dateTo = '{{ date_to or '' }}';
+    
+    const params = new URLSearchParams();
+    params.set('view_filter', viewFilter);
+    if (dateFrom) params.set('date_from', dateFrom);
+    if (dateTo) params.set('date_to', dateTo);
+    
+    fetch(`/api/clients/${clientId}/notes?${params.toString()}`)
+        .then(response => response.text())
+        .then(html => {
+            notesContent.innerHTML = html;
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        })
+        .catch(error => {
+            console.error('Error reloading notes:', error);
+            notesContent.innerHTML = '<div class="alert alert-danger">Erreur lors du rechargement des notes</div>';
+        });
+}
+
+// Simple toast notification
+function showToast(message, type) {
+    // Check if Bootstrap toast exists
+    let toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toastContainer';
+        toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+        toastContainer.style.zIndex = '11';
+        document.body.appendChild(toastContainer);
+    }
+    
+    const toastId = 'toast-' + Date.now();
+    const bgClass = type === 'success' ? 'bg-success' : (type === 'error' ? 'bg-danger' : 'bg-info');
+    
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    
+    const toastEl = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+    toast.show();
+    
+    // Remove from DOM after hidden
+    toastEl.addEventListener('hidden.bs.toast', function() {
+        toastEl.remove();
+    });
+}
+
+// Initialization
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Feather icons
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+    
+    // Set client ID for global functions
+    if (typeof window.setCurrentClientId === 'function') {
+        window.setCurrentClientId({{ client.id|default('null') }});
+    }
+    
+    // Attach AJAX handlers to invoice search form
+    const searchForm = document.getElementById('invoiceSearchForm');
+    
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchInput = this.querySelector('input[name="search_invoice"]');
+            const searchTerm = searchInput ? searchInput.value : '';
+            loadInvoices(searchTerm, 1); // Always start at page 1 for new search
+        });
+        
+        // Clear search button handler (progressive enhancement)
+        const clearBtn = document.getElementById('clearSearchBtn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function(e) {
+                e.preventDefault(); // Only prevent default when JS is enabled
+                const searchInput = searchForm.querySelector('input[name="search_invoice"]');
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+                loadInvoices('', 1); // Reload without search
+            });
+        }
+        
+        // Initial pagination handlers
+        attachPaginationHandlers();
+    }
+    
+    // Refresh Feather icons after all content is loaded
+    setTimeout(function() {
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+    }, 100);
+});
+</script>
+{% endblock %}

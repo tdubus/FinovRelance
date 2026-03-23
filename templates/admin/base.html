@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}Panel Administrateur - FinovRelance{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom Admin Styles -->
+    <style>
+        :root {
+            --admin-primary: #6B5DC0;
+            --admin-secondary: #8475EC;
+            --admin-success: #10b981;
+            --admin-warning: #f59e0b;
+            --admin-danger: #ef4444;
+            --admin-dark: #1f2937;
+            --admin-light: #f8fafc;
+        }
+        
+        body {
+            background-color: var(--admin-light);
+            font-family: 'Onest', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .admin-sidebar {
+            background: linear-gradient(180deg, var(--admin-primary) 0%, var(--admin-dark) 100%);
+            min-height: 100vh;
+            color: white;
+            position: fixed;
+            width: 280px;
+            z-index: 1000;
+            padding: 0;
+        }
+        
+        .admin-sidebar .navbar-brand {
+            color: white !important;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .admin-nav {
+            padding: 1rem 0;
+        }
+        
+        .admin-nav .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            padding: 0.75rem 1.5rem;
+            margin: 0.25rem 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        
+        .admin-nav .nav-link:hover,
+        .admin-nav .nav-link.active {
+            background-color: rgba(255,255,255,0.1);
+            color: white !important;
+            transform: translateX(5px);
+        }
+        
+        .admin-nav .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .admin-content {
+            margin-left: 280px;
+            padding: 2rem;
+        }
+        
+        .admin-header {
+            background: white;
+            padding: 0.5rem 1rem;
+            margin-left: 280px;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .admin-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+        
+        .admin-card-header {
+            background: var(--admin-light);
+            padding: 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .admin-card-title {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--admin-dark);
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--admin-secondary);
+            transition: transform 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .stat-success { border-left-color: #10b981; }
+        .stat-warning { border-left-color: #f59e0b; }
+        .stat-danger { border-left-color: #ef4444; }
+        .stat-info { border-left-color: #8475EC; }
+        .stat-secondary { border-left-color: #6b7280; }
+        .stat-dark { border-left-color: #374151; }
+        .stat-primary { border-left-color: var(--admin-primary); }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--admin-dark);
+            margin: 0;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .btn-admin-primary {
+            background-color: var(--admin-primary);
+            border-color: var(--admin-primary);
+            color: white;
+        }
+        
+        .btn-admin-primary:hover {
+            background-color: var(--admin-dark);
+            border-color: var(--admin-dark);
+            color: white;
+        }
+        
+        .table-admin {
+            background: white;
+        }
+        
+        .table-admin th {
+            background-color: var(--admin-light);
+            border-bottom: 2px solid #e5e7eb;
+            font-weight: 600;
+            color: var(--admin-dark);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .badge-plan-free {
+            background-color: var(--admin-success);
+        }
+        
+        .badge-plan-paid {
+            background-color: var(--admin-secondary);
+        }
+        
+        .badge-status-active {
+            background-color: var(--admin-success);
+        }
+        
+        .badge-status-inactive {
+            background-color: var(--admin-danger);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--admin-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        @media (max-width: 1400px) {
+            .admin-header {
+                padding: 0.4rem 0.75rem;
+            }
+            
+            .admin-header h5 {
+                font-size: 0.9rem;
+                margin-bottom: 0;
+            }
+            
+            .admin-header small {
+                font-size: 0.7rem;
+            }
+            
+            .user-avatar {
+                width: 26px;
+                height: 26px;
+                font-size: 0.7rem;
+            }
+            
+            .admin-sidebar .navbar-brand {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.75rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 100%;
+                position: relative;
+            }
+            
+            .admin-content,
+            .admin-header {
+                margin-left: 0;
+            }
+            
+            .admin-header .d-flex {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="admin-sidebar">
+        <div class="navbar-brand">
+            <i class="fas fa-shield-alt me-2"></i>
+            Panel Admin
+        </div>
+        
+        <ul class="nav flex-column admin-nav">
+            <li class="nav-item">
+                <a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" 
+                   href="{{ url_for('admin.dashboard') }}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if 'companies' in request.endpoint %}active{% endif %}" 
+                   href="{{ url_for('admin.companies') }}">
+                    <i class="fas fa-building"></i>
+                    <span>Entreprises</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if 'subscription' in request.endpoint %}active{% endif %}" 
+                   href="{{ url_for('admin.subscription_management') }}">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Gestion abonnements</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if 'audit' in request.endpoint or 'cron_job' in request.endpoint or 'consent' in request.endpoint %}active{% endif %}" 
+                   data-bs-toggle="collapse" href="#auditMenu" role="button" aria-expanded="false">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Audit & Logs</span>
+                    <i class="fas fa-chevron-down ms-auto" style="font-size: 0.7rem;"></i>
+                </a>
+                <div class="collapse {% if 'audit' in request.endpoint or 'cron_job' in request.endpoint or 'consent' in request.endpoint %}show{% endif %}" id="auditMenu">
+                    <ul class="nav flex-column ps-4" style="margin-top: 0.25rem;">
+                        <li class="nav-item">
+                            <a class="nav-link py-2 {% if 'user_audit_logs' in request.endpoint %}active{% endif %}" 
+                               href="{{ url_for('admin.user_audit_logs') }}" style="font-size: 0.9rem;">
+                                <i class="fas fa-user-clock"></i>
+                                <span>Actions Utilisateurs</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link py-2 {% if 'cron_job_logs' in request.endpoint %}active{% endif %}" 
+                               href="{{ url_for('admin.cron_job_logs') }}" style="font-size: 0.9rem;">
+                                <i class="fas fa-clock"></i>
+                                <span>Cron Jobs</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link py-2 {% if 'audit_logs' in request.endpoint and 'user_audit' not in request.endpoint %}active{% endif %}" 
+                               href="{{ url_for('admin.audit_logs') }}" style="font-size: 0.9rem;">
+                                <i class="fas fa-history"></i>
+                                <span>Logs Stripe</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link py-2 {% if 'consent_logs' in request.endpoint %}active{% endif %}" 
+                               href="{{ url_for('admin.consent_logs') }}" style="font-size: 0.9rem;">
+                                <i class="fas fa-file-contract"></i>
+                                <span>Consentements</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if 'webhooks' in request.endpoint %}active{% endif %}" 
+                   href="/admin/webhooks/">
+                    <i class="fas fa-satellite-dish"></i>
+                    <span>Webhooks Stripe</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if 'users' in request.endpoint %}active{% endif %}" 
+                   href="{{ url_for('admin.users') }}">
+                    <i class="fas fa-users"></i>
+                    <span>Utilisateurs</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if 'plans' in request.endpoint %}active{% endif %}" 
+                   href="{{ url_for('admin.plans') }}">
+                    <i class="fas fa-tags"></i>
+                    <span>Forfaits</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if 'system_email' in request.endpoint %}active{% endif %}" 
+                   href="{{ url_for('admin.system_email_configs') }}">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <span>Email Système</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if 'guides' in request.endpoint %}active{% endif %}" 
+                   href="{{ url_for('admin.guides') }}">
+                    <i class="fas fa-book-open"></i>
+                    <span>Pages Guide</span>
+                </a>
+            </li>
+            
+            <hr class="my-3" style="border-color: rgba(255,255,255,0.1);">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.dashboard') }}">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Retour à l'app</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">{% block page_title %}Panel Administrateur{% endblock %}</h5>
+                <small class="text-muted">{% block page_subtitle %}Gestion complète de votre plateforme SaaS{% endblock %}</small>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <div class="user-avatar">
+                    {{ current_user.first_name[0] }}{{ current_user.last_name[0] }}
+                </div>
+                <div class="fw-semibold small">{{ current_user.first_name }} {{ current_user.last_name }}</div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="admin-content">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }} me-2"></i>
+                        {{ message | safe }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chart.js for dashboard charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

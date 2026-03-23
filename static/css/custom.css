@@ -1,0 +1,62 @@
+/* Classes used dynamically by JavaScript - DO NOT REMOVE */
+
+/* Project expansion rows styling (receivables.js) */
+.project-row {
+    background-color: #f8f9fa;
+    border-left: 3px solid #8475EC;
+}
+
+.project-row-first {
+    border-top: 1px dashed #dee2e6;
+}
+
+.project-row td {
+    font-size: 0.9rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+/* Loading spinner animation (receivables.js) */
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.rotating {
+    animation: rotate 1s linear infinite;
+}
+
+/* Expand button hover effect (receivables.js) */
+.expand-projects-btn {
+    transition: all 0.2s ease;
+}
+
+.expand-projects-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Client name hover effect (clients.js) */
+.client-name-link:hover {
+    color: #8475EC !important;
+    text-decoration: underline !important;
+}
+
+.client-name-link:hover .fw-bold {
+    color: #8475EC !important;
+}
+
+/* Sortable table columns */
+.sortable-column {
+    cursor: pointer;
+}
+
+/* Small icons (14x14px) */
+.icon-sm {
+    width: 14px;
+    height: 14px;
+}
+
+/* Fix dropdown menu positioning in receivables table */
+.receivables-table .dropstart .dropdown-menu {
+    margin-right: 10px !important;
+}

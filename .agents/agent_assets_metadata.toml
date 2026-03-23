@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "25TXiGZZeYA-s7BKU346Q"
+uri = "file://docs/structure_technique.md"
+type = "text"
+title = "Structure Technique — FinovRelance"

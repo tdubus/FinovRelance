@@ -1,0 +1,293 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}Gestion des abonnements{% endblock %}
+{% block page_subtitle %}Vue globale des abonnements et annulations{% endblock %}
+
+{% block content %}
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-2 mb-3">
+        <div class="stat-card stat-primary">
+            <div class="stat-value">{{ stats.total }}</div>
+            <div class="stat-label">Total</div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="stat-card stat-success">
+            <div class="stat-value">{{ stats.active }}</div>
+            <div class="stat-label">Actifs</div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="stat-card stat-warning">
+            <div class="stat-value">{{ stats.pending_cancellation }}</div>
+            <div class="stat-label">Annulation en attente</div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="stat-card stat-danger">
+            <div class="stat-value">{{ stats.canceled }}</div>
+            <div class="stat-label">Annulés</div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="stat-card stat-secondary">
+            <div class="stat-value">{{ stats.expired }}</div>
+            <div class="stat-label">Expirés</div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <a href="{{ url_for('admin.audit_logs') }}" class="stat-card stat-info text-decoration-none">
+            <div class="stat-value"><i class="fas fa-history"></i></div>
+            <div class="stat-label">Logs d'audit</div>
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-body p-4">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Rechercher</label>
+                        <input type="text" name="search" class="form-control" 
+                               value="{{ search_query }}" placeholder="Nom ou email de l'entreprise">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Statut</label>
+                        <select name="status" class="form-select">
+                            <option value="">Tous les statuts</option>
+                            <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Actif</option>
+                            <option value="pending_cancellation" {% if status_filter == 'pending_cancellation' %}selected{% endif %}>Annulation en attente</option>
+                            <option value="canceled" {% if status_filter == 'canceled' %}selected{% endif %}>Annulé</option>
+                            <option value="expired" {% if status_filter == 'expired' %}selected{% endif %}>Expiré</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-admin-primary">Filtrer</button>
+                            <a href="{{ url_for('admin.subscription_management') }}" class="btn btn-outline-secondary">Reset</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Companies List -->
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">Entreprises ({{ companies.total }} résultats)</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if companies.items %}
+                <div class="table-responsive">
+                    <table class="table table-admin mb-0">
+                        <thead>
+                            <tr>
+                                <th>Entreprise</th>
+                                <th>Statut abonnement</th>
+                                <th>Forfait</th>
+                                <th>Status V2</th>
+                                <th>Date annulation</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for company in companies.items %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-2">{{ company.name[0] }}</div>
+                                        <div>
+                                            <div class="fw-semibold">{{ company.name }}</div>
+                                            <small class="text-muted">{{ company.email }}</small>
+                                            {% if company.stripe_customer_id %}
+                                                <br><small class="text-info">ID: {{ company.stripe_customer_id[:18] }}...</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if company.subscription_status == 'active' %}
+                                        <span class="badge bg-success">Actif</span>
+                                    {% elif company.subscription_status == 'pending_cancellation' %}
+                                        <span class="badge bg-warning">Annulation en attente</span>
+                                    {% elif company.subscription_status == 'canceled' %}
+                                        <span class="badge bg-danger">Annulé</span>
+                                    {% elif company.subscription_status == 'expired' %}
+                                        <span class="badge bg-dark">Expiré</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ company.subscription_status or 'Non défini' }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge {% if company.is_free_account %}badge-plan-free{% else %}badge-plan-paid{% endif %}">
+                                        {{ company.get_plan_display_name() }}
+                                    </span>
+                                    <br><small class="text-muted">Licences: {{ company.quantity_licenses or 1 }}</small>
+                                </td>
+                                <td>
+                                    <!-- PHASE 3 : Grace periods supprimés - architecture V2 -->
+                                    {% if company.can_be_reactivated() %}
+                                        <span class="badge bg-success">Réactivable</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Normal</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if company.cancellation_date %}
+                                        {{ company.cancellation_date.strftime('%d/%m/%Y') }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        {% if company.subscription_status == 'pending_cancellation' and company.can_be_reactivated() %}
+                                            <form method="POST" action="{{ url_for('admin.force_reactivate_subscription', company_id=company.id) }}" style="display: inline;">
+                                                <button type="submit" class="btn btn-sm btn-success" 
+                                                        onclick="return confirm('Êtes-vous sûr de vouloir réactiver cet abonnement ?')">
+                                                    <i class="fas fa-play me-1"></i>Réactiver
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                        
+                                        {% if company.subscription_status == 'pending_cancellation' and company.cancellation_date %}
+                                            <button type="button" class="btn btn-sm btn-warning" 
+                                                    data-bs-toggle="modal" data-bs-target="#extendCancellationModal" 
+                                                    data-company-id="{{ company.id }}" data-company-name="{{ company.name }}">
+                                                <i class="fas fa-clock me-1"></i>Reporter annulation
+                                            </button>
+                                        {% endif %}
+                                        
+                                        <a href="{{ url_for('admin.edit_company', company_id=company.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit me-1"></i>Éditer
+                                        </a>
+                                        
+                                        <a href="{{ url_for('admin.audit_logs', company_id=company.id) }}" class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-history me-1"></i>Logs
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if companies.pages > 1 %}
+                <div class="d-flex justify-content-between align-items-center p-4">
+                    <div class="text-muted">
+                        Affichage de {{ (companies.page - 1) * companies.per_page + 1 }} à {{ companies.page * companies.per_page if companies.page * companies.per_page < companies.total else companies.total }} 
+                        sur {{ companies.total }} résultats
+                    </div>
+                    
+                    <nav>
+                        <ul class="pagination mb-0">
+                            {% if companies.has_prev %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.subscription_management', page=companies.prev_num, status=status_filter, search=search_query) }}">Précédent</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for page_num in companies.iter_pages() %}
+                                {% if page_num %}
+                                    {% if page_num != companies.page %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url_for('admin.subscription_management', page=page_num, status=status_filter, search=search_query) }}">{{ page_num }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ page_num }}</span>
+                                        </li>
+                                    {% endif %}
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">…</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if companies.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.subscription_management', page=companies.next_num, status=status_filter, search=search_query) }}">Suivant</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+                
+                {% else %}
+                <div class="text-center p-5">
+                    <div class="text-muted">
+                        <i class="fas fa-search fa-3x mb-3"></i>
+                        <h5>Aucun résultat trouvé</h5>
+                        <p>Essayez de modifier vos critères de recherche.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for extending cancellation date V2 -->
+<div class="modal fade" id="extendCancellationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reporter la date d'annulation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="extendCancellationForm">
+                <div class="modal-body">
+                    <p>Reporter la date d'annulation pour <strong id="companyName"></strong></p>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de jours supplémentaires</label>
+                        <select name="days" class="form-select" required>
+                            <option value="3">3 jours</option>
+                            <option value="7" selected>7 jours (1 semaine)</option>
+                            <option value="14">14 jours (2 semaines)</option>
+                            <option value="30">30 jours (1 mois)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-warning">Reporter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Handle extend cancellation modal V2
+document.addEventListener('DOMContentLoaded', function() {
+    const extendCancellationModal = document.getElementById('extendCancellationModal');
+    if (extendCancellationModal) {
+        extendCancellationModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const companyId = button.getAttribute('data-company-id');
+            const companyName = button.getAttribute('data-company-name');
+            
+            const form = document.getElementById('extendCancellationForm');
+            form.action = `/admin/subscriptions/${companyId}/extend-grace`;
+            
+            document.getElementById('companyName').textContent = companyName;
+        });
+    }
+});
+</script>
+{% endblock %}

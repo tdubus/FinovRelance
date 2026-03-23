@@ -1,0 +1,231 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Événements Webhooks - PHASE 5{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">📋 Événements Webhooks</h1>
+        <a href="{{ url_for('webhook_admin.webhook_dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Retour Dashboard
+        </a>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5><i class="fas fa-filter"></i> Filtres</h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label for="type" class="form-label">Type d'Événement</label>
+                    <select name="type" id="type" class="form-select">
+                        <option value="">Tous les types</option>
+                        {% for webhook_type in webhook_types %}
+                            <option value="{{ webhook_type }}" 
+                                    {% if current_filters.type == webhook_type %}selected{% endif %}>
+                                {{ webhook_type }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-2">
+                    <label for="status" class="form-label">Statut</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">Tous les statuts</option>
+                        <option value="success" {% if current_filters.status == 'success' %}selected{% endif %}>Succès</option>
+                        <option value="failed" {% if current_filters.status == 'failed' %}selected{% endif %}>Échec</option>
+                        <option value="pending" {% if current_filters.status == 'pending' %}selected{% endif %}>En attente</option>
+                        <option value="retry" {% if current_filters.status == 'retry' %}selected{% endif %}>Retry</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="company_id" class="form-label">Entreprise</label>
+                    <select name="company_id" id="company_id" class="form-select">
+                        <option value="">Toutes les entreprises</option>
+                        {% for company in companies %}
+                            <option value="{{ company.id }}" 
+                                    {% if current_filters.company_id == company.id %}selected{% endif %}>
+                                {{ company.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search"></i> Filtrer
+                    </button>
+                    <a href="{{ url_for('webhook_admin.webhook_events') }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Résultats -->
+    {% if webhooks %}
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5><i class="fas fa-list"></i> Événements ({{ webhooks.total }})</h5>
+            <small class="text-muted">Page {{ webhooks.page }} / {{ webhooks.pages }}</small>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Type</th>
+                            <th>Entreprise</th>
+                            <th>Statut</th>
+                            <th>Durée</th>
+                            <th>Retry</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for webhook in webhooks.items %}
+                        <tr>
+                            <td>
+                                <small>{{ webhook.processed_at.strftime('%d/%m/%Y %H:%M:%S') }}</small>
+                            </td>
+                            <td>
+                                <code style="font-size: 0.85em;">{{ webhook.webhook_type }}</code>
+                            </td>
+                            <td>
+                                {% if webhook.company %}
+                                    <a href="#" class="text-decoration-none">{{ webhook.company.name }}</a>
+                                {% else %}
+                                    <em class="text-muted">Global</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge badge-{{ webhook.processing_status|webhook_status_color }}">
+                                    {{ webhook.processing_status|title }}
+                                </span>
+                            </td>
+                            <td>{{ webhook.processing_duration_ms|format_duration }}</td>
+                            <td>
+                                {% if webhook.retry_count > 0 %}
+                                    <span class="badge badge-info">{{ webhook.retry_count }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('webhook_admin.webhook_event_detail', event_id=webhook.id) }}" 
+                                       class="btn btn-outline-info">
+                                        <i class="fas fa-eye"></i> Voir
+                                    </a>
+                                    
+                                    {% if webhook.processing_status == 'failed' and webhook.retry_count < 3 %}
+                                        <button onclick="retryWebhook({{ webhook.id }})" 
+                                                class="btn btn-outline-warning">
+                                            <i class="fas fa-redo"></i> Retry
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if webhooks.pages > 1 %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if webhooks.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('webhook_admin.webhook_events', page=webhooks.prev_num, 
+                                                          type=current_filters.type, 
+                                                          status=current_filters.status,
+                                                          company_id=current_filters.company_id) }}">
+                        Précédent
+                    </a>
+                </li>
+            {% endif %}
+            
+            {% for page_num in webhooks.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num != webhooks.page %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('webhook_admin.webhook_events', page=page_num,
+                                                                  type=current_filters.type,
+                                                                  status=current_filters.status,
+                                                                  company_id=current_filters.company_id) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">…</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if webhooks.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('webhook_admin.webhook_events', page=webhooks.next_num,
+                                                          type=current_filters.type,
+                                                          status=current_filters.status,
+                                                          company_id=current_filters.company_id) }}">
+                        Suivant
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Aucun événement trouvé</h5>
+            <p class="text-muted">Modifiez vos filtres ou vérifiez la configuration des webhooks.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function retryWebhook(webhookId) {
+    if (!confirm('Relancer ce webhook ?')) return;
+    
+    fetch(`/admin/webhooks/retry/${webhookId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Erreur retry:', error);
+        alert('Erreur lors du retry');
+    });
+}
+</script>
+{% endblock %}

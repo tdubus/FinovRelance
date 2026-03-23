@@ -1,0 +1,56 @@
+{% extends "base_minimal.html" %}
+
+{% block title %}FinovRelance - Plateforme de gestion des comptes clients{% endblock %}
+
+{% block content %}
+<div class="container-fluid vh-100 d-flex align-items-center">
+    <div class="row w-100">
+        <div class="col-lg-6 offset-lg-3 text-center">
+            <div class="mb-5">
+                <h1 class="display-4 fw-bold text-primary mb-3">FinovRelance</h1>
+                <p class="lead text-muted">
+                    Plateforme de synchronisation des comptes clients de niveau entreprise
+                </p>
+            </div>
+            
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i data-feather="users" class="text-primary mb-3" style="width: 48px; height: 48px;"></i>
+                            <h5 class="card-title">Gestion Clients</h5>
+                            <p class="card-text text-muted">Centralisez et synchronisez tous vos comptes clients</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i data-feather="file-text" class="text-primary mb-3" style="width: 48px; height: 48px;"></i>
+                            <h5 class="card-title">Suivis & Relances</h5>
+                            <p class="card-text text-muted">Gérez les suivis et relances clients</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i data-feather="mail" class="text-primary mb-3" style="width: 48px; height: 48px;"></i>
+                            <h5 class="card-title">Courriels Intégrés</h5>
+                            <p class="card-text text-muted">Envoyez des courriels depuis l'application</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-block">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg px-5 me-3">Se connecter</a>
+                <a href="{{ url_for('onboarding.register_free') }}" class="btn btn-outline-primary btn-lg px-5">S'inscrire</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+<script>feather.replace();</script>
+{% endblock %}

@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}Import {{ job.filename }} - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('company.settings') }}#accounting">Paramètres</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('import.list_jobs') }}">Historique</a></li>
+                    <li class="breadcrumb-item active">Import #{{ job.id }}</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-0">Import {{ job.filename }}</h1>
+        </div>
+        <div>
+            <a href="{{ url_for('import.list_jobs') }}" class="btn btn-outline-secondary">
+                <i data-feather="arrow-left" class="me-2"></i>
+                Retour
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Status Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Statut de l'import</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Statut:</strong>
+                            <span id="job-status">
+                                {% if job.status == 'completed' %}
+                                <span class="badge bg-success">Terminé</span>
+                                {% elif job.status == 'processing' %}
+                                <span class="badge bg-primary">En cours</span>
+                                {% elif job.status == 'failed' %}
+                                <span class="badge bg-danger">Échec</span>
+                                {% else %}
+                                <span class="badge bg-secondary">En attente</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Type:</strong>
+                            <span class="badge bg-secondary">
+                                {{ 'Clients' if job.import_type == 'clients' else 'Factures' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Lignes traitées:</strong>
+                                <span id="processed-rows">{{ job.processed_rows }}</span> / 
+                                <span id="total-rows">{{ job.total_rows or '?' }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Durée:</strong>
+                                <span id="duration">{{ job.get_duration()|round(2) }}s</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if job.status == 'completed' %}
+                    <div class="alert alert-success" role="alert">
+                        <i data-feather="check-circle" class="me-2"></i>
+                        <strong id="result-message">{{ job.result_message or 'Import terminé avec succès' }}</strong>
+                    </div>
+                    {% elif job.status == 'failed' %}
+                    <div class="alert alert-danger" role="alert">
+                        <i data-feather="x-circle" class="me-2"></i>
+                        <strong id="result-message">{{ job.result_message or 'Import échoué' }}</strong>
+                    </div>
+                    {% elif job.status == 'processing' %}
+                    <div class="alert alert-info" role="alert">
+                        <i data-feather="loader" class="me-2 spinning"></i>
+                        Import en cours... Cette page se met à jour automatiquement.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Results Card -->
+            {% if job.status in ['completed', 'failed'] %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Résultats</h5>
+                </div>
+                <div class="card-body">
+                    {% if job.import_mode == 'sync' and (job.created_count > 0 or job.updated_count > 0 or job.deleted_count > 0) %}
+                    <!-- Sync mode: Show detailed counts -->
+                    <div class="row text-center mb-3">
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded bg-light">
+                                <i data-feather="plus-circle" class="text-success" style="width: 40px; height: 40px;"></i>
+                                <h4 class="mt-2 mb-0 text-success">{{ job.created_count }}</h4>
+                                <p class="text-muted mb-0 small">Créées</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded bg-light">
+                                <i data-feather="edit" class="text-primary" style="width: 40px; height: 40px;"></i>
+                                <h4 class="mt-2 mb-0 text-primary">{{ job.updated_count }}</h4>
+                                <p class="text-muted mb-0 small">Mises à jour</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded bg-light">
+                                <i data-feather="trash-2" class="text-warning" style="width: 40px; height: 40px;"></i>
+                                <h4 class="mt-2 mb-0 text-warning">{{ job.deleted_count }}</h4>
+                                <p class="text-muted mb-0 small">Supprimées</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row text-center">
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded">
+                                <i data-feather="check-circle" class="text-success" style="width: 48px; height: 48px;"></i>
+                                <h3 class="mt-2 mb-0 text-success" id="success-count">{{ job.success_count }}</h3>
+                                <p class="text-muted mb-0">Total traitées</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded">
+                                <i data-feather="x-circle" class="text-danger" style="width: 48px; height: 48px;"></i>
+                                <h3 class="mt-2 mb-0 text-danger" id="error-count">{{ job.error_count }}</h3>
+                                <p class="text-muted mb-0">Erreurs</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Info Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Informations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Fichier:</strong><br>
+                        {{ job.filename }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Taille:</strong><br>
+                        {{ (job.file_size / 1024)|round(2) }} KB
+                    </div>
+                    <div class="mb-3">
+                        <strong>Mode:</strong><br>
+                        {% if job.import_mode == 'sync' %}
+                        <span class="badge bg-primary">Synchronisation</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Ajout</span>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Démarré le:</strong><br>
+                        {{ job.created_at|format_local_datetime }}
+                    </div>
+                    {% if job.started_at %}
+                    <div class="mb-3">
+                        <strong>Traitement commencé:</strong><br>
+                        {{ job.started_at|format_local_datetime }}
+                    </div>
+                    {% endif %}
+                    {% if job.completed_at %}
+                    <div class="mb-3">
+                        <strong>Terminé le:</strong><br>
+                        {{ job.completed_at|format_local_datetime }}
+                    </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        <strong>Importé par:</strong><br>
+                        {{ job.user.full_name }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Errors Card -->
+            {% if job.errors and job.errors|length > 0 %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Erreurs ({{ job.errors|length }})</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert" style="max-height: 400px; overflow-y: auto;">
+                        <ul class="mb-0" id="errors-list">
+                            {% for error in job.errors[:20] %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                            {% if job.errors|length > 20 %}
+                            <li class="text-muted">... et {{ job.errors|length - 20 }} autres erreurs</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.spinning {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}

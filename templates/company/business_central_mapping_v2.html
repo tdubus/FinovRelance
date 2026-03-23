@@ -1,0 +1,815 @@
+{% extends "base.html" %}
+
+{% block title %}Mapping des Champs Business Central - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exchange-alt me-2"></i>Configuration du Mapping des Champs Business Central
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Instructions:</strong> Sélectionnez les champs Business Central correspondant à chaque champ FinovRelance.
+                        Les champs marqués d'un <span class="text-danger">*</span> sont obligatoires.
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('company.business_central_save_mapping') }}" id="mappingForm">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        
+                        <!-- Section Clients -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-users me-2"></i>Mapping des Clients</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Code Client -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Code Client FinovRelance</strong> <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" name="client_code" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% if bc_customer_fields %}
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_code') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="No" {% if field_mapping.get('client_code', 'No') == 'No' %}selected{% endif %}>No</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Nom Client -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Nom Client FinovRelance</strong> <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" name="client_name" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% if bc_customer_fields %}
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_name') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="Name" {% if field_mapping.get('client_name', 'Name') == 'Name' %}selected{% endif %}>Name</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Email -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Email FinovRelance</strong>
+                                        </label>
+                                        <select class="form-select" name="client_email">
+                                            <option value="">-- Aucun (optionnel) --</option>
+                                            {% if bc_customer_fields %}
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_email') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="E_Mail" {% if field_mapping.get('client_email', 'E_Mail') == 'E_Mail' %}selected{% endif %}>E_Mail</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Téléphone -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Téléphone FinovRelance</strong>
+                                        </label>
+                                        <select class="form-select" name="client_phone">
+                                            <option value="">-- Aucun (optionnel) --</option>
+                                            {% if bc_customer_fields %}
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_phone') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="Phone_No" {% if field_mapping.get('client_phone', 'Phone_No') == 'Phone_No' %}selected{% endif %}>Phone_No</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Section Adresse (6 champs concaténés) -->
+                                {% set saved_address = field_mapping.get('client_address', 'Address,Address_2,City,Post_Code,County,Country_Region_Code') %}
+                                {% set address_parts = saved_address.split(',') %}
+                                <div class="card bg-light mb-3">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><i class="fas fa-map-marker-alt me-2"></i>Adresse Complète (6 composants concaténés)</h6>
+                                        <div class="row">
+                                            <div class="col-md-4 mb-2">
+                                                <label class="form-label small">Adresse Ligne 1</label>
+                                                <select class="form-select form-select-sm" name="address_field_1">
+                                                    <option value="">-- Aucun --</option>
+                                                    {% for field_value, field_desc in bc_customer_fields %}
+                                                    <option value="{{ field_value }}" {% if address_parts|length > 0 and field_value == address_parts[0] %}selected{% endif %}>
+                                                        {{ field_value }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 mb-2">
+                                                <label class="form-label small">Adresse Ligne 2</label>
+                                                <select class="form-select form-select-sm" name="address_field_2">
+                                                    <option value="">-- Aucun --</option>
+                                                    {% for field_value, field_desc in bc_customer_fields %}
+                                                    <option value="{{ field_value }}" {% if address_parts|length > 1 and field_value == address_parts[1] %}selected{% endif %}>
+                                                        {{ field_value }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 mb-2">
+                                                <label class="form-label small">Ville</label>
+                                                <select class="form-select form-select-sm" name="address_field_3">
+                                                    <option value="">-- Aucun --</option>
+                                                    {% for field_value, field_desc in bc_customer_fields %}
+                                                    <option value="{{ field_value }}" {% if address_parts|length > 2 and field_value == address_parts[2] %}selected{% endif %}>
+                                                        {{ field_value }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 mb-2">
+                                                <label class="form-label small">Code Postal</label>
+                                                <select class="form-select form-select-sm" name="address_field_4">
+                                                    <option value="">-- Aucun --</option>
+                                                    {% for field_value, field_desc in bc_customer_fields %}
+                                                    <option value="{{ field_value }}" {% if address_parts|length > 3 and field_value == address_parts[3] %}selected{% endif %}>
+                                                        {{ field_value }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 mb-2">
+                                                <label class="form-label small">Province/État</label>
+                                                <select class="form-select form-select-sm" name="address_field_5">
+                                                    <option value="">-- Aucun --</option>
+                                                    {% for field_value, field_desc in bc_customer_fields %}
+                                                    <option value="{{ field_value }}" {% if address_parts|length > 4 and field_value == address_parts[4] %}selected{% endif %}>
+                                                        {{ field_value }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 mb-2">
+                                                <label class="form-label small">Pays</label>
+                                                <select class="form-select form-select-sm" name="address_field_6">
+                                                    <option value="">-- Aucun --</option>
+                                                    {% for field_value, field_desc in bc_customer_fields %}
+                                                    <option value="{{ field_value }}" {% if address_parts|length > 5 and field_value == address_parts[5] %}selected{% endif %}>
+                                                        {{ field_value }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">Ces champs seront automatiquement concaténés pour former l'adresse complète</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <!-- Représentant -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Représentant FinovRelance</strong>
+                                        </label>
+                                        <select class="form-select" name="client_representative">
+                                            <option value="">-- Aucun (optionnel) --</option>
+                                            {% if bc_customer_fields %}
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_representative') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="Salesperson_Code" {% if field_mapping.get('client_representative', 'Salesperson_Code') == 'Salesperson_Code' %}selected{% endif %}>Salesperson_Code</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Conditions de paiement -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Conditions de Paiement FinovRelance</strong>
+                                        </label>
+                                        <select class="form-select" name="client_payment_terms">
+                                            <option value="">-- Aucun (optionnel) --</option>
+                                            {% if bc_customer_fields %}
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_payment_terms') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="Payment_Terms_Code" {% if field_mapping.get('client_payment_terms', 'Payment_Terms_Code') == 'Payment_Terms_Code' %}selected{% endif %}>Payment_Terms_Code</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Code Parent -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Code Parent FinovRelance</strong>
+                                        </label>
+                                        <select class="form-select" name="client_parent_code">
+                                            <option value="">-- Aucun (optionnel) --</option>
+                                            {% if bc_customer_fields %}
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('client_parent_code') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="gsParentAccount" {% if field_mapping.get('client_parent_code') == 'gsParentAccount' %}selected{% endif %}>gsParentAccount</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Section Mapping de Langue -->
+                                <div class="card bg-light mb-3">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><i class="fas fa-language me-2"></i>Mapping des Langues</h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Champ Langue Business Central</label>
+                                                <select class="form-select mb-3" name="client_language_field">
+                                                    <option value="">-- Aucun (optionnel) --</option>
+                                                    {% for field_value, field_desc in bc_customer_fields %}
+                                                    <option value="{{ field_value }}" 
+                                                            {% if field_mapping.get('client_language_field', 'Language_Code') == field_value %}selected{% endif %}>
+                                                        {{ field_value }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Correspondances des valeurs</label>
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <span class="input-group-text">FR =</span>
+                                                    <input type="text" class="form-control" name="language_mapping_fr" 
+                                                           value="{{ field_mapping.get('language_mapping_fr', 'Français') }}"
+                                                           placeholder="ex: Français">
+                                                </div>
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text">EN =</span>
+                                                    <input type="text" class="form-control" name="language_mapping_en" 
+                                                           value="{{ field_mapping.get('language_mapping_en', 'Anglais') }}"
+                                                           placeholder="ex: Anglais">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">Indiquez comment les codes FR et EN correspondent aux valeurs dans Business Central</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Section Delta Sync -->
+                                <div class="mt-4 p-3 bg-info bg-opacity-10 rounded border border-info">
+                                    <h6><i class="fas fa-clock me-2"></i>Synchronisation Delta (Incrémentale)</h6>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">
+                                                <strong>Champ Date de Modification</strong>
+                                                <i class="fas fa-info-circle text-info ms-1" data-bs-toggle="tooltip" 
+                                                   title="Sélectionnez le champ Business Central qui contient la date de dernière modification des clients"></i>
+                                            </label>
+                                            <select class="form-select" name="delta_field">
+                                                <option value="">-- Désactivé --</option>
+                                                {% if bc_customer_fields %}
+                                                {% for field_value, field_desc in bc_customer_fields %}
+                                                <option value="{{ field_value }}" 
+                                                        {% if field_mapping.get('delta_field', connection.delta_field) == field_value %}selected{% endif %}>
+                                                    {{ field_value }}
+                                                </option>
+                                                {% endfor %}
+                                                {% else %}
+                                                <option value="SystemModifiedAt" {% if field_mapping.get('delta_field', 'SystemModifiedAt') == 'SystemModifiedAt' %}selected{% endif %}>SystemModifiedAt</option>
+                                                <option value="LastModifiedDateTime">LastModifiedDateTime</option>
+                                                <option value="SystemCreatedAt">SystemCreatedAt</option>
+                                                {% endif %}
+                                            </select>
+                                            <small class="form-text text-muted">
+                                                Lorsqu'activé, seuls les clients modifiés depuis la dernière synchronisation seront importés
+                                            </small>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">
+                                                <strong>Status Delta Sync</strong>
+                                            </label>
+                                            <div class="form-control-plaintext">
+                                                {% if connection.delta_enabled %}
+                                                <span class="badge bg-success"><i class="fas fa-check me-1"></i>Activé</span>
+                                                <small class="text-muted ms-2">
+                                                    Dernière sync: {{ connection.last_sync_at.strftime('%d/%m/%Y %H:%M') if connection.last_sync_at else 'Jamais' }}
+                                                </small>
+                                                {% else %}
+                                                <span class="badge bg-secondary"><i class="fas fa-times me-1"></i>Désactivé</span>
+                                                <small class="text-muted ms-2">
+                                                    Sélectionnez un champ de date pour activer
+                                                </small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info mb-0 mt-2">
+                                        <i class="fas fa-lightbulb me-2"></i>
+                                        <strong>Avantage:</strong> La synchronisation delta réduit le temps de traitement de 90% en ne synchronisant que les changements récents.
+                                    </div>
+                                </div>
+                                
+                                <!-- Filtre OData Clients -->
+                                <div class="mt-4 p-3 bg-light rounded">
+                                    <h6><i class="fas fa-filter me-2"></i>Filtrage des Clients</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Filtre OData (optionnel)</label>
+                                        <input type="text" class="form-control" name="customers_filter" 
+                                               value="{{ bc_config.customers_filter or '' }}"
+                                               placeholder="ex: startswith(No, 'CUST') or Balance_LCY gt 100">
+                                        <small class="form-text text-muted">
+                                            Filtre OData V4 pour ne synchroniser que certains clients
+                                        </small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <strong class="text-danger">* Champ de Tri Clients (OBLIGATOIRE)</strong>
+                                        </label>
+                                        <select class="form-select" name="customers_orderby_field" required>
+                                            <option value="">-- Sélectionnez un champ de tri --</option>
+                                            {% for field_value, field_desc in bc_customer_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if bc_config.customers_orderby_field == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                        <small class="form-text text-danger">
+                                            <i class="fas fa-exclamation-triangle"></i> IMPORTANT: Ce champ DOIT exister dans Business Central pour éviter les erreurs 400
+                                        </small>
+                                    </div>
+                                    <button type="button" class="btn btn-info btn-sm" onclick="previewData('customers')">
+                                        <i class="fas fa-eye me-1"></i>Aperçu des données (10 lignes)
+                                    </button>
+                                    <div id="customersPreview" class="mt-3" style="display:none;">
+                                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                            <table class="table table-sm table-bordered" id="customersPreviewTable">
+                                                <thead class="table-dark sticky-top"></thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Bouton Synchronisation Clients -->
+                                <div class="text-end mt-3">
+                                    <button type="button" class="btn btn-success" onclick="syncCustomers()">
+                                        <i class="fas fa-sync me-2"></i>Synchroniser les Clients
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Section Factures -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Mapping des Factures</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Code Client (dans la facture) -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Référence Client dans Facture</strong> <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" name="invoice_customer_code" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% if bc_invoice_fields %}
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('invoice_customer_code') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="Sell_to_Customer_No" {% if field_mapping.get('invoice_customer_code', 'Sell_to_Customer_No') == 'Sell_to_Customer_No' %}selected{% endif %}>Sell_to_Customer_No</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Numéro Facture -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Numéro de Facture</strong> <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" name="invoice_number" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% if bc_invoice_fields %}
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('invoice_number') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="No" {% if field_mapping.get('invoice_number', 'No') == 'No' %}selected{% endif %}>No</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Date Émission -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Date d'Émission</strong> <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" name="invoice_date" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% if bc_invoice_fields %}
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('invoice_date') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="Document_Date" {% if field_mapping.get('invoice_date', 'Document_Date') == 'Document_Date' %}selected{% endif %}>Document_Date</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Date Échéance -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Date d'Échéance</strong> <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" name="invoice_due_date" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% if bc_invoice_fields %}
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('invoice_due_date') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="Due_Date" {% if field_mapping.get('invoice_due_date', 'Due_Date') == 'Due_Date' %}selected{% endif %}>Due_Date</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Solde Restant à Payer (OBLIGATOIRE) -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Solde Restant à Payer</strong> <span class="text-danger">*</span>
+                                            <small class="text-muted d-block">Montant impayé de la facture</small>
+                                        </label>
+                                        <select class="form-select" name="invoice_balance" required>
+                                            <option value="">-- Sélectionnez un champ --</option>
+                                            {% if bc_invoice_fields %}
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('invoice_balance') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="Remaining_Amount" {% if field_mapping.get('invoice_balance', 'Remaining_Amount') == 'Remaining_Amount' %}selected{% endif %}>Remaining_Amount</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Montant Total (optionnel) -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <strong>Montant Total de la Facture</strong>
+                                            <small class="text-muted d-block">Montant original avant paiements (optionnel)</small>
+                                        </label>
+                                        <select class="form-select" name="invoice_amount">
+                                            <option value="">-- Aucun (optionnel) --</option>
+                                            {% if bc_invoice_fields %}
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if field_mapping.get('invoice_amount') == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                            {% else %}
+                                            <option value="Amount_Including_VAT" {% if field_mapping.get('invoice_amount', 'Amount_Including_VAT') == 'Amount_Including_VAT' %}selected{% endif %}>Amount_Including_VAT</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Filtre OData Factures -->
+                                <div class="mt-4 p-3 bg-light rounded">
+                                    <h6><i class="fas fa-filter me-2"></i>Filtrage des Factures</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Filtre OData (optionnel)</label>
+                                        <input type="text" class="form-control" name="invoices_filter" 
+                                               value="{{ bc_config.invoices_filter or '' }}"
+                                               placeholder="ex: Document_Date gt 2023-01-01 and Amount_Including_VAT gt 500">
+                                        <small class="form-text text-muted">
+                                            Filtre OData V4 pour ne synchroniser que certaines factures
+                                        </small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <strong class="text-danger">* Champ de Tri Factures (OBLIGATOIRE)</strong>
+                                        </label>
+                                        <select class="form-select" name="invoices_orderby_field" required>
+                                            <option value="">-- Sélectionnez un champ de tri --</option>
+                                            {% for field_value, field_desc in bc_invoice_fields %}
+                                            <option value="{{ field_value }}" 
+                                                    {% if bc_config.invoices_orderby_field == field_value %}selected{% endif %}>
+                                                {{ field_value }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                        <small class="form-text text-danger">
+                                            <i class="fas fa-exclamation-triangle"></i> IMPORTANT: Ce champ DOIT exister dans Business Central pour éviter les erreurs 400
+                                        </small>
+                                    </div>
+                                    <button type="button" class="btn btn-info btn-sm" onclick="previewData('invoices')">
+                                        <i class="fas fa-eye me-1"></i>Aperçu des données (10 lignes)
+                                    </button>
+                                    <div id="invoicesPreview" class="mt-3" style="display:none;">
+                                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                            <table class="table table-sm table-bordered" id="invoicesPreviewTable">
+                                                <thead class="table-dark sticky-top"></thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Bouton Synchronisation Factures -->
+                                <div class="text-end mt-3">
+                                    <button type="button" class="btn btn-warning" onclick="syncInvoices()">
+                                        <i class="fas fa-sync me-2"></i>Synchroniser les Factures
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- GUID de company pour téléchargement PDF -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-file-pdf me-2"></i>Téléchargement PDF (API REST BC)</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>GUID de la company Business Central</strong></label>
+                                    <div class="input-group">
+                                        <input type="password"
+                                               id="bc_company_guid_field"
+                                               class="form-control font-monospace"
+                                               name="bc_company_guid"
+                                               value="{{ bc_config.bc_company_guid or '' }}"
+                                               placeholder="Détecté automatiquement au premier téléchargement PDF"
+                                               readonly>
+                                        <button class="btn btn-outline-secondary"
+                                                type="button"
+                                                onclick="toggleBcGuid()"
+                                                id="bc_guid_eye_btn"
+                                                title="Afficher / masquer">
+                                            <i class="fas fa-eye" id="bc_guid_eye_icon"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text text-muted">
+                                        Détecté automatiquement à partir de votre connexion BC lors du premier téléchargement PDF.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Boutons d'action principaux -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Enregistrer le Mapping
+                            </button>
+                            <a href="{{ url_for('company.business_central_config') }}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Retour à la Configuration
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleBcGuid() {
+    const field = document.getElementById('bc_company_guid_field');
+    const icon = document.getElementById('bc_guid_eye_icon');
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        field.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+// Fonction pour afficher un aperçu des données
+function previewData(type) {
+    const previewDiv = document.getElementById(type + 'Preview');
+    const table = document.getElementById(type + 'PreviewTable');
+    const loadingMessage = '<div class="text-center"><div class="spinner-border spinner-border-sm me-2"></div>Chargement...</div>';
+    
+    // Afficher la section et un message de chargement
+    previewDiv.style.display = 'block';
+    previewDiv.innerHTML = loadingMessage;
+    
+    // Préparer le formulaire
+    const formData = new FormData();
+    formData.append('csrf_token', '{{ csrf_token() }}');
+    formData.append('type', type);
+    
+    // Envoyer la requête
+    fetch('{{ url_for("company.business_central_preview_data") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Créer le tableau HTML
+            let html = '<div class="alert alert-info mb-2">';
+            html += '<i class="fas fa-info-circle me-2"></i>';
+            html += `<strong>${data.count} lignes récupérées</strong> `;
+            html += `avec <strong>${data.columns.length} colonnes</strong> `;
+            html += '(aperçu limité à 10 lignes) - ';
+            html += '<span class="text-muted">Utilisez le défilement horizontal pour voir toutes les colonnes</span>';
+            html += '</div>';
+            html += '<div class="table-responsive" style="max-height: 500px; overflow: auto; border: 1px solid #dee2e6;">';
+            html += '<table class="table table-sm table-bordered table-hover preview-table mb-0">';
+            
+            // En-têtes
+            if (data.columns && data.columns.length > 0) {
+                html += '<thead class="table-dark sticky-top"><tr>';
+                // Afficher toutes les colonnes avec scroll horizontal
+                data.columns.forEach(col => {
+                    html += `<th style="min-width: 120px; white-space: nowrap;">${col}</th>`;
+                });
+                html += '</tr></thead>';
+                
+                // Données
+                html += '<tbody>';
+                data.data.forEach(row => {
+                    html += '<tr>';
+                    data.columns.forEach(col => {
+                        let value = row[col];
+                        // Tronquer les valeurs très longues mais garder plus de contenu
+                        if (value && typeof value === 'string' && value.length > 80) {
+                            value = value.substring(0, 77) + '...';
+                        }
+                        html += `<td style="min-width: 120px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${value || ''}">${value || ''}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                html += '</tbody>';
+            } else {
+                html += '<tbody><tr><td>Aucune donnée trouvée</td></tr></tbody>';
+            }
+            
+            html += '</table></div>';
+            previewDiv.innerHTML = html;
+        } else {
+            previewDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>${data.error}</div>`;
+        }
+    })
+    .catch(error => {
+        previewDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Erreur: ${error}</div>`;
+    });
+}
+
+// Fonction pour synchroniser les clients
+function syncCustomers() {
+    if (confirm('Voulez-vous synchroniser les clients maintenant ?')) {
+        // Sauvegarder le formulaire d'abord
+        const form = document.getElementById('mappingForm');
+        const formData = new FormData(form);
+        
+        fetch('{{ url_for("company.business_central_save_mapping") }}', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                // Créer un formulaire pour la synchronisation POST
+                const syncForm = document.createElement('form');
+                syncForm.method = 'POST';
+                syncForm.action = '{{ url_for("company.business_central_sync") }}';
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrf_token';
+                csrfInput.value = '{{ csrf_token() }}';
+                syncForm.appendChild(csrfInput);
+                
+                const typeInput = document.createElement('input');
+                typeInput.type = 'hidden';
+                typeInput.name = 'sync_type';
+                typeInput.value = 'customers';
+                syncForm.appendChild(typeInput);
+                
+                document.body.appendChild(syncForm);
+                syncForm.submit();
+            }
+        });
+    }
+}
+
+// Fonction pour synchroniser les factures
+function syncInvoices() {
+    if (confirm('Voulez-vous synchroniser les factures maintenant ?')) {
+        // Sauvegarder le formulaire d'abord
+        const form = document.getElementById('mappingForm');
+        const formData = new FormData(form);
+        
+        fetch('{{ url_for("company.business_central_save_mapping") }}', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                // Créer un formulaire pour la synchronisation POST
+                const syncForm = document.createElement('form');
+                syncForm.method = 'POST';
+                syncForm.action = '{{ url_for("company.business_central_sync") }}';
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrf_token';
+                csrfInput.value = '{{ csrf_token() }}';
+                syncForm.appendChild(csrfInput);
+                
+                const typeInput = document.createElement('input');
+                typeInput.type = 'hidden';
+                typeInput.name = 'sync_type';
+                typeInput.value = 'invoices';
+                syncForm.appendChild(typeInput);
+                
+                document.body.appendChild(syncForm);
+                syncForm.submit();
+            }
+        });
+    }
+}
+</script>
+
+<style>
+.form-select {
+    font-size: 0.95rem;
+}
+.form-label strong {
+    color: #2c3e50;
+}
+.text-muted {
+    font-size: 0.85rem;
+}
+.card-header h5, .card-header h6 {
+    color: #495057;
+}
+.form-select-sm {
+    font-size: 0.875rem;
+}
+.preview-table {
+    font-size: 0.8rem;
+}
+.preview-table th {
+    background-color: #212529 !important;
+    color: white !important;
+    font-weight: 600;
+    border-color: #373b3e !important;
+}
+.preview-table td {
+    font-family: 'Courier New', monospace;
+    vertical-align: middle;
+}
+.preview-table .table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,174 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ action }} Configuration Email Système{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i data-feather="mail" class="me-2"></i>
+        {{ action }} Configuration Email Système
+    </h2>
+    <a href="{{ url_for('admin.system_email_configs') }}" class="btn btn-outline-secondary">
+        <i data-feather="arrow-left" class="me-1"></i>
+        Retour
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.config_name.label(class="form-label") }}
+                        {{ form.config_name(class="form-control") }}
+                        {% if form.config_name.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.config_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Nom unique pour identifier cette configuration (ex: "password_reset", "notifications")
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.email_address.label(class="form-label") }}
+                        {{ form.email_address(class="form-control") }}
+                        {% if form.email_address.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.email_address.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Adresse email système (ex: noreply@finov-relance.com)
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows="3") }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Description optionnelle de l'utilisation de cette configuration
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_active(class="form-check-input") }}
+                            {{ form.is_active.label(class="form-check-label") }}
+                        </div>
+                        <div class="form-text">
+                            Les configurations inactives ne seront pas utilisées pour l'envoi d'emails
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i data-feather="help-circle" class="me-2"></i>
+                    Guide de configuration
+                </h6>
+            </div>
+            <div class="card-body">
+                <h6>Configurations recommandées :</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <strong>password_reset</strong><br>
+                        <small class="text-muted">Pour les emails de réinitialisation de mot de passe</small>
+                    </li>
+                    <li class="mb-2">
+                        <strong>notifications</strong><br>
+                        <small class="text-muted">Pour les notifications système</small>
+                    </li>
+                    <li class="mb-2">
+                        <strong>support</strong><br>
+                        <small class="text-muted">Pour les emails de support automatiques</small>
+                    </li>
+                </ul>
+                
+                <hr>
+                
+                <h6>Étapes suivantes :</h6>
+                <ol class="small">
+                    <li>Créer la configuration</li>
+                    <li>Connecter via OAuth Microsoft</li>
+                    <li>Tester l'envoi d'emails</li>
+                </ol>
+            </div>
+        </div>
+        
+        {% if config %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i data-feather="activity" class="me-2"></i>
+                    Statut OAuth
+                </h6>
+            </div>
+            <div class="card-body">
+                {% set oauth_status = config.get_outlook_connection_status() %}
+                {% if oauth_status == 'connecte' %}
+                    <div class="alert alert-success py-2 mb-2">
+                        <i data-feather="check-circle" class="me-2"></i>
+                        <strong>Connecté</strong>
+                    </div>
+                    <small class="text-muted">
+                        Connecté le {{ (config.outlook_oauth_connected_at | to_local_timezone).strftime('%d/%m/%Y à %H:%M') if config.outlook_oauth_connected_at else 'Date inconnue' }}
+                    </small>
+                {% elif oauth_status == 'expire' %}
+                    <div class="alert alert-warning py-2 mb-2">
+                        <i data-feather="alert-triangle" class="me-2"></i>
+                        <strong>Token expiré</strong>
+                    </div>
+                    <a href="{{ url_for('admin.connect_system_email_oauth', config_id=config.id) }}" 
+                       class="btn btn-sm btn-warning">
+                        <i data-feather="refresh-cw" class="me-1"></i>
+                        Reconnecter
+                    </a>
+                {% else %}
+                    <div class="alert alert-secondary py-2 mb-2">
+                        <i data-feather="x-circle" class="me-2"></i>
+                        <strong>Non connecté</strong>
+                    </div>
+                    <a href="{{ url_for('admin.connect_system_email_oauth', config_id=config.id) }}" 
+                       class="btn btn-sm btn-success">
+                        <i data-feather="link" class="me-1"></i>
+                        Connecter OAuth
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize Feather icons
+    feather.replace();
+</script>
+{% endblock %}

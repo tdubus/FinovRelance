@@ -1,0 +1,156 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}{{ action }} un utilisateur{% endblock %}
+{% block page_subtitle %}Configurer le profil utilisateur{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">{{ action }} un utilisateur</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" novalidate>
+                    {{ form.csrf_token }}
+                    
+                    <div class="row">
+                        <!-- Personal Information -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Informations personnelles</h6>
+                            
+                            <div class="mb-3">
+                                {{ form.first_name.label(class="form-label") }}
+                                {{ form.first_name(class="form-control" + (" is-invalid" if form.first_name.errors else "")) }}
+                                {% if form.first_name.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.last_name.label(class="form-label") }}
+                                {{ form.last_name(class="form-control" + (" is-invalid" if form.last_name.errors else "")) }}
+                                {% if form.last_name.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.email.label(class="form-label") }}
+                                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                                {% if form.email.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.email.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Access Settings -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Paramètres d'accès</h6>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.is_superuser(class="form-check-input") }}
+                                    {{ form.is_superuser.label(class="form-check-label") }}
+                                </div>
+                                {% if form.is_superuser.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.is_superuser.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Les super administrateurs ont accès à tous les paramètres de la plateforme.
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.must_change_password(class="form-check-input") }}
+                                    {{ form.must_change_password.label(class="form-check-label") }}
+                                </div>
+                                {% if form.must_change_password.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.must_change_password.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    L'utilisateur devra changer son mot de passe à la première connexion.
+                                </div>
+                            </div>
+                            
+                            {% if action == 'Créer' %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Mot de passe temporaire :</strong> Un mot de passe temporaire sera généré automatiquement et affiché après la création.
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if action == 'Créer' %}
+                    <!-- Company Assignment Section -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-building me-2"></i>Association à une entreprise (optionnel)
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                {{ form.company_id.label(class="form-label") }}
+                                                {{ form.company_id(class="form-control" + (" is-invalid" if form.company_id.errors else "")) }}
+                                                {% if form.company_id.errors %}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.company_id.errors %}{{ error }}{% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                                <div class="form-text">
+                                                    Vous pouvez associer l'utilisateur à une entreprise directement lors de la création.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                {{ form.role.label(class="form-label") }}
+                                                {{ form.role(class="form-control" + (" is-invalid" if form.role.errors else "")) }}
+                                                {% if form.role.errors %}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.role.errors %}{{ error }}{% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                                <div class="form-text">
+                                                    Rôle de l'utilisateur dans l'entreprise sélectionnée.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between pt-4 border-top">
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Retour
+                        </a>
+                        <button type="submit" class="btn btn-admin-primary">
+                            <i class="fas fa-save me-2"></i>{{ action }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

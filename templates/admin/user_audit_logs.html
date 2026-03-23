@@ -1,0 +1,243 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Logs d'audit utilisateurs - Administration{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-user-clock me-2"></i>Logs d'audit utilisateurs
+                </h1>
+                <div>
+                    <a href="{{ url_for('admin.export_user_audit_logs_csv', user_id=user_filter, company_id=company_filter, action=action_filter, entity_type=entity_filter, date_from=date_from, date_to=date_to) }}" class="btn btn-success me-2">
+                        <i class="fas fa-file-csv me-1"></i>Exporter CSV
+                    </a>
+                    <a href="{{ url_for('admin.cron_job_logs') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-clock me-1"></i>Logs Cron Jobs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0">{{ stats.total }}</h4>
+                    <small>Total logs</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0">{{ stats.last_24h }}</h4>
+                    <small>24 dernières heures</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-secondary text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0">{{ stats.last_week }}</h4>
+                    <small>7 derniers jours</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0">{{ stats.login_success }}</h4>
+                    <small>Connexions OK</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0">{{ stats.login_failed }}</h4>
+                    <small>Connexions KO</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i>Filtres
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-2">
+                    <label class="form-label">Utilisateur</label>
+                    <select name="user_id" class="form-select form-select-sm">
+                        <option value="">Tous</option>
+                        {% for user in users %}
+                        <option value="{{ user.id }}" {% if user_filter == user.id %}selected{% endif %}>{{ user.email }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Entreprise</label>
+                    <select name="company_id" class="form-select form-select-sm">
+                        <option value="">Toutes</option>
+                        {% for company in companies %}
+                        <option value="{{ company.id }}" {% if company_filter == company.id %}selected{% endif %}>{{ company.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Action</label>
+                    <select name="action" class="form-select form-select-sm">
+                        <option value="">Toutes</option>
+                        {% for action in unique_actions %}
+                        <option value="{{ action }}" {% if action_filter == action %}selected{% endif %}>{{ action }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Type entité</label>
+                    <select name="entity_type" class="form-select form-select-sm">
+                        <option value="">Tous</option>
+                        {% for entity_type in unique_entity_types %}
+                        <option value="{{ entity_type }}" {% if entity_filter == entity_type %}selected{% endif %}>{{ entity_type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Date début</label>
+                    <input type="date" name="date_from" class="form-control form-control-sm" value="{{ date_from or '' }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Date fin</label>
+                    <input type="date" name="date_to" class="form-control form-control-sm" value="{{ date_to or '' }}">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fas fa-search me-1"></i>Filtrer
+                    </button>
+                    <a href="{{ url_for('admin.user_audit_logs') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-times me-1"></i>Réinitialiser
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-list me-1"></i>Historique des actions ({{ logs.total }} résultats)
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width: 150px;">Date</th>
+                            <th>Utilisateur</th>
+                            <th>Action</th>
+                            <th>Entité</th>
+                            <th>Détails</th>
+                            <th style="width: 120px;">IP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs.items %}
+                        <tr>
+                            <td class="small">
+                                {{ log.created_at.strftime('%d/%m/%Y %H:%M') }}
+                            </td>
+                            <td>
+                                {% if log.user %}
+                                <span class="badge bg-secondary">{{ log.user.email }}</span>
+                                {% elif log.user_email %}
+                                <span class="text-muted">{{ log.user_email }}</span>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if 'success' in log.action %}
+                                <span class="badge bg-success">{{ log.action }}</span>
+                                {% elif 'failed' in log.action or 'deleted' in log.action %}
+                                <span class="badge bg-danger">{{ log.action }}</span>
+                                {% elif 'created' in log.action %}
+                                <span class="badge bg-primary">{{ log.action }}</span>
+                                {% elif 'updated' in log.action %}
+                                <span class="badge bg-info">{{ log.action }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ log.action }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.entity_type %}
+                                <span class="text-muted">{{ log.entity_type }}</span>
+                                {% if log.entity_name %}
+                                <br><small class="text-primary">{{ log.entity_name }}</small>
+                                {% elif log.entity_id %}
+                                <br><small class="text-muted">#{{ log.entity_id }}</small>
+                                {% endif %}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="small">
+                                {% if log.details %}
+                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#details-{{ log.id }}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <div class="collapse mt-2" id="details-{{ log.id }}">
+                                    <pre class="mb-0 p-2 bg-light rounded small">{{ log.details | tojson(indent=2) }}</pre>
+                                </div>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="small text-muted">
+                                {{ log.ip_address or '-' }}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                Aucun log trouvé
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if logs.pages > 1 %}
+        <div class="card-footer">
+            <nav aria-label="Pagination">
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    {% if logs.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.user_audit_logs', page=logs.prev_num, user_id=user_filter, company_id=company_filter, action=action_filter, entity_type=entity_filter, date_from=date_from, date_to=date_to) }}">Précédent</a>
+                    </li>
+                    {% endif %}
+                    {% for page_num in logs.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                        <li class="page-item {% if page_num == logs.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('admin.user_audit_logs', page=page_num, user_id=user_filter, company_id=company_filter, action=action_filter, entity_type=entity_filter, date_from=date_from, date_to=date_to) }}">{{ page_num }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if logs.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.user_audit_logs', page=logs.next_num, user_id=user_filter, company_id=company_filter, action=action_filter, entity_type=entity_filter, date_from=date_from, date_to=date_to) }}">Suivant</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

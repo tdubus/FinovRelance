@@ -1,0 +1,174 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}Entreprises de {{ user.first_name }} {{ user.last_name }}{% endblock %}
+{% block page_subtitle %}Gérer les affiliations de cet utilisateur{% endblock %}
+
+{% block content %}
+<!-- User Info -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">{{ user.first_name }} {{ user.last_name }}</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        {% if user.is_superuser %}
+                        <p><strong>Statut:</strong> <span class="badge bg-warning">Super Administrateur</span></p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Dernière connexion:</strong> 
+                            {% if user.last_login %}
+                                {{ (user.last_login | to_local_timezone).strftime('%d/%m/%Y %H:%M') if user.last_login }}
+                            {% else %}
+                                Jamais connecté
+                            {% endif %}
+                        </p>
+                        <p><strong>Date de création:</strong> {{ user.created_at.strftime('%d/%m/%Y') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">{{ user_companies|length }} entreprise(s)</h5>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('admin.create_user_company') }}?user_id={{ user.id }}" class="btn btn-admin-primary">
+                    <i class="fas fa-plus me-2"></i>Ajouter à une entreprise
+                </a>
+                <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Retour aux utilisateurs
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Companies Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="table-responsive">
+                <table class="table table-admin mb-0">
+                    <thead>
+                        <tr>
+                            <th>Entreprise</th>
+                            <th>Rôle</th>
+                            <th>Statut</th>
+                            <th>Date d'ajout</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for uc in user_companies %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-2" style="background: var(--admin-secondary);">
+                                        {{ uc.company.name[0] }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">{{ uc.company.name }}</div>
+                                        <small class="text-muted">{{ uc.company.email }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if uc.role == 'super_admin' %}bg-warning{% elif uc.role == 'admin' %}bg-primary{% elif uc.role == 'employe' %}bg-secondary{% else %}bg-info{% endif %}">
+                                    {{ uc.role.replace('_', ' ').title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {% if uc.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                    {% if uc.is_active %}Actif{% else %}Inactif{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ uc.created_at.strftime('%d/%m/%Y') }}</small>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="{{ url_for('admin.company_users', company_id=uc.company.id) }}">
+                                            <i class="fas fa-building me-2"></i>Voir l'entreprise
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        {% if uc.is_active %}
+                                        <li><a class="dropdown-item text-warning" href="#" onclick="toggleUserCompany({{ uc.id }}, false)">
+                                            <i class="fas fa-pause me-2"></i>Désactiver
+                                        </a></li>
+                                        {% else %}
+                                        <li><a class="dropdown-item text-success" href="#" onclick="toggleUserCompany({{ uc.id }}, true)">
+                                            <i class="fas fa-play me-2"></i>Activer
+                                        </a></li>
+                                        {% endif %}
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="confirmRemove({{ uc.id }}, '{{ uc.company.name }}')">
+                                            <i class="fas fa-trash me-2"></i>Retirer de l'entreprise
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if not user_companies %}
+            <div class="card-body text-center py-5">
+                <i class="fas fa-building text-muted mb-3" style="font-size: 3rem;"></i>
+                <h5 class="text-muted mb-3">Aucune entreprise</h5>
+                <p class="text-muted mb-4">Cet utilisateur n'est associé à aucune entreprise.</p>
+                <a href="{{ url_for('admin.create_user_company') }}?user_id={{ user.id }}" class="btn btn-admin-primary">
+                    <i class="fas fa-plus me-2"></i>Ajouter à une entreprise
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Hidden forms for actions -->
+<form id="toggleForm" method="POST" style="display: none;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="activate" id="activateInput">
+</form>
+
+<form id="removeForm" method="POST" style="display: none;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleUserCompany(userCompanyId, activate) {
+    const action = activate ? 'activer' : 'désactiver';
+    if (confirm(`Êtes-vous sûr de vouloir ${action} cette association ?`)) {
+        const form = document.getElementById('toggleForm');
+        form.action = "{{ url_for('admin.toggle_user_company', user_company_id=0) }}".replace('/0', '/' + userCompanyId);
+        document.getElementById('activateInput').value = activate ? 'true' : 'false';
+        form.submit();
+    }
+}
+
+function confirmRemove(userCompanyId, companyName) {
+    if (confirm(`Êtes-vous sûr de vouloir retirer cet utilisateur de l'entreprise "${companyName}" ? Cette action est irréversible.`)) {
+        const form = document.getElementById('removeForm');
+        form.action = "{{ url_for('admin.remove_user_from_company', user_company_id=0) }}".replace('/0', '/' + userCompanyId);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

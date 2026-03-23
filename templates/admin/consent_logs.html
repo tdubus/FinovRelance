@@ -1,0 +1,171 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}Historique des consentements{% endblock %}
+{% block page_subtitle %}Suivi complet des consentements RGPD/Loi 25{% endblock %}
+
+{% block content %}
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">Filtres</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label">Utilisateur</label>
+                        <select name="user_id" class="form-select">
+                            <option value="">Tous les utilisateurs</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}" {% if user_id_filter == user.id %}selected{% endif %}>
+                                {{ user.first_name }} {{ user.last_name }} ({{ user.email }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Type de consentement</label>
+                        <select name="consent_type" class="form-select">
+                            <option value="">Tous les types</option>
+                            <option value="terms" {% if consent_type_filter == 'terms' %}selected{% endif %}>CGU</option>
+                            <option value="privacy" {% if consent_type_filter == 'privacy' %}selected{% endif %}>Confidentialité</option>
+                            <option value="cookies" {% if consent_type_filter == 'cookies' %}selected{% endif %}>Cookies</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-admin-primary w-100">
+                            <i class="fas fa-filter me-2"></i>Filtrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">{{ consents.total }} consentement(s) trouvé(s)</h5>
+        </div>
+    </div>
+</div>
+
+<!-- Consents Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="table-responsive">
+                <table class="table table-admin mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Utilisateur</th>
+                            <th>Type</th>
+                            <th>Version</th>
+                            <th>Statut</th>
+                            <th>Adresse IP</th>
+                            <th>User Agent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consent in consents.items %}
+                        <tr>
+                            <td>
+                                <small class="text-muted">{{ consent.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</small>
+                            </td>
+                            <td>
+                                {% if consent.user %}
+                                    <div>
+                                        <div class="fw-semibold">{{ consent.user.first_name }} {{ consent.user.last_name }}</div>
+                                        <small class="text-muted">{{ consent.user.email }}</small>
+                                    </div>
+                                {% else %}
+                                    <span class="badge bg-secondary">Anonyme</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if consent.consent_type == 'terms' %}
+                                    <span class="badge bg-primary">CGU</span>
+                                {% elif consent.consent_type == 'privacy' %}
+                                    <span class="badge bg-info">Confidentialité</span>
+                                {% elif consent.consent_type == 'cookies' %}
+                                    <span class="badge bg-warning">Cookies</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ consent.consent_version }}</small>
+                            </td>
+                            <td>
+                                {% if consent.accepted %}
+                                    <span class="badge bg-success">Accepté</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Refusé</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ consent.ip_address or 'N/A' }}</small>
+                            </td>
+                            <td>
+                                <small class="text-muted" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block;">
+                                    {{ consent.user_agent or 'N/A' }}
+                                </small>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                Aucun consentement trouvé
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if consents.pages > 1 %}
+<div class="row mt-4">
+    <div class="col-12">
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if consents.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin.consent_logs', page=consents.prev_num, user_id=user_id_filter, consent_type=consent_type_filter) }}">Précédent</a>
+                </li>
+                {% endif %}
+                
+                {% for page_num in consents.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                    {% if page_num %}
+                        {% if page_num == consents.page %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.consent_logs', page=page_num, user_id=user_id_filter, consent_type=consent_type_filter) }}">{{ page_num }}</a>
+                        </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if consents.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin.consent_logs', page=consents.next_num, user_id=user_id_filter, consent_type=consent_type_filter) }}">Suivant</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

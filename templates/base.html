@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FinovRelance - Gestion des Comptes à Recevoir{% endblock %}</title>
+
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ 'css/style.css'|asset_url }}" rel="stylesheet">
+    <link href="{{ 'css/custom.css'|asset_url }}" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ 'favicon.ico'|asset_url }}">
+    <link rel="icon" type="image/x-icon" href="{{ 'favicon.ico'|asset_url }}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ 'favicon.png'|asset_url }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ 'favicon-32x32.png'|asset_url }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ 'favicon-16x16.png'|asset_url }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ 'apple-touch-icon.png'|asset_url }}">
+    <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
+
+    <!-- CSRF Token for AJAX requests -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    <!-- Company currency for JavaScript formatting -->
+    {% if current_user and current_user.is_authenticated %}
+        {% set company = current_user.get_selected_company() %}
+        <meta name="company-currency" content="{{ company.currency if company and company.currency else 'CAD' }}">
+    {% else %}
+        <meta name="company-currency" content="CAD">
+    {% endif %}
+
+    {% block extra_css %}{% endblock %}
+    <style>
+        /* Ensure action buttons are always visible and properly spaced */
+        .btn-group {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: nowrap;
+        }
+
+        .btn-group .btn {
+            white-space: nowrap;
+            min-width: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        /* Fix for action column width */
+        .table td:last-child {
+            width: auto;
+            min-width: 120px;
+        }
+
+        /* Ensure icons are properly sized in buttons */
+        .btn [data-feather] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-sm [data-feather] {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Tooltip styling */
+        .tooltip {
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    {% if current_user.is_authenticated %}
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.dashboard') }}">
+                <img src="{{ url_for('static', filename='logo-finov-relance.png') }}" alt="FinovRelance" class="navbar-logo">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" 
+                           href="{{ url_for('main.dashboard') }}">
+                            <i class="fas fa-home me-1"></i>
+                            Tableau de bord
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint.startswith('client.') %}active{% endif %}" 
+                           href="{{ url_for('client.list_clients') }}">
+                            <i class="fas fa-users me-1"></i>
+                            Clients
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint.startswith('receivable.') %}active{% endif %}" 
+                           href="{{ url_for('receivable.overview') }}">
+                            <i class="fas fa-dollar-sign me-1"></i>
+                            Comptes à recevoir
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint.startswith('note.') %}active{% endif %}" href="{{ url_for('note.list_notes') }}">
+                            <i class="fas fa-sticky-note me-1"></i>
+                            Notes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint.startswith('reminder.') %}active{% endif %}" href="{{ url_for('reminder.list_reminders') }}">
+                            <i class="fas fa-bell me-1"></i>
+                            Rappels
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="toolsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-tools me-1"></i>
+                            Outils
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% set email_templates_access = check_feature_access('email_templates_personal') %}
+                            {% if email_templates_access.allowed %}
+                            <li><a class="dropdown-item" href="{{ url_for('email.templates') }}">
+                                <i class="fas fa-envelope me-1"></i>
+                                Modèles de courriel
+                            </a></li>
+                            {% else %}
+                            <li><span class="dropdown-item {{ email_templates_access.css_class }}" title="{{ email_templates_access.message }}">
+                                <i class="{{ email_templates_access.icon }} me-1"></i>
+                                Modèles de courriel
+                            </span></li>
+                            {% endif %}
+                            
+                            {% set campaign_access = check_feature_access('campaigns') %}
+                            {% if campaign_access.allowed %}
+                            <li><a class="dropdown-item" href="{{ url_for('campaign.list_campaigns') }}">
+                                <i class="fas fa-bullhorn me-1"></i>
+                                Campagnes
+                            </a></li>
+                            {% else %}
+                            <li><span class="dropdown-item {{ campaign_access.css_class }}" title="{{ campaign_access.message }}">
+                                <i class="{{ campaign_access.icon }} me-1"></i>
+                                Campagnes
+                            </span></li>
+                            {% endif %}
+                            
+                            {% set team_access = check_feature_access('team_management') %}
+                            {% if team_access.allowed %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('company.users_list') }}">
+                                <i class="fas fa-users-cog me-1"></i>
+                                Gestion de l'équipe
+                            </a></li>
+                            {% else %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><span class="dropdown-item {{ team_access.css_class }}" title="{{ team_access.message }}">
+                                <i class="{{ team_access.icon }} me-1"></i>
+                                Gestion de l'équipe
+                            </span></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <!-- Notification Bell -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bell" style="font-size: 1.1rem;"></i>
+                            <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                                0
+                                <span class="visually-hidden">notifications non lues</span>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 350px;">
+                            <li>
+                                <h6 class="dropdown-header d-flex justify-content-between align-items-center">
+                                    <span>Notifications</span>
+                                    <button class="btn btn-sm btn-link text-muted p-0" id="mark-all-read" style="display: none;">
+                                        Tout marquer comme lu
+                                    </button>
+                                </h6>
+                            </li>
+                            <li><hr class="dropdown-divider mt-0"></li>
+                            <li>
+                                <div id="notification-list" class="px-3">
+                                    <div class="text-muted text-center py-3">
+                                        <i class="fas fa-bell-slash mb-2"></i><br>
+                                        Aucune nouvelle notification
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Company switcher dropdown -->
+                    {% set active_companies = current_user.get_companies() %}
+
+                    {% if active_companies|length > 1 %}
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle" href="#" id="companyDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-building me-1"></i>
+                            {{ current_user.company.name if current_user.company else "Sélectionnez une entreprise" }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% for company in active_companies %}
+                            <li>
+                                {% if company.id == current_user.company_id %}
+                                <span class="dropdown-item active">
+                                    <i class="fas fa-check me-1"></i>
+                                    {{ company.name }}
+                                </span>
+                                {% else %}
+                                <a class="dropdown-item" href="{{ url_for('auth.switch_company', company_id=company.id) }}">
+                                    <i class="fas fa-arrow-right me-1"></i>
+                                    {{ company.name }}
+                                </a>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endif %}
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>
+                            <span class="user-name">{{ current_user.full_name }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('profile.settings') }}">
+                                <i class="fas fa-user-cog me-1"></i>
+                                Mon profil
+                                {% if current_user.is_super_admin() %}
+                                    <span class="badge bg-danger ms-2">Super Admin</span>
+                                {% elif current_user.is_admin() %}
+                                    <span class="badge bg-primary ms-2">Admin</span>
+                                {% endif %}
+                            </a></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('profile.email_configuration') }}">
+                                    <i class="fas fa-envelope-square me-1"></i>
+                                    Connexion Courriel
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.my_companies') }}">
+                                <i class="fas fa-building me-1"></i>
+                                Mes entreprises
+                            </a></li>
+                            {% if current_user.can_access_company_settings() %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('company.settings') }}">
+                                <i class="fas fa-building me-1"></i>
+                                Paramètres de l'entreprise
+                            </a></li>
+                            {% endif %}
+                            {% if current_user.is_superuser %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                Panel Administrateur
+                            </a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                <i class="fas fa-sign-out-alt me-1"></i>
+                                Déconnexion
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="{% if current_user.is_authenticated %}container-fluid mt-4{% else %}container{% endif %}">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-4 bg-light border-top">
+        <div class="container text-center">
+            <p class="mb-1 text-muted">&copy; {{ now().year }} FinovRelance - Gestion des Comptes à Recevoir</p>
+            {% if current_user.is_authenticated %}
+            <small class="d-block mb-2 text-muted">{{ current_user.company.name }} | Connecté en tant que {{ current_user.full_name }}</small>
+            {% endif %}
+            <div class="d-flex justify-content-center gap-3 mt-2">
+                <a href="https://finov-relance.com/legal/cgu" class="text-muted text-decoration-none small">
+                    Conditions Générales d'Utilisation
+                </a>
+                <span class="text-muted">|</span>
+                <a href="https://finov-relance.com/legal/confidentialite" class="text-muted text-decoration-none small">
+                    Politique de Confidentialité
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+
+    <script src="{{ 'js/main.js'|asset_url }}"></script>
+
+    <script>
+        // Initialize tooltips and icons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips if Bootstrap is available
+            if (typeof bootstrap !== 'undefined') {
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+
+            // Safe feather-icons replacement (global helper for all JS files)
+            window.safeFeatherReplace = function() {
+                if (typeof feather !== 'undefined' && feather.replace) {
+                    try { feather.replace(); } catch (e) { /* invalid icon name */ }
+                }
+            };
+            window.safeFeatherReplace();
+        });
+    </script>
+
+    <!-- Notification system (polling, badge, mark-read) -->
+    <script src="{{ 'js/notifications.js'|asset_url }}"></script>
+
+    <!-- Bootstrap JavaScript déjà chargé plus haut -->
+
+    <!-- AR State Manager - Global pour restaurer filtres/tri depuis n'importe quelle page -->
+    <script src="{{ 'js/ar_state_manager.js'|asset_url }}"></script>
+
+    <!-- Fix accessibilité Bootstrap modal aria-hidden -->
+    <script>
+    document.addEventListener('hide.bs.modal', function (e) {
+        if (e.target.contains(document.activeElement)) {
+            document.activeElement.blur();
+        }
+    });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

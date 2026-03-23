@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lien expiré - FinovRelance</title>
+    <link rel="shortcut icon" href="{{ 'favicon.ico'|asset_url }}">
+    <link rel="icon" type="image/x-icon" href="{{ 'favicon.ico'|asset_url }}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ 'favicon.png'|asset_url }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ 'favicon-32x32.png'|asset_url }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ 'favicon-16x16.png'|asset_url }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+    <style>
+        :root {
+            --primary: 250 75% 69%;
+            --primary-light: 260 95% 97%;
+            --primary-dark: 250 45% 55%;
+            --background: 0 0% 99%;
+            --text-primary: 220 14% 11%;
+            --text-secondary: 220 10% 40%;
+        }
+        body {
+            background: linear-gradient(135deg, hsl(var(--primary-light)) 0%, hsl(var(--background)) 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: hsl(var(--text-primary));
+        }
+        .expired-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .expired-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 460px;
+            text-align: center;
+        }
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #FEF2F2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        .icon-circle svg {
+            color: #EF4444;
+            width: 36px;
+            height: 36px;
+        }
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+        p {
+            color: hsl(var(--text-secondary));
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .btn-primary {
+            background: hsl(var(--primary));
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        .btn-primary:hover {
+            background: hsl(var(--primary-dark));
+        }
+    </style>
+</head>
+<body>
+    <div class="expired-container">
+        <div class="expired-card">
+            <div class="icon-circle">
+                <i data-feather="alert-circle"></i>
+            </div>
+
+            {% if invalid %}
+            <h3>Lien invalide</h3>
+            <p>Ce lien de configuration de mot de passe est invalide ou a déjà été utilisé.</p>
+            {% else %}
+            <h3>Lien expiré</h3>
+            <p>Ce lien de configuration de mot de passe a expiré (validité : 48 heures).</p>
+            {% endif %}
+
+            <p>Si vous n'avez pas encore configuré votre mot de passe, contactez notre support pour recevoir un nouveau lien.</p>
+
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+                Retour à la connexion
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>feather.replace();</script>
+</body>
+</html>

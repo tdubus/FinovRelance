@@ -1,0 +1,67 @@
+{% if projects_balances %}
+<div>
+    <h6 class="text-muted mb-3">Ventilation par {{ project_label or 'projet' }} ({{ projects_balances|length }})</h6>
+    <div {% if projects_balances|length > 5 %}style="max-height: 600px; overflow-y: auto; overflow-x: hidden; padding-right: 10px;"{% endif %}>
+    {% for project in projects_balances %}
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="p-3 border rounded">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <i data-feather="folder" class="me-2"></i>
+                        <strong>{{ project['project_name'] }}</strong>
+                    </div>
+                    <div class="text-end ms-3">
+                        <span class="fw-bold text-primary">{{ format_currency(project['total']) }}</span>
+                        <div class="small text-muted">Total à recevoir</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="p-3 bg-light rounded">
+                <div class="row text-center">
+                    <div class="col">
+                        <div class="small">
+                            <strong>{{ format_currency(project['current']) }}</strong>
+                            <div class="text-muted" style="font-size: 0.75rem;">Courant</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="small">
+                            <strong class="text-warning">{{ format_currency(project['30_days']) }}</strong>
+                            <div class="text-muted" style="font-size: 0.75rem;">1-30j</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="small">
+                            <strong class="text-warning">{{ format_currency(project['60_days']) }}</strong>
+                            <div class="text-muted" style="font-size: 0.75rem;">31-60j</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="small">
+                            <strong class="text-danger">{{ format_currency(project['90_days']) }}</strong>
+                            <div class="text-muted" style="font-size: 0.75rem;">61-90j</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="small">
+                            <strong class="text-danger">{{ format_currency(project['over_90_days']) }}</strong>
+                            <div class="text-muted" style="font-size: 0.75rem;">90j+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="text-center py-4">
+    <i data-feather="folder" style="width: 48px; height: 48px; stroke: hsl(var(--text-muted));" class="mb-3"></i>
+    <h6 class="text-muted">Aucun {{ project_label or 'projet' }} trouvé</h6>
+    <p class="text-muted small">Ce client n'a pas de factures impayées associées à un {{ project_label or 'projet' }}.</p>
+</div>
+{% endif %}

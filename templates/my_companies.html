@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Mes entreprises - FinovRelance{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Mes entreprises</h1>
+                <a href="{{ url_for('onboarding.add_company_plan_selection') }}" class="btn btn-primary">
+                    <i data-feather="plus"></i> Ajouter une entreprise
+                </a>
+            </div>
+            
+            {% if companies %}
+                <div class="row">
+                    {% for company in companies %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ company.name }}</h5>
+                                <p class="card-text text-muted">{{ company.email }}</p>
+                                
+                                <div class="mb-3">
+                                    <small class="text-muted">Forfait:</small><br>
+                                    <span class="badge bg-{{ 'success' if company.subscription_status == 'active' else 'warning' }}">
+                                        {{ company.get_plan_display_name() }}
+                                    </span>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <small class="text-muted">Statut:</small><br>
+                                    {% if company.subscription_status == 'active' %}
+                                        <span class="badge bg-success">Actif</span>
+                                    {% elif company.subscription_status == 'canceled' %}
+                                        <span class="badge bg-danger">Annulé</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ company.subscription_status or 'Inactif' }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <small class="text-muted">Créée le:</small><br>
+                                    {{ company.created_at.strftime('%d/%m/%Y') }}
+                                </div>
+                                
+                                <div class="mt-auto">
+                                    <a href="{{ url_for('auth.switch_company', company_id=company.id) }}" class="btn btn-outline-primary btn-sm">
+                                        <i data-feather="external-link"></i> Accéder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i data-feather="briefcase" style="width: 48px; height: 48px;" class="text-muted mb-3"></i>
+                    <h4 class="text-muted">Aucune entreprise créée</h4>
+                    <p class="text-muted">Vous n'avez encore créé aucune entreprise. Commencez en ajoutant votre première entreprise.</p>
+                    <a href="{{ url_for('onboarding.add_company_plan_selection') }}" class="btn btn-primary">
+                        <i data-feather="plus"></i> Créer ma première entreprise
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

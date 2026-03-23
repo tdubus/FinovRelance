@@ -1,0 +1,75 @@
+{% if client.is_parent and client.child_clients %}
+<div>
+    <h6 class="text-muted mb-3">Comptes enfants ({{ client.child_clients|length }})</h6>
+    <div {% if client.child_clients|length > 5 %}style="max-height: 600px; overflow-y: auto; overflow-x: hidden; padding-right: 10px;"{% endif %}>
+    {% for child in client.child_clients %}
+    {% if children_balances is defined %}
+        {% set child_balances = children_balances.get(child.id, {'current': 0, '30_days': 0, '60_days': 0, '90_days': 0, 'over_90_days': 0}) %}
+    {% else %}
+        {% set child_balances = child.get_aged_balances(current_user.get_selected_company().aging_calculation_method) %}
+    {% endif %}
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <a href="{{ url_for('client.detail_client', id=child.id) }}" class="text-decoration-none">
+                <div class="p-3 border rounded">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <strong>{{ child.code_client }}</strong> - {{ child.name }}
+                            <div class="small text-muted mt-1">
+                                {% if child.email %}{{ child.email }}{% endif %}
+                                {% if child.phone %}{{ '• ' + child.phone if child.email else child.phone }}{% endif %}
+                            </div>
+                        </div>
+                        <div class="text-end ms-3">
+                            {% if children_total_outstanding is defined %}
+                                <span class="fw-bold text-primary">{{ format_currency(children_total_outstanding.get(child.id, 0)) }}</span>
+                            {% else %}
+                                <span class="fw-bold text-primary">{{ format_currency(child.get_total_outstanding()) }}</span>
+                            {% endif %}
+                            <div class="small text-muted">Total à recevoir</div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <div class="p-3 bg-light rounded">
+                <div class="row text-center">
+                    <div class="col">
+                        <div class="small">
+                            <strong>{{ format_currency(child_balances['current']) }}</strong>
+                            <div class="text-muted" style="font-size: 0.75rem;">Courant</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="small">
+                            <strong class="text-warning">{{ format_currency(child_balances['30_days']) }}</strong>
+                            <div class="text-muted" style="font-size: 0.75rem;">1-30j</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="small">
+                            <strong class="text-warning">{{ format_currency(child_balances['60_days']) }}</strong>
+                            <div class="text-muted" style="font-size: 0.75rem;">31-60j</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="small">
+                            <strong class="text-danger">{{ format_currency(child_balances['90_days']) }}</strong>
+                            <div class="text-muted" style="font-size: 0.75rem;">61-90j</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="small">
+                            <strong class="text-danger">{{ format_currency(child_balances['over_90_days']) }}</strong>
+                            <div class="text-muted" style="font-size: 0.75rem;">90j+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+</div>
+{% endif %}

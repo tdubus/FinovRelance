@@ -1,0 +1,123 @@
+{% for group in note_groups %}
+{% set note = group.parent %}
+{% set is_conversation = group.is_conversation %}
+
+{# Ligne principale - Affiche le message le PLUS RÉCENT #}
+<tr data-note-id="{{ note.id }}" {% if is_conversation %}class="conversation-parent-row"{% endif %} style="cursor: pointer;" onclick="viewNote({{ note.id }})">
+    <td>
+        <small>{{ format_local_datetime(note.created_at, '%Y-%m-%d %H:%M', company.timezone) }}</small>
+        {# Indicateur de date originale pour les conversations #}
+        {% if is_conversation and group.original_date %}
+        <br>
+        <small class="text-muted" style="font-size: 0.75em;" title="Date du courriel original">
+            <i class="fas fa-clock me-1"></i>Orig: {{ format_local_datetime(group.original_date, '%d/%m/%Y', company.timezone) }}
+        </small>
+        {% endif %}
+        {% if note.reminder_date %}
+        <span class="reminder-badge-inline {% if note.is_reminder_completed %}reminder-completed{% elif note.is_reminder_overdue() %}reminder-overdue{% elif note.is_reminder_today() %}reminder-today{% else %}reminder-upcoming{% endif %}">
+            {% if note.is_reminder_completed %}
+            <i class="fas fa-check-circle"></i>
+            {% else %}
+            <i class="fas fa-bell"></i>
+            {{ note.reminder_date.strftime('%d/%m/%Y') }}
+            {% endif %}
+        </span>
+        {% endif %}
+    </td>
+    <td>
+        {% if note.note_type == 'email' %}
+            <span class="badge bg-info"><i class="fas fa-envelope me-1"></i>Courriel</span>
+            {# N'afficher le badge de direction que pour les emails simples (pas les conversations) #}
+            {% if note.email_direction and not is_conversation %}
+            <br>
+            <span class="badge {{ note.get_email_direction_badge_class() }} mt-1" style="font-size: 0.7em;">
+                {% if note.email_direction == 'sent' %}
+                    <i class="fas fa-paper-plane me-1"></i>Envoyé
+                {% elif note.email_direction == 'received' %}
+                    <i class="fas fa-inbox me-1"></i>Reçu
+                {% elif note.email_direction == 'reply' %}
+                    <i class="fas fa-reply me-1"></i>Réponse
+                {% elif note.email_direction == 'forward' %}
+                    <i class="fas fa-share me-1"></i>Transféré
+                {% endif %}
+            </span>
+            {% endif %}
+        {% elif note.note_type == 'call' %}
+            <span class="badge bg-success"><i class="fas fa-phone me-1"></i>Appel</span>
+        {% elif note.note_type == 'meeting' %}
+            <span class="badge bg-warning"><i class="fas fa-users me-1"></i>Rencontre</span>
+        {% else %}
+            <span class="badge bg-secondary"><i class="fas fa-sticky-note me-1"></i>Note</span>
+        {% endif %}
+    </td>
+    <td>
+        <div><strong>{{ note.client.code_client }}</strong></div>
+        <small class="text-muted">{{ note.client.name }}</small>
+    </td>
+    <td><small>{{ note.user.first_name }} {{ note.user.last_name }}</small></td>
+    <td>
+        {% if note.note_type == 'email' %}
+            {# Badge de conversation avec bouton toggle si plusieurs échanges #}
+            {% if is_conversation %}
+                <span class="badge bg-primary conversation-toggle-badge me-2" 
+                      style="cursor: pointer; padding: 0.4em 0.6em;"
+                      title="Cliquez pour voir {{ group.count }}{% if group.has_external_parent %}+{% endif %} échanges"
+                      data-conversation-id="{{ group.canonical_key or note.conversation_id }}"
+                      data-note-parent-id="{{ note.id }}"
+                      onclick="event.stopPropagation(); toggleConversation(this);">
+                    <i class="fas fa-comments me-1"></i> {{ group.count }}{% if group.has_external_parent %}+{% endif %} échanges
+                    <i class="fas fa-chevron-down ms-1 conv-chevron"></i>
+                </span>
+            {% endif %}
+            {# Sujet et aperçu #}
+            {% if (note.email_subject and note.email_subject.strip()) or (note.email_body and note.email_body.strip()) %}
+                <div>
+                    <small><strong>{{ (note.email_subject or 'Sans sujet')|truncate(80) }}</strong></small>
+                </div>
+                {% if note.email_body and note.email_body.strip() %}
+                <div class="text-muted" style="font-size: 0.85em;">
+                    {{ note.email_body|clean_email_preview(120) }}
+                </div>
+                {% endif %}
+            {% elif note.note_text and note.note_text.strip() %}
+                <small>{{ note.note_text|truncate(150) }}</small>
+            {% else %}
+                <small class="text-muted">Aucun contenu</small>
+            {% endif %}
+            {# Pièces jointes #}
+            {% if note.attachments and note.attachments|length > 0 %}
+            <div class="mt-1">
+                <small class="text-muted">
+                    <i class="fas fa-paperclip"></i> {{ note.attachments|length }} PJ
+                </small>
+            </div>
+            {% endif %}
+        {% else %}
+            <small>{{ (note.note_text or '')|truncate(150) }}</small>
+        {% endif %}
+    </td>
+    <td class="text-end" onclick="event.stopPropagation()">
+        <div class="btn-group">
+            {% set can_edit_note = not current_user.is_read_only() and (user_role in ['super_admin', 'admin'] or note.user_id == current_user.id) %}
+            <button class="btn btn-sm btn-outline-primary" onclick="editNote({{ note.id }})" title="{{ 'Modifier' if can_edit_note else 'Voir le détail' }}">
+                <i class="fas {{ 'fa-edit' if can_edit_note else 'fa-eye' }}"></i>
+            </button>
+            {% if can_edit_note %}
+            <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete({{ note.id }})">
+                <i class="fas fa-trash"></i>
+            </button>
+            {% endif %}
+        </div>
+    </td>
+</tr>
+{# Conteneur pour les enfants de conversation (style carte comme Détail client) #}
+{% if is_conversation %}
+<tr class="conversation-children-container" data-parent-note-id="{{ note.id }}" data-conversation-id="{{ group.canonical_key or note.conversation_id }}" style="display: none;">
+    <td colspan="6" class="p-0">
+        <div class="conversation-children-wrapper" id="conv-children-{{ note.id }}">
+            {# Les enfants sont chargés dynamiquement via AJAX avec style carte #}
+        </div>
+    </td>
+</tr>
+{% endif %}
+{% endfor %}

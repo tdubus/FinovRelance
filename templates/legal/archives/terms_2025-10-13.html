@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Conditions Générales d'Utilisation - FinovRelance{% endblock %}
+
+{% block extra_css %}
+<meta name="robots" content="noindex, nofollow">
+<style>
+    .bg-primary { background-color: #8475EC !important; }
+    .text-primary { color: #8475EC !important; }
+    .alert-info { background-color: #EDE9FE !important; border-color: #8475EC !important; color: #6B5DC0 !important; }
+    .border-info { border-color: #8475EC !important; }
+    .bg-info { background-color: #8475EC !important; }
+    a { color: #8475EC; }
+    a:hover { color: #6B5DC0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h3 mb-0">
+                        <i data-feather="file-text" class="me-2"></i>
+                        Conditions Générales d'Utilisation
+                    </h1>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i data-feather="info" class="me-2"></i>
+                        <strong>Application :</strong> FinovRelance - Gestion des Comptes à Recevoir
+                    </div>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">Introduction</h2>
+                        <p>Ce document décrit les conditions d'utilisation de l'application FinovRelance. Il couvre les responsabilités, la propriété intellectuelle, la protection des données et les clauses juridiques applicables au Québec.</p>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">1. Objet et Champ d'Application</h2>
+                        <p>Les présentes conditions générales d'utilisation (« CGU ») régissent l'utilisation de l'application FinovRelance, une solution SaaS de gestion des comptes à recevoir développée par Finova Solutions.</p>
+                        <p>L'utilisation de l'application implique l'acceptation pleine et entière des présentes CGU.</p>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">2. Définitions</h2>
+                        <ul>
+                            <li><strong>Application :</strong> FinovRelance, solution logicielle accessible en ligne</li>
+                            <li><strong>Utilisateur :</strong> Toute personne physique ou morale utilisant l'application</li>
+                            <li><strong>Compte :</strong> Espace personnel sécurisé permettant l'accès aux fonctionnalités</li>
+                            <li><strong>Données :</strong> Toutes informations saisies, stockées ou traitées via l'application</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">3. Accès et Utilisation</h2>
+                        <h3 class="h5">3.1 Conditions d'accès</h3>
+                        <p>L'accès à l'application nécessite la création d'un compte avec des identifiants valides. L'utilisateur s'engage à :</p>
+                        <ul>
+                            <li>Fournir des informations exactes et complètes</li>
+                            <li>Maintenir la confidentialité de ses identifiants</li>
+                            <li>Notifier immédiatement tout usage non autorisé</li>
+                        </ul>
+
+                        <h3 class="h5">3.2 Utilisation autorisée</h3>
+                        <p>L'application est destinée exclusivement à la gestion des comptes à recevoir dans un cadre professionnel légal.</p>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">4. Responsabilités</h2>
+                        <h3 class="h5">4.1 Responsabilités de Finova Solutions</h3>
+                        <ul>
+                            <li>Assurer la disponibilité de l'application selon les niveaux de service convenus</li>
+                            <li>Maintenir la sécurité des données selon les standards de l'industrie</li>
+                            <li>Fournir le support technique dans les délais raisonnables</li>
+                            <li>Effectuer des sauvegardes automatiques quotidiennes vers une infrastructure externe sécurisée (Supabase)</li>
+                        </ul>
+
+                        <h3 class="h5">4.2 Responsabilités de l'utilisateur</h3>
+                        <ul>
+                            <li>Utiliser l'application conformément à sa destination</li>
+                            <li>Respecter la législation applicable</li>
+                            <li>Effectuer des sauvegardes complémentaires de ses données si nécessaire</li>
+                            <li>Signaler tout dysfonctionnement ou incident de sécurité</li>
+                        </ul>
+                        
+                        <div class="alert alert-info mt-3">
+                            <i data-feather="shield" class="me-2"></i>
+                            <strong>Protection renforcée des données :</strong> Finova Solutions met en place un système de sauvegarde automatique quotidien vers Supabase, une infrastructure indépendante et certifiée, garantissant ainsi une protection optimale et la récupération de vos données en cas d'incident.
+                        </div>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">5. Propriété Intellectuelle</h2>
+                        <p>L'application FinovRelance, incluant son code source, son interface, sa documentation et tous éléments qui la composent, est la propriété exclusive de Finova Solutions.</p>
+                        <p>L'utilisateur ne peut reproduire, modifier, distribuer ou commercialiser tout ou partie de l'application sans autorisation écrite préalable.</p>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">6. Protection des Données</h2>
+                        <p>Le traitement des données personnelles est régi par notre <a href="{{ url_for('main.legal_confidentialite') }}" class="text-decoration-none">Politique de Confidentialité</a>, conforme à la Loi 25 du Québec et aux lois canadiennes sur la protection des renseignements personnels.</p>
+                        
+                        <h3 class="h5 mt-3">6.1 Système de sauvegarde</h3>
+                        <p>Vos données sont automatiquement sauvegardées vers Supabase, un fournisseur tiers certifié SOC 2 et ISO 27001. En acceptant ces CGU, vous consentez également aux <a href="https://supabase.com/terms" target="_blank" class="text-decoration-none">conditions d'utilisation de Supabase</a> et à leur <a href="https://supabase.com/privacy" target="_blank" class="text-decoration-none">politique de confidentialité</a> pour ce qui concerne les services de sauvegarde.</p>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">7. Limitation de Responsabilité</h2>
+                        <p>Dans les limites autorisées par la loi, Finova Solutions ne saurait être tenue responsable :</p>
+                        <ul>
+                            <li>Des dommages indirects, consécutifs ou accessoires</li>
+                            <li>De la perte de données due à une négligence de l'utilisateur</li>
+                            <li>Des interruptions de service dues à des causes externes</li>
+                            <li>De l'utilisation inappropriée de l'application</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">8. Modifications des CGU</h2>
+                        <p>Finova Solutions se réserve le droit de modifier les présentes CGU à tout moment. Les modifications entrent en vigueur dès leur publication dans l'application.</p>
+                        <p>L'utilisation continue de l'application après modification vaut acceptation des nouvelles conditions.</p>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">9. Résiliation</h2>
+                        <p>Le contrat peut être résilié par l'une ou l'autre des parties moyennant un préavis de 30 jours. En cas de manquement grave aux présentes CGU, Finova Solutions peut procéder à une résiliation immédiate.</p>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">10. Droit Applicable et Juridiction</h2>
+                        <p>Les présentes CGU sont régies par le droit québécois. Tout litige sera soumis à la juridiction des tribunaux du Québec.</p>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">11. Contact</h2>
+                        <div class="alert alert-light">
+                            <p class="mb-1"><strong>Finova Solutions</strong></p>
+                            <p class="mb-1">Responsable : Tony Dubus</p>
+                            <p class="mb-0">Email : <a href="mailto:tdubus@finova-solutions.com">tdubus@finova-solutions.com</a></p>
+                        </div>
+                    </section>
+
+                    <div class="text-muted small mt-4">
+                        <hr>
+                        <p class="mb-0">Dernière mise à jour : 8 octobre 2025 - Conformité canadienne (LPRPDE/Loi 25)</p>
+                        <p class="mb-0"><em>Ajout : Système de backup automatique vers Supabase</em></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialize Feather icons
+if (typeof feather !== 'undefined') {
+    feather.replace();
+}
+</script>
+{% endblock %}

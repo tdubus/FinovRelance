@@ -1,0 +1,178 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}{{ action }} une association utilisateur-entreprise{% endblock %}
+{% block page_subtitle %}Associer un utilisateur à une entreprise{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">{{ action }} une association</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" novalidate>
+                    {{ form.csrf_token }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Sélection</h6>
+                            
+                            <div class="mb-3">
+                                {{ form.user_id.label(class="form-label") }}
+                                {{ form.user_id(class="form-control" + (" is-invalid" if form.user_id.errors else "")) }}
+                                {% if form.user_id.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.user_id.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.company_id.label(class="form-label") }}
+                                {{ form.company_id(class="form-control" + (" is-invalid" if form.company_id.errors else "")) }}
+                                {% if form.company_id.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.company_id.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Configuration</h6>
+                            
+                            <div class="mb-3">
+                                {{ form.role.label(class="form-label") }}
+                                {{ form.role(class="form-control" + (" is-invalid" if form.role.errors else "")) }}
+                                {% if form.role.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.role.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    <ul class="mb-0">
+                                        <li><strong>Lecteur:</strong> Accès lecture seule</li>
+                                        <li><strong>Employé:</strong> Accès standard</li>
+                                        <li><strong>Admin:</strong> Gestion de l'entreprise</li>
+                                        <li><strong>Super Admin:</strong> Accès plateforme</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.is_active(class="form-check-input") }}
+                                    {{ form.is_active.label(class="form-check-label") }}
+                                </div>
+                                {% if form.is_active.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.is_active.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Les utilisateurs inactifs ne peuvent pas se connecter à cette entreprise.
+                                </div>
+                            </div>
+                            
+                            {% if current_user.is_superuser %}
+                            <div class="mt-4 pt-3 border-top">
+                                <h6 class="fw-bold mb-3 text-warning"><i class="fas fa-shield-alt me-2"></i>Options Super Admin</h6>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        {{ form.bypass_license(class="form-check-input", id="bypass_license") }}
+                                        {{ form.bypass_license.label(class="form-check-label") }}
+                                    </div>
+                                    <div class="form-text text-warning">
+                                        Permet d'ajouter un utilisateur même si le nombre de licences est insuffisant (usage support uniquement).
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3" id="password_section" style="display: none;">
+                                    {{ form.admin_password.label(class="form-label") }}
+                                    {{ form.admin_password(class="form-control" + (" is-invalid" if form.admin_password.errors else ""), placeholder="Votre mot de passe") }}
+                                    {% if form.admin_password.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.admin_password.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text">
+                                        Requis pour confirmer le bypass de licence.
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if request.args.get('user_id') or request.args.get('company_id') %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {% if request.args.get('user_id') %}
+                            <strong>Utilisateur pré-sélectionné</strong> - Choisissez l'entreprise à associer
+                        {% elif request.args.get('company_id') %}
+                            <strong>Entreprise pré-sélectionnée</strong> - Choisissez l'utilisateur à ajouter
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between pt-4 border-top">
+                        <div>
+                            {% if request.args.get('user_id') %}
+                                <a href="{{ url_for('admin.user_companies', user_id=request.args.get('user_id')) }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Retour à l'utilisateur
+                                </a>
+                            {% elif request.args.get('company_id') %}
+                                <a href="{{ url_for('admin.company_users', company_id=request.args.get('company_id')) }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Retour à l'entreprise
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Retour aux utilisateurs
+                                </a>
+                            {% endif %}
+                        </div>
+                        <button type="submit" class="btn btn-admin-primary">
+                            <i class="fas fa-link me-2"></i>{{ action }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Pre-select values from URL parameters
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    const userId = urlParams.get('user_id');
+    if (userId && document.getElementById('user_id')) {
+        document.getElementById('user_id').value = userId;
+    }
+    
+    const companyId = urlParams.get('company_id');
+    if (companyId && document.getElementById('company_id')) {
+        document.getElementById('company_id').value = companyId;
+    }
+    
+    // Toggle password section based on bypass checkbox
+    const bypassCheckbox = document.getElementById('bypass_license');
+    const passwordSection = document.getElementById('password_section');
+    
+    if (bypassCheckbox && passwordSection) {
+        bypassCheckbox.addEventListener('change', function() {
+            passwordSection.style.display = this.checked ? 'block' : 'none';
+        });
+        // Initial state
+        if (bypassCheckbox.checked) {
+            passwordSection.style.display = 'block';
+        }
+    }
+});
+</script>
+{% endblock %}

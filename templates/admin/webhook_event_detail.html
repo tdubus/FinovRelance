@@ -1,0 +1,212 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Détail Webhook - PHASE 5{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">🔍 Détail Événement Webhook</h1>
+        <div>
+            <a href="{{ url_for('webhook_admin.webhook_events') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour Liste
+            </a>
+            <a href="{{ url_for('webhook_admin.webhook_dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    {% if webhook %}
+    <div class="row">
+        <!-- Informations principales -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle"></i> Informations Générales</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-5">ID Événement:</dt>
+                                <dd class="col-sm-7"><code>{{ webhook.stripe_event_id }}</code></dd>
+                                
+                                <dt class="col-sm-5">Type:</dt>
+                                <dd class="col-sm-7"><code>{{ webhook.webhook_type }}</code></dd>
+                                
+                                <dt class="col-sm-5">Statut:</dt>
+                                <dd class="col-sm-7">
+                                    <span class="badge badge-{{ webhook.processing_status|webhook_status_color }}">
+                                        {{ webhook.processing_status|title }}
+                                    </span>
+                                </dd>
+                                
+                                <dt class="col-sm-5">Traité le:</dt>
+                                <dd class="col-sm-7">{{ webhook.processed_at.strftime('%d/%m/%Y %H:%M:%S') }}</dd>
+                            </dl>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-5">Entreprise:</dt>
+                                <dd class="col-sm-7">
+                                    {% if webhook.company %}
+                                        <strong>{{ webhook.company.name }}</strong>
+                                        <br><small class="text-muted">ID: {{ webhook.company.id }}</small>
+                                    {% else %}
+                                        <em class="text-muted">Événement global</em>
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-5">Durée:</dt>
+                                <dd class="col-sm-7">{{ webhook.processing_duration_ms|format_duration }}</dd>
+                                
+                                <dt class="col-sm-5">Tentatives:</dt>
+                                <dd class="col-sm-7">
+                                    {% if webhook.retry_count > 0 %}
+                                        <span class="badge badge-warning">{{ webhook.retry_count }}</span>
+                                    {% else %}
+                                        <span class="text-muted">Aucune</span>
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    {% if webhook.error_message %}
+                    <div class="alert alert-danger mt-3">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Message d'Erreur</h6>
+                        <pre class="mb-0">{{ webhook.error_message }}</pre>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if webhook_data_parsed %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-code"></i> Données Webhook (JSON)</h5>
+                </div>
+                <div class="card-body">
+                    <pre class="bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto;"><code>{{ webhook_data_parsed|format_json }}</code></pre>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Actions et métadonnées -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tools"></i> Actions</h5>
+                </div>
+                <div class="card-body">
+                    {% if webhook.processing_status == 'failed' and webhook.retry_count < 3 %}
+                        <button onclick="retryWebhook()" class="btn btn-warning btn-block mb-2">
+                            <i class="fas fa-redo"></i> Relancer Webhook
+                        </button>
+                    {% endif %}
+                    
+                    <button onclick="copyEventId()" class="btn btn-info btn-block mb-2">
+                        <i class="fas fa-copy"></i> Copier ID Événement
+                    </button>
+                    
+                    {% if webhook.company %}
+                        <a href="#" class="btn btn-outline-primary btn-block mb-2">
+                            <i class="fas fa-building"></i> Voir Entreprise
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6><i class="fas fa-chart-line"></i> Métriques</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Temps de traitement:</span>
+                        <strong>{{ webhook.processing_duration_ms|format_duration }}</strong>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Nombre de tentatives:</span>
+                        <strong>{{ webhook.retry_count }}</strong>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Statut final:</span>
+                        <strong>
+                            <span class="badge badge-{{ webhook.processing_status|webhook_status_color }}">
+                                {{ webhook.processing_status|title }}
+                            </span>
+                        </strong>
+                    </div>
+                </div>
+            </div>
+
+            {% if webhook.company %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6><i class="fas fa-building"></i> Contexte Entreprise</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>{{ webhook.company.name }}</strong></p>
+                    <p class="text-muted small">
+                        Plan: {{ webhook.company.plan.name if webhook.company.plan else 'N/A' }}<br>
+                        Statut: {{ webhook.company.subscription_status or 'N/A' }}<br>
+                        Licences: {{ webhook.company.quantity_licenses or 1 }}
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+            <h5 class="text-muted">Événement introuvable</h5>
+            <p class="text-muted">L'événement webhook demandé n'existe pas ou a été supprimé.</p>
+            <a href="{{ url_for('webhook_admin.webhook_events') }}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Retour à la Liste
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function retryWebhook() {
+    if (!confirm('Relancer le traitement de ce webhook ?')) return;
+    
+    fetch(`/admin/webhooks/retry/{{ webhook.id }}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Erreur retry:', error);
+        alert('Erreur lors du retry');
+    });
+}
+
+function copyEventId() {
+    const eventId = '{{ webhook.stripe_event_id if webhook else "" }}';
+    navigator.clipboard.writeText(eventId).then(() => {
+        alert('ID événement copié dans le presse-papiers');
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription - FinovRelance{% endblock %}
+
+{% block content %}
+<div class="container-fluid d-flex align-items-center justify-content-center min-vh-100">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-8 col-lg-6 col-xl-5">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        <img src="{{ url_for('static', filename='logo-vertical.png') }}" 
+                             alt="FinovRelance" 
+                             style="height: 80px; width: auto;">
+                    </div>
+                    <h2 class="h4 text-primary fw-bold">Créer votre entreprise</h2>
+                    <p class="text-muted">Démarrez avec FinovRelance</p>
+                </div>
+                
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <!-- Company Information -->
+                    <div class="mb-4">
+                        <h6 class="text-primary fw-bold mb-3">
+                            <i data-feather="briefcase" style="width: 16px; height: 16px;"></i>
+                            Informations de votre entreprise
+                        </h6>
+                        <div class="form-group mb-3">
+                            {{ form.company_name.label(class="form-label") }}
+                            {{ form.company_name(class="form-control", placeholder="Nom de votre entreprise") }}
+                            {% if form.company_name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.company_name.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            {{ form.plan.label(class="form-label") }}
+                            {{ form.plan(class="form-select") }}
+                            {% if form.plan.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.plan.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="text-muted">Vous pourrez changer de forfait à tout moment depuis les paramètres.</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Admin User Information -->
+                    <div class="mb-4">
+                        <h6 class="text-primary fw-bold mb-3">
+                            <i data-feather="user" style="width: 16px; height: 16px;"></i>
+                            Votre compte administrateur
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    {{ form.first_name.label(class="form-label") }}
+                                    {{ form.first_name(class="form-control", placeholder="Votre prénom") }}
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in form.first_name.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    {{ form.last_name.label(class="form-label") }}
+                                    {{ form.last_name(class="form-control", placeholder="Votre nom") }}
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in form.last_name.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Courriel</label>
+                            {{ form.email(class="form-control", placeholder="votre@courriel.com") }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.email.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    {{ form.password.label(class="form-label") }}
+                                    {{ form.password(class="form-control", placeholder="Mot de passe sécurisé") }}
+                                    {% if form.password.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in form.password.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    {{ form.password2.label(class="form-label") }}
+                                    {{ form.password2(class="form-control", placeholder="Confirmer le mot de passe") }}
+                                    {% if form.password2.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in form.password2.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i data-feather="info" style="width: 16px; height: 16px;"></i>
+                        <strong>Plateforme SaaS Multi-Entreprise:</strong> Vos données seront complètement isolées 
+                        et vous pourrez inviter d'autres utilisateurs dans votre entreprise.
+                    </div>
+                    
+                    <!-- Acceptation des conditions -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            {{ form.accept_terms(class="form-check-input", id="accept_terms") }}
+                            <label class="form-check-label" for="accept_terms">
+                                J'accepte les conditions d'utilisation et la politique de confidentialité
+                                <span class="text-danger">*</span>
+                            </label>
+                            {% if form.accept_terms.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.accept_terms.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <small class="text-muted">
+                            <i data-feather="shield" style="width: 14px; height: 14px;"></i>
+                            Vos données sont protégées et traitées conformément à la réglementation en vigueur.
+                        </small>
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <p class="text-muted">
+                        Déjà un compte? 
+                        <a href="{{ url_for('auth.login') }}" class="text-primary text-decoration-none">
+                            Se connecter
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, hsl(var(--primary-light)) 0%, hsl(var(--surface)) 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+    
+    .card {
+        border-radius: var(--radius-xl);
+        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.95);
+    }
+    
+    .form-control, .form-select {
+        border-radius: var(--radius-lg);
+        border: 2px solid hsl(var(--border));
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: hsl(var(--primary));
+        box-shadow: 0 0 0 0.25rem hsl(var(--primary) / 0.25);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%);
+        border: none;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+    }
+</style>
+{% endblock %}

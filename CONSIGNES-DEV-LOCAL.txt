@@ -1,0 +1,116 @@
+============================================================
+  CONSIGNES DE CONFIGURATION - DEVELOPPEMENT LOCAL
+  FinovRelance
+============================================================
+
+PREREQUIS :
+- Docker Desktop installe et en marche
+- Python 3.11+ (si tu veux tester hors Docker)
+- PostgreSQL 16 client (psql, pg_dump) installe
+- Git configure avec acces au repo GitHub prive
+
+------------------------------------------------------------
+1. CLONER LE REPO
+------------------------------------------------------------
+git clone git@github.com:tdubus/FinovRelance.git
+cd FinovRelance
+
+------------------------------------------------------------
+2. CONFIGURER LES VARIABLES D'ENVIRONNEMENT
+------------------------------------------------------------
+cp .env.example .env
+
+Ouvre le fichier .env et remplis TOUTES les valeurs.
+
+Pour le dev local, ajuste ces valeurs specifiquement :
+- DATABASE_URL=postgresql://finovrelance:localdevpassword@db:5432/finovrelance
+  (ou @localhost:5432 si sans Docker)
+- FLASK_ENV=development
+- DEV_MODE=true
+- APP_URL=http://localhost:5000
+- Ne pas definir MARKETING_URL (desactive le routage par domaine)
+
+------------------------------------------------------------
+3. CONFIGURER OAUTH MICROSOFT (OBLIGATOIRE)
+------------------------------------------------------------
+Va dans Azure Portal > App registrations > ton app FinovRelance.
+
+Dans "Authentication" > "Redirect URIs", AJOUTE cette URL :
+  http://localhost:5000/auth/microsoft/callback
+
+Ne supprime PAS les URLs de production, ajoute celle-ci en plus.
+
+Dans ton .env local, mets :
+  MICROSOFT_REDIRECT_URI=http://localhost:5000/auth/microsoft/callback
+
+------------------------------------------------------------
+4. CONFIGURER STRIPE (OPTIONNEL POUR DEV)
+------------------------------------------------------------
+Va dans le dashboard Stripe > mode Test.
+
+Utilise les cles de test (commencent par sk_test_ et pk_test_).
+
+Pour les webhooks en local, installe le Stripe CLI :
+  stripe login
+  stripe listen --forward-to localhost:5000/stripe/v2/webhook
+
+Le CLI va te donner un webhook secret (whsec_...).
+Mets-le dans ton .env local comme STRIPE_WEBHOOK_SECRET.
+
+------------------------------------------------------------
+5. CONFIGURER XERO / BUSINESS CENTRAL (OPTIONNEL)
+------------------------------------------------------------
+Meme principe que Microsoft OAuth.
+Ajoute les redirect URIs localhost dans chaque portail developeur.
+
+Xero : https://developer.xero.com > tes apps > redirect URIs
+  Ajouter : http://localhost:5000/profile/xero/callback
+
+Business Central : Azure Portal > l'app Business Central
+  Ajouter : http://localhost:5000/profile/business-central/callback
+
+(Verifie les paths exacts dans le code, blueprints oauth_callback_bp)
+
+------------------------------------------------------------
+6. LANCER L'APPLICATION
+------------------------------------------------------------
+Option A - Avec Docker (recommande) :
+  docker compose up --build
+
+  L'app sera disponible sur http://localhost:5000
+
+Option B - Sans Docker :
+  pip install -r requirements.txt
+  # Assure-toi que PostgreSQL tourne en local
+  python main.py
+
+------------------------------------------------------------
+7. IMPORTER LES DONNEES DE PRODUCTION
+------------------------------------------------------------
+Si tu as besoin des donnees de prod pour tester :
+
+  python scripts/migrate_db.py \
+    --source "postgresql://USER:PASS@NEON_HOST:5432/finovrelance" \
+    --target "postgresql://finovrelance:localdevpassword@localhost:5432/finovrelance"
+
+IMPORTANT : Ne commite JAMAIS un dump SQL dans le repo.
+Supprime le fichier .sql apres utilisation.
+
+------------------------------------------------------------
+8. CRON JOBS
+------------------------------------------------------------
+En local, les cron jobs ne tournent pas automatiquement.
+Pour tester un cron job manuellement :
+
+  curl -H "Authorization: Bearer TON_CRON_SECRET" http://localhost:5000/jobs/NOM_DU_JOB
+
+------------------------------------------------------------
+NOTES DE SECURITE
+------------------------------------------------------------
+- Le fichier .env ne doit JAMAIS etre commite (verifie .gitignore)
+- Les dumps SQL (.sql) ne doivent JAMAIS etre commites
+- Ne mets jamais de secrets dans le code source
+- En cas de doute, fais : git diff --cached (avant un commit)
+  pour verifier qu'aucun secret n'est inclus
+
+============================================================

@@ -1,0 +1,523 @@
+{% extends "base.html" %}
+
+{% block title %}Configuration Import Excel/CSV - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-excel me-2"></i>Configuration du Connecteur Excel/CSV
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Instructions -->
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Comment configurer votre import</h5>
+                        <p>Le Connecteur Excel/CSV vous permet d'importer des clients et factures depuis des fichiers Excel (.xlsx) ou CSV (.csv) sans reformater vos fichiers à chaque fois.</p>
+                        <hr>
+                        <ol class="mb-0">
+                            <li>Uploadez un fichier exemple (Excel ou CSV) pour détecter automatiquement les colonnes</li>
+                            <li>Associez chaque colonne de votre fichier aux champs FinovRelance</li>
+                            <li>Sauvegardez la configuration (elle sera réutilisée pour tous vos futurs imports)</li>
+                            <li>Importez vos clients et factures directement depuis les Paramètres</li>
+                        </ol>
+                    </div>
+                    
+                    <!-- Status actuel -->
+                    {% if mapping_config.is_configured %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Configuration active</strong>
+                        <p class="mb-0 mt-2">
+                            Vos mappings sont configurés et prêts à l'emploi.
+                            Vous pouvez reconfigurer ci-dessous si nécessaire.
+                        </p>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Configuration requise</strong>
+                        <p class="mb-0 mt-2">
+                            Configurez au moins un mapping (clients OU factures) pour activer le connecteur.
+                        </p>
+                    </div>
+                    {% endif %}
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Section 1: Configuration Clients -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-users text-primary me-2"></i>
+                                1. Configuration du Mapping Clients
+                                {% if mapping_config.client_column_mappings %}
+                                <span class="badge bg-success ms-2">Configuré</span>
+                                {% else %}
+                                <span class="badge bg-warning ms-2">Non configuré</span>
+                                {% endif %}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Upload fichier exemple clients -->
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Étape 1 :</strong> Uploadez un fichier exemple (Excel ou CSV)</label>
+                                <input type="file" 
+                                       class="form-control" 
+                                       id="clientsSampleFile" 
+                                       accept=".xlsx,.xls,.csv">
+                                <small class="form-text text-muted">Formats acceptés : .xlsx, .xls, .csv</small>
+                            </div>
+                            
+                            <button type="button" 
+                                    class="btn btn-primary mb-3" 
+                                    id="detectClientsHeaders">
+                                <i class="fas fa-search me-2"></i>Détecter les colonnes
+                            </button>
+                            
+                            <!-- Zone de mapping clients -->
+                            <div id="clientsMappingZone" style="display: none;">
+                                <hr class="my-3">
+                                <h6><strong>Étape 2 :</strong> Associez les colonnes de votre fichier</h6>
+                                <p class="text-muted small">Les champs marqués d'un <span class="text-danger">*</span> sont obligatoires</p>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Code Client <span class="text-danger">*</span></label>
+                                        <select class="form-select client-mapping-field" data-field="code_client" required>
+                                            <option value="">-- Sélectionnez une colonne --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Nom <span class="text-danger">*</span></label>
+                                        <select class="form-select client-mapping-field" data-field="name" required>
+                                            <option value="">-- Sélectionnez une colonne --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Email</label>
+                                        <select class="form-select client-mapping-field" data-field="email">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Téléphone</label>
+                                        <select class="form-select client-mapping-field" data-field="phone">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                    </div>
+                                    <!-- Champs d'adresse ventilés -->
+                                    <div class="col-12 mb-2">
+                                        <label class="form-label text-muted"><i class="fas fa-map-marker-alt me-1"></i>Champs d'adresse (optionnels)</label>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Adresse 1</label>
+                                        <select class="form-select client-mapping-field" data-field="address_line1">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Adresse 2</label>
+                                        <select class="form-select client-mapping-field" data-field="address_line2">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Ville</label>
+                                        <select class="form-select client-mapping-field" data-field="city">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Province</label>
+                                        <select class="form-select client-mapping-field" data-field="province">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Code postal</label>
+                                        <select class="form-select client-mapping-field" data-field="postal_code">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Pays</label>
+                                        <select class="form-select client-mapping-field" data-field="country">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 mb-2"></div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Représentant</label>
+                                        <select class="form-select client-mapping-field" data-field="representative_name">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Conditions de paiement</label>
+                                        <select class="form-select client-mapping-field" data-field="payment_terms">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Code Client Parent</label>
+                                        <select class="form-select client-mapping-field" data-field="parent_code">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Langue (fr/en)</label>
+                                        <select class="form-select client-mapping-field" data-field="language">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Section Mapping de Langue -->
+                                <div class="card bg-light mb-3">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><i class="fas fa-language me-2"></i>Mapping des Codes de Langue</h6>
+                                        <p class="text-muted small">
+                                            Définissez comment les valeurs de langue dans votre fichier Excel correspondent aux codes FR et EN utilisés dans FinovRelance.
+                                        </p>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <span class="input-group-text" style="min-width: 60px;">FR =</span>
+                                                    <input type="text" class="form-control" id="language_mapping_fr" 
+                                                           value="{{ mapping_config.get_language_mappings().get('FR', 'Français') }}"
+                                                           placeholder="ex: Français">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text" style="min-width: 60px;">EN =</span>
+                                                    <input type="text" class="form-control" id="language_mapping_en" 
+                                                           value="{{ mapping_config.get_language_mappings().get('EN', 'Anglais') }}"
+                                                           placeholder="ex: Anglais">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">
+                                            Exemple : Si votre fichier Excel contient "Français", tapez "Français" pour FR. 
+                                            Si vous utilisez "French", tapez "French" pour EN.
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" 
+                                        class="btn btn-success" 
+                                        id="saveClientsMapping">
+                                    <i class="fas fa-save me-2"></i>Sauvegarder le mapping clients
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Section 2: Configuration Factures -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-file-invoice text-warning me-2"></i>
+                                2. Configuration du Mapping Factures
+                                {% if mapping_config.invoice_column_mappings %}
+                                <span class="badge bg-success ms-2">Configuré</span>
+                                {% else %}
+                                <span class="badge bg-warning ms-2">Non configuré</span>
+                                {% endif %}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Upload fichier exemple factures -->
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Étape 1 :</strong> Uploadez un fichier exemple (Excel ou CSV)</label>
+                                <input type="file" 
+                                       class="form-control" 
+                                       id="invoicesSampleFile" 
+                                       accept=".xlsx,.xls,.csv">
+                                <small class="form-text text-muted">Formats acceptés : .xlsx, .xls, .csv</small>
+                            </div>
+                            
+                            <button type="button" 
+                                    class="btn btn-primary mb-3" 
+                                    id="detectInvoicesHeaders">
+                                <i class="fas fa-search me-2"></i>Détecter les colonnes
+                            </button>
+                            
+                            <!-- Zone de mapping factures -->
+                            <div id="invoicesMappingZone" style="display: none;">
+                                <hr class="my-3">
+                                <h6><strong>Étape 2 :</strong> Associez les colonnes de votre fichier</h6>
+                                <p class="text-muted small">Tous les champs sont obligatoires</p>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Code Client <span class="text-danger">*</span></label>
+                                        <select class="form-select invoice-mapping-field" data-field="code_client" required>
+                                            <option value="">-- Sélectionnez une colonne --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Numéro de Facture <span class="text-danger">*</span></label>
+                                        <select class="form-select invoice-mapping-field" data-field="invoice_number" required>
+                                            <option value="">-- Sélectionnez une colonne --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Montant <span class="text-danger">*</span></label>
+                                        <select class="form-select invoice-mapping-field" data-field="amount" required>
+                                            <option value="">-- Sélectionnez une colonne --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Montant Original</label>
+                                        <select class="form-select invoice-mapping-field" data-field="original_amount">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                        <small class="form-text text-muted">Montant total de la facture (avant paiements)</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Date d'émission <span class="text-danger">*</span></label>
+                                        <select class="form-select invoice-mapping-field" data-field="issue_date" required>
+                                            <option value="">-- Sélectionnez une colonne --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Date d'échéance <span class="text-danger">*</span></label>
+                                        <select class="form-select invoice-mapping-field" data-field="due_date" required>
+                                            <option value="">-- Sélectionnez une colonne --</option>
+                                        </select>
+                                    </div>
+                                    {% if is_project_enabled %}
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">{{ project_label }}</label>
+                                        <select class="form-select invoice-mapping-field" data-field="project_name">
+                                            <option value="">-- Optionnel --</option>
+                                        </select>
+                                        <small class="form-text text-muted">Pour regrouper les factures par {{ project_label|lower }}</small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <button type="button" 
+                                        class="btn btn-success" 
+                                        id="saveInvoicesMapping">
+                                    <i class="fas fa-save me-2"></i>Sauvegarder le mapping factures
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Retour aux paramètres -->
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('company.settings', _anchor='accounting') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Retour aux Paramètres
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Get CSRF token
+function getCsrfToken() {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+}
+
+// Fonction pour détecter les headers des clients
+document.getElementById('detectClientsHeaders').addEventListener('click', function() {
+    const fileInput = document.getElementById('clientsSampleFile');
+    if (!fileInput.files[0]) {
+        alert('Veuillez d\'abord sélectionner un fichier');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('sample_file', fileInput.files[0]);
+    
+    fetch('{{ url_for("company.file_import_detect_headers") }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remplir les dropdowns
+            const selects = document.querySelectorAll('.client-mapping-field');
+            selects.forEach(select => {
+                select.innerHTML = '<option value="">-- Sélectionnez une colonne --</option>';
+                data.headers.forEach(header => {
+                    const option = document.createElement('option');
+                    option.value = header;
+                    option.textContent = header;
+                    select.appendChild(option);
+                });
+            });
+            
+            // Afficher la zone de mapping
+            document.getElementById('clientsMappingZone').style.display = 'block';
+        } else {
+            alert('Erreur : ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Erreur lors de la détection : ' + error);
+    });
+});
+
+// Fonction pour détecter les headers des factures
+document.getElementById('detectInvoicesHeaders').addEventListener('click', function() {
+    const fileInput = document.getElementById('invoicesSampleFile');
+    if (!fileInput.files[0]) {
+        alert('Veuillez d\'abord sélectionner un fichier');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('sample_file', fileInput.files[0]);
+    
+    fetch('{{ url_for("company.file_import_detect_headers") }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remplir les dropdowns
+            const selects = document.querySelectorAll('.invoice-mapping-field');
+            selects.forEach(select => {
+                select.innerHTML = '<option value="">-- Sélectionnez une colonne --</option>';
+                data.headers.forEach(header => {
+                    const option = document.createElement('option');
+                    option.value = header;
+                    option.textContent = header;
+                    select.appendChild(option);
+                });
+            });
+            
+            // Afficher la zone de mapping
+            document.getElementById('invoicesMappingZone').style.display = 'block';
+        } else {
+            alert('Erreur : ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Erreur lors de la détection : ' + error);
+    });
+});
+
+// Sauvegarder le mapping clients
+document.getElementById('saveClientsMapping').addEventListener('click', function() {
+    const mapping = {};
+    const selects = document.querySelectorAll('.client-mapping-field');
+    
+    selects.forEach(select => {
+        if (select.value) {
+            const field = select.dataset.field;
+            mapping[select.value] = field;
+        }
+    });
+    
+    // Vérifier les champs obligatoires
+    const requiredFields = ['code_client', 'name'];
+    const mappedFields = Object.values(mapping);
+    const missingFields = requiredFields.filter(f => !mappedFields.includes(f));
+    
+    if (missingFields.length > 0) {
+        alert('Champs obligatoires manquants : ' + missingFields.join(', '));
+        return;
+    }
+    
+    // Récupérer les correspondances de langue
+    const languageMappings = {
+        'FR': document.getElementById('language_mapping_fr').value.trim() || 'Français',
+        'EN': document.getElementById('language_mapping_en').value.trim() || 'Anglais'
+    };
+    
+    // Envoyer au serveur
+    fetch('{{ url_for("company.file_import_save_mapping") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            mapping_type: 'clients',
+            mapping: mapping,
+            language_mappings: languageMappings
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Configuration clients sauvegardée avec succès !');
+            location.reload();
+        } else {
+            alert('Erreur : ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Erreur lors de la sauvegarde : ' + error);
+    });
+});
+
+// Sauvegarder le mapping factures
+document.getElementById('saveInvoicesMapping').addEventListener('click', function() {
+    const mapping = {};
+    const selects = document.querySelectorAll('.invoice-mapping-field');
+    
+    selects.forEach(select => {
+        if (select.value) {
+            const field = select.dataset.field;
+            mapping[select.value] = field;
+        }
+    });
+    
+    // Vérifier les champs obligatoires
+    const requiredFields = ['code_client', 'invoice_number', 'amount', 'issue_date', 'due_date'];
+    const mappedFields = Object.values(mapping);
+    const missingFields = requiredFields.filter(f => !mappedFields.includes(f));
+    
+    if (missingFields.length > 0) {
+        alert('Champs obligatoires manquants : ' + missingFields.join(', '));
+        return;
+    }
+    
+    // Envoyer au serveur
+    fetch('{{ url_for("company.file_import_save_mapping") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            mapping_type: 'invoices',
+            mapping: mapping
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Configuration factures sauvegardée avec succès !');
+            location.reload();
+        } else {
+            alert('Erreur : ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Erreur lors de la sauvegarde : ' + error);
+    });
+});
+</script>
+{% endblock %}

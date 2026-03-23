@@ -1,0 +1,2211 @@
+/* FinovRelance - Modern CSS with vibrant, friendly color palette */
+
+/* ==========================================================================
+   Custom Fonts (Auto-hébergées)
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Host Grotesk';
+  src: url('../fonts/HostGrotesk-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Onest';
+  src: url('../fonts/Onest-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Onest';
+  src: url('../fonts/Onest-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Onest';
+  src: url('../fonts/Onest-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Modern Vibrant Color Palette - Nouvelle palette violet */
+  --primary: 250 75% 69%; /* #8475EC - Violet principal */
+  --primary-light: 260 95% 97%; /* #EDE9FE - Violet pale */
+  --primary-dark: 250 45% 55%; /* #6B5DC0 - Violet fonce */
+  --secondary: 250 75% 69%; /* #8475EC - Violet */
+  --success: 142 76% 36%; /* #15803D - Rich green */
+  --danger: 0 84% 60%; /* #EF4444 - Modern red */
+  --warning: 38 92% 50%; /* #F59E0B - Vibrant orange */
+  --info: 250 75% 69%; /* #8475EC - Violet */
+
+  /* Modern Neutral Colors */
+  --background: 0 0% 99%; /* #FCFCFC - Blanc */
+  --surface: 0 0% 100%; /* #FFFFFF */
+  --surface-secondary: 210 40% 96%; /* #F1F5F9 - Soft blue-gray */
+  --surface-tertiary: 210 40% 93%; /* #E2E8F0 */
+  --border: 210 40% 88%; /* #CBD5E1 */
+  --border-light: 260 60% 94%; /* #EDE9FE */
+
+  /* Modern Text Colors */
+  --text-primary: 220 14% 11%; /* #161819 - Noir pour titres */
+  --text-secondary: 220 10% 40%; /* #1A1C21 approx - Gris noir pour paragraphes */
+  --text-muted: 215 16% 75%; /* #94A3B8 - Light gray */
+
+  /* Shadows - Subtiles */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  --shadow: 0 2px 4px -1px rgb(0 0 0 / 0.06);
+  --shadow-lg: 0 4px 8px -2px rgb(0 0 0 / 0.08);
+  --shadow-colored: 0 2px 8px 0 rgb(132 117 236 / 0.1);
+
+  /* Border Radius - Plus fins */
+  --radius-sm: 0.125rem;
+  --radius: 0.25rem;
+  --radius-lg: 0.375rem;
+  --radius-xl: 0.5rem;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  
+  /* Restriction Colors */
+  --restriction-bg: 215 20% 95%; /* #F1F5F9 - Light gray background */
+  --restriction-border: 215 20% 85%; /* #CBD5E1 - Gray border */
+  --restriction-text: 215 20% 55%; /* #64748B - Muted gray text */
+}
+
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+/* CORRECTION LSP : Footer visible selon correction_détail.md */
+body {
+  font-family: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: hsl(var(--text-primary));
+  background-color: hsl(var(--background));
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Typographie */
+h1, h2 {
+  font-family: 'Host Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 800;
+}
+
+h3, h4, h5, h6 {
+  font-family: 'Onest', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600;
+}
+
+/* Footer visible at bottom */
+footer {
+  margin-top: 3rem !important;
+  background-color: #f8f9fa !important;
+  border-top: 1px solid #dee2e6 !important;
+  clear: both !important;
+}
+
+/* Layout */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.container-fluid {
+  width: 100%;
+  padding: 0 var(--space-4);
+}
+
+/* Navigation */
+.navbar {
+  background: hsl(var(--surface));
+  border-bottom: 1px solid hsl(var(--border));
+  box-shadow: var(--shadow);
+  padding: var(--space-4) 0;
+}
+
+.navbar-brand {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: hsl(var(--primary));
+  text-decoration: none;
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.navbar-nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: var(--space-6);
+}
+
+.nav-link {
+  color: hsl(var(--text-primary));
+  text-decoration: none;
+  font-weight: 600;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: hsl(var(--primary));
+  background: hsl(var(--primary-light));
+}
+
+/* Cards */
+.card {
+  background-color: hsl(var(--surface));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+.card-header {
+  background: hsl(var(--surface));
+  border-bottom: 1px solid hsl(var(--border-light));
+  padding: var(--space-4) var(--space-5);
+  font-weight: 500;
+  color: hsl(var(--text-primary));
+  font-size: 0.925rem;
+}
+
+.card-body {
+  padding: var(--space-6);
+}
+
+.card-footer {
+  background: hsl(var(--surface));
+  border-top: 1px solid hsl(var(--border-light));
+  padding: var(--space-4) var(--space-5);
+}
+
+/* Modern Action Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-5);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: var(--space-2);
+}
+
+.btn:focus {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  color: white;
+  background: #8475EC;
+  border-color: #8475EC;
+}
+
+.btn-primary:hover {
+  background: #6B5DC0;
+  border-color: #6B5DC0;
+  color: white;
+}
+
+.btn-secondary {
+  color: #6c757d;
+  background: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.btn-secondary:hover {
+  background: #e9ecef;
+  border-color: #ced4da;
+  color: #5a6268;
+}
+
+.btn-success {
+  color: white;
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.btn-success:hover {
+  background: #059669;
+  border-color: #059669;
+  color: white;
+}
+
+.btn-danger {
+  color: white;
+  background: #f56565;
+  border-color: #f56565;
+}
+
+.btn-danger:hover {
+  background: #e53e3e;
+  border-color: #e53e3e;
+  color: white;
+}
+
+.btn-warning {
+  color: white;
+  background: #f6ad55;
+  border-color: #f6ad55;
+}
+
+.btn-warning:hover {
+  background: #ed8936;
+  border-color: #ed8936;
+  color: white;
+}
+
+.btn-info {
+  color: white;
+  background: #4fd1c7;
+  border-color: #4fd1c7;
+}
+
+.btn-info:hover {
+  background: #38b2ac;
+  border-color: #38b2ac;
+  color: white;
+}
+
+.btn-sm {
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.75rem;
+  border-radius: var(--radius);
+}
+
+.btn-lg {
+  padding: var(--space-4) var(--space-8);
+  font-size: 1.125rem;
+  border-radius: var(--radius-xl);
+}
+
+/* Icon styling for buttons */
+.btn i, .btn [data-feather] {
+  width: 16px;
+  height: 16px;
+  margin-right: var(--space-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-sm i, .btn-sm [data-feather] {
+  width: 14px;
+  height: 14px;
+  margin-right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-lg i, .btn-lg [data-feather] {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Specific styling for action buttons in tables */
+.table .btn-group .btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+}
+
+.table .btn-group .btn i {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: var(--space-5);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-weight: 600;
+  color: hsl(var(--text-primary));
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: var(--space-4) var(--space-4);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: hsl(var(--text-primary));
+  background-color: hsl(var(--surface));
+  border: 2px solid hsl(var(--border));
+  border-radius: var(--radius-lg);
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.1);
+  background-color: hsl(var(--surface));
+}
+
+.form-control:disabled {
+  background-color: hsl(var(--surface-secondary));
+  color: hsl(var(--text-muted));
+  cursor: not-allowed;
+}
+
+.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%238475EC' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right var(--space-3) center;
+  background-repeat: no-repeat;
+  background-size: 1.2rem;
+  padding-right: 3rem;
+}
+
+/* Tables */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--space-4);
+  background-color: hsl(var(--surface));
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.table th,
+.table td {
+  padding: var(--space-4) var(--space-5);
+  text-align: left;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.table th {
+  background: linear-gradient(135deg, hsl(var(--surface-secondary)), hsl(var(--surface-tertiary)));
+  font-weight: 600;
+  color: hsl(var(--text-primary));
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table tbody tr:hover {
+  background: linear-gradient(135deg, hsl(var(--surface-secondary)), hsl(var(--surface)));
+  transform: scale(1.005);
+  transition: all 0.2s ease;
+}
+
+.table-striped tbody tr:nth-child(even) {
+  background-color: hsl(var(--surface-secondary) / 0.3);
+}
+
+/* Action buttons in tables */
+.table .btn-group {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: nowrap;
+}
+
+.table .btn-group .btn {
+  min-width: auto;
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+/* Alerts */
+.alert {
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, var(--alert-bg), var(--alert-bg-light));
+}
+
+.alert-success {
+  --alert-bg: hsl(var(--success) / 0.1);
+  --alert-bg-light: hsl(var(--success) / 0.05);
+  color: hsl(var(--success));
+  border-color: hsl(var(--success) / 0.3);
+}
+
+.alert-danger {
+  --alert-bg: hsl(var(--danger) / 0.1);
+  --alert-bg-light: hsl(var(--danger) / 0.05);
+  color: hsl(var(--danger));
+  border-color: hsl(var(--danger) / 0.3);
+}
+
+.alert-warning {
+  --alert-bg: hsl(var(--warning) / 0.1);
+  --alert-bg-light: hsl(var(--warning) / 0.05);
+  color: hsl(var(--warning));
+  border-color: hsl(var(--warning) / 0.3);
+}
+
+.alert-info {
+  --alert-bg: hsl(var(--info) / 0.1);
+  --alert-bg-light: hsl(var(--info) / 0.05);
+  color: hsl(var(--info));
+  border-color: hsl(var(--info) / 0.3);
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.badge-success {
+  color: white;
+  background: linear-gradient(135deg, hsl(var(--success)), hsl(142 76% 30%));
+}
+
+.badge-danger {
+  color: white;
+  background: linear-gradient(135deg, hsl(var(--danger)), hsl(0 84% 55%));
+}
+
+.badge-warning {
+  color: white;
+  background: linear-gradient(135deg, hsl(var(--warning)), hsl(38 92% 45%));
+}
+
+.badge-secondary {
+  color: hsl(var(--text-primary));
+  background: linear-gradient(135deg, hsl(var(--surface-secondary)), hsl(var(--surface-tertiary)));
+}
+
+.badge .badge-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.35rem;
+}
+
+.badge .badge-icon svg,
+.badge .badge-icon i {
+  width: 10px;
+  height: 10px;
+}
+
+/* Dashboard Stats */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+/* Smaller cards for receivables with more aging periods */
+.receivables-stats .stats-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, hsl(var(--surface)), hsl(var(--surface-secondary)));
+  border: 1px solid hsl(var(--border));
+  border-left: 4px solid hsl(var(--primary));
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Smaller padding for receivables cards */
+.receivables-stats .stat-card {
+    padding: 1rem 0.75rem;
+    min-height: auto;
+    background: white;
+}
+
+.receivables-stats .stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+.receivables-stats .stat-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.25rem;
+    line-height: 1.1;
+}
+
+.receivables-stats .stat-percentage {
+    font-size: 0.75rem;
+    line-height: 1;
+}
+
+/* Receivables specific card colors - only borders and values */
+.receivables-stats .stat-card.total {
+    border-left: 4px solid hsl(215 16% 75%);
+}
+
+.receivables-stats .stat-card.total .stat-value {
+    color: hsl(215 25% 27%);
+}
+
+.receivables-stats .stat-card.current {
+    border-left: 4px solid hsl(var(--success));
+}
+
+.receivables-stats .stat-card.current .stat-value {
+    color: hsl(var(--success));
+}
+
+.receivables-stats .stat-card.aging-0-30 {
+    border-left: 4px solid hsl(38 92% 50%);
+}
+
+.receivables-stats .stat-card.aging-0-30 .stat-value {
+    color: hsl(38 92% 40%);
+}
+
+.receivables-stats .stat-card.aging-31-60 {
+    border-left: 4px solid hsl(25 95% 55%);
+}
+
+.receivables-stats .stat-card.aging-31-60 .stat-value {
+    color: hsl(25 95% 45%);
+}
+
+.receivables-stats .stat-card.aging-61-90 {
+    border-left: 4px solid hsl(var(--danger));
+}
+
+.receivables-stats .stat-card.aging-61-90 .stat-value {
+    color: hsl(var(--danger));
+}
+
+.receivables-stats .stat-card.aging-90-plus {
+    border-left: 4px solid hsl(0 84% 40%);
+}
+
+.receivables-stats .stat-card.aging-90-plus .stat-value {
+    color: hsl(0 84% 30%);
+}
+
+/* Disable the top border for receivables stats cards */
+.receivables-stats .stat-card::before {
+    display: none;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)));
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+/* Consistent colors for table amounts - aligned with JS class names */
+.receivables-table .amount-current {
+    color: hsl(var(--success));
+    font-weight: 600;
+}
+
+.receivables-table .amount-aging-0-30 {
+    color: hsl(38 92% 40%);
+    font-weight: 600;
+}
+
+.receivables-table .amount-aging-31-60 {
+    color: hsl(25 95% 45%);
+    font-weight: 600;
+}
+
+.receivables-table .amount-aging-61-90 {
+    color: hsl(var(--danger));
+    font-weight: 600;
+}
+
+.receivables-table .amount-aging-90-plus {
+    color: hsl(0 84% 30%);
+    font-weight: 600;
+}
+
+/* Ensure amounts are always on a single line */
+.receivables-table td.text-end {
+    white-space: nowrap;
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+}
+
+/* Compact amount headers */
+.receivables-table th.text-end {
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+}
+
+/* Allow client names to wrap without breaking words */
+.receivables-table td:first-child {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: none;
+    max-width: 180px;
+    width: 180px;
+}
+
+/* Compact client name styling */
+.receivables-table td:first-child a {
+    display: block;
+    line-height: 1.3;
+}
+
+.receivables-table td:first-child small {
+    display: block;
+    font-size: 0.7rem;
+    margin-top: 2px;
+}
+
+/* Force the client header to same width */
+.receivables-table th:first-child {
+    max-width: 180px;
+    width: 180px;
+}
+
+/* Limit collector column width */
+.receivables-table th:nth-child(2),
+.receivables-table td:nth-child(2) {
+    max-width: 140px;
+    width: 140px;
+}
+
+/* Give more space to amount columns */
+.receivables-table th.text-end,
+.receivables-table td.text-end {
+    min-width: 85px;
+}
+
+/* Compact actions column */
+.receivables-table th:last-child,
+.receivables-table td:last-child {
+    width: 60px;
+    max-width: 60px;
+    text-align: center;
+}
+
+/* Align actions header with other headers */
+.receivables-table th:last-child {
+    vertical-align: middle;
+    padding: var(--space-4) var(--space-2) !important;
+}
+
+/* Center content in actions cells */
+.receivables-table td:last-child {
+    padding: 0.5rem 0.25rem !important;
+}
+
+/* Style the dropdown button */
+.receivables-table .dropdown .btn {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* Style dropdown menu items */
+.receivables-table .dropdown-menu {
+    min-width: 160px;
+}
+
+.receivables-table .dropdown-item {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.receivables-table .dropdown-item [data-feather] {
+    width: 16px;
+    height: 16px;
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.stat-card.success {
+  border-left-color: hsl(var(--success));
+}
+
+.stat-card.success::before {
+  background: linear-gradient(90deg, hsl(var(--success)), hsl(142 76% 40%));
+}
+
+.stat-card.warning {
+  border-left-color: hsl(var(--warning));
+}
+
+.stat-card.warning::before {
+  background: linear-gradient(90deg, hsl(var(--warning)), hsl(38 92% 55%));
+}
+
+.stat-card.danger {
+  border-left-color: hsl(var(--danger));
+}
+
+.stat-card.danger::before {
+  background: linear-gradient(90deg, hsl(var(--danger)), hsl(0 84% 65%));
+}
+
+.stat-card.danger {
+            border-left: 4px solid var(--danger);
+        }
+
+        .stat-card.danger .stat-value {
+            color: var(--danger);
+        }
+
+        .stat-card.info {
+            border-left: 4px solid var(--info);
+        }
+
+        .stat-card.info .stat-value {
+            color: var(--info);
+        }
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+  color: hsl(var(--text-primary));
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: hsl(var(--text-secondary));
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Logo responsive sizing */
+.navbar-logo {
+  height: 45px;
+  width: auto;
+  transition: height 0.2s ease;
+}
+
+/* Navbar optimizations */
+.navbar {
+  padding: 0.5rem 1rem;
+}
+
+.navbar-brand {
+  margin-right: 1rem;
+  padding: 0.25rem 0;
+}
+
+/* User dropdown optimizations */
+.user-name {
+  display: inline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 var(--space-3);
+  }
+
+  .navbar-nav {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  /* Smaller logo on smaller screens */
+  .navbar-logo {
+    height: 30px;
+  }
+
+
+  /* Compact user dropdown */
+  .user-name {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+
+  /* Responsive for receivables stats on mobile */
+  .receivables-stats .stats-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.25rem;
+  }
+
+  .receivables-stats .stat-card {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .receivables-stats .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .receivables-stats .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .receivables-stats .stat-percentage {
+    font-size: 0.65rem;
+  }
+
+  .table {
+    font-size: 0.8rem;
+  }
+
+  .table th,
+  .table td {
+    padding: var(--space-2);
+  }
+
+  .btn-group {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  /* Adjust client name max-width on mobile */
+  .receivables-table td:first-child {
+    max-width: 90px;
+    min-width: 70px;
+    font-size: 0.75rem;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  /* Hide client code on mobile to save space */
+  .receivables-table td:first-child small {
+    display: none;
+  }
+
+  /* Reduce font size for amounts on mobile */
+  .receivables-table td.text-end {
+    font-size: 0.7rem;
+    padding-left: 0.15rem !important;
+    padding-right: 0.15rem !important;
+  }
+
+  /* Reduce header font size and padding */
+  .receivables-table th {
+    font-size: 0.6rem;
+    padding: 0.4rem 0.25rem !important;
+  }
+
+  /* Compact collector badge */
+  .receivables-table td:nth-child(2) .badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .receivables-stats .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Extra small screens - even smaller logo */
+  .navbar-logo {
+    height: 25px;
+  }
+
+  /* More compact navbar on very small screens */
+  .navbar-brand {
+    padding: 0.25rem 0;
+  }
+
+  /* Compact navigation items */
+  .nav-link {
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.9rem;
+  }
+
+  /* Company switcher text optimization */
+  .nav-link .fas.fa-building + span {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Further reduce client name width on very small screens */
+  .receivables-table td:first-child {
+    max-width: 70px;
+    min-width: 60px;
+    font-size: 0.7rem;
+    padding-left: 0.3rem !important;
+    padding-right: 0.3rem !important;
+  }
+
+  /* Even smaller amounts on very small screens but still readable */
+  .receivables-table td.text-end {
+    font-size: 0.65rem;
+    padding-left: 0.1rem !important;
+    padding-right: 0.1rem !important;
+  }
+
+  /* Ultra compact headers */
+  .receivables-table th {
+    font-size: 0.55rem;
+    padding: 0.3rem 0.15rem !important;
+  }
+
+  /* Hide collector column on very small screens to maximize space */
+  .receivables-table th:nth-child(2),
+  .receivables-table td:nth-child(2) {
+    display: none;
+  }
+
+  /* Compact action buttons */
+  .receivables-table .btn-group .btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+  }
+
+  .receivables-table .btn-group .btn [data-feather] {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* Bootstrap Color Overrides - Violet Branding */
+.bg-primary { background-color: #8475EC !important; }
+.text-primary { color: #8475EC !important; }
+.btn-primary { background-color: #8475EC !important; border-color: #8475EC !important; }
+.btn-primary:hover { background-color: #6B5DC0 !important; border-color: #6B5DC0 !important; }
+.btn-outline-primary { color: #8475EC !important; border-color: #8475EC !important; }
+.btn-outline-primary:hover { background-color: #8475EC !important; color: white !important; }
+.border-primary { border-color: #8475EC !important; }
+.alert-info { background-color: #EDE9FE !important; border-color: #8475EC !important; color: #6B5DC0 !important; }
+.bg-info { background-color: #8475EC !important; }
+.text-info { color: #8475EC !important; }
+a:not(.btn):not(.nav-link):not(.dropdown-item) { color: #8475EC; }
+a:not(.btn):not(.nav-link):not(.dropdown-item):hover { color: #6B5DC0; }
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-muted { color: hsl(var(--text-muted)); }
+.text-success { color: hsl(var(--success)); }
+.text-danger { color: hsl(var(--danger)); }
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: var(--space-1); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-5 { margin-bottom: var(--space-5); }
+
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: var(--space-1); }
+.mt-2 { margin-top: var(--space-2); }
+.mt-3 { margin-top: var(--space-3); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-5 { margin-top: var(--space-5); }
+
+.d-none { display: none; }
+.d-block { display: block; }
+.d-flex { display: flex; }
+.d-grid { display: grid; }
+
+.justify-content-between { justify-content: space-between; }
+.justify-content-center { justify-content: center; }
+.align-items-center { align-items: center; }
+
+.w-100 { width: 100%; }
+.h-100 { height: 100%; }
+
+/* Overdue Indicator */
+.overdue {
+  color: hsl(var(--danger)) !important;
+  font-weight: 600;
+}
+
+/* Notes styles */
+.note-item {
+    border-left: 3px solid var(--primary);
+    background: rgba(var(--primary), 0.05);
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.375rem;
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+/* Client detail notes with improved spacing */
+
+
+.note-meta {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+}
+
+.note-text {
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal !important;
+    max-width: 100%;
+    overflow-x: hidden;
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    padding-left: 1rem !important;
+}
+
+.note-preview-container {
+    max-width: 100%;
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.note-preview {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal !important;
+    max-width: 100%;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    padding-left: 1rem !important;
+}
+
+/* LEGACY - Dashboard specific styles for reminders (conservés pour autres pages) */
+.reminder-item {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+.reminder-item .note-preview-container {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.reminder-item .note-preview {
+    max-width: 100%;
+    overflow-x: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal !important;
+    padding-left: 0.75rem !important;
+    text-indent: 0 !important;
+}
+
+/* Read more button styling (conservé pour autres composants) */
+.read-more-btn {
+    color: hsl(var(--primary)) !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    margin-top: 0.5rem !important;
+    display: inline-block !important;
+    padding: 0 !important;
+    border: none !important;
+    background: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.read-more-btn:hover {
+    color: hsl(var(--primary-dark)) !important;
+    text-decoration: underline !important;
+}
+
+/* Adding margin between "Notes de communication" and "Factures impayées" */
+.communication-notes-section {
+  margin-bottom: var(--space-5);
+}
+
+/* Aging analysis improvements */
+.aging-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.aging-row {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.aging-row:last-child {
+  border-bottom: none;
+}
+
+.aging-list {
+  margin-top: var(--space-2);
+}
+
+.donut-chart-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  height: 100%;
+}
+
+.chart-with-legend {
+  text-align: center;
+}
+
+.donut-chart {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.06));
+  margin-bottom: 10px;
+}
+
+.donut-chart circle {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.donut-chart circle:hover {
+  stroke-width: 22;
+  filter: brightness(1.05);
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.legend-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.legend-text {
+  font-weight: 600;
+  color: #495057;
+}
+
+/* ====== NOTES DE COMMUNICATION - REFONTE UX/UI ====== */
+
+/* Note card container moderne */
+.communication-note {
+  position: relative;
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border-light));
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.communication-note:hover {
+  border-color: hsl(var(--primary) / 0.3);
+  box-shadow: var(--shadow);
+}
+
+/* Header de la note avec alignement parfait */
+.note-header-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+/* Icône de type de note redesignée */
+.note-type-indicator {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.note-type-indicator::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0.1;
+  transition: opacity 0.2s ease;
+}
+
+.communication-note:hover .note-type-indicator::after {
+  opacity: 0.15;
+}
+
+.note-type-indicator svg {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Couleurs par type de communication */
+.note-type-call { 
+  background: hsl(var(--success) / 0.1);
+  color: hsl(var(--success));
+  border: 1px solid hsl(var(--success) / 0.2);
+}
+
+.note-type-email { 
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+  border: 1px solid hsl(var(--primary) / 0.2);
+}
+
+.note-type-meeting { 
+  background: hsl(var(--info) / 0.1);
+  color: hsl(var(--info));
+  border: 1px solid hsl(var(--info) / 0.2);
+}
+
+.note-type-general { 
+  background: hsl(var(--secondary) / 0.1);
+  color: hsl(var(--secondary));
+  border: 1px solid hsl(var(--secondary) / 0.2);
+}
+
+/* Métadonnées alignées */
+.note-metadata {
+  flex: 1;
+  min-width: 0;
+}
+
+.note-user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.note-author-name {
+  font-weight: 600;
+  color: hsl(var(--text-primary));
+  font-size: 0.95rem;
+}
+
+.note-timestamp {
+  color: hsl(var(--text-muted));
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.note-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  background: hsl(var(--surface-tertiary));
+  color: hsl(var(--text-secondary));
+  margin-left: auto;
+}
+
+/* Email direction badges */
+.email-direction-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--radius);
+}
+
+.email-direction-badge svg {
+  width: 10px;
+  height: 10px;
+}
+
+
+/* Wrapper pour le contenu principal (sans les enfants de conversation) */
+.note-primary-content {
+  position: relative;
+}
+
+/* Actions repositionnées et discrètes */
+.note-actions-wrapper {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: var(--space-4);
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.note-primary-content:hover .note-actions-wrapper {
+  opacity: 1;
+}
+
+.note-actions {
+  display: flex;
+  gap: var(--space-1);
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: var(--space-1);
+  box-shadow: var(--shadow);
+}
+
+.note-actions .btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+
+.note-actions .btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Contenu de la note amélioré */
+.note-content-wrapper {
+  margin-left: calc(44px + var(--space-4));
+  line-height: 1.6;
+}
+
+.note-text-content {
+  color: hsl(var(--text-primary));
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+.note-text-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Contenu email spécialisé */
+.email-note-content {
+  background: hsl(var(--surface-secondary));
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.email-subject {
+  font-weight: 600;
+  color: hsl(var(--text-primary));
+  margin-bottom: var(--space-2);
+  font-size: 0.95rem;
+}
+
+.email-preview {
+  color: hsl(var(--text-secondary));
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.email-meta-info {
+  color: hsl(var(--text-muted));
+  font-size: 0.75rem;
+  font-style: italic;
+  margin-top: var(--space-2);
+}
+
+/* Container avec scroll amélioré */
+.notes-container {
+  min-height: 400px;  /* Garantir au moins 3 notes visibles */
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: var(--space-2);
+  margin-right: calc(-1 * var(--space-2));
+}
+
+/* Scrollbar personnalisée */
+.notes-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notes-container::-webkit-scrollbar-track {
+  background: hsl(var(--surface-secondary));
+  border-radius: 3px;
+}
+
+.notes-container::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.notes-container::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--text-muted));
+}
+
+/* ===== CONVERSATION GROUPÉES ===== */
+
+/* Note avec conversation */
+.communication-note.has-conversation {
+  border-left: 3px solid hsl(var(--primary));
+}
+
+/* Badge de conversation cliquable */
+.conversation-badge {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.conversation-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px hsla(var(--primary), 0.3);
+}
+
+/* Chevron animation */
+.conversation-badge .conv-chevron {
+  transition: transform 0.2s ease;
+}
+
+.conversation-badge[aria-expanded="true"] .conv-chevron,
+.conversation-badge:not(.collapsed) .conv-chevron {
+  transform: rotate(180deg);
+}
+
+/* Thread de conversation */
+.conversation-thread {
+  border-left: 2px solid hsl(var(--border));
+  margin-left: calc(44px + var(--space-2));
+  padding-left: var(--space-4);
+}
+
+/* Note enfant dans la conversation */
+.conversation-child-note {
+  position: relative;
+  background: hsl(var(--surface-secondary));
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  transition: all 0.2s ease;
+}
+
+.conversation-child-note:last-child {
+  margin-bottom: 0;
+}
+
+.conversation-child-note:hover {
+  background: hsl(var(--surface));
+  box-shadow: var(--shadow-sm);
+}
+
+/* Ligne de connexion */
+.conversation-child-note::before {
+  content: '';
+  position: absolute;
+  left: calc(-1 * var(--space-4) - 1px);
+  top: 16px;
+  width: var(--space-3);
+  height: 2px;
+  background: hsl(var(--border));
+}
+
+/* Header note enfant */
+.child-note-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.child-note-author {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: hsl(var(--text-primary));
+}
+
+.child-note-date {
+  font-size: 0.75rem;
+}
+
+/* Contenu note enfant */
+.child-note-content {
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.child-email-subject {
+  margin-bottom: var(--space-1);
+  font-size: 0.85rem;
+}
+
+.child-email-preview {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Actions note enfant */
+.child-note-actions {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: var(--space-2);
+  display: flex;
+  gap: var(--space-1);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.conversation-child-note:hover .child-note-actions {
+  opacity: 1;
+}
+
+.child-note-actions .btn {
+  padding: 2px 6px;
+  font-size: 0.7rem;
+}
+
+/* Collapse animation */
+.conversation-children {
+  transition: all 0.3s ease;
+}
+
+.conversation-children.collapsing {
+  height: 0;
+  overflow: hidden;
+}
+
+/* Fix Bootstrap collapse pour les lignes de tableau */
+tr.collapse:not(.show) {
+  display: none !important;
+}
+
+tr.collapse.show {
+  display: table-row !important;
+}
+
+tr.collapsing {
+  display: table-row;
+  overflow: hidden;
+}
+
+/* État vide amélioré */
+.notes-empty-state {
+  text-align: center;
+  padding: var(--space-12) var(--space-4);
+}
+
+.notes-empty-state svg {
+  width: 64px;
+  height: 64px;
+  color: hsl(var(--text-muted));
+  margin-bottom: var(--space-4);
+}
+
+.notes-empty-state h6 {
+  color: hsl(var(--text-secondary));
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.notes-empty-state p {
+  color: hsl(var(--text-muted));
+  font-size: 0.9rem;
+  margin-bottom: var(--space-4);
+}
+
+/* Indicateur de reminder si présent */
+
+/* Badge de rappel visible sur les notes */
+
+
+/* Rappel à venir (bleu/info) */
+
+
+/* Rappel aujourd'hui (orange/warning) */
+
+
+/* Rappel en retard (rouge/danger) */
+
+
+/* Rappel terminé (vert/success) */
+
+
+/* Badge de rappel dans la table des notes */
+.reminder-badge-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.reminder-badge-inline svg {
+  width: 12px;
+  height: 12px;
+}
+
+.reminder-badge-inline.reminder-upcoming {
+  background: hsl(var(--info) / 0.15);
+  color: hsl(var(--info));
+}
+
+.reminder-badge-inline.reminder-today {
+  background: hsl(var(--warning) / 0.15);
+  color: hsl(210, 50%, 35%);
+}
+
+.reminder-badge-inline.reminder-overdue {
+  background: hsl(var(--danger) / 0.15);
+  color: hsl(var(--danger));
+}
+
+.reminder-badge-inline.reminder-completed {
+  background: hsl(var(--success) / 0.15);
+  color: hsl(var(--success));
+}
+
+/* Animation de chargement */
+@keyframes noteSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.communication-note {
+  animation: noteSlideIn 0.3s ease;
+}
+
+/* ====== SECTION D'ÉDITION EMAIL - FRAME LISIBLE ====== */
+
+/* Conteneur principal de la section email */
+
+
+/* Header card avec métadonnées */
+
+
+.email-icon-wrapper svg {
+  width: 24px;
+  height: 24px;
+}
+
+
+/* Métadonnées du courriel */
+
+
+/* Frame de contenu email */
+
+
+.email-content-label svg {
+  width: 18px;
+  height: 18px;
+}
+
+.email-content-toggle .btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.85rem;
+  padding: var(--space-2) var(--space-3);
+  transition: all 0.2s ease;
+}
+
+.email-content-toggle .btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Vue lisible avec iframe */
+
+
+/* Vue code source */
+
+
+/* Scrollbar pour le code source */
+
+
+/* Responsive design pour la section email */
+@media (max-width: 768px) {
+  
+  
+  .email-content-toggle .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  
+  .email-icon-wrapper svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Animation pour les transitions de vue */
+@keyframes emailViewFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Amélioration de l'accessibilité */
+.email-content-toggle .btn:focus {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+
+.note-header {
+  border-bottom: 1px solid hsl(var(--border-light));
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.email-note {
+  border-left: 4px solid hsl(var(--primary));
+}
+
+.note-text {
+  line-height: 1.6;
+}
+
+.note-actions {
+  border-top: 1px solid hsl(var(--border-light));
+  padding-top: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+
+/* Modern note styling */
+
+
+.note-type-icon {
+  width: 32px;
+  height: 32px;
+  background: hsl(var(--primary-light));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: hsl(var(--primary));
+}
+
+.note-type-icon i {
+  width: 16px;
+  height: 16px;
+}
+
+.note-content {
+  margin-top: var(--space-2);
+  line-height: 1.6;
+}
+
+.note-text {
+  color: hsl(var(--text-primary));
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.note-actions {
+  border-top: 1px solid hsl(var(--border-light));
+  padding-top: var(--space-2);
+}
+
+
+/* ===============================
+   BUTTON RESTRICTIONS STYLES
+   =============================== */
+
+/* Disabled button styles for permission restrictions */
+
+
+/* Lock icon for restricted buttons */
+
+
+/* Tooltip styles for restriction messages */
+
+
+/* Specific styling for different restriction types */
+
+
+/* Feature unavailable overlay for entire sections */
+
+
+/* Registration Form Fixes */
+.form-check {
+  position: relative;
+  display: block;
+  min-height: 1.5rem;
+}
+
+.form-check .form-check-input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+  vertical-align: top;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  border: 2px solid #dee2e6;
+  border-radius: 50%;
+  transition: all 0.15s ease-in-out;
+}
+
+.form-check .form-check-input:checked {
+  background-color: #8475EC;
+  border-color: #8475EC;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+.form-check .form-check-input:focus {
+  border-color: #8475EC;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(132, 117, 236, 0.25);
+}
+
+.form-check .form-check-label {
+  color: #212529;
+  cursor: pointer;
+  margin-bottom: 0;
+}
+
+.form-check:hover .form-check-input {
+  border-color: #8475EC;
+}
+
+.form-check:hover {
+  background-color: rgba(132, 117, 236, 0.05);
+  border-color: #8475EC;
+  transform: translateY(-1px);
+}
+
+.form-check.mb-3.p-3.border.rounded {
+  border: 2px solid #dee2e6 !important;
+  border-radius: 0.5rem !important;
+  padding: 1rem !important;
+  margin-bottom: 1rem !important;
+  background: #fff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.form-check.mb-3.p-3.border.rounded:has(.form-check-input:checked) {
+  border-color: #8475EC !important;
+  background-color: rgba(132, 117, 236, 0.05) !important;
+  box-shadow: 0 0 0 4px rgba(132, 117, 236, 0.1);
+}
+
+.form-check .fw-bold {
+  font-weight: 600 !important;
+  color: #212529;
+  margin-bottom: 0.25rem;
+}
+
+.form-check .text-muted {
+  color: #6c757d !important;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* Fix dropdown menu scrollbar issues in admin tables */
+.admin-card {
+  overflow: visible !important;
+}
+
+.admin-card .table-responsive {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+/* Ensure dropdowns work properly in admin tables */
+.admin-card .dropdown {
+  position: static !important;
+}
+
+.admin-card .dropdown-menu {
+  position: absolute !important;
+  right: 0;
+  left: auto;
+  min-width: 180px;
+  z-index: 1050;
+  transform: none !important;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid hsl(var(--border));
+}
+
+/* Prevent any container from creating scroll when dropdown opens */
+.admin-card:has(.dropdown.show) {
+  overflow: visible !important;
+}
+
+.admin-card .table-responsive:has(.dropdown.show) {
+  overflow: visible !important;
+}
+
+/* Ensure table itself doesn't cause scrolling issues */
+.admin-card .table {
+  margin-bottom: 0;
+}
+
+/* Force all parent containers to be visible when dropdown is open */
+body:has(.dropdown.show) .admin-card,
+body:has(.dropdown.show) .table-responsive {
+  overflow: visible !important;
+}
+
+/* ============================================
+   Conversation Child Rows Styling
+   ============================================ */
+
+/* Ligne enfant de conversation - design distinctif */
+.conversation-child-row {
+  background: linear-gradient(to right, #e3f2fd 0%, #f8f9fa 100%) !important;
+  border-left: 4px solid #2196F3 !important;
+  transition: all 0.15s ease;
+}
+
+.conversation-child-row:hover {
+  background: linear-gradient(to right, #bbdefb 0%, #e8f4fc 100%) !important;
+}
+
+/* Première cellule des enfants - indent visuel et une seule ligne */
+.conversation-child-row td:first-child {
+  position: relative;
+  padding-left: 35px !important;
+  white-space: nowrap;
+}
+
+/* Icône de connexion pour les enfants */
+.conversation-child-row td:first-child::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 12px;
+  height: 2px;
+  background-color: #90caf9;
+}
+
+/* Badge de conversation - style amélioré */
+.conversation-toggle-badge {
+  background: linear-gradient(135deg, #1976D2 0%, #42A5F5 100%) !important;
+  border: none !important;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.25);
+  transition: all 0.2s ease;
+}
+
+.conversation-toggle-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.35);
+}
+
+/* Ligne parent de conversation - bordure visuelle comme dans Détail client */
+tr.conversation-parent-row {
+  border-left: 3px solid #2196F3 !important;
+  background: linear-gradient(to right, #e3f2fd 0%, #ffffff 30%) !important;
+}
+
+tr.conversation-parent-row:hover {
+  background: linear-gradient(to right, #bbdefb 0%, #f8f9fa 30%) !important;
+}
+
+/* Conteneur des enfants de conversation dans la page Notes (style carte) */
+.conversation-children-container td {
+  background: linear-gradient(to right, #e8f4fc 0%, #f8f9fa 100%) !important;
+  border-left: 3px solid #90caf9 !important;
+}
+
+.conversation-children-wrapper {
+  padding: var(--space-4);
+  padding-left: var(--space-6);
+}
+
+.conversation-children-wrapper .conversation-thread {
+  border-left: 2px solid #bbdefb;
+  padding-left: var(--space-4);
+  margin-left: var(--space-2);
+}
+
+/* Animation du chevron */
+.conv-chevron {
+  transition: transform 0.2s ease;
+}
+
+/* Ligne parent d'une conversation - style subtil */
+tr[data-note-id]:has(+ .conversation-child-row:not([style*="display: none"])) {
+  border-bottom: 2px solid #2196F3 !important;
+}
+
+/* Style distinctif pour le courriel original (le plus ancien) dans une conversation */
+.conversation-child-row.conversation-original {
+  background: linear-gradient(to right, #fff3e0 0%, #fafafa 100%) !important;
+  border-left: 4px solid #ff9800 !important;
+}
+
+.conversation-child-row.conversation-original:hover {
+  background: linear-gradient(to right, #ffe0b2 0%, #fff8e1 100%) !important;
+}
+
+.conversation-child-note.conversation-original {
+  background: linear-gradient(to right, #fff3e0 0%, hsl(var(--surface-secondary)) 100%);
+  border-left: 3px solid #ff9800;
+}
+
+/* ==========================================================================
+   Quill Editor - Styles standardisés pour tous les éditeurs d'email
+   ========================================================================== */
+
+/* Conteneurs d'éditeur Quill */
+#emailEditorContainer,
+#email_editor_container,
+.quill-editor-container {
+  margin-bottom: 1rem;
+}
+
+/* Toolbar Quill */
+#emailEditorContainer .ql-toolbar.ql-snow,
+#email_editor_container .ql-toolbar.ql-snow,
+.quill-editor-container .ql-toolbar.ql-snow,
+.ql-toolbar.ql-snow {
+  border: 1px solid #ced4da;
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+  background-color: #f8f9fa;
+}
+
+/* Conteneur Quill */
+#emailEditorContainer .ql-container.ql-snow,
+#email_editor_container .ql-container.ql-snow,
+.quill-editor-container .ql-container.ql-snow,
+.ql-container.ql-snow {
+  border: 1px solid #ced4da;
+  border-top: none;
+  border-bottom-left-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
+
+/* Zone d'édition Quill */
+#emailEditorContainer .ql-editor,
+#email_editor_container .ql-editor,
+.quill-editor-container .ql-editor,
+.ql-editor {
+  font-family: 'Onest', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Paragraphes dans l'éditeur - interligne simple sans marge (style Outlook) */
+#emailEditorContainer .ql-editor p,
+#email_editor_container .ql-editor p,
+.quill-editor-container .ql-editor p,
+.ql-editor p {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+/* Placeholder Quill */
+#emailEditorContainer .ql-editor.ql-blank::before,
+#email_editor_container .ql-editor.ql-blank::before,
+.quill-editor-container .ql-editor.ql-blank::before,
+.ql-editor.ql-blank::before {
+  font-style: italic;
+  color: #999;
+}

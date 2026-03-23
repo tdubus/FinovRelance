@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FinovRelance - Gestion des Comptes à Recevoir{% endblock %}</title>
+
+    <!-- CSS - Version développeur sans CDN externes -->
+    <style>
+        /* Bootstrap minimal pour développement */
+        .container-fluid { padding: 0 15px; }
+        .btn { padding: 8px 16px; margin: 2px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .btn-sm { padding: 4px 8px; font-size: 12px; }
+        .alert { padding: 12px; margin: 10px 0; border-radius: 4px; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .navbar { background: #343a40; padding: 10px 0; }
+        .navbar a { color: white; text-decoration: none; margin: 0 10px; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 8px; border-bottom: 1px solid #ddd; }
+        .table th { background: #f8f9fa; }
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-menu { display: none; position: absolute; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000; }
+        .dropdown:hover .dropdown-menu { display: block; }
+        .form-control { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .mt-4 { margin-top: 24px; }
+        .mt-5 { margin-top: 48px; }
+        .py-4 { padding: 24px 0; }
+        .bg-light { background-color: #f8f9fa; }
+        .border-top { border-top: 1px solid #ddd; }
+        .text-center { text-align: center; }
+        .text-muted { color: #6c757d; }
+        .d-flex { display: flex; }
+        .justify-content-center { justify-content: center; }
+        .gap-3 { gap: 1rem; }
+        .text-decoration-none { text-decoration: none; }
+        .small { font-size: 0.875em; }
+    </style>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ 'favicon.ico'|asset_url }}">
+    <link rel="icon" type="image/x-icon" href="{{ 'favicon.ico'|asset_url }}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ 'favicon.png'|asset_url }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ 'favicon-32x32.png'|asset_url }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ 'favicon-16x16.png'|asset_url }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ 'apple-touch-icon.png'|asset_url }}">
+
+    <!-- CSRF Token for AJAX requests -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    {% if current_user.is_authenticated %}
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a href="{{ url_for('main.dashboard') }}">
+                <img src="{{ url_for('static', filename='logo-finov-relance.png') }}" alt="FinovRelance - Logiciel de gestion des comptes à recevoir" style="height: 60px; width: auto;">
+            </a>
+            
+            <div>
+                <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('client.list_clients') }}">Clients</a>
+                <a href="{{ url_for('receivable.list_receivables') }}">Créances</a>
+                
+                <div class="dropdown" style="display: inline-block;">
+                    <a href="#" id="userDropdown">
+                        {{ current_user.full_name }}
+                        {% if current_user.is_super_admin() %}
+                            <span style="background: #dc3545; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px;">Super Admin</span>
+                        {% elif current_user.is_admin() %}
+                            <span style="background: #007bff; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px;">Admin</span>
+                        {% endif %}
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="{{ url_for('profile.settings') }}">Mon profil</a>
+                        <a href="{{ url_for('auth.logout') }}">Déconnexion</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="{% if current_user.is_authenticated %}container-fluid mt-4{% else %}container{% endif %}">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }}" role="alert">
+                            {{ message }}
+                            <button type="button" onclick="this.parentElement.style.display='none'" style="float: right; background: none; border: none; font-size: 18px; cursor: pointer;">&times;</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-4 bg-light border-top">
+        <div class="container text-center">
+            <p class="mb-1 text-muted">&copy; {{ now().year }} FinovRelance - Gestion des Comptes à Recevoir</p>
+            {% if current_user.is_authenticated %}
+            <small class="d-block mb-2 text-muted">{{ current_user.company.name }} | Connecté en tant que {{ current_user.full_name }}</small>
+            {% endif %}
+            <div class="d-flex justify-content-center gap-3 mt-2">
+                <a href="https://finov-relance.com/legal/cgu" class="text-muted text-decoration-none small">
+                    Conditions Générales d'Utilisation
+                </a>
+                <span class="text-muted">|</span>
+                <a href="https://finov-relance.com/legal/confidentialite" class="text-muted text-decoration-none small">
+                    Politique de Confidentialité
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript minimal pour développement -->
+    <script src="{{ 'js/main.js'|asset_url }}"></script>
+
+    <script>
+        // Version développeur - pas de CDN externes
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dev mode active - external CDN disabled');
+            
+            // Pas d'initialisation de notifications en mode dev
+            console.log('Notification system disabled in dev mode');
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

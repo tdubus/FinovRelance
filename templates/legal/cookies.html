@@ -1,0 +1,522 @@
+{% extends "base.html" %}
+
+{% block title %}Politique de Cookies - FinovRelance{% endblock %}
+
+{% block extra_css %}
+<meta name="robots" content="noindex, nofollow">
+<style>
+    .bg-primary { background-color: #8475EC !important; }
+    .text-primary { color: #8475EC !important; }
+    .alert-info { background-color: #EDE9FE !important; border-color: #8475EC !important; color: #6B5DC0 !important; }
+    .border-info { border-color: #8475EC !important; }
+    .bg-info { background-color: #8475EC !important; }
+    a { color: #8475EC; }
+    a:hover { color: #6B5DC0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h3 mb-0">
+                        <i data-feather="coffee" class="me-2"></i>
+                        Politique de Cookies
+                    </h1>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i data-feather="info" class="me-2"></i>
+                        <strong>Dernière mise à jour :</strong> 29 décembre 2025
+                    </div>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">1. Qu'est-ce qu'un cookie ?</h2>
+                        <p>Un cookie est un petit fichier texte stocké sur votre appareil (ordinateur, tablette ou mobile) lorsque vous visitez un site web. Les cookies permettent au site de mémoriser vos actions et préférences pendant une certaine période.</p>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">2. Cookies utilisés par FinovRelance</h2>
+                        
+                        <div class="alert alert-success">
+                            <i data-feather="check-circle" class="me-2"></i>
+                            <p class="mb-2"><strong>FinovRelance utilise un nombre minimal de cookies pour garantir votre vie privée.</strong></p>
+                        </div>
+
+                        <div class="card border-success mb-4">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">
+                                    <i data-feather="shield" class="me-2"></i>
+                                    Cookie essentiel de session
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>FinovRelance utilise un cookie essentiel pour assurer le fonctionnement de l'application.</strong></p>
+                                
+                                <table class="table table-bordered mt-3">
+                                    <thead>
+                                        <tr>
+                                            <th>Nom du cookie</th>
+                                            <th>Finalité</th>
+                                            <th>Durée</th>
+                                            <th>Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>session</code></td>
+                                            <td>
+                                                <ul class="mb-0">
+                                                    <li>Maintenir votre connexion pendant votre navigation</li>
+                                                    <li>Identifier votre session utilisateur de manière sécurisée</li>
+                                                    <li>Protéger contre les attaques CSRF (Cross-Site Request Forgery)</li>
+                                                    <li>Stocker temporairement l'entreprise sélectionnée (ID uniquement)</li>
+                                                    <li>Gérer les états temporaires lors des authentifications OAuth (Gmail, Outlook, QuickBooks)</li>
+                                                    <li>Mémoriser temporairement les données d'inscription en cours</li>
+                                                    <li>Afficher les messages de notification (messages flash)</li>
+                                                </ul>
+                                            </td>
+                                            <td><strong>2 heures</strong> d'inactivité</td>
+                                            <td>Cookie propriétaire essentiel</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h6 class="text-success mt-4">Caractéristiques de sécurité :</h6>
+                                <ul>
+                                    <li><strong>HttpOnly :</strong> Le cookie est inaccessible par JavaScript, ce qui protège contre les attaques XSS (Cross-Site Scripting)</li>
+                                    <li><strong>Secure :</strong> En production, le cookie est transmis uniquement via HTTPS (connexion sécurisée)</li>
+                                    <li><strong>SameSite: Lax :</strong> Protection contre les attaques CSRF en limitant l'envoi du cookie aux requêtes du même site</li>
+                                    <li><strong>Signé cryptographiquement :</strong> Le contenu du cookie est signé avec HMAC pour prévenir toute falsification. Les données sont encodées mais <strong>ne sont pas chiffrées</strong> (cependant, aucune donnée sensible comme les mots de passe ou informations financières n'y est stockée)</li>
+                                    <li><strong>Contenu minimal :</strong> Le cookie contient uniquement des identifiants (ID utilisateur, ID entreprise) et des états temporaires d'authentification, jamais de données confidentielles</li>
+                                </ul>
+
+                                <div class="alert alert-warning mt-3">
+                                    <i data-feather="alert-triangle" class="me-2"></i>
+                                    <strong>Important :</strong> Ce cookie est strictement nécessaire au fonctionnement de l'application. Sans ce cookie, vous ne pourrez pas vous connecter ni utiliser les fonctionnalités de FinovRelance. Il ne peut pas être désactivé sans compromettre la sécurité et les fonctionnalités de base.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-warning mb-4">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0">
+                                    <i data-feather="shield" class="me-2"></i>
+                                    Cookies de sécurité Cloudflare (tiers essentiels)
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>FinovRelance utilise Cloudflare pour protéger l'application contre les cyberattaques.</strong> Cloudflare peut déposer les cookies suivants pour assurer la sécurité :</p>
+                                
+                                <table class="table table-bordered mt-3">
+                                    <thead>
+                                        <tr>
+                                            <th>Nom du cookie</th>
+                                            <th>Finalité</th>
+                                            <th>Durée</th>
+                                            <th>Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>__cf_bm</code></td>
+                                            <td>Cookie de gestion des bots - Distingue les visiteurs humains des bots automatisés</td>
+                                            <td><strong>30 minutes</strong></td>
+                                            <td>Cookie tiers essentiel (sécurité)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>cf_clearance</code></td>
+                                            <td>Cookie de validation suite à un défi de sécurité (CAPTCHA) - Prouve que vous avez passé le contrôle de sécurité</td>
+                                            <td><strong>Jusqu'à 1 an</strong></td>
+                                            <td>Cookie tiers essentiel (sécurité)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h6 class="text-warning mt-4">Caractéristiques de sécurité Cloudflare :</h6>
+                                <ul>
+                                    <li>Cookies déposés uniquement en cas de menace détectée</li>
+                                    <li>Données traitées selon la <a href="https://www.cloudflare.com/privacy/" target="_blank" class="text-decoration-none">politique de confidentialité de Cloudflare</a></li>
+                                    <li>Protection contre DDoS et attaques par déni de service</li>
+                                    <li>Aucune donnée personnelle sensible stockée</li>
+                                    <li>Suppression automatique à expiration</li>
+                                </ul>
+
+                                <div class="alert alert-danger mt-3 mb-0">
+                                    <i data-feather="alert-triangle" class="me-2"></i>
+                                    <strong>IMPORTANT :</strong> Ces cookies sont strictement nécessaires à la sécurité de l'application. Sans eux, vous pourriez être bloqué en cas d'attaque ou de trafic suspect détecté.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-info">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">
+                                    <i data-feather="check-square" class="me-2"></i>
+                                    Consentement aux cookies (localStorage)
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Sur le site marketing, votre choix d'acceptation/refus des cookies est enregistré dans le localStorage de votre navigateur.</strong></p>
+                                
+                                <table class="table table-bordered mt-3">
+                                    <thead>
+                                        <tr>
+                                            <th>Nom</th>
+                                            <th>Finalité</th>
+                                            <th>Durée</th>
+                                            <th>Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>cookieConsent</code></td>
+                                            <td>Mémoriser votre choix d'acceptation ou de refus de la bannière de cookies sur le site marketing</td>
+                                            <td>Permanent (jusqu'à suppression manuelle)</td>
+                                            <td>localStorage (pas un cookie)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="alert alert-info mt-3 mb-0">
+                                    <i data-feather="info" class="me-2"></i>
+                                    <strong>Note :</strong> Le localStorage n'est pas un cookie au sens strict, mais une technologie de stockage du navigateur. Il permet d'enregistrer des préférences localement sans envoyer ces données au serveur à chaque requête.
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">3. Cookies tiers essentiels</h2>
+                        <p>FinovRelance utilise uniquement des cookies tiers <strong>ESSENTIELS</strong> à la sécurité :</p>
+                        
+                        <div class="card border-success mb-3">
+                            <div class="card-body">
+                                <h6 class="text-success"><i data-feather="check" class="me-2"></i>Cloudflare (cookies de sécurité) :</h6>
+                                <ul class="mb-0">
+                                    <li><code>__cf_bm</code> et <code>cf_clearance</code> pour la protection anti-bot</li>
+                                    <li>Strictement nécessaires à la sécurité de l'application</li>
+                                    <li>Aucune finalité marketing ou publicitaire</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card border-danger">
+                            <div class="card-body">
+                                <h6 class="text-danger"><i data-feather="x" class="me-2"></i>Cookies tiers que nous n'utilisons PAS :</h6>
+                                <ul class="mb-0">
+                                    <li>Cookies publicitaires (Google Ads, Facebook Ads)</li>
+                                    <li>Cookies d'analyse (Google Analytics, etc.)</li>
+                                    <li>Cookies de réseaux sociaux (Facebook, Twitter, LinkedIn)</li>
+                                    <li>Cookies de profilage comportemental</li>
+                                    <li>Cookies marketing de tiers</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-3">
+                            <i data-feather="info" class="me-2"></i>
+                            <strong>Note importante :</strong> Stripe (notre processeur de paiement) fonctionne côté serveur via API et ne dépose aucun cookie dans votre navigateur.
+                        </div>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">4. Cookies que nous n'utilisons PAS</h2>
+                        <div class="alert alert-success">
+                            <i data-feather="x-circle" class="me-2"></i>
+                            <p class="mb-2"><strong>FinovRelance respecte votre vie privée. Nous n'utilisons PAS :</strong></p>
+                            <ul class="mb-0">
+                                <li>Cookies publicitaires ou de ciblage</li>
+                                <li>Cookies de suivi tiers (Google Analytics, Facebook Pixel, etc.)</li>
+                                <li>Cookies de réseaux sociaux</li>
+                                <li>Cookies de profilage comportemental</li>
+                                <li>Cookies de partage de données avec des tiers à des fins commerciales</li>
+                                <li>Cookies de préférences non essentiels</li>
+                                <li>Cookies marketing ou statistiques</li>
+                            </ul>
+                        </div>
+
+                        <div class="card border-primary mt-3">
+                            <div class="card-body">
+                                <h6 class="text-primary">
+                                    <i data-feather="database" class="me-2"></i>
+                                    Où sont stockées vos préférences et données ?
+                                </h6>
+                                <p class="mb-2">Contrairement à de nombreux sites web qui utilisent des cookies pour mémoriser vos préférences, <strong>FinovRelance utilise une approche hybride</strong> :</p>
+                                
+                                <p class="mb-2"><strong>Stockées dans le cookie de session (temporaire, 2 heures) :</strong></p>
+                                <ul class="mb-3">
+                                    <li>ID de l'entreprise actuellement sélectionnée (pour basculer rapidement entre entreprises)</li>
+                                    <li>États temporaires OAuth lors des authentifications externes</li>
+                                    <li>Messages de notification à afficher</li>
+                                </ul>
+                                
+                                <p class="mb-2"><strong>Stockées dans la base de données sécurisée (permanent) :</strong></p>
+                                <ul class="mb-0">
+                                    <li>Préférences d'affichage (tri des tableaux, pagination, filtres)</li>
+                                    <li>Langue de l'interface (si configurée)</li>
+                                    <li>Configuration de messagerie (tokens OAuth Outlook et mots de passe SMTP Gmail chiffrés AES-128)</li>
+                                    <li>Paramètres de synchronisation comptable (QuickBooks, Business Central)</li>
+                                    <li>Toutes vos données métier (clients, factures, etc.)</li>
+                                </ul>
+                                <p class="mt-2 mb-0 text-muted small">Les données permanentes sont associées à votre compte utilisateur et protégées dans une base de données chiffrée. Elles ne sont jamais exposées dans des cookies accessibles par votre navigateur.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">5. Gestion de vos cookies</h2>
+                        
+                        <div class="accordion" id="cookieManagementAccordion">
+                            <div class="accordion-item">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#browserSettings">
+                                        <i data-feather="globe" class="me-2"></i>
+                                        Paramètres de votre navigateur
+                                    </button>
+                                </h3>
+                                <div id="browserSettings" class="accordion-collapse collapse" data-bs-parent="#cookieManagementAccordion">
+                                    <div class="accordion-body">
+                                        <p><strong>Vous pouvez contrôler et gérer les cookies via votre navigateur :</strong></p>
+                                        <ul>
+                                            <li>Voir les cookies stockés</li>
+                                            <li>Supprimer le cookie de session (vous serez déconnecté)</li>
+                                            <li>Bloquer tous les cookies (l'application ne fonctionnera plus)</li>
+                                        </ul>
+                                        <p class="text-muted small"><strong>Guides par navigateur :</strong></p>
+                                        <ul class="small">
+                                            <li><a href="https://support.google.com/chrome/answer/95647" target="_blank">Google Chrome</a></li>
+                                            <li><a href="https://support.mozilla.org/fr/kb/activer-desactiver-cookies" target="_blank">Mozilla Firefox</a></li>
+                                            <li><a href="https://support.apple.com/fr-ca/guide/safari/sfri11471/mac" target="_blank">Safari</a></li>
+                                            <li><a href="https://support.microsoft.com/fr-fr/microsoft-edge" target="_blank">Microsoft Edge</a></li>
+                                        </ul>
+                                        <div class="alert alert-warning mt-3">
+                                            <i data-feather="alert-triangle" class="me-2"></i>
+                                            <strong>Attention :</strong> Si vous bloquez ou supprimez le cookie de session, vous ne pourrez plus vous connecter ni utiliser FinovRelance. Ce cookie est strictement nécessaire au fonctionnement de l'application.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cloudflareManagement">
+                                        <i data-feather="shield" class="me-2"></i>
+                                        Gestion des cookies Cloudflare
+                                    </button>
+                                </h3>
+                                <div id="cloudflareManagement" class="accordion-collapse collapse" data-bs-parent="#cookieManagementAccordion">
+                                    <div class="accordion-body">
+                                        <p>Les cookies Cloudflare sont automatiquement gérés selon les menaces détectées :</p>
+                                        
+                                        <h6 class="text-warning mt-3">Si vous supprimez les cookies Cloudflare :</h6>
+                                        <ul>
+                                            <li>Ils peuvent être redéposés automatiquement si une menace est détectée</li>
+                                            <li>Vous pourriez devoir passer un défi de sécurité (CAPTCHA)</li>
+                                            <li>L'accès à l'application pourrait être temporairement ralenti</li>
+                                        </ul>
+                                        
+                                        <h6 class="text-danger mt-3">Pour bloquer complètement Cloudflare :</h6>
+                                        <ul>
+                                            <li>Utilisez un bloqueur de cookies tiers dans votre navigateur</li>
+                                            <li><strong>ATTENTION :</strong> Cela peut compromettre la sécurité et l'accès à l'application</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#localStorageManagement">
+                                        <i data-feather="hard-drive" class="me-2"></i>
+                                        Gestion du localStorage
+                                    </button>
+                                </h3>
+                                <div id="localStorageManagement" class="accordion-collapse collapse" data-bs-parent="#cookieManagementAccordion">
+                                    <div class="accordion-body">
+                                        <p>Le localStorage (consentement aux cookies sur le site marketing) peut être effacé via les outils de développement de votre navigateur :</p>
+                                        <ol class="small">
+                                            <li>Ouvrir les outils de développement (F12)</li>
+                                            <li>Aller dans l'onglet "Application" (Chrome) ou "Stockage" (Firefox)</li>
+                                            <li>Sélectionner "Local Storage"</li>
+                                            <li>Supprimer l'entrée <code>cookieConsent</code></li>
+                                        </ol>
+                                        <p class="mb-0 small text-muted">La bannière de consentement réapparaîtra lors de votre prochaine visite du site marketing.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">6. Conséquences de la désactivation des cookies</h2>
+                        
+                        <div class="alert alert-danger mb-4">
+                            <h6 class="alert-heading">
+                                <i data-feather="alert-triangle" class="me-2"></i>
+                                Si vous désactivez le cookie de session
+                            </h6>
+                            <p class="mb-2">Le cookie de session est <strong>strictement nécessaire</strong> au fonctionnement de FinovRelance. Si vous le désactivez ou le supprimez :</p>
+                            <ul class="mb-0">
+                                <li>Vous ne pourrez pas vous connecter à votre compte</li>
+                                <li>Vous serez déconnecté immédiatement si vous étiez connecté</li>
+                                <li>Aucune fonctionnalité de l'application ne sera accessible</li>
+                                <li>Les formulaires ne pourront pas être soumis de manière sécurisée (protection CSRF)</li>
+                            </ul>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <h6 class="alert-heading">
+                                <i data-feather="shield" class="me-2"></i>
+                                Si vous désactivez les cookies Cloudflare
+                            </h6>
+                            <p class="mb-2">Les cookies Cloudflare sont essentiels à la sécurité. Si vous les désactivez :</p>
+                            
+                            <p class="mb-1"><strong>Risques de sécurité :</strong></p>
+                            <ul>
+                                <li>Exposition accrue aux attaques DDoS</li>
+                                <li>Possible blocage en cas de trafic suspect</li>
+                                <li>Défis de sécurité (CAPTCHA) plus fréquents</li>
+                            </ul>
+                            
+                            <p class="mb-1"><strong>Impact sur l'expérience :</strong></p>
+                            <ul class="mb-0">
+                                <li>Temps de chargement potentiellement plus longs</li>
+                                <li>Interruptions possibles en cas d'attaque</li>
+                                <li>Vérifications de sécurité répétitives</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">7. Données exactes stockées dans le cookie de session</h2>
+                        <div class="alert alert-success">
+                            <i data-feather="lock" class="me-2"></i>
+                            <p><strong>Contenu réel du cookie de session :</strong></p>
+                            <ul class="mb-0">
+                                <li><strong>ID utilisateur :</strong> Identifiant numérique de votre compte</li>
+                                <li><strong>ID entreprise sélectionnée :</strong> L'entreprise actuellement active dans votre session</li>
+                                <li><strong>États OAuth temporaires :</strong> Lors des connexions Gmail/Outlook/QuickBooks (ID entreprise concernée, email cible, état de validation - supprimés après connexion réussie)</li>
+                                <li><strong>Données d'inscription temporaires :</strong> Lors de la création de compte (nom, email, entreprise - supprimées après finalisation)</li>
+                                <li><strong>Messages flash :</strong> Messages de confirmation ou d'erreur à afficher</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3">
+                            <i data-feather="shield" class="me-2"></i>
+                            <p><strong>Protection des données :</strong></p>
+                            <ul class="mb-0">
+                                <li><strong>Aucune donnée sensible</strong> (mots de passe, informations financières, numéros de carte bancaire) n'est jamais stockée dans le cookie</li>
+                                <li>Le cookie est <strong>signé cryptographiquement avec HMAC</strong> pour empêcher toute falsification</li>
+                                <li>Toutes les données réelles (profil utilisateur, clients, factures, etc.) sont stockées <strong>côté serveur dans une base de données sécurisée</strong></li>
+                                <li>Le cookie est transmis via <strong>HTTPS (connexion sécurisée chiffrée)</strong> en production</li>
+                                <li>Le cookie a le flag <strong>HttpOnly</strong>, ce qui le rend inaccessible par JavaScript malveillant</li>
+                                <li>Les tokens OAuth (Outlook, QuickBooks) et mots de passe d'application Gmail sont stockés <strong>côté serveur avec chiffrement AES-128 (Fernet)</strong>, jamais dans des cookies</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">8. Détails techniques</h2>
+                        
+                        <div class="card border-secondary">
+                            <div class="card-header bg-secondary text-white">
+                                <h6 class="mb-0"><i data-feather="code" class="me-2"></i>Informations techniques avancées</h6>
+                            </div>
+                            <div class="card-body">
+                                <h6 class="text-primary">Cookie de session (structure) :</h6>
+                                <ul>
+                                    <li><strong>Format :</strong> JSON Web Token signé (HMAC-SHA256)</li>
+                                    <li><strong>Champs :</strong> user_id, company_id, csrf_token, flash_messages</li>
+                                    <li><strong>Chiffrement :</strong> Signature cryptographique (pas de chiffrement du contenu)</li>
+                                    <li><strong>Stockage :</strong> Côté client uniquement, pas de réplication serveur</li>
+                                </ul>
+                                
+                                <h6 class="text-primary mt-3">Cookies Cloudflare (comportement) :</h6>
+                                <ul class="mb-0">
+                                    <li><strong>Déclenchement :</strong> Détection automatique de menaces</li>
+                                    <li><strong>Géolocalisation :</strong> Selon le datacenter Cloudflare le plus proche</li>
+                                    <li><strong>Révocation :</strong> Automatique à expiration ou changement d'IP suspect</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card border-info mt-3">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i data-feather="tool" class="me-2"></i>Outils de diagnostic cookies</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>Pour vérifier vos cookies FinovRelance :</p>
+                                <ol>
+                                    <li>Ouvrez les outils développeur (F12)</li>
+                                    <li>Onglet "Application" &gt; "Cookies"</li>
+                                    <li>Recherchez le domaine finov-relance.com</li>
+                                    <li>Vérifiez la présence de : <code>session</code>, <code>__cf_bm</code> (si applicable), <code>cf_clearance</code> (si applicable)</li>
+                                </ol>
+                                <p class="mb-0 text-muted small">En cas de problème de connexion, supprimez tous les cookies du domaine et reconnectez-vous.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">9. Conformité légale</h2>
+                        <p>Notre utilisation des cookies est conforme aux réglementations suivantes :</p>
+                        <ul>
+                            <li><strong>Loi 25 du Québec</strong> : Modernisation des dispositions législatives en matière de protection des renseignements personnels</li>
+                            <li><strong>LPRPDE</strong> : Loi sur la protection des renseignements personnels et les documents électroniques (Canada)</li>
+                            <li><strong>Principe de minimisation des données</strong> : Nous utilisons le strict minimum de cookies nécessaires</li>
+                            <li><strong>Transparence totale</strong> : Cette politique détaille exhaustivement les cookies utilisés par l'application</li>
+                        </ul>
+                        
+                        <div class="alert alert-info mt-3">
+                            <i data-feather="info" class="me-2"></i>
+                            <strong>Cookies essentiels :</strong> Le cookie de session et les cookies Cloudflare sont des cookies <strong>strictement nécessaires</strong> au sens de la réglementation. Ils assurent la sécurité et le fonctionnement de base de l'application. Conformément aux lois en vigueur, ils ne nécessitent pas de consentement préalable car ils sont indispensables à la fourniture du service que vous demandez explicitement.
+                        </div>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">10. Modifications de cette politique</h2>
+                        <p>Nous nous réservons le droit de modifier cette politique de cookies à tout moment pour refléter les changements dans nos pratiques ou pour des raisons légales. Toute modification sera publiée sur cette page avec une mise à jour de la date de révision.</p>
+                        <p>Nous vous encourageons à consulter régulièrement cette politique pour rester informé de l'utilisation que nous faisons des cookies.</p>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">11. Contact</h2>
+                        <div class="alert alert-light">
+                            <p>Pour toute question concernant notre politique de cookies, vous pouvez nous contacter :</p>
+                            <p class="mb-1"><strong>Responsable de la protection des données :</strong> Tony Dubus</p>
+                            <p class="mb-0"><strong>Courriel :</strong> <a href="mailto:tdubus@finova-solutions.com">tdubus@finova-solutions.com</a></p>
+                        </div>
+                    </section>
+
+                    <div class="text-center mt-5">
+                        <a href="/" class="btn btn-primary">
+                            <i data-feather="arrow-left" class="me-2"></i>
+                            Retour à l'accueil
+                        </a>
+                        <a href="https://finov-relance.com/legal/confidentialite" class="btn btn-outline-primary">
+                            <i data-feather="shield" class="me-2"></i>
+                            Politique de confidentialité
+                        </a>
+                    </div>
+
+                    <div class="text-muted small mt-4">
+                        <hr>
+                        <p class="mb-0">Dernière mise à jour : 29 décembre 2025</p>
+                        <p class="mb-0"><em>Ajout : Cookies Cloudflare (sécurité), détails techniques, outils de diagnostic</em></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialize Feather icons
+if (typeof feather !== 'undefined') {
+    feather.replace();
+}
+</script>
+{% endblock %}

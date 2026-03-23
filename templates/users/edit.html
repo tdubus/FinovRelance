@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier Utilisateur{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Modifier Utilisateur : {{ user.full_name }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.first_name.label(class="form-label") }}
+                                    {{ form.first_name(class="form-control") }}
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in form.first_name.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.last_name.label(class="form-label") }}
+                                    {{ form.last_name(class="form-control") }}
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in form.last_name.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            {{ form.email(class="form-control") }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.email.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">L'adresse email sert d'identifiant de connexion.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.role.label(class="form-label") }}
+                            {{ form.role(class="form-control") }}
+                            {% if form.role.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.role.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% if can_manage_campaign_permission %}
+                        <hr class="my-4">
+                        
+                        <h5 class="mb-3">
+                            <i class="fas fa-mail-bulk me-2"></i>Permissions avancées
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.can_create_campaigns(class="form-check-input") }}
+                                {{ form.can_create_campaigns.label(class="form-check-label") }}
+                            </div>
+                            <div class="form-text text-muted">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                <strong>Permission sécurisée</strong> : Permet à cet utilisateur de créer et gérer des campagnes d'envoi de courriels en masse. 
+                                Par défaut, seuls les Super Administrateurs ont accès à cette fonctionnalité.
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <hr class="my-4">
+
+                        <h5 class="mb-3">
+                            <i class="fas fa-key me-2"></i>Réinitialisation du mot de passe
+                        </h5>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.reset_password(class="form-check-input") }}
+                                {{ form.reset_password.label(class="form-check-label") }}
+                            </div>
+                            <div class="form-text">Cochez cette case pour définir un nouveau mot de passe temporaire.</div>
+                        </div>
+
+                        <div class="mb-4" id="password-field" style="display: none;">
+                            {{ form.new_password.label(class="form-label") }}
+                            {{ form.new_password(class="form-control") }}
+                            {% if form.new_password.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.new_password.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">L'utilisateur devra changer ce mot de passe lors de sa prochaine connexion.</div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Information:</strong> Toutes les modifications seront appliquées immédiatement.
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('users.users_list') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Retour
+                            </a>
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resetPasswordCheckbox = document.getElementById('reset_password');
+    const passwordField = document.getElementById('password-field');
+    const newPasswordInput = document.getElementById('new_password');
+
+    function togglePasswordField() {
+        if (resetPasswordCheckbox.checked) {
+            passwordField.style.display = 'block';
+            newPasswordInput.required = true;
+        } else {
+            passwordField.style.display = 'none';
+            newPasswordInput.required = false;
+            newPasswordInput.value = '';
+        }
+    }
+
+    resetPasswordCheckbox.addEventListener('change', togglePasswordField);
+    togglePasswordField(); // Initialize on page load
+});
+</script>
+{% endblock %}

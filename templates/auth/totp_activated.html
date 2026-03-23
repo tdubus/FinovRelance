@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}TOTP active - FinovRelance{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-check-circle me-2"></i>
+                        TOTP active avec succes
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-shield-alt text-success" style="font-size: 3rem;"></i>
+                        <p class="mt-3">
+                            L'authentification TOTP est maintenant active sur votre compte.
+                            Vous pouvez utiliser votre application d'authentification pour vous connecter.
+                        </p>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <h5><i class="fas fa-exclamation-triangle me-2"></i>Codes de secours</h5>
+                        <p class="mb-2">
+                            <strong>Conservez ces codes en lieu sur.</strong>
+                            Ils ne seront plus affiches apres cette page.
+                            Chaque code ne peut etre utilise qu'une seule fois.
+                        </p>
+                        <div class="bg-light p-3 border rounded">
+                            {% for code in recovery_codes %}
+                            <div class="mb-1">
+                                <code style="font-size: 1.2em; letter-spacing: 2px;">{{ code }}</code>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyRecoveryCodes()">
+                                <i class="fas fa-copy me-1"></i>Copier les codes
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{{ url_for('profile.settings') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Retour au profil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-primary {
+    background-color: #8475EC;
+    border-color: #8475EC;
+}
+.btn-primary:hover {
+    background-color: #6B5DC0;
+    border-color: #6B5DC0;
+}
+.card {
+    border: none;
+    border-radius: 10px;
+}
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+</style>
+
+<script>
+function copyRecoveryCodes() {
+    var codes = [{% for code in recovery_codes %}'{{ code }}'{% if not loop.last %}, {% endif %}{% endfor %}];
+    var text = codes.join('\n');
+    navigator.clipboard.writeText(text).then(function() {
+        var btn = event.target.closest('button');
+        btn.innerHTML = '<i class="fas fa-check me-1"></i>Copie!';
+        setTimeout(function() {
+            btn.innerHTML = '<i class="fas fa-copy me-1"></i>Copier les codes';
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}

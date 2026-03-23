@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Mapping des champs Odoo - {{ company.nom }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>
+                <i class="fas fa-cube"></i> Mapping des champs Odoo
+            </h2>
+            <p class="text-muted">Configurez la correspondance entre les champs Odoo et votre système</p>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Configuration du mapping</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Mapping par défaut appliqué</strong><br>
+                        Le mapping des champs est configuré automatiquement avec les correspondances standard Odoo.
+                        Vous pouvez maintenant lancer votre première synchronisation !
+                    </div>
+
+                    <h6>Champs clients (res.partner)</h6>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Champ interne</th>
+                                <th>Champ Odoo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Code client</td>
+                                <td><code>ref</code> (ou ID si vide)</td>
+                            </tr>
+                            <tr>
+                                <td>Nom</td>
+                                <td><code>name</code></td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td><code>email</code></td>
+                            </tr>
+                            <tr>
+                                <td>Téléphone</td>
+                                <td><code>phone</code></td>
+                            </tr>
+                            <tr>
+                                <td>Adresse</td>
+                                <td><code>street</code></td>
+                            </tr>
+                            <tr>
+                                <td>Ville</td>
+                                <td><code>city</code></td>
+                            </tr>
+                            <tr>
+                                <td>Code postal</td>
+                                <td><code>zip</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h6 class="mt-4">Champs factures (account.move)</h6>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Champ interne</th>
+                                <th>Champ Odoo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Numéro facture</td>
+                                <td><code>name</code></td>
+                            </tr>
+                            <tr>
+                                <td>Date facture</td>
+                                <td><code>invoice_date</code></td>
+                            </tr>
+                            <tr>
+                                <td>Date échéance</td>
+                                <td><code>invoice_date_due</code></td>
+                            </tr>
+                            <tr>
+                                <td>Montant restant dû</td>
+                                <td><code>amount_residual</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="alert alert-success mt-3">
+                        <i class="fas fa-check"></i>
+                        <strong>Filtrage automatique :</strong> Seules les factures ayant un montant restant dû supérieur à 0 sont importées. 
+                        Les factures entièrement payées sont automatiquement exclues.
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <a href="{{ url_for('company.settings', _anchor='accounting') }}" class="btn btn-primary">
+                            <i class="fas fa-check"></i> Terminer la configuration
+                        </a>
+                        <a href="{{ url_for('company.odoo_setup') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Retour à la configuration
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

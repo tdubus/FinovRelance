@@ -1,0 +1,2207 @@
+{% extends "base.html" %}
+
+{% block title %}Paramètres de l'entreprise - FinovRelance{% endblock %}
+
+{% block extra_css %}
+<style>
+.subscription-status {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.subscription-section {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.subscription-section h6 {
+    color: #495057;
+    font-weight: 600;
+}
+
+.plan-change-option, .upgrade-options .d-flex {
+    transition: all 0.2s ease;
+}
+
+.plan-change-option:hover, .upgrade-options .d-flex:hover {
+    background-color: #f8f9fa;
+    border-color: #dee2e6 !important;
+}
+
+.license-count {
+    padding: 0.5rem;
+}
+
+.status-header {
+    margin-bottom: 1rem;
+}
+
+.status-header h6 {
+    font-weight: 600;
+    color: #495057;
+}
+
+.license-form .form-control {
+    border-radius: 4px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1">Paramètres de l'entreprise</h1>
+                <p class="text-muted">Configurez votre entreprise et ses connexions comptables</p>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if user_role == 'admin' %}disabled{% else %}active{% endif %}" 
+                        id="general-tab" data-bs-toggle="tab" 
+                        data-bs-target="#general" type="button" role="tab"
+                        {% if user_role == 'admin' %}disabled title="Seuls les super administrateurs peuvent modifier les informations générales"{% endif %}>
+                    <i data-feather="briefcase" class="me-2"></i>
+                    Informations générales
+                    {% if user_role == 'admin' %}<i data-feather="lock" class="ms-2 text-muted" style="width: 14px; height: 14px;"></i>{% endif %}
+                </button>
+            </li>
+            {% if user_role != 'admin' %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" 
+                        id="subscription-tab" data-bs-toggle="tab" 
+                        data-bs-target="#subscription" type="button" role="tab">
+                    <i data-feather="credit-card" class="me-2"></i>
+                    Abonnement
+                </button>
+            </li>
+            {% endif %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if user_role == 'admin' %}active{% endif %}" id="accounting-tab" data-bs-toggle="tab" 
+                        data-bs-target="#accounting" type="button" role="tab">
+                    <i data-feather="link" class="me-2"></i>
+                    Connexions comptables
+                </button>
+            </li>
+
+        </ul>
+
+        <div class="tab-content" id="settingsTabContent">
+            <!-- General Settings Tab -->
+            <div class="tab-pane fade {% if user_role != 'admin' %}show active{% endif %}" id="general" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i data-feather="settings" class="me-2"></i>
+                            Paramètres généraux
+                        </h5>
+                    </div>
+
+            <form method="POST" enctype="multipart/form-data" onsubmit="console.log('Form submitting!'); return true;">
+                {{ form.hidden_tag() }}
+                <div class="card-body">
+                    <!-- Company Basic Information -->
+                    <h6 class="border-bottom pb-2 mb-3">
+                        <i data-feather="briefcase" class="me-2"></i>
+                        Informations générales
+                    </h6>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group mb-3">
+                                {{ form.name.label(class="form-label") }}
+                                {{ form.name(class="form-control form-control-lg", placeholder="Nom de votre entreprise") }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.name.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                {{ form.logo.label(class="form-label") }}
+
+                                <!-- Current logo preview -->
+                                {% if company.logo_base64 or company.logo_path %}
+                                    <div class="current-logo-preview mb-3">
+                                        <label class="form-label text-muted small">Logo actuel :</label>
+                                        <div class="d-flex align-items-center gap-3">
+                                            {% if company.logo_base64 %}
+                                                {# NOUVEAU: Utiliser Base64 directement (survit aux redéploiements) #}
+                                                <img src="{{ company.logo_base64 }}" 
+                                                     alt="Logo de l'entreprise" 
+                                                     class="logo-preview-img"
+                                                     style="max-width: 120px; max-height: 60px; border: 1px solid #dee2e6; border-radius: 4px; padding: 4px; background: white;">
+                                            {% else %}
+                                                {# FALLBACK: Ancien système de fichiers (temporaire pour migration) #}
+                                                <img src="{{ url_for('static', filename='uploads/logos/' + company.logo_path) }}" 
+                                                     alt="Logo de l'entreprise" 
+                                                     class="logo-preview-img"
+                                                     style="max-width: 120px; max-height: 60px; border: 1px solid #dee2e6; border-radius: 4px; padding: 4px; background: white;">
+                                            {% endif %}
+                                            <div class="d-flex flex-column gap-2">
+                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        onclick="if(confirm('Êtes-vous sûr de vouloir supprimer le logo ?')) { fetch('{{ url_for('company.delete_logo') }}', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': '{{ csrf_token() }}' }, body: new URLSearchParams({ 'csrf_token': '{{ csrf_token() }}' }) }).then(response => { if (response.ok) { window.location.reload(); } else { alert('Erreur lors de la suppression du logo'); } }).catch(error => { alert('Erreur lors de la suppression du logo'); }); }">
+                                                    <i data-feather="trash-2" width="16" height="16" class="me-1"></i>
+                                                    Supprimer
+                                                </button>
+                                                <small class="text-muted">Téléchargez un nouveau fichier pour remplacer</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {{ form.logo(class="form-control") }}
+                                {% if form.logo.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.logo.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Formats acceptés: JPG, PNG, GIF</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <h6 class="border-bottom pb-2 mb-3 mt-4">
+                        <i data-feather="phone" class="me-2"></i>
+                        Informations de contact
+                    </h6>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.email.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i data-feather="mail"></i>
+                                    </span>
+                                    {{ form.email(class="form-control", placeholder="contact@votre-entreprise.com") }}
+                                </div>
+                                {% if form.email.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.email.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Courriel principal de l'entreprise</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.phone.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i data-feather="phone"></i>
+                                    </span>
+                                    {{ form.phone(class="form-control", type="tel", placeholder="(514) 555-0123") }}
+                                </div>
+                                {% if form.phone.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.phone.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Numéro de téléphone principal</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        {{ form.address.label(class="form-label") }}
+                        {{ form.address(class="form-control", rows="3", placeholder="Adresse complète de l'entreprise...") }}
+                        {% if form.address.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.address.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <small class="text-muted">Adresse qui apparaîtra sur les documents</small>
+                    </div>
+
+                    <!-- Brand Customization -->
+                    <h6 class="border-bottom pb-2 mb-3 mt-4">
+                        <i data-feather="palette" class="me-2"></i>
+                        Personnalisation de la marque
+                    </h6>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.primary_color.label(class="form-label") }}
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="color-picker-container">
+                                        {{ form.primary_color(class="form-control form-control-color", 
+                                               style="width: 60px; height: 40px; border-radius: 8px; border: 2px solid #dee2e6;",
+                                               value=company.primary_color or '#007bff',
+                                               onchange="document.getElementById('primary_color_text').value = this.value") }}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <input type="text" class="form-control" id="primary_color_text" 
+                                               value="{{ company.primary_color or '#007bff' }}" 
+                                               placeholder="#007bff"
+                                               onchange="document.getElementById('primary_color').value = this.value">
+                                    </div>
+                                </div>
+                                {% if form.primary_color.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.primary_color.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Couleur principale pour les en-têtes et éléments importants</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.secondary_color.label(class="form-label") }}
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="color-picker-container">
+                                        {{ form.secondary_color(class="form-control form-control-color", 
+                                               style="width: 60px; height: 40px; border-radius: 8px; border: 2px solid #dee2e6;",
+                                               value=company.secondary_color or '#6c757d',
+                                               onchange="document.getElementById('secondary_color_text').value = this.value") }}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <input type="text" class="form-control" id="secondary_color_text" 
+                                               value="{{ company.secondary_color or '#6c757d' }}" 
+                                               placeholder="#6c757d"
+                                               onchange="document.getElementById('secondary_color').value = this.value">
+                                    </div>
+                                </div>
+                                {% if form.secondary_color.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.secondary_color.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Couleur secondaire pour les textes et éléments secondaires</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Regional and Business Configuration -->
+                    <h6 class="border-bottom pb-2 mb-3 mt-4">
+                        <i data-feather="globe" class="me-2"></i>
+                        Configuration régionale et métier
+                    </h6>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                {{ form.timezone.label(class="form-label") }}
+                                {{ form.timezone(class="form-select") }}
+                                {% if form.timezone.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.timezone.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Fuseau horaire pour l'affichage des dates et heures</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                {{ form.currency.label(class="form-label") }}
+                                {{ form.currency(class="form-select") }}
+                                {% if form.currency.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.currency.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Devise pour l'affichage des montants</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                {{ form.aging_calculation_method.label(class="form-label") }}
+                                {{ form.aging_calculation_method(class="form-select") }}
+                                {% if form.aging_calculation_method.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.aging_calculation_method.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Méthode de calcul pour l'âge des créances</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <div class="d-flex">
+                            <i data-feather="info" class="me-2 mt-1"></i>
+                            <div>
+                                <strong>Configuration des calculs :</strong>
+                                <ul class="mb-0 mt-1">
+                                    <li><strong>Fuseau horaire :</strong> Affecte l'affichage des heures et la détermination des rappels quotidiens</li>
+                                    <li><strong>Date de facture :</strong> L'âge est calculé depuis la date d'émission de la facture</li>
+                                    <li><strong>Date d'échéance :</strong> L'âge est calculé depuis la date d'échéance de la facture</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Field Configuration (Optional Hierarchy) -->
+                    <h6 class="border-bottom pb-2 mb-3 mt-4">
+                        <i data-feather="folder" class="me-2"></i>
+                        Champ projet (hiérarchie optionnelle)
+                    </h6>
+
+                    <div class="form-check mb-3">
+                        {{ form.project_field_enabled(class="form-check-input", id="project_field_enabled") }}
+                        {{ form.project_field_enabled.label(class="form-check-label fw-bold") }}
+                        <small class="d-block text-muted ms-4">
+                            Permet d'organiser vos factures par projet/contrat au sein de chaque client
+                        </small>
+                    </div>
+
+                    <div id="project_name_field" class="mb-3" style="display: {{ 'block' if company.project_field_enabled else 'none' }};">
+                        {{ form.project_field_name.label(class="form-label") }}
+                        {{ form.project_field_name(class="form-control", placeholder="Ex: Projet, Contrat, Chantier") }}
+                        {% if form.project_field_name.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.project_field_name.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <small class="text-muted">Personnalisez le nom de ce champ selon votre métier</small>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <div class="d-flex">
+                            <i data-feather="alert-triangle" class="me-2 mt-1"></i>
+                            <div>
+                                <strong>Important :</strong> Ce champ est disponible <strong>uniquement pour les imports Excel/CSV</strong>.
+                                Les connecteurs comptables (QuickBooks, Business Central, etc.) ignorent ce champ.
+                                <ul class="mb-0 mt-2">
+                                    <li>Organisez vos factures : <strong>Client > {{ company.project_field_name or 'Projet' }} > Factures</strong></li>
+                                    <li>Visible dans les comptes à recevoir, le détail client et les rapports</li>
+                                    <li>Vous pouvez changer le nom du champ à tout moment</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                    <div class="card-footer d-flex justify-content-between">
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+                            <i data-feather="arrow-left" class="me-1"></i>
+                            Retour au tableau de bord
+                        </a>
+                        <button type="submit" class="btn btn-primary" onclick="console.log('Button clicked!');">
+                            <i data-feather="save" class="me-1"></i>
+                            Sauvegarder
+                        </button>
+                    </div>
+                </form>
+                </div>
+            </div>
+
+            <!-- Accounting Connections Tab - REFONTE 2-SECTIONS -->
+            <div class="tab-pane fade {% if user_role == 'admin' %}show active{% endif %}" id="accounting" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i data-feather="link" class="me-2"></i>
+                            Connexions comptables
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- SECTION 1: Connecteur sélectionné -->
+                        <div class="mb-5">
+                            <h6 class="text-muted mb-3">
+                                <i data-feather="check-circle" class="me-2"></i>Connecteur sélectionné
+                            </h6>
+                            
+                            {% if connector_context.selected_connector %}
+                                {% set conn = connector_context.selected_connector %}
+                                <!-- Connecteur actif -->
+                                <div class="card border-primary shadow-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="me-3" style="min-width: 80px; display: flex; align-items: center; justify-content: center;">
+                                                {% if conn.logo %}
+                                                    <img src="{{ url_for('static', filename=conn.logo) }}" 
+                                                         alt="{{ conn.name }}" style="max-height: 48px; max-width: 80px; width: auto; height: auto; object-fit: contain;">
+                                                {% else %}
+                                                    <div class="rounded p-2" style="background: #1e7e34;">
+                                                        <i class="fas fa-file-excel text-white" style="font-size: 32px;"></i>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h5 class="mb-1">{{ conn.name }}</h5>
+                                                <p class="text-muted small mb-0">{{ conn.description }}</p>
+                                            </div>
+                                            <div>
+                                                <span class="badge bg-success">Actif</span>
+                                            </div>
+                                        </div>
+                                        
+                                        {% if conn.type == 'file_import' %}
+                                            <!-- Excel/CSV Connector Details -->
+                                            <div class="row mt-3">
+                                                <div class="col-md-6">
+                                                    <small class="text-muted">Mapping Clients</small>
+                                                    <div class="fw-bold">
+                                                        {% if conn.mapping_object and conn.mapping_object.client_column_mappings %}
+                                                            <i class="fas fa-check text-success"></i> Configuré
+                                                        {% else %}
+                                                            <i class="fas fa-times text-danger"></i> Non configuré
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <small class="text-muted">Mapping Factures</small>
+                                                    <div class="fw-bold">
+                                                        {% if conn.mapping_object and conn.mapping_object.invoice_column_mappings %}
+                                                            <i class="fas fa-check text-success"></i> Configuré
+                                                        {% else %}
+                                                            <i class="fas fa-times text-danger"></i> Non configuré
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mt-3">
+                                                <div class="d-flex gap-2 flex-wrap">
+                                                    <a href="{{ url_for('company.file_import_config') }}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-cog me-1"></i>Reconfigurer
+                                                    </a>
+                                                    
+                                                    {% if conn.mapping_object and conn.mapping_object.client_column_mappings %}
+                                                    <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#importClientsModal">
+                                                        <i class="fas fa-users me-1"></i>Importer clients
+                                                    </button>
+                                                    {% endif %}
+                                                    
+                                                    {% if conn.mapping_object and conn.mapping_object.invoice_column_mappings %}
+                                                    <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#importInvoicesModal">
+                                                        <i class="fas fa-file-invoice me-1"></i>Importer factures
+                                                    </button>
+                                                    {% endif %}
+                                                    
+                                                    <a href="{{ url_for('import.list_jobs') }}" class="btn btn-sm btn-outline-secondary">
+                                                        <i class="fas fa-history me-1"></i>Historique des imports
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        
+                                        {% else %}
+                                            <!-- API Connector Details (QuickBooks, Xero, Business Central) -->
+                                            <div class="row mt-3">
+                                                <div class="col-md-6">
+                                                    <small class="text-muted">Dernière synchronisation</small>
+                                                    <div class="fw-bold">
+                                                        {% if conn.last_sync_at %}
+                                                            {{ (conn.last_sync_at | to_local_timezone).strftime('%d/%m/%Y à %H:%M') }}
+                                                        {% else %}
+                                                            Jamais
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <small class="text-muted">Statut</small>
+                                                    <div class="fw-bold">
+                                                        {% if conn.connection_object and conn.connection_object.is_token_valid() %}
+                                                            <span class="text-success">Connecté</span>
+                                                        {% else %}
+                                                            <span class="text-warning">Reconnexion requise</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {% if conn.sync_stats %}
+                                                <div class="mt-3">
+                                                    {% if conn.sync_stats.status == 'success' %}
+                                                        <div class="alert alert-success p-2 small mb-0">
+                                                            <i data-feather="check-circle" class="me-2" style="width: 16px; height: 16px;"></i>
+                                                            <strong>Dernière sync :</strong>
+                                                            {{ conn.sync_stats.customers_created or 0 }} clients créés,
+                                                            {{ conn.sync_stats.customers_updated or 0 }} mis à jour,
+                                                            {{ conn.sync_stats.invoices_created or 0 }} factures créées,
+                                                            {{ conn.sync_stats.invoices_updated or 0 }} mises à jour.
+                                                        </div>
+                                                    {% elif conn.sync_stats.status == 'error' %}
+                                                        <div class="alert alert-danger p-2 small mb-0">
+                                                            <i data-feather="alert-circle" class="me-2" style="width: 16px; height: 16px;"></i>
+                                                            <strong>Échec :</strong> {{ conn.sync_stats.error }}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                            
+                                            <div class="mt-3">
+                                                <div class="d-flex gap-2">
+                                                    {% if conn.type == 'quickbooks' %}
+                                                        <button type="button" class="btn btn-sm btn-primary" onclick="triggerQuickBooksSync()">
+                                                            Synchroniser maintenant
+                                                        </button>
+                                                        <form method="POST" action="{{ url_for('company.quickbooks_disconnect', connection_id=conn.connection_id) }}" class="d-inline">
+                                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                                    onclick="return confirm('Êtes-vous sûr de vouloir déconnecter QuickBooks ?')">
+                                                                Déconnecter
+                                                            </button>
+                                                        </form>
+                                                    {% elif conn.type == 'xero' %}
+                                                        <button id="sync-btn-xero" type="button" class="btn btn-sm btn-primary" onclick="triggerXeroSync()">
+                                                            Synchroniser maintenant
+                                                        </button>
+                                                        <form method="POST" action="{{ url_for('company.xero_disconnect', connection_id=conn.connection_id) }}" class="d-inline">
+                                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                                    onclick="return confirm('Êtes-vous sûr de vouloir déconnecter Xero ?')">
+                                                                Déconnecter
+                                                            </button>
+                                                        </form>
+                                                    {% elif conn.type == 'business_central' %}
+                                                        <button type="button" class="btn btn-sm btn-primary" onclick="syncBCCustomers()">
+                                                            <i data-feather="users" class="me-1"></i>Sync Clients
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-primary" onclick="syncBCInvoices()">
+                                                            <i data-feather="file-text" class="me-1"></i>Sync Factures
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-success" onclick="syncBCPayments()">
+                                                            <i data-feather="dollar-sign" class="me-1"></i>Sync Paiements
+                                                        </button>
+                                                        <a href="{{ url_for('company.business_central_field_mapping_v2') }}" class="btn btn-sm btn-outline-primary">
+                                                            <i data-feather="settings" class="me-1"></i>Configurer mapping
+                                                        </a>
+                                                        <form method="POST" action="{{ url_for('company.business_central_disconnect', connection_id=conn.connection_id) }}" class="d-inline">
+                                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                                    onclick="return confirm('Êtes-vous sûr de vouloir déconnecter Business Central ?')">
+                                                                Déconnecter
+                                                            </button>
+                                                        </form>
+                                                    {% elif conn.type == 'odoo' %}
+                                                        <button id="sync-btn-odoo" type="button" class="btn btn-sm btn-primary" onclick="syncOdoo('clients')">
+                                                            <i data-feather="refresh-cw" class="me-1"></i>Synchroniser
+                                                        </button>
+                                                        <form method="POST" action="{{ url_for('company.odoo_disconnect', connection_id=conn.connection_id) }}" class="d-inline">
+                                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                                    onclick="return confirm('Êtes-vous sûr de vouloir déconnecter Odoo ?')">
+                                                                Déconnecter
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <!-- Aucun connecteur sélectionné -->
+                                <div class="alert alert-info">
+                                    <i data-feather="info" class="me-2"></i>
+                                    <strong>Pas de connecteur sélectionné</strong>
+                                    <p class="mb-0 mt-2">Choisissez un connecteur ci-dessous pour synchroniser vos données comptables.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- SECTION 2: Connecteurs disponibles -->
+                        <div>
+                            <h6 class="text-muted mb-3">
+                                <i data-feather="grid" class="me-2"></i>Connecteurs disponibles
+                            </h6>
+                            
+                            <div class="row g-3">
+                                {% for connector in connector_context.available_connectors %}
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="me-3" style="min-width: 60px; display: flex; align-items: center; justify-content: center;">
+                                                        {% if connector.logo %}
+                                                            <img src="{{ url_for('static', filename=connector.logo) }}" 
+                                                                 alt="{{ connector.name }}" style="max-height: 32px; max-width: 60px; width: auto; height: auto; object-fit: contain;">
+                                                        {% else %}
+                                                            <div class="rounded p-1" style="background: #1e7e34;">
+                                                                <i class="fas fa-file-excel text-white" style="font-size: 24px; padding: 4px;"></i>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1">{{ connector.name }}</h6>
+                                                        <p class="text-muted small mb-0">{{ connector.description }}</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mt-auto">
+                                                    {% if connector.is_configured and connector.type == 'file_import' %}
+                                                        <a href="{{ url_for('company.file_import_config') }}" class="btn btn-sm btn-outline-success">
+                                                            <i class="fas fa-cog me-1"></i>Reconfigurer
+                                                        </a>
+                                                    {% elif connector.type == 'file_import' %}
+                                                        {% if accounting_permission.allowed %}
+                                                        <a href="{{ url_for('company.file_import_config') }}" class="btn btn-sm btn-success">
+                                                            <i class="fas fa-cog me-1"></i>Configurer
+                                                        </a>
+                                                        {% else %}
+                                                        <button class="btn btn-sm btn-outline-secondary" disabled 
+                                                                title="{{ accounting_permission.restriction_reason }}">
+                                                            <i class="fas fa-lock me-1"></i>Configurer
+                                                        </button>
+                                                        {% endif %}
+                                                    {% elif connector.type == 'quickbooks' %}
+                                                        {% if accounting_permission.allowed %}
+                                                        <a href="{{ url_for('company.quickbooks_connect') }}" class="btn btn-sm btn-primary">
+                                                            Connecter QuickBooks
+                                                        </a>
+                                                        {% else %}
+                                                        <button class="btn btn-sm btn-outline-secondary" disabled 
+                                                                title="{{ accounting_permission.restriction_reason }}">
+                                                            <i class="fas fa-lock me-1"></i>Connecter
+                                                        </button>
+                                                        {% endif %}
+                                                    {% elif connector.type == 'xero' %}
+                                                        {% if accounting_permission.allowed %}
+                                                        <a href="{{ url_for('company.xero_connect') }}" class="btn btn-sm btn-primary">
+                                                            Connecter Xero
+                                                        </a>
+                                                        {% else %}
+                                                        <button class="btn btn-sm btn-outline-secondary" disabled 
+                                                                title="{{ accounting_permission.restriction_reason }}">
+                                                            <i class="fas fa-lock me-1"></i>Connecter
+                                                        </button>
+                                                        {% endif %}
+                                                    {% elif connector.type == 'business_central' %}
+                                                        {% if accounting_permission.allowed %}
+                                                        <a href="{{ url_for('company.business_central_config') }}" class="btn btn-sm btn-primary">
+                                                            Configurer Business Central
+                                                        </a>
+                                                        {% else %}
+                                                        <button class="btn btn-sm btn-outline-secondary" disabled 
+                                                                title="{{ accounting_permission.restriction_reason }}">
+                                                            <i class="fas fa-lock me-1"></i>Configurer
+                                                        </button>
+                                                        {% endif %}
+                                                    {% elif connector.type == 'odoo' %}
+                                                        {% if accounting_permission.allowed %}
+                                                        <a href="{{ url_for('company.odoo_setup') }}" class="btn btn-sm btn-primary">
+                                                            Configurer Odoo
+                                                        </a>
+                                                        {% else %}
+                                                        <button class="btn btn-sm btn-outline-secondary" disabled 
+                                                                title="{{ accounting_permission.restriction_reason }}">
+                                                            <i class="fas fa-lock me-1"></i>Configurer
+                                                        </button>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal pour import clients Excel/CSV -->
+            <div class="modal fade" id="importClientsModal" tabindex="-1" aria-labelledby="importClientsLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="importClientsLabel">
+                                <i class="fas fa-users me-2"></i>Importer des clients
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="clientsImportForm" method="POST" action="{{ url_for('company.file_import_clients') }}" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <div class="modal-body">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Uploadez votre fichier Excel (.xlsx) ou CSV (.csv) contenant les clients.
+                                    Le mapping configuré sera appliqué automatiquement.
+                                </div>
+                                <div class="mb-3">
+                                    <label for="clientsImportFile" class="form-label">Fichier clients</label>
+                                    <input type="file" 
+                                           class="form-control" 
+                                           id="clientsImportFile" 
+                                           name="import_file"
+                                           accept=".xlsx,.xls,.csv"
+                                           required>
+                                    <small class="form-text text-muted">Formats acceptés : .xlsx, .xls, .csv</small>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                <button type="submit" class="btn btn-success" id="startClientsImport">
+                                    <i class="fas fa-upload me-1"></i>Importer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal de progression d'import -->
+            <div class="modal fade" id="importProgressModal" tabindex="-1" aria-labelledby="importProgressLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="importProgressLabel">
+                                <i class="fas fa-spinner fa-spin me-2"></i>Import en cours...
+                            </h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span id="progressStep" class="text-muted">Initialisation...</span>
+                                    <span id="progressPercent" class="fw-bold">0%</span>
+                                </div>
+                                <div class="progress" style="height: 25px;">
+                                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                                         role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                        0%
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="progressMessages" class="small text-muted mt-3"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="closeProgressModal" disabled>
+                                Fermer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal pour import factures Excel/CSV -->
+            <div class="modal fade" id="importInvoicesModal" tabindex="-1" aria-labelledby="importInvoicesLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="importInvoicesLabel">
+                                <i class="fas fa-file-invoice me-2"></i>Importer des factures
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="{{ url_for('company.file_import_invoices') }}" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <div class="modal-body">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Uploadez votre fichier Excel (.xlsx) ou CSV (.csv) contenant les factures.
+                                    Le mapping configuré sera appliqué automatiquement.
+                                </div>
+                                <div class="mb-3">
+                                    <label for="invoicesImportFile" class="form-label">Fichier factures</label>
+                                    <input type="file" 
+                                           class="form-control" 
+                                           id="invoicesImportFile" 
+                                           name="import_file"
+                                           accept=".xlsx,.xls,.csv"
+                                           required>
+                                    <small class="form-text text-muted">Formats acceptés : .xlsx, .xls, .csv</small>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-upload me-1"></i>Importer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- Subscription Tab - REFONTE STRIPE 2.0 - VERSION SIMPLIFIÉE (Super Admin only) -->
+            {% if user_role != 'admin' %}
+            <div class="tab-pane fade" id="subscription" role="tabpanel">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i data-feather="credit-card" class="me-2"></i>
+                            Gestion de l'abonnement
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Informations abonnement actuel -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="subscription-status">
+                                    <div class="d-flex align-items-center mb-3">
+                                        {% if subscription_data.trial.is_trialing %}
+                                            <span class="badge bg-info me-2">Période d'essai</span>
+                                        {% elif company.stripe_subscription_id %}
+                                            <span class="badge bg-success me-2">Actif</span>
+                                        {% elif (company.plan and company.plan.is_free) or (company.plan_ref and company.plan_ref.is_free) or company.is_free_account %}
+                                            <span class="badge bg-secondary me-2">Gratuit</span>
+                                        {% else %}
+                                            <span class="badge bg-warning me-2">Manuel</span>
+                                        {% endif %}
+                                        <h6 class="mb-0">{{ company.get_plan_display_name() }}</h6>
+                                    </div>
+                                    <p class="text-muted">Plan actuel de votre entreprise</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="license-summary">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h6 class="border-bottom pb-2 mb-0 flex-grow-1">Licences</h6>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Licences utilisées :</span>
+                                        <strong id="used-licenses">{{ company.get_used_licenses() }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Licences disponibles :</span>
+                                        <strong id="available-licenses">{{ (company.quantity_licenses or 1) - company.get_used_licenses() }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Total payant :</span>
+                                        <strong id="total-licenses">{{ company.quantity_licenses or 1 }}</strong>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between text-muted">
+                                        <span>Lecteurs (gratuit) :</span>
+                                        <span id="readers-count">{{ company.get_license_summary().readers }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if subscription_data.trial.is_trialing %}
+                        <div class="alert alert-info border-info mb-4">
+                            <div class="d-flex">
+                                <i data-feather="clock" class="me-3 mt-1 text-info" style="min-width: 24px;"></i>
+                                <div>
+                                    <h6 class="alert-heading mb-1">Période d'essai gratuite en cours</h6>
+                                    <p class="mb-0">
+                                        Vous profitez de toutes les fonctionnalités de votre plan sans frais.
+                                        {% if subscription_data.trial.trial_end_display %}
+                                            Votre période d'essai se termine le <strong>{{ subscription_data.trial.trial_end_display }}</strong>.
+                                        {% endif %}
+                                        Après cette date, votre carte sera automatiquement débitée selon le tarif de votre plan.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Actions principales -->
+                        <div class="row">
+                            <div class="col-12">
+                                {% if company.stripe_subscription_id %}
+                                    <!-- Abonnement Stripe actif - Redirection vers portail -->
+                                    <div class="alert alert-info">
+                                        <h6 class="alert-heading">
+                                            <i data-feather="info" class="me-2"></i>
+                                            Gestion via Stripe
+                                        </h6>
+                                        <p class="mb-3">
+                                            Toutes les modifications d'abonnement (changement de plan, quantité de licences, annulation) 
+                                            se font désormais exclusivement via le portail sécurisé de Stripe.
+                                        </p>
+                                        <button type="button" class="btn btn-primary" id="manageSubscriptionBtn" 
+                                                onclick="window.location.href='/stripe/v2/create-portal-session'">
+                                            Gérer mon abonnement
+                                        </button>
+                                    </div>
+                                {% elif company.is_free_account or (plan_obj and plan_obj.is_free) or (company.plan_ref and company.plan_ref.is_free) %}
+                                    <!-- Plan gratuit - Proposition d'upgrade -->
+                                    <div class="alert alert-secondary">
+                                        <h6 class="alert-heading">
+                                            <i data-feather="gift" class="me-2"></i>
+                                            Plan Gratuit
+                                        </h6>
+                                        <p class="mb-3">
+                                            Vous utilisez actuellement le plan gratuit. Passez à un plan payant pour débloquer 
+                                            toutes les fonctionnalités et ajouter plus d'utilisateurs.
+                                        </p>
+                                        <a href="{{ url_for('stripe_checkout_v2.plan_selection') }}" class="btn btn-primary">
+                                            <i data-feather="arrow-up-circle" class="me-2"></i>
+                                            Choisir un plan payant
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <!-- Aucun abonnement - Proposition de choix de plan -->
+                                    <div class="alert alert-info">
+                                        <h6 class="alert-heading">
+                                            <i data-feather="star" class="me-2"></i>
+                                            Choisir votre forfait
+                                        </h6>
+                                        <p class="mb-3">
+                                            Sélectionnez le forfait qui convient le mieux à vos besoins. 
+                                            Commencez gratuitement ou choisissez un plan payant pour plus de fonctionnalités.
+                                        </p>
+                                        <a href="{{ url_for('stripe_checkout_v2.plan_selection') }}" class="btn btn-primary">
+                                            <i data-feather="package" class="me-2"></i>
+                                            Voir tous les forfaits
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        <!-- Zone dangereuse - Suppression de l'entreprise (Super Admin uniquement) -->
+        {% if current_user.is_super_admin() %}
+        <div class="card mt-4 border-danger">
+            <div class="card-header bg-danger text-white">
+                <h6 class="mb-0">
+                    <i data-feather="alert-triangle" class="me-2"></i>
+                    Zone dangereuse
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6 class="text-danger">Supprimer définitivement l'entreprise</h6>
+                        <p class="text-muted mb-3">
+                            Cette action supprimera définitivement votre entreprise et toutes ses données associées. 
+                            Ceci inclut tous les utilisateurs, clients, factures, notes de communication et connexions comptables.
+                        </p>
+                        
+                        <!-- Disclaimer sur l'abonnement Stripe -->
+                        {% if company.stripe_subscription_id and company.subscription_status in ['active', 'trialing', 'past_due', 'pending_cancellation'] %}
+                        <div class="alert alert-warning mb-3">
+                            <div class="d-flex">
+                                <i data-feather="credit-card" class="me-2 mt-1 text-warning"></i>
+                                <div>
+                                    <strong>⚠️ Abonnement Stripe en cours :</strong>
+                                    <p class="mb-1 mt-1">Si un abonnement est actif, la suppression de l'entreprise entraînera l'annulation de cet abonnement <strong>uniquement à la fin de la période de facturation en cours</strong>.</p>
+                                    <small class="text-muted">
+                                        <strong>Aucun remboursement ne sera effectué</strong> pour la période déjà facturée. 
+                                        L'annulation prendra effet à la prochaine date de facturation prévue.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="alert alert-warning">
+                            <h6 class="alert-heading">
+                                <i data-feather="shield" class="me-2"></i>
+                                Conformité aux lois canadiennes
+                            </h6>
+                            <p class="mb-2">
+                                Cette suppression est conforme aux lois canadiennes sur la protection des données personnelles (PIPEDA).
+                                Toutes vos données seront supprimées de manière sécurisée et définitive.
+                            </p>
+                            <ul class="mb-0 small">
+                                <li>Suppression immédiate et irréversible de toutes les données</li>
+                                <li>Respect du droit à l'effacement des données personnelles</li>
+                                <li>Aucune sauvegarde ne sera conservée après la suppression</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <form method="POST" action="{{ url_for('company.delete_company') }}" style="display: inline;"
+                                  onsubmit="var confirmation = prompt('Pour confirmer la suppression définitive, tapez exactement le nom de votre entreprise : {{ company.name }}'); if(confirmation === '{{ company.name }}') { document.getElementById('confirmationField').value = confirmation; return confirm('DERNIÈRE CONFIRMATION : Supprimer définitivement l\'entreprise et toutes ses données ?'); } else { alert('Nom incorrect. Suppression annulée.'); return false; }">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <input type="hidden" name="confirmation" id="confirmationField" value="">
+                                <button type="submit" class="btn btn-danger btn-lg">
+                                    <i data-feather="trash-2" class="me-2"></i>
+                                    Supprimer l'entreprise
+                                </button>
+                            </form>
+                            <p class="small text-muted mt-2">
+                                Cette action ne peut pas être annulée
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression d'entreprise -->
+<div class="modal fade" id="deleteCompanyModal" tabindex="-1" aria-labelledby="deleteCompanyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteCompanyModalLabel">
+                    <i data-feather="alert-triangle" class="me-2"></i>
+                    Suppression définitive de l'entreprise
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <h6 class="alert-heading">
+                        <i data-feather="alert-circle" class="me-2"></i>
+                        ATTENTION : Action irréversible
+                    </h6>
+                    <p class="mb-0">
+                        Vous êtes sur le point de supprimer définitivement votre entreprise 
+                        <strong>"{{ current_user.company.name }}"</strong> et toutes ses données.
+                    </p>
+                </div>
+
+                <h6>Données qui seront supprimées :</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i data-feather="users" class="me-2 text-danger" style="width: 16px; height: 16px;"></i>{{ company.users|length }} utilisateur(s)</li>
+                            <li><i data-feather="users" class="me-2 text-danger" style="width: 16px; height: 16px;"></i>{{ company.clients|length }} client(s)</li>
+                            <li><i data-feather="file-text" class="me-2 text-danger" style="width: 16px; height: 16px;"></i>{{ company.invoices|length }} facture(s)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i data-feather="message-circle" class="me-2 text-danger" style="width: 16px; height: 16px;"></i>Toutes les notes de communication</li>
+                            <li><i data-feather="mail" class="me-2 text-danger" style="width: 16px; height: 16px;"></i>Tous les modèles de courriels</li>
+                            <li><i data-feather="link" class="me-2 text-danger" style="width: 16px; height: 16px;"></i>Toutes les connexions comptables</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">
+                        <i data-feather="info" class="me-2"></i>
+                        Conformité légale - Canada
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li>Suppression conforme à la Loi sur la protection des renseignements personnels et les documents électroniques (PIPEDA)</li>
+                        <li>Respect du droit à l'effacement des données personnelles</li>
+                        <li>Suppression sécurisée et définitive sans possibilité de récupération</li>
+                        <li>Aucune trace ne sera conservée dans nos systèmes</li>
+                    </ul>
+                </div>
+
+                <form id="deleteCompanyForm" method="POST" action="{{ url_for('company.delete_company') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="form-group mb-3">
+                        <label for="confirmationInput" class="form-label">
+                            <strong>Pour confirmer la suppression, tapez exactement le nom de votre entreprise :</strong>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="confirmationInput" 
+                               name="confirmation" 
+                               placeholder="{{ current_user.company.name }}" 
+                               required 
+                               autocomplete="off">
+                        <div class="form-text text-danger">
+                            Attention : Cette vérification est obligatoire pour procéder à la suppression.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i data-feather="x" class="me-2"></i>Annuler
+                </button>
+                <button type="button" 
+                        class="btn btn-danger" 
+                        id="confirmDeleteBtn" 
+                        onclick="confirmCompanyDeletion()" 
+                        disabled>
+                    <i data-feather="trash-2" class="me-2"></i>
+                    Supprimer définitivement l'entreprise
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+// Fonction pour afficher le modal de suppression d'entreprise
+function showDeleteCompanyModal() {
+    const modal = new bootstrap.Modal(document.getElementById('deleteCompanyModal'));
+    modal.show();
+}
+
+// Fonction pour valider la confirmation et activer le bouton
+function validateConfirmation() {
+    const confirmationInput = document.getElementById('confirmationInput');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const expectedName = {{ current_user.company.name|tojson }};
+
+    if (confirmationInput.value.trim() === expectedName) {
+        confirmDeleteBtn.disabled = false;
+        confirmDeleteBtn.classList.remove('btn-secondary');
+        confirmDeleteBtn.classList.add('btn-danger');
+    } else {
+        confirmDeleteBtn.disabled = true;
+        confirmDeleteBtn.classList.remove('btn-danger');
+        confirmDeleteBtn.classList.add('btn-secondary');
+    }
+}
+
+// Fonction pour supprimer le logo
+function deleteLogo() {
+    console.log('deleteLogo function called');
+    if (confirm('Êtes-vous sûr de vouloir supprimer le logo ?')) {
+        console.log('User confirmed deletion');
+
+        // Utiliser fetch pour envoyer la requête
+        fetch('{{ url_for('company.delete_logo') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            body: new URLSearchParams({
+                'csrf_token': '{{ csrf_token() }}'
+            })
+        })
+        .then(response => {
+            console.log('Response received:', response.status);
+            if (response.ok) {
+                // Recharger la page pour voir les changements
+                window.location.reload();
+            } else {
+                alert('Erreur lors de la suppression du logo');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de la suppression du logo');
+        });
+    } else {
+        console.log('User cancelled deletion');
+    }
+}
+
+// Fonction pour confirmer la suppression de l'entreprise
+function confirmCompanyDeletion() {
+    const confirmationInput = document.getElementById('confirmationInput');
+    const expectedName = {{ current_user.company.name|tojson }};
+
+    if (confirmationInput.value.trim() !== expectedName) {
+        alert('Le nom de l\'entreprise ne correspond pas. Veuillez saisir exactement : ' + expectedName);
+        return false;
+    }
+
+    // Afficher une dernière confirmation
+    if (confirm('DERNIÈRE CONFIRMATION : Êtes-vous absolument certain de vouloir supprimer définitivement votre entreprise et toutes ses données ? Cette action ne peut pas être annulée.')) {
+        document.getElementById('deleteCompanyForm').submit();
+    }
+}
+
+// Event listener pour valider la saisie en temps réel
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmationInput = document.getElementById('confirmationInput');
+    if (confirmationInput) {
+        confirmationInput.addEventListener('input', validateConfirmation);
+        confirmationInput.addEventListener('paste', function() {
+            setTimeout(validateConfirmation, 10); // Petit délai pour que la valeur soit mise à jour
+        });
+    }
+
+    // Bouton portail Stripe - IMMÉDIAT
+    setTimeout(function() {
+        const manageBtn = document.getElementById('manageSubscriptionBtn');
+        if (manageBtn && !manageBtn.hasAttribute('data-stripe-ready')) {
+            manageBtn.setAttribute('data-stripe-ready', 'true');
+            manageBtn.onclick = function() {
+                window.location.href = '/stripe/v2/create-portal-session';
+            };
+        }
+    }, 100);
+
+});
+
+// Simple QuickBooks connection function
+document.addEventListener('DOMContentLoaded', function() {
+    const connectBtn = document.getElementById('connectQuickBooksBtn');
+    if (connectBtn) {
+        connectBtn.addEventListener('click', function() {
+            // Show loading state
+            this.disabled = true;
+            this.innerHTML = '<i data-feather="loader" class="me-2"></i>Connexion...';
+
+            // Generate a random state for security
+            const state = Math.random().toString(36).substring(2, 15);
+            sessionStorage.setItem('qb_oauth_state', state);
+
+            // Redirect to QuickBooks OAuth
+            window.location.href = `/company/quickbooks/connect?state=${state}`;
+        });
+    }
+});
+
+// REFONTE STRIPE 2.0 - Fonction pour créer un checkout depuis plan gratuit
+function createCheckout(planId, planName) {
+    if (!confirm('Voulez-vous vraiment passer au plan ' + planName + ' ?')) {
+        return;
+    }
+
+    // Désactiver le bouton pendant le traitement
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i data-feather="loader" class="me-2"></i>Création...';
+
+    fetch('/stripe/v2/create-checkout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            plan_id: planId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = data.checkout_url;
+        } else {
+            alert('Erreur lors de la création du checkout: ' + (data.error || 'Erreur inconnue'));
+            button.disabled = false;
+            button.innerHTML = originalText;
+        }
+    })
+    .catch(error => {
+        alert('Erreur lors de la création du checkout');
+        console.error('Checkout error:', error);
+        button.disabled = false;
+        button.innerHTML = originalText;
+    });
+}
+
+// Tab functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle tab switching
+    const tabs = document.querySelectorAll('#settingsTabs button[data-bs-toggle="tab"]');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Update URL hash for direct linking
+            const target = this.getAttribute('data-bs-target');
+            window.location.hash = target;
+        });
+    });
+
+    // Check for hash in URL and activate corresponding tab
+    const hash = window.location.hash;
+    if (hash) {
+        const tabButton = document.querySelector(`button[data-bs-target="${hash}"]`);
+        if (tabButton) {
+            const tab = new bootstrap.Tab(tabButton);
+            tab.show();
+        }
+    }
+
+    // Add CSS animations for connection cards
+    const style = document.createElement('style');
+    style.textContent = `
+        .connection-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        .connection-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .connection-preview:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            border-bottom: 2px solid transparent;
+            background: none;
+        }
+        .nav-tabs .nav-link.active {
+            border-bottom-color: var(--bs-primary);
+            background: none;
+        }
+    `;
+    document.head.appendChild(style);
+});
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Fonction de synchronisation QuickBooks
+function triggerQuickBooksSync() {
+    const button = document.getElementById('sync-btn');
+    if (!button) return; // Protection si bouton inexistant
+    
+    const originalText = button.innerHTML;
+
+    // Show loading state
+    button.disabled = true;
+    button.innerHTML = '<i data-feather="loader" class="me-2"></i>Synchronisation...';
+
+    fetch('{{ url_for("company.quickbooks_sync") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: new URLSearchParams({
+            'csrf_token': '{{ csrf_token() }}'
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json().catch(() => ({ success: true, message: 'Synchronisation lancée' }));
+        } else {
+            throw new Error('Erreur de synchronisation');
+        }
+    })
+    .then(data => {
+        if (data.success) {
+            button.innerHTML = '<i data-feather="check" class="me-2"></i>Synchronisation lancée';
+            // Actualiser après un court délai pour voir le résultat
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        } else {
+            console.error('Sync failed:', data.message);
+            button.innerHTML = '<i data-feather="x" class="me-2"></i>Erreur';
+            setTimeout(() => {
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }, 2000);
+        }
+    })
+    .catch(error => {
+        console.error('Sync error:', error);
+        button.innerHTML = '<i data-feather="x" class="me-2"></i>Erreur';
+        setTimeout(() => {
+            button.disabled = false;
+            button.innerHTML = originalText;
+        }, 2000);
+    });
+}
+
+// Fonction de synchronisation Xero
+function triggerXeroSync() {
+    const button = document.getElementById('sync-btn-xero');
+    if (!button) return;
+    
+    const originalText = button.innerHTML;
+
+    button.disabled = true;
+    button.innerHTML = '<i data-feather="loader" class="me-2"></i>Synchronisation...';
+
+    fetch('{{ url_for("company.xero_sync") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: new URLSearchParams({
+            'csrf_token': '{{ csrf_token() }}'
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json().catch(() => ({ success: true, message: 'Synchronisation lancée' }));
+        } else {
+            throw new Error('Erreur de synchronisation');
+        }
+    })
+    .then(data => {
+        if (data.success) {
+            button.innerHTML = '<i data-feather="check" class="me-2"></i>Synchronisation lancée';
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        } else {
+            console.error('Sync failed:', data.message);
+            button.innerHTML = '<i data-feather="x" class="me-2"></i>Erreur';
+            setTimeout(() => {
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }, 2000);
+        }
+    })
+    .catch(error => {
+        console.error('Sync error:', error);
+        button.innerHTML = '<i data-feather="x" class="me-2"></i>Erreur';
+        setTimeout(() => {
+            button.disabled = false;
+            button.innerHTML = originalText;
+        }, 2000);
+    });
+}
+
+function configureQuickBooks() {
+    // Open configuration modal or redirect to configuration page
+    showAlert('Configuration QuickBooks - Fonctionnalité en développement', 'info');
+}
+
+function disconnectQuickBooks() {
+    if (confirm('Êtes-vous sûr de vouloir déconnecter QuickBooks ? Vous devrez vous reconnecter pour continuer la synchronisation.')) {
+        fetch('/company/quickbooks/disconnect', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('QuickBooks déconnecté avec succès', 'success');
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                showAlert(data.message || 'Erreur lors de la déconnexion', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Disconnect error:', error);
+            showAlert('Erreur de connexion lors de la déconnexion', 'error');
+        });
+    }
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.top = '20px';
+    alertDiv.style.right = '20px';
+    alertDiv.style.zIndex = '9999';
+    alertDiv.style.minWidth = '300px';
+
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    document.body.appendChild(alertDiv);
+
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Logo preview
+    const logoInput = document.querySelector('#logo');
+    if (logoInput) {
+        logoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Could add logo preview functionality here
+                    console.log('Logo selected:', file.name);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Form validation
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const nameField = document.querySelector('#name');
+            const emailField = document.querySelector('#email');
+
+            if (nameField && !nameField.value.trim()) {
+                e.preventDefault();
+                nameField.focus();
+                showAlert('Le nom de l\'entreprise est obligatoire.', 'danger');
+                return;
+            }
+
+            if (emailField && !emailField.value.trim()) {
+                e.preventDefault();
+                emailField.focus();
+                showAlert('Le courriel de l\'entreprise est obligatoire.', 'danger');
+                return;
+            }
+        });
+    }
+
+    // Synchroniser les champs couleur et texte
+    const primaryColorInput = document.getElementById('primary_color');
+    const primaryTextInput = document.getElementById('primary_color_text');
+
+    if (primaryColorInput && primaryTextInput) {
+        primaryColorInput.addEventListener('input', function() {
+            primaryTextInput.value = this.value;
+        });
+
+        primaryTextInput.addEventListener('input', function() {
+            if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+                primaryColorInput.value = this.value;
+            }
+        });
+    }
+
+    const secondaryColorInput = document.getElementById('secondary_color');
+    const secondaryTextInput = document.getElementById('secondary_color_text');
+
+    if (secondaryColorInput && secondaryTextInput) {
+        secondaryColorInput.addEventListener('input', function() {
+            secondaryTextInput.value = this.value;
+        });
+
+        secondaryTextInput.addEventListener('input', function() {
+            if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+                secondaryColorInput.value = this.value;
+            }
+        });
+    }
+});
+</script>
+
+<style>
+.color-picker-container {
+    position: relative;
+}
+
+.color-picker-container input[type="color"] {
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.color-picker-container input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-picker-container input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 8px;
+}
+
+.color-picker-container input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: 8px;
+}
+
+
+
+/* Amélioration responsive */
+@media (max-width: 768px) {
+    .d-flex.align-items-center.gap-3 {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 1rem !important;
+    }
+
+    .color-picker-container {
+        align-self: center;
+    }
+
+    .color-preview-large {
+        align-self: center;
+    }
+}
+</style>
+
+<!-- JavaScript pour la synchronisation QuickBooks et notifications -->
+<script>
+// Supprimé - conflit avec la fonction triggerQuickBooksSync() appelée par le bouton onclick
+
+    function startPolling() {
+        if (polling) return;
+        polling = true;
+        
+        const pollInterval = setInterval(() => {
+            fetch('/api/notifications/recent', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }).then(response => response.json())
+            .then(data => {
+                if (data.notifications && data.notifications.length > 0) {
+                    // Chercher les notifications récentes (dernières 30 secondes) - QuickBooks ET Business Central
+                    const now = new Date();
+                    const recentNotifications = data.notifications.filter(notif => {
+                        const notifTime = new Date(notif.created_at);
+                        const diffSeconds = (now - notifTime) / 1000;
+                        return (notif.type === 'quickbooks_sync' || notif.type === 'business_central_sync' || notif.type === 'business_central_sync_error') || (notif.type === 'error' && diffSeconds < 30);
+                    });
+
+                    if (recentNotifications.length > 0) {
+                        const latestNotif = recentNotifications[0];
+                        if (latestNotif.type === 'quickbooks_sync') {
+                            showNotification(latestNotif.message, 'success');
+                        } else {
+                            showNotification(latestNotif.message, 'error');
+                        }
+                        
+                        // Arrêter le polling
+                        clearInterval(pollInterval);
+                        polling = false;
+                        resetSyncButton();
+                        
+                        // Recharger les stats de sync après quelques secondes
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }
+                }
+            }).catch(error => {
+                console.error('Erreur lors du polling:', error);
+            });
+        }, 2000); // Vérifier toutes les 2 secondes
+
+        // Arrêter le polling après 60 secondes maximum
+        setTimeout(() => {
+            if (polling) {
+                clearInterval(pollInterval);
+                polling = false;
+                resetSyncButton();
+                showNotification('Synchronisation en cours... Rechargez la page pour voir les résultats.', 'info');
+            }
+        }, 60000);
+    }
+
+    function resetSyncButton() {
+        syncBtn.disabled = false;
+        syncBtn.className = 'btn btn-sm btn-primary text-center';
+        syncText.textContent = 'Synchroniser maintenant';
+        
+        // Arrêter l'animation
+        const icon = syncBtn.querySelector('i[data-feather="refresh-cw"]');
+        if (icon) {
+            icon.style.animation = '';
+        }
+    }
+
+    function showNotification(message, type) {
+        // Notifications supprimées - uniquement dans la cloche
+        // Plus de popup verts ou d'alertes visuelles
+    }
+});
+
+// CSS pour l'animation de rotation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
+</script>
+
+<script>
+// Fonctions de synchronisation Business Central séparées
+function syncBCCustomers() {
+    // Vérifier si une sync est déjà en cours localement
+    if (window.bcSyncInProgress) {
+        showAlert('⚠️ Une synchronisation Business Central est déjà en cours. Veuillez patienter.', 'warning');
+        return;
+    }
+    
+    // Vérifier côté serveur s'il y a déjà une sync en cours
+    fetch('{{ url_for("company.check_sync_status") }}', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.sync_in_progress) {
+            showAlert('⚠️ ' + (data.message || 'Une synchronisation est déjà en cours. Veuillez patienter.'), 'warning');
+            return;
+        }
+        
+        if (confirm('Voulez-vous synchroniser les clients depuis Business Central ?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ url_for("company.business_central_sync") }}';
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrf_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            form.appendChild(csrfInput);
+            
+            const typeInput = document.createElement('input');
+            typeInput.type = 'hidden';
+            typeInput.name = 'sync_type';
+            typeInput.value = 'customers';
+            form.appendChild(typeInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+            
+            // Marquer sync en cours et désactiver les boutons
+            window.bcSyncInProgress = true;
+            updateBCSyncButtons(true);
+            
+            // Démarrer le polling des notifications Business Central
+            startBCNotificationPolling('customers');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors de la vérification du statut:', error);
+        showAlert('❌ Erreur lors de la vérification. Veuillez réessayer.', 'error');
+    });
+}
+
+function syncBCInvoices() {
+    // Vérifier si une sync est déjà en cours localement
+    if (window.bcSyncInProgress) {
+        showAlert('⚠️ Une synchronisation Business Central est déjà en cours. Veuillez patienter.', 'warning');
+        return;
+    }
+    
+    // Vérifier côté serveur s'il y a déjà une sync en cours
+    fetch('{{ url_for("company.check_sync_status") }}', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.sync_in_progress) {
+            showAlert('⚠️ ' + (data.message || 'Une synchronisation est déjà en cours. Veuillez patienter.'), 'warning');
+            return;
+        }
+        
+        if (confirm('Voulez-vous synchroniser les factures depuis Business Central ?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ url_for("company.business_central_sync") }}';
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrf_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            form.appendChild(csrfInput);
+            
+            const typeInput = document.createElement('input');
+            typeInput.type = 'hidden';
+            typeInput.name = 'sync_type';
+            typeInput.value = 'invoices';
+            form.appendChild(typeInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+            
+            // Marquer sync en cours et désactiver les boutons
+            window.bcSyncInProgress = true;
+            updateBCSyncButtons(true);
+            
+            // Démarrer le polling des notifications Business Central
+            startBCNotificationPolling('invoices');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors de la vérification du statut:', error);
+        showAlert('❌ Erreur lors de la vérification. Veuillez réessayer.', 'error');
+    });
+}
+
+function syncBCPayments() {
+    if (window.bcSyncInProgress) {
+        showAlert('⚠️ Une synchronisation Business Central est déjà en cours. Veuillez patienter.', 'warning');
+        return;
+    }
+
+    fetch('{{ url_for("company.check_sync_status") }}', {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.sync_in_progress) {
+            showAlert('⚠️ ' + (data.message || 'Une synchronisation est déjà en cours. Veuillez patienter.'), 'warning');
+            return;
+        }
+
+        if (confirm('Voulez-vous synchroniser les paiements reçus depuis Business Central ?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ url_for("company.business_central_sync") }}';
+
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrf_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            form.appendChild(csrfInput);
+
+            const typeInput = document.createElement('input');
+            typeInput.type = 'hidden';
+            typeInput.name = 'sync_type';
+            typeInput.value = 'payments';
+            form.appendChild(typeInput);
+
+            document.body.appendChild(form);
+            form.submit();
+
+            window.bcSyncInProgress = true;
+            updateBCSyncButtons(true);
+
+            startBCNotificationPolling('payments');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors de la vérification du statut:', error);
+        showAlert('❌ Erreur lors de la vérification. Veuillez réessayer.', 'error');
+    });
+}
+
+// Fonction pour gérer l'état visuel des boutons de synchronisation
+function updateBCSyncButtons(syncInProgress) {
+    const clientsBtn = document.querySelector('button[onclick="syncBCCustomers()"]');
+    const invoicesBtn = document.querySelector('button[onclick="syncBCInvoices()"]');
+    const paymentsBtn = document.querySelector('button[onclick="syncBCPayments()"]');
+
+    if (syncInProgress) {
+        // Désactiver et changer le texte des boutons
+        if (clientsBtn) {
+            clientsBtn.disabled = true;
+            clientsBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Synchronisation en cours...';
+            clientsBtn.classList.add('btn-secondary');
+            clientsBtn.classList.remove('btn-success');
+        }
+        if (invoicesBtn) {
+            invoicesBtn.disabled = true;
+            invoicesBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Synchronisation en cours...';
+            invoicesBtn.classList.add('btn-secondary');
+            invoicesBtn.classList.remove('btn-warning');
+        }
+        if (paymentsBtn) {
+            paymentsBtn.disabled = true;
+            paymentsBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Synchronisation en cours...';
+            paymentsBtn.classList.add('btn-secondary');
+            paymentsBtn.classList.remove('btn-success');
+        }
+    } else {
+        // Réactiver et restaurer le texte original des boutons
+        if (clientsBtn) {
+            clientsBtn.disabled = false;
+            clientsBtn.innerHTML = '<i class="fas fa-users me-1"></i>Sync Clients';
+            clientsBtn.classList.add('btn-success');
+            clientsBtn.classList.remove('btn-secondary');
+        }
+        if (invoicesBtn) {
+            invoicesBtn.disabled = false;
+            invoicesBtn.innerHTML = '<i class="fas fa-file-invoice me-1"></i>Sync Factures';
+            invoicesBtn.classList.add('btn-warning');
+            invoicesBtn.classList.remove('btn-secondary');
+        }
+        if (paymentsBtn) {
+            paymentsBtn.disabled = false;
+            paymentsBtn.innerHTML = '<i class="fas fa-dollar-sign me-1"></i>Sync Paiements';
+            paymentsBtn.classList.add('btn-success');
+            paymentsBtn.classList.remove('btn-secondary');
+        }
+    }
+}
+
+// Fonctions de synchronisation Odoo
+function syncOdooCustomers() {
+    syncOdoo('clients');
+}
+
+function syncOdooInvoices() {
+    syncOdoo('factures');
+}
+
+function syncOdoo(type) {
+    if (window.odooSyncInProgress) {
+        showAlert('⚠️ Une synchronisation Odoo est déjà en cours. Veuillez patienter.', 'warning');
+        return;
+    }
+    
+    fetch('{{ url_for("company.check_sync_status") }}', {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.sync_in_progress) {
+            showAlert('⚠️ ' + (data.message || 'Une synchronisation est déjà en cours.'), 'warning');
+            return;
+        }
+        
+        if (confirm('Voulez-vous synchroniser les ' + type + ' depuis Odoo ? (Clients et factures seront synchronisés ensemble)')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ url_for("company.odoo_sync") }}';
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrf_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            form.appendChild(csrfInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+            
+            window.odooSyncInProgress = true;
+            showAlert('🔄 Synchronisation Odoo lancée (clients + factures)...', 'info');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showAlert('❌ Erreur lors de la vérification. Veuillez réessayer.', 'error');
+    });
+}
+
+// Fonction de polling des notifications Business Central
+function startBCNotificationPolling(syncType) {
+    console.log(`Démarrage du polling des notifications Business Central pour ${syncType}`);
+    
+    const pollInterval = setInterval(() => {
+        fetch('/api/notifications/recent', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.notifications && data.notifications.length > 0) {
+                // Chercher les notifications Business Central récentes (dernières 60 secondes)
+                const now = new Date();
+                const recentNotifications = data.notifications.filter(notif => {
+                    const notifTime = new Date(notif.created_at);
+                    const diffSeconds = (now - notifTime) / 1000;
+                    return (notif.type === 'business_central_sync' || notif.type === 'business_central_sync_error') && diffSeconds < 60;
+                });
+
+                if (recentNotifications.length > 0) {
+                    const latestNotif = recentNotifications[0];
+                    
+                    // Arrêter le polling
+                    clearInterval(pollInterval);
+                    
+                    // Marquer sync terminée et réactiver les boutons
+                    window.bcSyncInProgress = false;
+                    updateBCSyncButtons(false);
+                    
+                    // Afficher l'alerte avec le résultat
+                    if (latestNotif.type === 'business_central_sync') {
+                        showAlert(`✅ ${latestNotif.title}: ${latestNotif.message}`, 'success');
+                    } else {
+                        showAlert(`❌ ${latestNotif.title}: ${latestNotif.message}`, 'error');
+                    }
+                    
+                    console.log('Notification Business Central reçue:', latestNotif);
+                }
+            }
+        })
+        .catch(error => {
+            console.log('Erreur polling notifications BC:', error);
+        });
+    }, 5000); // Vérifier toutes les 5 secondes
+    
+    // Arrêter le polling après 10 minutes maximum
+    setTimeout(() => {
+        clearInterval(pollInterval);
+        // Réactiver les boutons même en cas de timeout
+        window.bcSyncInProgress = false;
+        updateBCSyncButtons(false);
+        console.log('Polling des notifications Business Central arrêté (timeout)');
+        showAlert('⏱️ Temps d\'attente de notification dépassé. La synchronisation continue en arrière-plan.', 'info');
+    }, 600000);
+}
+
+// Gestion de l'import clients avec barre de progression SSE
+document.getElementById('clientsImportForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const importModal = bootstrap.Modal.getInstance(document.getElementById('importClientsModal'));
+    const progressModal = new bootstrap.Modal(document.getElementById('importProgressModal'));
+    
+    // Fermer modal d'import et ouvrir celle de progression
+    importModal.hide();
+    progressModal.show();
+    
+    // Réinitialiser la progression
+    updateProgress(0, 'Démarrage...', false);
+    
+    // Envoyer le fichier au serveur pour démarrer l'import
+    fetch('{{ url_for("company.file_import_clients_start") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            throw new Error(data.error || 'Erreur lors du démarrage de l\'import');
+        }
+        
+        // Se connecter au SSE pour suivre la progression
+        connectToProgressSSE(data.session_id);
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        updateProgress(0, 'Erreur: ' + error.message, true);
+        document.getElementById('closeProgressModal').disabled = false;
+    });
+});
+
+function connectToProgressSSE(sessionId) {
+    const eventSource = new EventSource('/import/progress/' + sessionId);
+    
+    eventSource.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        
+        if (data.error) {
+            console.error('Erreur SSE:', data.error);
+            updateProgress(0, 'Session introuvable', true);
+            eventSource.close();
+            document.getElementById('closeProgressModal').disabled = false;
+            return;
+        }
+        
+        // Mettre à jour la barre de progression
+        updateProgress(
+            data.progress_percent,
+            data.current_step,
+            data.status === 'error'
+        );
+        
+        // Si terminé ou erreur, fermer la connexion SSE
+        if (data.status === 'completed') {
+            eventSource.close();
+            updateProgress(100, 'Import terminé avec succès!', false);
+            document.getElementById('closeProgressModal').disabled = false;
+            
+            // Recharger la page après 1.5 secondes
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else if (data.status === 'error') {
+            eventSource.close();
+            updateProgress(data.progress_percent, 'Erreur: ' + (data.error_message || 'Erreur inconnue'), true);
+            document.getElementById('closeProgressModal').disabled = false;
+        }
+    };
+    
+    eventSource.onerror = function(error) {
+        console.error('Erreur de connexion SSE:', error);
+        eventSource.close();
+        updateProgress(0, 'Connexion perdue', true);
+        document.getElementById('closeProgressModal').disabled = false;
+    };
+}
+
+function updateProgress(percent, step, isError = false) {
+    const progressBar = document.getElementById('progressBar');
+    const progressPercent = document.getElementById('progressPercent');
+    const progressStep = document.getElementById('progressStep');
+    
+    progressBar.style.width = percent + '%';
+    progressBar.setAttribute('aria-valuenow', percent);
+    progressBar.textContent = percent + '%';
+    
+    if (isError) {
+        progressBar.classList.remove('bg-success');
+        progressBar.classList.add('bg-danger');
+        progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
+    } else if (percent === 100) {
+        progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
+    }
+    
+    progressPercent.textContent = percent + '%';
+    progressStep.textContent = step;
+}
+
+// Vérifier au chargement de la page si une synchronisation est en cours
+document.addEventListener('DOMContentLoaded', function() {
+    // Réinitialiser l'état au chargement
+    window.bcSyncInProgress = false;
+    
+    // Optionnel : vérifier côté serveur si une sync est en cours
+    fetch('/api/notifications/recent', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.notifications) {
+            // Chercher des notifications Business Central très récentes (moins de 10 secondes)
+            const now = new Date();
+            const veryRecentSync = data.notifications.find(notif => {
+                const notifTime = new Date(notif.created_at);
+                const diffSeconds = (now - notifTime) / 1000;
+                // Si on trouve un message de démarrage très récent, considérer qu'une sync est en cours
+                return notif.message && notif.message.includes('lancée en arrière-plan') && diffSeconds < 30;
+            });
+            
+            if (veryRecentSync) {
+                window.bcSyncInProgress = true;
+                updateBCSyncButtons(true);
+                console.log('Synchronisation Business Central détectée en cours');
+            }
+        }
+    })
+    .catch(error => {
+        console.log('Impossible de vérifier l\'état des synchronisations:', error);
+    });
+});
+
+// Project field toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const projectEnabledCheckbox = document.getElementById('project_field_enabled');
+    const projectNameField = document.getElementById('project_name_field');
+    
+    if (projectEnabledCheckbox && projectNameField) {
+        projectEnabledCheckbox.addEventListener('change', function() {
+            projectNameField.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+});
+</script>
+
+{% endblock %}

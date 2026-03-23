@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}Monitor de Synchronisation - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3">📊 Monitor de Synchronisation Business Central</h1>
+            <p class="text-muted">Visualisation en temps réel des synchronisations et métriques</p>
+        </div>
+    </div>
+
+    <!-- Métriques Globales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Syncs Actives</h6>
+                    <h3 class="card-title">
+                        <span id="active-syncs">{{ active_syncs }}</span>
+                        <small class="text-muted">/ {{ max_concurrent }}</small>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Jobs en Attente</h6>
+                    <h3 class="card-title" id="pending-jobs">{{ pending_jobs }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Taux de Succès (24h)</h6>
+                    <h3 class="card-title">
+                        <span id="success-rate">{{ success_rate }}</span>%
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Vitesse Moyenne</h6>
+                    <h3 class="card-title">
+                        <span id="avg-speed">{{ avg_speed }}</span> items/s
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Synchronisations en Cours -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">🔄 Synchronisations en Cours</h5>
+        </div>
+        <div class="card-body">
+            <div id="active-syncs-container">
+                {% if active_sync_logs %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Company</th>
+                                    <th>Type</th>
+                                    <th>Démarré</th>
+                                    <th>Progression</th>
+                                    <th>Vitesse</th>
+                                    <th>ETA</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in active_sync_logs %}
+                                <tr data-sync-id="{{ log.id }}">
+                                    <td>{{ log.connection.company.name if log.connection and log.connection.company else 'N/A' }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ log.entity_type }}</span>
+                                        {% if log.is_delta_sync %}
+                                            <span class="badge bg-success">Delta</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log.started_at.strftime('%H:%M:%S') if log.started_at else '-' }}</td>
+                                    <td>
+                                        <div class="progress" style="min-width: 150px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{ log.progress_percent }}%"
+                                                 aria-valuenow="{{ log.progress_percent }}" 
+                                                 aria-valuemin="0" aria-valuemax="100">
+                                                {{ log.items_processed }} / {{ log.estimated_total or '?' }}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if log.processing_rate %}
+                                            {{ "%.1f"|format(log.processing_rate) }} items/s
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if log.estimated_completion %}
+                                            {{ log.estimated_completion.strftime('%H:%M:%S') }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" 
+                                                onclick="stopSync({{ log.id }})"
+                                                title="Arrêter cette synchronisation">
+                                            ⏹️
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">Aucune synchronisation en cours</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Historique Récent -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">📈 Historique Récent (24h)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Type</th>
+                            <th>Statut</th>
+                            <th>Début</th>
+                            <th>Durée</th>
+                            <th>Items</th>
+                            <th>Vitesse</th>
+                            <th>Erreur</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in recent_logs %}
+                        <tr>
+                            <td>{{ log.connection.company.name if log.connection and log.connection.company else 'N/A' }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ log.entity_type }}</span>
+                                {% if log.is_delta_sync %}
+                                    <span class="badge bg-success">Delta</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.status == 'completed' %}
+                                    <span class="badge bg-success">✅ Complété</span>
+                                {% elif log.status == 'failed' %}
+                                    <span class="badge bg-danger">❌ Échoué</span>
+                                {% elif log.status == 'partial' %}
+                                    <span class="badge bg-warning">⚠️ Partiel</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ log.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ log.started_at.strftime('%d/%m %H:%M') if log.started_at else '-' }}</td>
+                            <td>
+                                {% if log.completed_at and log.started_at %}
+                                    {{ ((log.completed_at - log.started_at).total_seconds() / 60)|round(1) }} min
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ log.items_processed or 0 }}</td>
+                            <td>
+                                {% if log.processing_rate %}
+                                    {{ "%.1f"|format(log.processing_rate) }} items/s
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.error_message %}
+                                    <span class="text-danger" title="{{ log.error_message }}">
+                                        {{ log.error_message[:50] }}...
+                                    </span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-refresh toutes les 10 secondes
+setInterval(function() {
+    refreshMonitor();
+}, 10000);
+
+function refreshMonitor() {
+    fetch('{{ url_for("admin.sync_monitor_data") }}')
+        .then(response => response.json())
+        .then(data => {
+            // Mettre à jour les métriques
+            document.getElementById('active-syncs').textContent = data.active_syncs;
+            document.getElementById('pending-jobs').textContent = data.pending_jobs;
+            document.getElementById('success-rate').textContent = data.success_rate;
+            document.getElementById('avg-speed').textContent = data.avg_speed;
+            
+            // Mettre à jour les tableaux
+            if (data.active_syncs_html) {
+                document.getElementById('active-syncs-container').innerHTML = data.active_syncs_html;
+            }
+            if (data.pending_jobs_html) {
+                document.getElementById('pending-jobs-container').innerHTML = data.pending_jobs_html;
+            }
+        })
+        .catch(error => console.error('Error refreshing monitor:', error));
+}
+
+function stopSync(syncId) {
+    if (!confirm('Êtes-vous sûr de vouloir arrêter cette synchronisation ?')) {
+        return;
+    }
+    
+    fetch(`{{ url_for("admin.stop_sync", sync_id=0) }}`.replace('0', syncId), {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Synchronisation arrêtée');
+            refreshMonitor();
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error stopping sync:', error));
+}
+
+function executeJob(jobId) {
+    fetch(`{{ url_for("admin.execute_job", job_id=0) }}`.replace('0', jobId), {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Job démarré');
+            refreshMonitor();
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error executing job:', error));
+}
+
+function cancelJob(jobId) {
+    if (!confirm('Êtes-vous sûr de vouloir annuler ce job ?')) {
+        return;
+    }
+    
+    fetch(`{{ url_for("admin.cancel_job", job_id=0) }}`.replace('0', jobId), {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Job annulé');
+            refreshMonitor();
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error canceling job:', error));
+}
+
+function processJobs() {
+    fetch('{{ url_for("admin.process_jobs") }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`${data.processed} jobs traités`);
+            refreshMonitor();
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error processing jobs:', error));
+}
+</script>
+{% endblock %}

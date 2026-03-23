@@ -1,0 +1,157 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Détail exécution {{ log.job_name }} - Administration{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}">Administration</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.cron_job_logs') }}">Logs Cron Jobs</a></li>
+                    <li class="breadcrumb-item active">Détail #{{ log.id }}</li>
+                </ol>
+            </nav>
+            <h1 class="h3">
+                <i class="fas fa-clock me-2"></i>Exécution: <code>{{ log.job_name }}</code>
+            </h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-1"></i>Informations générales
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Job</th>
+                                    <td><code>{{ log.job_name }}</code></td>
+                                </tr>
+                                <tr>
+                                    <th>Statut</th>
+                                    <td>
+                                        {% if log.status == 'success' %}
+                                        <span class="badge bg-success"><i class="fas fa-check"></i> Succès</span>
+                                        {% elif log.status == 'warning' %}
+                                        <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle"></i> Avertissement</span>
+                                        {% elif log.status == 'failed' %}
+                                        <span class="badge bg-danger"><i class="fas fa-times"></i> Échec</span>
+                                        {% elif log.status == 'running' %}
+                                        <span class="badge bg-info"><i class="fas fa-spinner fa-spin"></i> En cours</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ log.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Démarré le</th>
+                                    <td>{{ log.started_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Terminé le</th>
+                                    <td>{{ log.ended_at.strftime('%d/%m/%Y %H:%M:%S') if log.ended_at else '-' }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Durée</th>
+                                    <td>
+                                        {% if log.duration_seconds is not none %}
+                                        <strong>{{ "%.2f"|format(log.duration_seconds) }} secondes</strong>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Éléments traités</th>
+                                    <td class="text-success">{{ log.items_processed if log.items_processed is not none else '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Éléments échoués</th>
+                                    <td class="{% if log.items_failed and log.items_failed > 0 %}text-danger{% endif %}">
+                                        {{ log.items_failed if log.items_failed is not none else '-' }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Éléments ignorés</th>
+                                    <td class="text-muted">{{ log.items_skipped if log.items_skipped is not none else '-' }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if log.error_message %}
+            <div class="card mb-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <i class="fas fa-exclamation-triangle me-1"></i>Message d'erreur
+                </div>
+                <div class="card-body">
+                    <pre class="mb-0 text-danger">{{ log.error_message }}</pre>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if log.details %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-code me-1"></i>Détails (JSON)
+                </div>
+                <div class="card-body">
+                    <pre class="mb-0 bg-light p-3 rounded">{{ log.details | tojson(indent=2) }}</pre>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-history me-1"></i>Exécutions récentes
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for recent in recent_logs %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center {% if recent.id == log.id %}active{% endif %}">
+                            <div>
+                                <small class="text-muted">{{ recent.started_at.strftime('%d/%m %H:%M') }}</small>
+                                {% if recent.status == 'success' %}
+                                <span class="badge bg-success ms-1">OK</span>
+                                {% elif recent.status == 'failed' %}
+                                <span class="badge bg-danger ms-1">KO</span>
+                                {% elif recent.status == 'warning' %}
+                                <span class="badge bg-warning text-dark ms-1">!</span>
+                                {% endif %}
+                            </div>
+                            {% if recent.duration_seconds is not none %}
+                            <small>{{ "%.1f"|format(recent.duration_seconds) }}s</small>
+                            {% endif %}
+                        </li>
+                        {% else %}
+                        <li class="list-group-item text-muted">Aucune autre exécution</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <a href="{{ url_for('admin.cron_job_logs') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Retour à la liste
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

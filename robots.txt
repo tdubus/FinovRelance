@@ -1,0 +1,25 @@
+# robots.txt pour FinovRelance
+# https://finov-relance.com
+
+# Googlebot - autoriser l'indexation complète
+User-agent: Googlebot
+Allow: /
+
+# Googlebot Images
+User-agent: Googlebot-Image
+Allow: /
+
+# Google AdsBot - autoriser explicitement l'exploration publicitaire
+User-agent: AdsBot-Google
+Allow: /
+
+# Google AdsBot Mobile
+User-agent: AdsBot-Google-Mobile
+Allow: /
+
+# Tous les autres robots
+User-agent: *
+Disallow:
+
+# Sitemap
+Sitemap: https://finov-relance.com/sitemap.xml

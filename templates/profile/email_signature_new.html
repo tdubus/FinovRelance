@@ -1,0 +1,357 @@
+                                        <div class="mb-3">
+                                            <label for="email_signature" class="form-label">Signature Email</label>
+                                            
+                                            <!-- Onglets pour choisir le mode d'édition -->
+                                            <ul class="nav nav-tabs mb-3" id="signature-tabs" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link active" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor-pane" type="button" role="tab">
+                                                        <i class="fas fa-edit me-1"></i> Éditeur Simple
+                                                    </button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="html-tab" data-bs-toggle="tab" data-bs-target="#html-pane" type="button" role="tab">
+                                                        <i class="fas fa-code me-1"></i> HTML Avancé
+                                                    </button>
+                                                </li>
+
+                                            </ul>
+                                            
+                                            <div class="tab-content" id="signature-tab-content">
+                                                <!-- Onglet Éditeur Simple -->
+                                                <div class="tab-pane fade show active" id="editor-pane" role="tabpanel">
+                                                    <!-- Banque d'icônes -->
+                                                    <div class="mb-3">
+                                                        <label class="form-label small text-muted">Icônes rapides :</label>
+                                                        <div class="d-flex gap-2 flex-wrap">
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertIcon('phone')" title="Téléphone">
+                                                                📞
+                                                            </button>
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertIcon('email')" title="Email">
+                                                                ✉️
+                                                            </button>
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertIcon('address')" title="Adresse">
+                                                                📍
+                                                            </button>
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertIcon('linkedin')" title="LinkedIn">
+                                                                💼
+                                                            </button>
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertIcon('facebook')" title="Facebook">
+                                                                📘
+                                                            </button>
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertIcon('instagram')" title="Instagram">
+                                                                📷
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div id="signature-editor" style="height: 200px; border: 1px solid #ced4da; border-radius: 0.375rem;"></div>
+                                                </div>
+                                                
+                                                <!-- Onglet HTML Avancé -->
+                                                <div class="tab-pane fade" id="html-pane" role="tabpanel">
+                                                    <textarea id="signature-html" class="form-control" rows="12" placeholder="Collez votre code HTML de signature ici..."></textarea>
+                                                    <div class="mt-2">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="previewHtml()">
+                                                            <i class="fas fa-eye me-1"></i> Aperçu
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-success" onclick="applyHtml()">
+                                                            <i class="fas fa-check me-1"></i> Appliquer
+                                                        </button>
+                                                    </div>
+                                                    <div id="html-preview" class="mt-3 p-3 border rounded" style="display: none; background-color: #f8f9fa;"></div>
+                                                </div>
+                                                
+
+
+                                            </div>
+                                            
+                                            {{ form.email_signature(style="display: none;") }}
+                                        </div>
+
+<!-- Quill Editor CSS -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<style>
+/* Styles pour l'éditeur de signature */
+.ql-editor {
+    min-height: 150px;
+    font-family: inherit;
+}
+
+.ql-toolbar.ql-snow {
+    border-top: 1px solid #ced4da;
+    border-left: 1px solid #ced4da;
+    border-right: 1px solid #ced4da;
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+}
+
+.ql-container.ql-snow {
+    border-bottom: 1px solid #ced4da;
+    border-left: 1px solid #ced4da;
+    border-right: 1px solid #ced4da;
+    border-bottom-left-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+}
+
+#signature-editor {
+    border: none !important;
+}
+
+/* Styles pour les onglets */
+.nav-tabs .nav-link {
+    color: #495057;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #007bff;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+</style>
+
+<!-- Quill Editor JavaScript -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script>
+let quill;
+let signatureField;
+
+// Nettoyage des signatures Outlook
+function cleanOutlookSignature(htmlContent) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+    
+    // Supprimer les éléments Microsoft spécifiques
+    const elementsToRemove = [];
+    
+    // Ajouter les éléments standards à supprimer
+    elementsToRemove.push(...tempDiv.querySelectorAll('meta, link, style, script'));
+    
+    // Supprimer les éléments avec préfixes Office (o:, v:, w:)
+    const allElements = tempDiv.querySelectorAll('*');
+    allElements.forEach(el => {
+        const tagName = el.tagName.toLowerCase();
+        if (tagName.startsWith('o:') || tagName.startsWith('v:') || tagName.startsWith('w:')) {
+            elementsToRemove.push(el);
+        }
+        
+        // Nettoyer les classes Microsoft
+        if (el.className && el.className.match(/^(Mso|xl|Outlook)/)) {
+            el.removeAttribute('class');
+        }
+        
+        // Supprimer les attributs Microsoft spécifiques
+        const attributesToRemove = [];
+        for (let i = 0; i < el.attributes.length; i++) {
+            const attr = el.attributes[i];
+            if (attr.name.startsWith('o:') || attr.name.startsWith('v:') || attr.name.startsWith('w:')) {
+                attributesToRemove.push(attr.name);
+            }
+        }
+        attributesToRemove.forEach(attrName => el.removeAttribute(attrName));
+    });
+    
+    // Supprimer tous les éléments identifiés
+    elementsToRemove.forEach(el => {
+        if (el.parentNode) {
+            el.parentNode.removeChild(el);
+        }
+    });
+    
+    // Extraire le contenu utile
+    const body = tempDiv.querySelector('body');
+    let result = body ? body.innerHTML : tempDiv.innerHTML;
+    
+    // Nettoyage supplémentaire du contenu textuel
+    result = result.replace(/<!--\[if[\s\S]*?<!\[endif\]-->/gi, ''); // Supprimer les commentaires conditionnels IE
+    result = result.replace(/mso-[^;:]+:[^;]+;?/gi, ''); // Supprimer les styles MSO
+    result = result.replace(/\s+/g, ' ').trim(); // Nettoyer les espaces multiples
+    
+    return result;
+}
+
+// Fonction pour insérer des icônes dans l'éditeur simple
+function insertIcon(iconType) {
+    const icons = {
+        'phone': '📞',
+        'email': '✉️', 
+        'address': '📍',
+        'linkedin': '💼',
+        'facebook': '📘',
+        'instagram': '📷'
+    };
+    
+    if (quill && icons[iconType]) {
+        const selection = quill.getSelection();
+        if (selection) {
+            quill.insertText(selection.index, icons[iconType] + ' ');
+            quill.setSelection(selection.index + 2);
+        } else {
+            quill.insertText(quill.getLength() - 1, icons[iconType] + ' ');
+        }
+        updateSignatureField();
+    }
+}
+
+// Fonctions pour l'édition HTML
+function previewHtml() {
+    const htmlContent = document.getElementById('signature-html').value;
+    const preview = document.getElementById('html-preview');
+    preview.innerHTML = htmlContent;
+    preview.style.display = 'block';
+}
+
+function applyHtml() {
+    const htmlContent = document.getElementById('signature-html').value;
+    console.log('ApplyHtml - Contenu HTML à appliquer:', htmlContent.length, 'caractères');
+    
+    // Désactiver temporairement la synchronisation automatique
+    isUpdatingFromHtml = true;
+    
+    // Vider Quill et insérer le nouveau contenu HTML
+    quill.setContents([]);
+    quill.clipboard.dangerouslyPasteHTML(0, htmlContent);
+    console.log('ApplyHtml - Quill mis à jour avec HTML préservé');
+    
+    // Forcer la synchronisation vers le champ caché avec le contenu HTML original
+    signatureField.value = htmlContent;
+    console.log('ApplyHtml - Champ caché mis à jour:', signatureField.value.length, 'caractères');
+    
+    // Réactiver la synchronisation automatique après un délai
+    setTimeout(() => {
+        isUpdatingFromHtml = false;
+    }, 500);
+    
+    // Passer automatiquement à l'onglet Éditeur Simple pour voir le résultat
+    const editorTab = document.getElementById('editor-tab');
+    if (editorTab) {
+        editorTab.click();
+        console.log('ApplyHtml - Passage vers Éditeur Simple');
+    }
+    
+    alert('Contenu HTML appliqué à l\'éditeur simple !');
+}
+
+// Mise à jour du champ caché
+function updateSignatureField() {
+    // Ne pas mettre à jour si on est en train d'appliquer du HTML depuis l'onglet avancé
+    if (!isUpdatingFromHtml && quill && signatureField) {
+        signatureField.value = quill.root.innerHTML;
+    }
+}
+
+// Rendre les fonctions globales pour les boutons onclick
+window.insertIcon = insertIcon;
+window.previewHtml = previewHtml;
+window.applyHtml = applyHtml;
+
+// Variables globales
+let isUpdatingFromHtml = false;
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initialisation du nouveau système de signature...');
+    
+    signatureField = document.getElementById('email_signature');
+    
+    // Vérifier que tous les éléments existent
+    const editorElement = document.getElementById('signature-editor');
+    if (!editorElement) {
+        console.error('Élément signature-editor non trouvé');
+        return;
+    }
+    
+    // Initialiser Quill
+    quill = new Quill('#signature-editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'font': [] }, { 'size': [] }],
+                [{ 'align': [] }],
+                ['link', 'image'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['blockquote'],
+                ['clean']
+            ]
+        },
+        placeholder: 'Créez votre signature...'
+    });
+    
+    console.log('Quill initialisé:', quill);
+    
+    // Charger la signature existante et la nettoyer
+    if (signatureField && signatureField.value && signatureField.value.trim() !== '' && signatureField.value.trim() !== '<p><br></p>') {
+        console.log('Chargement signature existante...');
+        let signatureContent = signatureField.value;
+        
+        // Nettoyer les messages obsolètes du système précédent
+        signatureContent = signatureContent.replace(/<p><strong>Signature Word importée[^<]*<\/strong><\/p>/gi, '');
+        signatureContent = signatureContent.replace(/<p><strong>Signature importée depuis Word[^<]*<\/strong><\/p>/gi, '');
+        signatureContent = signatureContent.replace(/<p><em>.*?signature.*?sera.*?utilisée.*?emails.*?<\/em><\/p>/gi, '');
+        signatureContent = signatureContent.replace(/<p><em>Note:.*?La signature complète sera utilisée dans les emails.*?<\/em><\/p>/gi, '');
+        
+        // Nettoyer les paragraphes vides qui restent
+        signatureContent = signatureContent.replace(/<p><br><\/p>/gi, '');
+        signatureContent = signatureContent.replace(/<p>\s*<\/p>/gi, '');
+        
+        // Nettoyer le contenu Outlook
+        const cleanedContent = cleanOutlookSignature(signatureContent);
+        
+        if (cleanedContent.trim() !== '') {
+            quill.root.innerHTML = cleanedContent;
+            
+            const htmlTextarea = document.getElementById('signature-html');
+            if (htmlTextarea) {
+                htmlTextarea.value = cleanedContent;
+            }
+            
+            // Mettre à jour le champ caché avec le contenu nettoyé
+            signatureField.value = cleanedContent;
+        } else {
+            // Si après nettoyage il ne reste rien, initialiser vide
+            quill.root.innerHTML = '<p><br></p>';
+        }
+    }
+    
+    // Synchroniser l'éditeur avec le champ caché
+    quill.on('text-change', function() {
+        updateSignatureField();
+        console.log('Quill text-change: signature mise à jour, ', signatureField.value.length, 'caractères');
+    });
+    
+    // Synchroniser aussi lors de la sélection pour capturer tous les changements
+    quill.on('selection-change', function() {
+        updateSignatureField();
+    });
+    
+    // Gestion de la soumission avec logging
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            console.log('Soumission formulaire - Avant updateSignatureField:', signatureField.value.length);
+            updateSignatureField();
+            console.log('Soumission formulaire - Après updateSignatureField:', signatureField.value.length);
+            console.log('Contenu final soumis:', signatureField.value.substring(0, 200));
+        });
+    }
+    
+    // Synchronisation entre les onglets
+    const htmlTab = document.getElementById('html-tab');
+    if (htmlTab) {
+        htmlTab.addEventListener('shown.bs.tab', function() {
+            const htmlTextarea = document.getElementById('signature-html');
+            if (htmlTextarea && quill) {
+                htmlTextarea.value = quill.root.innerHTML;
+            }
+        });
+    }
+    
+    console.log('Système de signature initialisé avec succès');
+});
+</script>

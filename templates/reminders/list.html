@@ -1,0 +1,291 @@
+
+{% extends "base.html" %}
+
+{% block title %}Rappels - FinovRelance{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Gestion des rappels</h1>
+        <p class="text-muted">Gérer tous vos rappels et notifications</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Sidebar with filters -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Filtres</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{{ url_for('reminder.list_reminders', filter='all') }}" 
+                   class="list-group-item list-group-item-action {{ 'active' if filter_type == 'all' else '' }}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Tous les rappels</span>
+                        <span class="badge bg-secondary">{{ total_count }}</span>
+                    </div>
+                </a>
+                <a href="{{ url_for('reminder.list_reminders', filter='overdue') }}" 
+                   class="list-group-item list-group-item-action {{ 'active' if filter_type == 'overdue' else '' }}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i data-feather="alert-circle" class="me-1"></i>En retard</span>
+                        <span class="badge bg-danger">{{ overdue_count }}</span>
+                    </div>
+                </a>
+                <a href="{{ url_for('reminder.list_reminders', filter='today') }}" 
+                   class="list-group-item list-group-item-action {{ 'active' if filter_type == 'today' else '' }}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i data-feather="calendar" class="me-1"></i>Aujourd'hui</span>
+                        <span class="badge bg-warning">{{ today_count }}</span>
+                    </div>
+                </a>
+                <a href="{{ url_for('reminder.list_reminders', filter='upcoming') }}" 
+                   class="list-group-item list-group-item-action {{ 'active' if filter_type == 'upcoming' else '' }}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i data-feather="clock" class="me-1"></i>À venir</span>
+                        <span class="badge bg-info">{{ upcoming_count }}</span>
+                    </div>
+                </a>
+                <a href="{{ url_for('reminder.list_reminders', filter='completed') }}" 
+                   class="list-group-item list-group-item-action {{ 'active' if filter_type == 'completed' else '' }}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i data-feather="check-circle" class="me-1"></i>Terminés</span>
+                        <span class="badge bg-success">{{ completed_count }}</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h6 class="mb-0">
+                            <span id="filterTitle">
+                                {% if filter_type == 'all' %}Tous les rappels
+                                {% elif filter_type == 'overdue' %}Rappels en retard
+                                {% elif filter_type == 'today' %}Rappels d'aujourd'hui
+                                {% elif filter_type == 'upcoming' %}Rappels à venir
+                                {% elif filter_type == 'completed' %}Rappels terminés
+                                {% endif %}
+                            </span>
+                            <span class="badge bg-secondary ms-2" id="totalCount">0</span>
+                        </h6>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Rechercher par nom ou code client...">
+                            <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+                                <i data-feather="x"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Initial loader -->
+                <div id="initialLoader" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p class="text-muted mt-2">Chargement des rappels...</p>
+                </div>
+                
+                <!-- Reminders container (hidden initially) -->
+                <div id="remindersContainer" class="d-none">
+                    <!-- Reminders will be loaded here by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="card-footer">
+                <div id="paginationContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Utility Functions -->
+<script src="{{ 'js/utils.js'|asset_url }}"></script>
+
+<!-- DOMPurify for XSS protection -->
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
+<!-- Include reminders.js for lazy loading and search -->
+<script src="{{ 'js/reminders.js'|asset_url }}"></script>
+
+<script>
+/**
+ * Sanitize HTML content using DOMPurify to prevent XSS attacks
+ * @param {string} html - The HTML content to sanitize
+ * @returns {string} - Sanitized HTML safe for innerHTML
+ */
+function sanitizeHTML(html) {
+    if (!html) return '';
+    
+    // Check if DOMPurify is available
+    if (typeof DOMPurify === 'undefined') {
+        console.error('DOMPurify is not loaded. Falling back to textContent.');
+        const div = document.createElement('div');
+        div.textContent = html;
+        return div.innerHTML;
+    }
+    
+    // Configure DOMPurify to allow common formatting tags and images
+    const config = {
+        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'b', 'i', 'ul', 'ol', 'li', 'a', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'pre', 'code', 'img', 'hr', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
+        ALLOWED_ATTR: ['href', 'target', 'style', 'class', 'src', 'alt', 'width', 'height', 'title', 'colspan', 'rowspan'],
+        ALLOW_DATA_ATTR: false,
+        SAFE_FOR_JQUERY: true
+    };
+    
+    return DOMPurify.sanitize(html, config);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const currentFilter = '{{ filter_type }}';
+    
+    // Initialize the page with lazy loading
+    if (typeof window.initializeRemindersPage === 'function') {
+        window.initializeRemindersPage(currentFilter);
+    }
+});
+</script>
+
+<!-- Modal Modification de Rappel -->
+<div class="modal fade" id="editReminderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i data-feather="edit" class="me-2"></i>
+                    Modifier le rappel
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="#" id="editReminderForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" id="editReminderId" name="reminder_id" value="">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Client</label>
+                        <div class="fw-bold" id="editClientName"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="editNoteText" class="form-label">Texte de la note</label>
+                        <textarea class="form-control" id="editNoteText" name="note_text" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="editReminderDate" class="form-label">Date de rappel</label>
+                        <input type="date" class="form-control" id="editReminderDate" name="reminder_date">
+                        <div class="form-text">
+                            <i data-feather="bell" class="icon-sm"></i>
+                            Modifiez la date du rappel
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEditedReminder()">
+                        <i data-feather="save" class="me-1"></i>
+                        Sauvegarder
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Edit Email Note (Hybrid - Read-only email + Editable note) -->
+<div class="modal fade" id="editEmailNoteModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i data-feather="mail" class="me-2"></i>
+                    Courriel envoyé
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Email Details (Read-only) -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0"><i data-feather="info" class="me-2"></i>Détails du courriel</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <strong>Client :</strong>
+                                <span id="emailNoteClient"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Date :</strong>
+                                <span id="emailNoteDate"></span>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Expéditeur :</strong>
+                            <span id="emailNoteFrom"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Destinataires :</strong>
+                            <span id="emailNoteTo"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Sujet :</strong>
+                            <span id="emailNoteSubject" class="fw-bold"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Message :</strong>
+                            <div id="emailNoteBody" class="mt-2 p-3 bg-light rounded" style="max-height: 300px; overflow-y: auto;"></div>
+                        </div>
+                        <div id="emailNoteAttachments" class="mb-2" style="display: none;">
+                            <strong>Pièces jointes :</strong>
+                            <ul id="emailNoteAttachmentsList" class="list-unstyled ms-3"></ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Editable Section -->
+                <form id="editEmailNoteForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" id="editEmailNoteId">
+                    
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0"><i data-feather="edit" class="me-2"></i>Notes et rappel (modifiable)</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="emailNoteAdditional" class="form-label">Note additionnelle</label>
+                                <textarea id="emailNoteAdditional" name="note_text" class="form-control" rows="3" placeholder="Ajoutez une note..."></textarea>
+                                <small class="form-text text-muted">Informations complémentaires sur cet envoi</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="emailNoteReminder" class="form-label">Date de rappel</label>
+                                <input type="date" id="emailNoteReminder" name="reminder_date" class="form-control">
+                                <small class="form-text text-muted">Optionnel - Pour programmer un suivi</small>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="saveEditedEmailNote()">
+                    <i data-feather="save" class="me-1"></i>
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

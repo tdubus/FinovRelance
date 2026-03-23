@@ -1,0 +1,190 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}Gestion des entreprises{% endblock %}
+{% block page_subtitle %}Administrer toutes les entreprises de votre plateforme{% endblock %}
+
+{% block content %}
+<!-- Search and Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">Recherche et filtres</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="query" class="form-control" placeholder="Rechercher une entreprise..." value="">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="filter_by" class="form-control">
+                            <option value="">Tous les statuts</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="plan_filter" class="form-control">
+                            <option value="">Tous les plans</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-admin-primary w-100">
+                            <i class="fas fa-search me-2"></i>Filtrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">{{ companies.total }} entreprise(s) trouvée(s)</h5>
+            <a href="{{ url_for('admin.create_company') }}" class="btn btn-admin-primary">
+                <i class="fas fa-plus me-2"></i>Créer une entreprise
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Companies Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card" style="overflow: visible;">
+            <div class="table-responsive" style="overflow: visible;">
+                <table class="table table-admin mb-0">
+                    <thead>
+                        <tr>
+                            <th>Entreprise</th>
+                            <th>Forfait</th>
+                            <th>Statut</th>
+                            <th>Utilisateurs</th>
+                            <th>Connexion</th>
+                            <th>Date création</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for company in companies.items %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-2" style="background: var(--admin-secondary);">
+                                        {{ company.name[0] }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">{{ company.name }}</div>
+                                        <small class="text-muted">{{ company.email }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge {% if company.is_free_account %}badge-plan-free{% else %}badge-plan-paid{% endif %}">
+                                    {{ company.get_plan_display_name() }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {% if company.plan_status == 'active' %}badge-status-active{% else %}badge-status-inactive{% endif %}">
+                                    {{ company.plan_status.title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-primary">A: {{ company.get_user_count_by_role('admin') + company.get_user_count_by_role('super_admin') }}</span>
+                                    <span class="badge bg-secondary">E: {{ company.get_user_count_by_role('employe') }}</span>
+                                    <span class="badge bg-info">L: {{ company.get_user_count_by_role('lecteur') }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">{{ (company.connection_type or 'Aucune').title() }}</span>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ company.created_at.strftime('%d/%m/%Y') }}</small>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
+                                            data-bs-toggle="dropdown" data-bs-auto-close="true" data-bs-boundary="viewport">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="{{ url_for('admin.edit_company', company_id=company.id) }}">
+                                            <i class="fas fa-edit me-2"></i>Modifier
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('admin.company_users', company_id=company.id) }}">
+                                            <i class="fas fa-users me-2"></i>Utilisateurs
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="confirmDelete({{ company.id }}, '{{ company.name }}')">
+                                            <i class="fas fa-trash me-2"></i>Supprimer
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if companies.pages > 1 %}
+            <div class="card-body">
+                <nav aria-label="Navigation des entreprises">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if companies.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.companies', page=companies.prev_num) }}">Précédent</a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for page_num in companies.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != companies.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.companies', page=page_num) }}">{{ page_num }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                                {% endif %}
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if companies.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.companies', page=companies.next_num) }}">Suivant</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- Hidden forms for delete actions -->
+{% for company in companies.items %}
+<form id="delete-form-{{ company.id }}" method="POST" action="{{ url_for('admin.delete_company', company_id=company.id) }}" style="display: none;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+</form>
+{% endfor %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function confirmDelete(companyId, companyName) {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer l'entreprise "${companyName}" ?\n\nCette action est irréversible et supprimera toutes les données associées.`)) {
+        document.getElementById('delete-form-' + companyId).submit();
+    }
+}
+</script>
+{% endblock %}

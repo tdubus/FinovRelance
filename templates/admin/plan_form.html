@@ -1,0 +1,249 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}{{ action }} un forfait{% endblock %}
+{% block page_subtitle %}Configurer les détails du forfait{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">{{ action }} un forfait</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" novalidate>
+                    {{ form.csrf_token }}
+                    
+                    <div class="row">
+                        <!-- Basic Information -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Informations de base</h6>
+                            
+                            <div class="mb-3">
+                                {{ form.name.label(class="form-label") }}
+                                {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                                {% if form.name.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.name.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Nom technique utilisé en interne</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.display_name.label(class="form-label") }}
+                                {{ form.display_name(class="form-control" + (" is-invalid" if form.display_name.errors else "")) }}
+                                {% if form.display_name.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.display_name.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Nom affiché aux utilisateurs</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.description.label(class="form-label") }}
+                                {{ form.description(class="form-control", rows="3") }}
+                                {% if form.description.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.description.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.is_active(class="form-check-input") }}
+                                    {{ form.is_active.label(class="form-check-label") }}
+                                </div>
+                                {% if form.is_active.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.is_active.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.is_free(class="form-check-input") }}
+                                    {{ form.is_free.label(class="form-check-label") }}
+                                </div>
+                                {% if form.is_free.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.is_free.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Stripe Configuration V2 -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Configuration Stripe V2</h6>
+                            
+                            <div class="mb-3">
+                                {{ form.plan_level.label(class="form-label") }}
+                                {{ form.plan_level(class="form-control" + (" is-invalid" if form.plan_level.errors else "")) }}
+                                {% if form.plan_level.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.plan_level.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Niveau du plan (1=Gratuit, 2=Basique, etc.)</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.stripe_product_id.label(class="form-label") }}
+                                {{ form.stripe_product_id(class="form-control" + (" is-invalid" if form.stripe_product_id.errors else "")) }}
+                                {% if form.stripe_product_id.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.stripe_product_id.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">ID du produit Stripe (ex: prod_xxxxx)</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.stripe_price_id.label(class="form-label") }}
+                                {{ form.stripe_price_id(class="form-control" + (" is-invalid" if form.stripe_price_id.errors else "")) }}
+                                {% if form.stripe_price_id.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.stripe_price_id.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">ID du prix Stripe (ex: price_xxxxx)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Limits -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Limites</h6>
+                            
+                            <div class="mb-3">
+                                {{ form.max_clients.label(class="form-label") }}
+                                {{ form.max_clients(class="form-control" + (" is-invalid" if form.max_clients.errors else "")) }}
+                                {% if form.max_clients.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.max_clients.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">0 = illimité</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.daily_sync_limit.label(class="form-label") }}
+                                {{ form.daily_sync_limit(class="form-control" + (" is-invalid" if form.daily_sync_limit.errors else "")) }}
+                                {% if form.daily_sync_limit.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.daily_sync_limit.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Vide = illimité</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Features -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Fonctionnalités</h6>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.allows_email_sending(class="form-check-input") }}
+                                    {{ form.allows_email_sending.label(class="form-check-label") }}
+                                </div>
+                                {% if form.allows_email_sending.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.allows_email_sending.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.allows_email_connection(class="form-check-input") }}
+                                    {{ form.allows_email_connection.label(class="form-check-label") }}
+                                </div>
+                                {% if form.allows_email_connection.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.allows_email_connection.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.allows_accounting_connection(class="form-check-input") }}
+                                    {{ form.allows_accounting_connection.label(class="form-check-label") }}
+                                </div>
+                                {% if form.allows_accounting_connection.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.allows_accounting_connection.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.allows_team_management(class="form-check-input") }}
+                                    {{ form.allows_team_management.label(class="form-check-label") }}
+                                </div>
+                                {% if form.allows_team_management.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.allows_team_management.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.allows_email_templates(class="form-check-input") }}
+                                    {{ form.allows_email_templates.label(class="form-check-label") }}
+                                </div>
+                                {% if form.allows_email_templates.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.allows_email_templates.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between pt-4 border-top">
+                        <a href="{{ url_for('admin.plans') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Retour
+                        </a>
+                        <button type="submit" class="btn btn-admin-primary">
+                            <i class="fas fa-save me-2"></i>{{ action }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Toggle Stripe fields based on free plan checkbox
+document.getElementById('is_free').addEventListener('change', function() {
+    // REFONTE STRIPE 2.0 : Champs unifiés stripe_product_id et stripe_price_id
+    const stripeFields = document.querySelectorAll('#stripe_product_id, #stripe_price_id');
+    stripeFields.forEach(field => {
+        field.disabled = this.checked;
+        // NE PAS vider les champs automatiquement - laisser l'utilisateur décider
+        // if (this.checked) {
+        //     field.value = '';
+        // }
+    });
+});
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('is_free').checked) {
+        document.getElementById('is_free').dispatchEvent(new Event('change'));
+    }
+});
+</script>
+{% endblock %}

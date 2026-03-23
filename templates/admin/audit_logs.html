@@ -1,0 +1,207 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}Logs d'audit{% endblock %}
+{% block page_subtitle %}Historique des actions sur les abonnements{% endblock %}
+
+{% block content %}
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-body p-4">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">ID Entreprise</label>
+                        <input type="number" name="company_id" class="form-control" 
+                               value="{{ company_id or '' }}" placeholder="ID de l'entreprise">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Action</label>
+                        <select name="action" class="form-select">
+                            <option value="">Toutes les actions</option>
+                            {% for action in unique_actions %}
+                                <option value="{{ action }}" {% if action_filter == action %}selected{% endif %}>
+                                    {{ action.replace('_', ' ').title() }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-admin-primary">Filtrer</button>
+                            <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-outline-secondary">Reset</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Audit Logs -->
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">Logs d'audit ({{ logs.total }} entrées)</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if logs.items %}
+                <div class="table-responsive">
+                    <table class="table table-admin mb-0">
+                        <thead>
+                            <tr>
+                                <th width="150">Date/Heure</th>
+                                <th>Entreprise</th>
+                                <th width="180">Action</th>
+                                <th width="120">Ancien statut</th>
+                                <th width="120">Nouveau statut</th>
+                                <th>Admin</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs.items %}
+                            <tr>
+                                <td>
+                                    <small>{{ log.created_at.strftime('%d/%m/%Y') }}</small><br>
+                                    <small class="text-muted">{{ log.created_at.strftime('%H:%M:%S') }}</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-2" style="font-size: 10px;">
+                                            {{ log.company.name[0] if log.company else '?' }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">
+                                                {% if log.company %}
+                                                    {{ log.company.name }}
+                                                {% else %}
+                                                    <span class="text-muted">Entreprise supprimée</span>
+                                                {% endif %}
+                                            </div>
+                                            <small class="text-muted">ID: {{ log.company_id }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if log.action_type == 'cancel' %}
+                                        <span class="badge bg-warning">Annulation</span>
+                                    {% elif log.action_type == 'reactivate' %}
+                                        <span class="badge bg-success">Réactivation</span>
+                                    {% elif log.action_type == 'grace_period_created' %}
+                                        <span class="badge bg-info">Période grâce créée</span>
+                                    {% elif log.action_type == 'admin_force_reactivate' %}
+                                        <span class="badge bg-danger">Force réactivation</span>
+                                    {% elif log.action_type == 'admin_extend_grace' %}
+                                        <span class="badge bg-secondary">Prolongation grâce</span>
+                                    {% elif log.action_type == 'upgrade' or log.action_type == 'license_upgrade' %}
+                                        <span class="badge bg-primary">Upgrade</span>
+                                    {% elif log.action_type == 'downgrade' or log.action_type == 'license_reduction' %}
+                                        <span class="badge bg-warning">Réduction</span>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark">{{ log.action_type.replace('_', ' ').title() }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if log.old_status %}
+                                        <small class="badge bg-light text-dark">{{ log.old_status }}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if log.new_status %}
+                                        <small class="badge bg-light text-dark">{{ log.new_status }}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if log.admin_user %}
+                                        <div class="d-flex align-items-center">
+                                            <div class="user-avatar me-1" style="font-size: 10px; width: 20px; height: 20px;">
+                                                {{ log.admin_user.first_name[0] if log.admin_user.first_name else log.admin_user.email[0] }}
+                                            </div>
+                                            <small>{{ log.admin_user.first_name }} {{ log.admin_user.last_name }}</small>
+                                        </div>
+                                    {% elif log.webhook_source %}
+                                        <small class="text-info">
+                                            <i class="fas fa-robot me-1"></i>Webhook
+                                        </small>
+                                    {% else %}
+                                        <small class="text-muted">Système</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if log.notes %}
+                                        <small class="text-muted">{{ log.notes[:100] }}{% if log.notes|length > 100 %}...{% endif %}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if logs.pages > 1 %}
+                <div class="d-flex justify-content-between align-items-center p-4">
+                    <div class="text-muted">
+                        Affichage de {{ (logs.page - 1) * logs.per_page + 1 }} à {{ logs.page * logs.per_page if logs.page * logs.per_page < logs.total else logs.total }} 
+                        sur {{ logs.total }} résultats
+                    </div>
+                    
+                    <nav>
+                        <ul class="pagination mb-0">
+                            {% if logs.has_prev %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.audit_logs', page=logs.prev_num, company_id=company_id, action=action_filter) }}">Précédent</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for page_num in logs.iter_pages() %}
+                                {% if page_num %}
+                                    {% if page_num != logs.page %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url_for('admin.audit_logs', page=page_num, company_id=company_id, action=action_filter) }}">{{ page_num }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ page_num }}</span>
+                                        </li>
+                                    {% endif %}
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">…</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if logs.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.audit_logs', page=logs.next_num, company_id=company_id, action=action_filter) }}">Suivant</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+                
+                {% else %}
+                <div class="text-center p-5">
+                    <div class="text-muted">
+                        <i class="fas fa-file-alt fa-3x mb-3"></i>
+                        <h5>Aucun log trouvé</h5>
+                        <p>Aucune activité correspondant aux critères sélectionnés.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

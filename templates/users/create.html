@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Créer un utilisateur - FinovRelance{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>Créer un nouvel utilisateur
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.user_type.label(class="form-label") }}
+                            {{ form.user_type(class="form-select", id="user-type-select") }}
+                            {% if form.user_type.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.user_type.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Choisissez "Nouvel utilisateur" pour créer un compte complètement nouveau ou "Utilisateur existant" pour ajouter un utilisateur déjà inscrit à votre entreprise.
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.first_name.label(class="form-label") }}
+                                    {{ form.first_name(class="form-control") }}
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in form.first_name.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.last_name.label(class="form-label") }}
+                                    {{ form.last_name(class="form-control") }}
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in form.last_name.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            {{ form.email(class="form-control", id="email-input") }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.email.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">L'adresse email servira d'identifiant de connexion.</div>
+                            
+                            <!-- Message d'information dynamique -->
+                            <div id="user-status-info" class="mt-2" style="display: none;">
+                                <div id="existing-user-info" class="alert alert-info" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Utilisateur existant détecté :</strong>
+                                    <span id="existing-user-details"></span>
+                                    <br><small>Cet utilisateur conservera son mot de passe actuel.</small>
+                                </div>
+                                <div id="already-in-company-warning" class="alert alert-warning" style="display: none;">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>Attention :</strong> Cet utilisateur fait déjà partie de votre entreprise.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.role.label(class="form-label") }}
+                            {{ form.role(class="form-select") }}
+                            {% if form.role.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.role.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Un mot de passe temporaire sera envoyé par courriel à l'utilisateur.</div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Information:</strong> Cet utilisateur sera ajouté à votre entreprise 
+                            <strong>{{ company.name }}</strong> et aura accès aux mêmes données clients et factures.
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('company.users_list') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Retour
+                            </a>
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const userTypeSelect = document.getElementById('user-type-select');
+    const emailInput = document.getElementById('email-input');
+    const firstNameInput = document.getElementById('first_name');
+    const lastNameInput = document.getElementById('last_name');
+    const userStatusInfo = document.getElementById('user-status-info');
+    const existingUserInfo = document.getElementById('existing-user-info');
+    const existingUserDetails = document.getElementById('existing-user-details');
+    const alreadyInCompanyWarning = document.getElementById('already-in-company-warning');
+    const submitButton = document.querySelector('input[type="submit"]');
+    
+    let checkTimeout;
+    let currentUserExists = false;
+    let userAlreadyInCompany = false;
+    
+    function checkUserExists() {
+        const email = emailInput.value.trim();
+        
+        if (!email || !email.includes('@')) {
+            resetForm();
+            return;
+        }
+        
+        fetch('{{ url_for("company.check_user_exists") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.exists) {
+                currentUserExists = true;
+                userAlreadyInCompany = data.already_in_company;
+                
+                if (data.already_in_company) {
+                    showAlreadyInCompanyWarning();
+                    submitButton.disabled = true;
+                } else {
+                    showExistingUserInfo(data.user_info);
+                    fillUserInfo(data.user_info);
+                    submitButton.disabled = false;
+                    
+                    if (userTypeSelect) {
+                        userTypeSelect.value = 'existing';
+                    }
+                }
+            } else {
+                currentUserExists = false;
+                userAlreadyInCompany = false;
+                hideUserStatusInfo();
+                submitButton.disabled = false;
+                
+                if (userTypeSelect) {
+                    userTypeSelect.value = 'new';
+                }
+                
+                firstNameInput.readOnly = false;
+                lastNameInput.readOnly = false;
+                firstNameInput.classList.remove('bg-light');
+                lastNameInput.classList.remove('bg-light');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors de la vérification:', error);
+            resetForm();
+        });
+    }
+    
+    function resetForm() {
+        currentUserExists = false;
+        userAlreadyInCompany = false;
+        hideUserStatusInfo();
+        submitButton.disabled = false;
+    }
+    
+    function showExistingUserInfo(userInfo) {
+        existingUserDetails.textContent = `${userInfo.first_name} ${userInfo.last_name} (${userInfo.email})`;
+        existingUserInfo.style.display = 'block';
+        alreadyInCompanyWarning.style.display = 'none';
+        userStatusInfo.style.display = 'block';
+    }
+    
+    function showAlreadyInCompanyWarning() {
+        existingUserInfo.style.display = 'none';
+        alreadyInCompanyWarning.style.display = 'block';
+        userStatusInfo.style.display = 'block';
+    }
+    
+    function hideUserStatusInfo() {
+        userStatusInfo.style.display = 'none';
+        existingUserInfo.style.display = 'none';
+        alreadyInCompanyWarning.style.display = 'none';
+    }
+    
+    function fillUserInfo(userInfo) {
+        firstNameInput.value = userInfo.first_name;
+        lastNameInput.value = userInfo.last_name;
+        firstNameInput.readOnly = true;
+        lastNameInput.readOnly = true;
+        firstNameInput.classList.add('bg-light');
+        lastNameInput.classList.add('bg-light');
+    }
+    
+    // Événement sur le champ email avec debounce
+    emailInput.addEventListener('input', function() {
+        clearTimeout(checkTimeout);
+        
+        // Réactiver les champs si l'email change
+        if (!currentUserExists) {
+            firstNameInput.readOnly = false;
+            lastNameInput.readOnly = false;
+            firstNameInput.classList.remove('bg-light');
+            lastNameInput.classList.remove('bg-light');
+        }
+        
+        checkTimeout = setTimeout(checkUserExists, 500);
+    });
+    
+    // Vérifier au chargement de la page si un email est pré-rempli
+    if (emailInput.value.trim()) {
+        checkUserExists();
+    }
+});
+</script>
+{% endblock %}

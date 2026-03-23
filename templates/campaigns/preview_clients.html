@@ -1,0 +1,476 @@
+{% extends "base.html" %}
+
+{% block title %}Sélection des clients - {{ campaign.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('campaign.list_campaigns') }}">Campagnes</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('campaign.view_campaign', campaign_id=campaign.id) }}">{{ campaign.name }}</a></li>
+            <li class="breadcrumb-item active">Sélection des clients</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-primary rounded-pill me-3">2</span>
+                    <div>
+                        <h5 class="mb-0">Liste des clients cibles</h5>
+                        <small class="text-muted">Étape 2 sur 3 : Sélectionner les clients destinataires</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addClientModal">
+                        <i class="fas fa-plus me-1"></i>Ajouter un client
+                    </button>
+                    <span class="badge bg-info fs-6" id="totalClientsCount">{{ (clients|length) + (added_clients|length) }} client(s)</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('campaign.preview_clients', campaign_id=campaign.id) }}" id="clientsForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Comment ça marche :</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>Cochez/décochez les clients dans la liste pour les inclure/exclure</li>
+                        <li>Utilisez la case à cocher dans l'en-tête pour tout sélectionner/désélectionner</li>
+                        <li>Utilisez le bouton "Ajouter un client" pour inclure des clients supplémentaires</li>
+                    </ul>
+                </div>
+
+                <div class="mb-3 d-flex justify-content-end align-items-center">
+                    <span class="text-muted me-2">Sélectionnés : </span>
+                    <span class="badge bg-success fs-6" id="selectedCount">{{ (clients|length) + (added_clients|length) }}</span>
+                </div>
+
+                {% if added_clients %}
+                <div class="mb-4">
+                    <h6 class="text-success mb-2"><i class="fas fa-plus-circle me-1"></i>Clients ajoutés manuellement</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover table-bordered border-success">
+                            <thead class="table-success">
+                                <tr>
+                                    <th style="width: 40px;">
+                                        <input class="form-check-input" type="checkbox" id="selectAllAdded" checked title="Tout sélectionner/désélectionner">
+                                    </th>
+                                    <th>Code client</th>
+                                    <th>Nom</th>
+                                    <th class="text-end">Solde</th>
+                                    <th style="width: 60px;" class="text-center">Retirer</th>
+                                </tr>
+                            </thead>
+                            <tbody id="addedClientsBody">
+                                {% for client in added_clients %}
+                                <tr class="added-client-row" data-client-id="{{ client.id }}">
+                                    <td>
+                                        <input class="form-check-input client-checkbox added-checkbox" type="checkbox" 
+                                               name="include_clients" value="{{ client.id }}" checked>
+                                    </td>
+                                    <td>{{ client.code_client }}</td>
+                                    <td>{{ client.name }}</td>
+                                    <td class="text-end">{{ format_currency(client.balance) }}</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-outline-danger btn-sm btn-remove-added" 
+                                                data-client-id="{{ client.id }}" title="Retirer de la liste">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+                <h6 class="text-muted mb-2"><i class="fas fa-filter me-1"></i>Clients correspondant aux filtres</h6>
+                
+                {% if clients %}
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-sm table-hover">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th style="width: 40px;">
+                                    <input class="form-check-input" type="checkbox" id="selectAllFiltered" checked title="Tout sélectionner/désélectionner">
+                                </th>
+                                <th>Code client</th>
+                                <th>Nom</th>
+                                <th class="text-end">Solde</th>
+                                <th style="width: 60px;" class="text-center">Exclure</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for client in clients %}
+                            {% set is_selected = (previously_selected and client.id in previously_selected) or (not previously_selected and client.id not in excluded_ids) %}
+                            <tr class="filtered-client-row" data-client-id="{{ client.id }}">
+                                <td>
+                                    <input class="form-check-input client-checkbox filtered-checkbox" type="checkbox" 
+                                           name="include_clients" value="{{ client.id }}"
+                                           {% if is_selected %}checked{% endif %}>
+                                </td>
+                                <td>{{ client.code_client }}</td>
+                                <td>{{ client.name }}</td>
+                                <td class="text-end">{{ format_currency(client.balance) }}</td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline-danger btn-sm btn-exclude-client" 
+                                            data-client-id="{{ client.id }}" title="Exclure de la campagne">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Aucun client ne correspond aux filtres définis. Vous pouvez ajouter des clients manuellement.
+                </div>
+                {% endif %}
+
+                <div class="mt-4 p-3 bg-light rounded">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="mb-1">Résumé</h6>
+                            <ul class="mb-0 small text-muted">
+                                <li>Clients sélectionnés : <strong id="finalCount">{{ (clients|length) + (added_clients|length) }}</strong></li>
+                                <li>Pièces jointes : 
+                                    {% if campaign.attach_pdf_statement %}<span class="badge bg-danger">PDF</span> {% endif %}
+                                    {% if campaign.attach_excel_statement %}<span class="badge bg-success">Excel</span>{% endif %}
+                                    {% if not campaign.attach_pdf_statement and not campaign.attach_excel_statement %}Aucune{% endif %}
+                                </li>
+                                <li>Langue des pièces : <em>selon la langue du contact/client</em></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{{ url_for('campaign.create_campaign') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i>Retour
+                                </a>
+                                <button type="submit" class="btn btn-primary" id="continueBtn">
+                                    Continuer<i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addClientModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Ajouter un client</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="searchClient" class="form-label">Rechercher un client</label>
+                    <input type="text" class="form-control" id="searchClient" 
+                           placeholder="Tapez au moins 2 caractères (nom ou code client)...">
+                </div>
+                <div id="searchResults" class="mt-3"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const campaignId = {{ campaign.id }};
+    const selectAllFiltered = document.getElementById('selectAllFiltered');
+    const selectAllAdded = document.getElementById('selectAllAdded');
+    const selectedCountEl = document.getElementById('selectedCount');
+    const finalCountEl = document.getElementById('finalCount');
+    const totalClientsCountEl = document.getElementById('totalClientsCount');
+    const continueBtn = document.getElementById('continueBtn');
+    const searchInput = document.getElementById('searchClient');
+    const searchResults = document.getElementById('searchResults');
+    
+    let existingClientIds = new Set();
+    document.querySelectorAll('.client-checkbox').forEach(cb => {
+        existingClientIds.add(parseInt(cb.value));
+    });
+    
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('fr-CA', {
+            style: 'currency',
+            currency: 'CAD',
+            minimumFractionDigits: 2
+        }).format(amount).replace('CA', '').trim();
+    }
+    
+    function updateCount() {
+        const allCheckboxes = document.querySelectorAll('.client-checkbox');
+        const checkedCheckboxes = document.querySelectorAll('.client-checkbox:checked');
+        const checked = checkedCheckboxes.length;
+        const total = allCheckboxes.length;
+        
+        selectedCountEl.textContent = checked;
+        finalCountEl.textContent = checked;
+        totalClientsCountEl.textContent = total + ' client(s)';
+        continueBtn.disabled = checked === 0;
+        
+        // Update filtered select all
+        if (selectAllFiltered) {
+            const filteredCheckboxes = document.querySelectorAll('.filtered-checkbox');
+            const filteredChecked = document.querySelectorAll('.filtered-checkbox:checked').length;
+            selectAllFiltered.checked = filteredChecked === filteredCheckboxes.length && filteredCheckboxes.length > 0;
+            selectAllFiltered.indeterminate = filteredChecked > 0 && filteredChecked < filteredCheckboxes.length;
+        }
+        
+        // Update added select all
+        if (selectAllAdded) {
+            const addedCheckboxes = document.querySelectorAll('.added-checkbox');
+            const addedChecked = document.querySelectorAll('.added-checkbox:checked').length;
+            selectAllAdded.checked = addedChecked === addedCheckboxes.length && addedCheckboxes.length > 0;
+            selectAllAdded.indeterminate = addedChecked > 0 && addedChecked < addedCheckboxes.length;
+        }
+    }
+    
+    if (selectAllFiltered) {
+        selectAllFiltered.addEventListener('change', function() {
+            document.querySelectorAll('.filtered-checkbox').forEach(cb => cb.checked = this.checked);
+            updateCount();
+        });
+    }
+    
+    if (selectAllAdded) {
+        selectAllAdded.addEventListener('change', function() {
+            document.querySelectorAll('.added-checkbox').forEach(cb => cb.checked = this.checked);
+            updateCount();
+        });
+    }
+    
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('client-checkbox')) {
+            updateCount();
+        }
+    });
+    
+    document.querySelectorAll('.btn-remove-added').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const clientId = parseInt(this.dataset.clientId);
+            const row = document.querySelector(`.added-client-row[data-client-id="${clientId}"]`);
+            if (row) {
+                row.remove();
+                existingClientIds.delete(clientId);
+                updateCount();
+                
+                // Remove entire added section if empty
+                const tbody = document.getElementById('addedClientsBody');
+                if (tbody && tbody.children.length === 0) {
+                    const section = tbody.closest('.mb-4');
+                    if (section) section.remove();
+                }
+            }
+        });
+    });
+    
+    // Boutons d'exclusion/réinclusion pour les clients filtrés
+    document.querySelectorAll('.btn-exclude-client').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const clientId = parseInt(this.dataset.clientId);
+            const row = document.querySelector(`.filtered-client-row[data-client-id="${clientId}"]`);
+            if (!row) return;
+            
+            const checkbox = row.querySelector('.filtered-checkbox');
+            const isExcluded = this.dataset.excluded === 'true';
+            
+            if (isExcluded) {
+                // Réinclure le client
+                if (checkbox) checkbox.checked = true;
+                row.classList.remove('table-secondary', 'text-decoration-line-through');
+                row.style.opacity = '1';
+                this.innerHTML = '<i class="fas fa-times"></i>';
+                this.title = 'Exclure de la campagne';
+                this.classList.remove('btn-outline-success');
+                this.classList.add('btn-outline-danger');
+                this.dataset.excluded = 'false';
+            } else {
+                // Exclure le client
+                if (checkbox) checkbox.checked = false;
+                row.classList.add('table-secondary', 'text-decoration-line-through');
+                row.style.opacity = '0.5';
+                this.innerHTML = '<i class="fas fa-undo"></i>';
+                this.title = 'Réinclure dans la campagne';
+                this.classList.remove('btn-outline-danger');
+                this.classList.add('btn-outline-success');
+                this.dataset.excluded = 'true';
+            }
+            
+            updateCount();
+        });
+    });
+    
+    let searchTimeout;
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const query = this.value.trim();
+        
+        if (query.length < 2) {
+            searchResults.innerHTML = '<p class="text-muted">Tapez au moins 2 caractères...</p>';
+            return;
+        }
+        
+        searchResults.innerHTML = '<div class="text-center"><span class="spinner-border spinner-border-sm"></span> Recherche...</div>';
+        
+        searchTimeout = setTimeout(function() {
+            fetch(`/campaigns/${campaignId}/search-clients?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.clients && data.clients.length > 0) {
+                        let html = '<div class="list-group">';
+                        data.clients.forEach(client => {
+                            const isAlreadyIncluded = existingClientIds.has(client.id);
+                            html += `
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>${client.code_client}</strong> - ${client.name}
+                                        <br><small class="text-muted">Solde: ${formatCurrency(client.balance)}</small>
+                                    </div>
+                                    ${isAlreadyIncluded 
+                                        ? '<span class="badge bg-secondary">Déjà inclus</span>'
+                                        : `<button type="button" class="btn btn-success btn-sm btn-add-client" 
+                                                   data-id="${client.id}" 
+                                                   data-code="${client.code_client}" 
+                                                   data-name="${client.name}" 
+                                                   data-balance="${client.balance}">
+                                               <i class="fas fa-plus me-1"></i>Ajouter
+                                           </button>`
+                                    }
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                        searchResults.innerHTML = html;
+                        
+                        document.querySelectorAll('.btn-add-client').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                addClientToList(this.dataset);
+                                this.replaceWith(createBadge('Ajouté'));
+                            });
+                        });
+                    } else {
+                        searchResults.innerHTML = '<p class="text-muted">Aucun client trouvé.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    searchResults.innerHTML = '<p class="text-danger">Erreur lors de la recherche.</p>';
+                });
+        }, 300);
+    });
+    
+    function createBadge(text) {
+        const badge = document.createElement('span');
+        badge.className = 'badge bg-success';
+        badge.textContent = text;
+        return badge;
+    }
+    
+    function addClientToList(data) {
+        const clientId = parseInt(data.id);
+        existingClientIds.add(clientId);
+        
+        let addedSection = document.querySelector('#addedClientsBody')?.closest('.mb-4');
+        if (!addedSection) {
+            const form = document.getElementById('clientsForm');
+            const alertInfo = form.querySelector('.alert-info');
+            
+            addedSection = document.createElement('div');
+            addedSection.className = 'mb-4';
+            addedSection.innerHTML = `
+                <h6 class="text-success mb-2"><i class="fas fa-plus-circle me-1"></i>Clients ajoutés manuellement</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover table-bordered border-success">
+                        <thead class="table-success">
+                            <tr>
+                                <th style="width: 40px;">
+                                    <input class="form-check-input" type="checkbox" id="selectAllAdded" checked title="Tout sélectionner/désélectionner">
+                                </th>
+                                <th>Code client</th>
+                                <th>Nom</th>
+                                <th class="text-end">Solde</th>
+                                <th style="width: 60px;" class="text-center">Retirer</th>
+                            </tr>
+                        </thead>
+                        <tbody id="addedClientsBody"></tbody>
+                    </table>
+                </div>
+            `;
+            alertInfo.after(addedSection);
+            
+            // Rebind selectAllAdded
+            const newSelectAll = document.getElementById('selectAllAdded');
+            if (newSelectAll) {
+                newSelectAll.addEventListener('change', function() {
+                    document.querySelectorAll('.added-checkbox').forEach(cb => cb.checked = this.checked);
+                    updateCount();
+                });
+            }
+        }
+        
+        const tbody = document.getElementById('addedClientsBody');
+        
+        const row = document.createElement('tr');
+        row.className = 'added-client-row';
+        row.dataset.clientId = clientId;
+        row.innerHTML = `
+            <td>
+                <input class="form-check-input client-checkbox added-checkbox" type="checkbox" 
+                       name="include_clients" value="${clientId}" checked>
+            </td>
+            <td>${data.code}</td>
+            <td>${data.name}</td>
+            <td class="text-end">${formatCurrency(parseFloat(data.balance))}</td>
+            <td class="text-center">
+                <button type="button" class="btn btn-outline-danger btn-sm btn-remove-added" 
+                        data-client-id="${clientId}" title="Retirer de la liste">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+        
+        row.querySelector('.btn-remove-added').addEventListener('click', function() {
+            row.remove();
+            existingClientIds.delete(clientId);
+            updateCount();
+            
+            if (tbody.children.length === 0) {
+                addedSection.remove();
+            }
+        });
+        
+        updateCount();
+    }
+    
+    document.getElementById('clientsForm').addEventListener('submit', function(e) {
+        const checked = document.querySelectorAll('.client-checkbox:checked').length;
+        if (checked === 0) {
+            e.preventDefault();
+            alert('Veuillez sélectionner au moins un client.');
+            return;
+        }
+    });
+    
+    updateCount();
+});
+</script>
+{% endblock %}

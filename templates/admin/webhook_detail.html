@@ -1,0 +1,152 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Détail Webhook #{{ webhook.id }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-satellite-dish text-primary mr-2"></i>
+            Détail Webhook #{{ webhook.id }}
+        </h1>
+        <div class="btn-group" role="group">
+            <a href="/admin/webhooks/" class="btn btn-sm btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+    </div>
+
+    <!-- Informations générales -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Informations générales</h6>
+                    <div class="dropdown no-arrow">
+                        {% if webhook.action_status.value == 'SUCCESS' %}
+                            <span class="badge badge-success">Succès</span>
+                        {% elif webhook.action_status.value == 'FAILED' %}
+                            <span class="badge badge-danger">Échec</span>
+                        {% elif webhook.action_status.value == 'IGNORED' %}
+                            <span class="badge badge-warning">Ignoré</span>
+                        {% else %}
+                            <span class="badge badge-secondary">{{ webhook.action_status.value }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>ID Webhook :</strong></td>
+                            <td>{{ webhook.id }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ID Stripe :</strong></td>
+                            <td><code>{{ webhook.stripe_event_id }}</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Type d'événement :</strong></td>
+                            <td><span class="badge badge-info">{{ webhook.event_type }}</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reçu le :</strong></td>
+                            <td>{{ webhook.received_at.strftime('%d/%m/%Y à %H:%M:%S') }} UTC</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Temps de traitement :</strong></td>
+                            <td>
+                                {% if webhook.processing_time_ms %}
+                                    {{ webhook.processing_time_ms }} ms
+                                {% else %}
+                                    <span class="text-muted">Non disponible</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if webhook.company %}
+                        <tr>
+                            <td><strong>Entreprise :</strong></td>
+                            <td>
+                                <i class="fas fa-building text-muted mr-1"></i>
+                                {{ webhook.company.name }}
+                                {% if webhook.company.email %}
+                                    <br><small class="text-muted">{{ webhook.company.email }}</small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Détails de l'action</h6>
+                </div>
+                <div class="card-body">
+                    {% if webhook.action_details %}
+                        <pre class="bg-light p-3 rounded"><code>{{ webhook.action_details }}</code></pre>
+                    {% else %}
+                        <div class="text-muted text-center p-4">
+                            <i class="fas fa-info-circle fa-2x mb-2"></i>
+                            <p>Aucun détail d'action disponible</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payload complet -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-code mr-2"></i>
+                        Payload Stripe complet
+                    </h6>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="copyPayload()">
+                        <i class="fas fa-copy"></i> Copier
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if webhook.event_payload %}
+                        <div class="position-relative">
+                            <pre id="payload-content" class="bg-dark text-light p-3 rounded" style="max-height: 500px; overflow-y: auto;"><code>{{ webhook.event_payload | tojson(indent=2) }}</code></pre>
+                        </div>
+                    {% else %}
+                        <div class="text-muted text-center p-4">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                            <p>Payload non disponible</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyPayload() {
+    const payloadContent = document.getElementById('payload-content').textContent;
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(payloadContent).then(() => {
+            // Afficher une notification de succès
+            const btn = event.target.closest('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copié !';
+            btn.classList.remove('btn-outline-primary');
+            btn.classList.add('btn-success');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-primary');
+            }, 2000);
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,257 @@
+{% if all_invoices %}
+{% if group_by_project and invoices_by_project %}
+<!-- Grouped by project view -->
+<div class="accordion mt-3" id="projectAccordion">
+    {% for project_name, project_invoices in invoices_by_project %}
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="heading{{ loop.index }}">
+            <button class="accordion-button{% if not loop.first %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}">
+                <i data-feather="folder" class="me-2"></i>
+                <strong>{{ project_name }}</strong>
+                <span class="badge bg-primary ms-2">{{ project_invoices|length }} facture{{ 's' if project_invoices|length > 1 else '' }}</span>
+            </button>
+        </h2>
+        <div id="collapse{{ loop.index }}" class="accordion-collapse collapse{% if loop.first %} show{% endif %}" data-bs-parent="#projectAccordion">
+            <div class="accordion-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>N° Facture</th>
+                                {% if include_children %}
+                                <th>Compte</th>
+                                {% endif %}
+                                <th>Date</th>
+                                <th>Échéance</th>
+                                <th>Jours</th>
+                                {% if has_original_amount %}
+                                <th>Montant Original</th>
+                                {% endif %}
+                                <th>Montant</th>
+                                {% if not current_user.is_read_only() and (current_user.get_role_in_company(current_user.get_selected_company().id) in ['admin', 'super_admin']) %}
+                                <th width="80px" class="text-center">Actions</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in project_invoices %}
+                            <tr{% if invoice.is_overdue() %} class="table-warning"{% endif %} data-invoice-id="{{ invoice.id }}">
+                                <td class="fw-bold">{{ invoice.invoice_number }}</td>
+                                {% if include_children %}
+                                <td>
+                                    <span class="badge bg-light text-dark">{{ invoice.client.code_client }}</span>
+                                    <small class="text-muted d-block">{{ invoice.client.name }}</small>
+                                </td>
+                                {% endif %}
+                                <td>{{ invoice.invoice_date.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ invoice.due_date.strftime('%d/%m/%Y') }}</td>
+                                <td>
+                                    {% set days = invoice.days_outstanding(current_user.company.aging_calculation_method) %}
+                                    {% if days > 90 %}
+                                        <span class="badge badge-danger">{{ days }} jours</span>
+                                    {% elif days > 60 %}
+                                        <span class="badge badge-warning">{{ days }} jours</span>
+                                    {% elif days > 30 %}
+                                        <span class="badge badge-warning">{{ days }} jours</span>
+                                    {% else %}
+                                        <span class="badge badge-success">{{ days }} jours</span>
+                                    {% endif %}
+                                </td>
+                                {% if has_original_amount %}
+                                <td class="text-muted">{{ format_currency(invoice.original_amount) if invoice.original_amount else '-' }}</td>
+                                {% endif %}
+                                <td class="fw-bold">{{ format_currency(invoice.amount) }}</td>
+                                {% if not current_user.is_read_only() and (current_user.get_role_in_company(current_user.get_selected_company().id) in ['admin', 'super_admin']) %}
+                                <td class="text-center">
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        {% set supports_pdf = accounting_system_type in ['quickbooks', 'xero', 'odoo'] and invoice.invoice_id_external %}
+                                        {% set supports_bc_pdf = accounting_system_type == 'business_central' and invoice.invoice_number %}
+                                        {% if has_accounting_connection and (supports_pdf or supports_bc_pdf) %}
+                                        <a href="{{ url_for('invoice.download_invoice_pdf', invoice_id=invoice.id) }}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           title="Télécharger le PDF depuis {{ accounting_system_type|capitalize }}">
+                                            <i data-feather="download" style="width: 16px; height: 16px;"></i>
+                                        </a>
+                                        {% endif %}
+                                        <form method="POST" action="{{ url_for('invoice.delete_invoice', invoice_id=invoice.id) }}" 
+                                              class="d-inline" onsubmit="return confirmSingleDelete('{{ invoice.invoice_number }}')">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                    title="Supprimer la facture {{ invoice.invoice_number }}">
+                                                <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<!-- Normal list view -->
+<div class="table-responsive mt-3">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th>N° Facture</th>
+                {% if include_children %}
+                <th>Compte</th>
+                {% endif %}
+                <th>Date</th>
+                <th>Échéance</th>
+                <th>Jours</th>
+                {% if has_original_amount %}
+                <th>Montant Original</th>
+                {% endif %}
+                <th>Montant</th>
+                {% if is_project_enabled %}
+                <th>{{ project_label }}</th>
+                {% endif %}
+                {% if not current_user.is_read_only() and (current_user.get_role_in_company(current_user.get_selected_company().id) in ['admin', 'super_admin']) %}
+                <th width="80px" class="text-center">Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in all_invoices %}
+            <tr{% if invoice.is_overdue() %} class="table-warning"{% endif %} data-invoice-id="{{ invoice.id }}">
+                <td class="fw-bold">{{ invoice.invoice_number }}</td>
+                {% if include_children %}
+                <td>
+                    <span class="badge bg-light text-dark">{{ invoice.client.code_client }}</span>
+                    <small class="text-muted d-block">{{ invoice.client.name }}</small>
+                </td>
+                {% endif %}
+                <td>{{ invoice.invoice_date.strftime('%d/%m/%Y') }}</td>
+                <td>{{ invoice.due_date.strftime('%d/%m/%Y') }}</td>
+                <td>
+                    {% set days = invoice.days_outstanding(current_user.company.aging_calculation_method) %}
+                    {% if days > 90 %}
+                        <span class="badge badge-danger">{{ days }} jours</span>
+                    {% elif days > 60 %}
+                        <span class="badge badge-warning">{{ days }} jours</span>
+                    {% elif days > 30 %}
+                        <span class="badge badge-warning">{{ days }} jours</span>
+                    {% else %}
+                        <span class="badge badge-success">{{ days }} jours</span>
+                    {% endif %}
+                </td>
+                {% if has_original_amount %}
+                <td class="text-muted">{{ format_currency(invoice.original_amount) if invoice.original_amount else '-' }}</td>
+                {% endif %}
+                <td class="fw-bold">{{ format_currency(invoice.amount) }}</td>
+                {% if is_project_enabled %}
+                <td class="text-muted"><small>{{ invoice.project_name if invoice.project_name else '-' }}</small></td>
+                {% endif %}
+                {% if not current_user.is_read_only() and (current_user.get_role_in_company(current_user.get_selected_company().id) in ['admin', 'super_admin']) %}
+                <td class="text-center">
+                    <div class="d-flex gap-1 justify-content-center">
+                        {% set supports_pdf = accounting_system_type in ['quickbooks', 'xero', 'odoo'] and invoice.invoice_id_external %}
+                        {% set supports_bc_pdf = accounting_system_type == 'business_central' and invoice.invoice_number %}
+                        {% if has_accounting_connection and (supports_pdf or supports_bc_pdf) %}
+                        <a href="{{ url_for('invoice.download_invoice_pdf', invoice_id=invoice.id) }}" 
+                           class="btn btn-sm btn-outline-primary" 
+                           title="Télécharger le PDF depuis {{ accounting_system_type|capitalize }}">
+                            <i data-feather="download" style="width: 16px; height: 16px;"></i>
+                        </a>
+                        {% endif %}
+                        <form method="POST" action="{{ url_for('invoice.delete_invoice', invoice_id=invoice.id) }}" 
+                              class="d-inline" onsubmit="return confirmSingleDelete('{{ invoice.invoice_number }}')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                    title="Supprimer la facture {{ invoice.invoice_number }}">
+                                <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination Controls -->
+{% if total_pages > 1 %}
+<div class="card-footer">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="text-muted">
+            Affichage {{ (page - 1) * per_page + 1 }} à {{ min(page * per_page, total_invoices) }} sur {{ total_invoices }} factures
+        </div>
+        <nav aria-label="Pagination des factures">
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+                    {% if page > 1 %}
+                    <a class="page-link pagination-link" data-page="{{ page-1 }}" href="{{ url_for('client.detail_client', id=client.id, page=page-1, per_page=per_page, view_filter=view_filter, date_from=date_from, date_to=date_to, search_invoice=search_invoice) }}">
+                        <i data-feather="chevron-left" style="width: 14px; height: 14px;"></i>
+                    </a>
+                    {% else %}
+                    <span class="page-link">
+                        <i data-feather="chevron-left" style="width: 14px; height: 14px;"></i>
+                    </span>
+                    {% endif %}
+                </li>
+                
+                {% if page > 3 %}
+                <li class="page-item">
+                    <a class="page-link pagination-link" data-page="1" href="{{ url_for('client.detail_client', id=client.id, page=1, per_page=per_page, view_filter=view_filter, date_from=date_from, date_to=date_to, search_invoice=search_invoice) }}">1</a>
+                </li>
+                {% if page > 4 %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+                {% endif %}
+                
+                {% for p in range(max(1, page - 2), min(total_pages + 1, page + 3)) %}
+                <li class="page-item {% if p == page %}active{% endif %}">
+                    <a class="page-link pagination-link" data-page="{{ p }}" href="{{ url_for('client.detail_client', id=client.id, page=p, per_page=per_page, view_filter=view_filter, date_from=date_from, date_to=date_to, search_invoice=search_invoice) }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+                
+                {% if page < total_pages - 2 %}
+                {% if page < total_pages - 3 %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+                <li class="page-item">
+                    <a class="page-link pagination-link" data-page="{{ total_pages }}" href="{{ url_for('client.detail_client', id=client.id, page=total_pages, per_page=per_page, view_filter=view_filter, date_from=date_from, date_to=date_to, search_invoice=search_invoice) }}">{{ total_pages }}</a>
+                </li>
+                {% endif %}
+                
+                <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+                    {% if page < total_pages %}
+                    <a class="page-link pagination-link" data-page="{{ page+1 }}" href="{{ url_for('client.detail_client', id=client.id, page=page+1, per_page=per_page, view_filter=view_filter, date_from=date_from, date_to=date_to, search_invoice=search_invoice) }}">
+                        <i data-feather="chevron-right" style="width: 14px; height: 14px;"></i>
+                    </a>
+                    {% else %}
+                    <span class="page-link">
+                        <i data-feather="chevron-right" style="width: 14px; height: 14px;"></i>
+                    </span>
+                    {% endif %}
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+
+{% else %}
+<div class="card-body text-center py-4">
+    <i data-feather="file-text" style="width: 48px; height: 48px; stroke: hsl(var(--text-muted));" class="mb-3"></i>
+    <h6 class="text-muted">Aucune facture trouvée</h6>
+    <p class="text-muted small mb-3">{% if search_invoice %}Aucun résultat pour votre recherche.{% else %}Ce client n'a pas encore de factures.{% endif %}</p>
+    {% if not current_user.is_read_only() and not search_invoice %}
+    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addInvoiceModal">
+        <i data-feather="plus" class="me-1"></i>
+        Ajouter une facture
+    </button>
+    {% endif %}
+</div>
+{% endif %}

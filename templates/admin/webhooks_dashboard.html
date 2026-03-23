@@ -1,0 +1,322 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Monitoring Webhooks Stripe{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-webhook text-primary mr-2"></i>
+            Monitoring Webhooks Stripe
+        </h1>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshStats()">
+                <i class="fas fa-sync-alt"></i> Actualiser
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistiques Temps Réel -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Webhooks ({{ stats.period_label }})
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.total_webhooks }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-bar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Taux de Succès
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.success_rate }}%</div>
+                            <div class="text-xs text-muted">{{ stats.success_count }}/{{ stats.total_webhooks }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Temps Moyen
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.avg_processing_time }}ms</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Dernière Activité
+                            </div>
+                            <div class="h6 mb-0 font-weight-bold text-gray-800">
+                                {% if stats.last_activity %}
+                                    {{ stats.last_activity|format_local_datetime }}
+                                {% else %}
+                                    Aucune
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filtres</h6>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row">
+                <div class="col-md-2">
+                    <label for="date_range" class="form-label text-sm">Période</label>
+                    <select name="date_range" id="date_range" class="form-control form-control-sm">
+                        <option value="24h" {% if filters.date_range == '24h' %}selected{% endif %}>24 heures</option>
+                        <option value="7d" {% if filters.date_range == '7d' %}selected{% endif %}>7 jours</option>
+                        <option value="30d" {% if filters.date_range == '30d' %}selected{% endif %}>30 jours</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="status" class="form-label text-sm">Statut</label>
+                    <select name="status" id="status" class="form-control form-control-sm">
+                        <option value="all" {% if filters.status == 'all' %}selected{% endif %}>Tous</option>
+                        <option value="success" {% if filters.status == 'success' %}selected{% endif %}>Succès</option>
+                        <option value="failed" {% if filters.status == 'failed' %}selected{% endif %}>Échoués</option>
+                        <option value="ignored" {% if filters.status == 'ignored' %}selected{% endif %}>Ignorés</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="event_type" class="form-label text-sm">Type d'événement</label>
+                    <select name="event_type" id="event_type" class="form-control form-control-sm">
+                        <option value="all" {% if filters.event_type == 'all' %}selected{% endif %}>Tous</option>
+                        {% for event_type in event_types %}
+                        <option value="{{ event_type }}" {% if filters.event_type == event_type %}selected{% endif %}>{{ event_type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="company" class="form-label text-sm">Entreprise</label>
+                    <select name="company" id="company" class="form-control form-control-sm">
+                        <option value="all" {% if filters.company == 'all' %}selected{% endif %}>Toutes</option>
+                        {% for company in companies %}
+                        <option value="{{ company.id }}" {% if filters.company == company.id|string %}selected{% endif %}>{{ company.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary btn-sm mr-2">
+                        <i class="fas fa-filter"></i> Filtrer
+                    </button>
+                    <a href="{{ url_for('admin_webhooks.webhooks_dashboard') }}" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tableau des Webhooks -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                Historique des Webhooks 
+                <span class="badge badge-secondary">{{ webhooks.total }} résultats</span>
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Date/Heure</th>
+                            <th>Événement</th>
+                            <th>Action</th>
+                            <th>Détail</th>
+                            <th>Client</th>
+                            <th>Durée</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for webhook in webhooks.items %}
+                        <tr>
+                            <td class="text-nowrap text-sm">
+                                {{ webhook.received_at|format_local_datetime }}
+                            </td>
+                            <td>
+                                <code class="text-sm">{{ webhook.event_type }}</code>
+                            </td>
+                            <td>
+                                {% if webhook.action_status.name == 'SUCCESS' %}
+                                    <span class="badge badge-success">{{ webhook.action_status_display }}</span>
+                                {% elif webhook.action_status.name == 'FAILED' %}
+                                    <span class="badge badge-danger">{{ webhook.action_status_display }}</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">{{ webhook.action_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-sm">
+                                {{ webhook.action_detail or '-' }}
+                                {% if webhook.error_message %}
+                                <br><small class="text-danger">{{ webhook.error_message[:100] }}{% if webhook.error_message|length > 100 %}...{% endif %}</small>
+                                {% endif %}
+                            </td>
+                            <td class="text-sm">
+                                {% if webhook.company_name %}
+                                    {{ webhook.company_name }}
+                                {% else %}
+                                    <span class="text-muted">Non configuré</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-sm">
+                                {{ webhook.processing_duration_display }}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('admin_webhooks.webhook_detail', webhook_id=webhook.id) }}" 
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Voir détails">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                                Aucun webhook trouvé pour les critères sélectionnés
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if webhooks.pages > 1 %}
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-sm text-muted">
+                    Affichage {{ webhooks.page * webhooks.per_page - webhooks.per_page + 1 }} à 
+                    {{ webhooks.page * webhooks.per_page if webhooks.page < webhooks.pages else webhooks.total }} 
+                    de {{ webhooks.total }} résultats
+                </div>
+                
+                <nav aria-label="Navigation des pages">
+                    <ul class="pagination pagination-sm mb-0">
+                        {% if webhooks.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin_webhooks.webhooks_dashboard', page=webhooks.prev_num, **request.args) }}">Précédent</a>
+                        </li>
+                        {% endif %}
+
+                        {% for page_num in webhooks.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != webhooks.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin_webhooks.webhooks_dashboard', page=page_num, **request.args) }}">{{ page_num }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                                {% endif %}
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">…</span>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if webhooks.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin_webhooks.webhooks_dashboard', page=webhooks.next_num, **request.args) }}">Suivant</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Top Événements -->
+    {% if stats.top_events %}
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Top des Types d'Événements</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for event_type, count in stats.top_events %}
+                <div class="col-md-4 mb-2">
+                    <div class="d-flex justify-content-between align-items-center p-2 border rounded">
+                        <code class="text-sm">{{ event_type }}</code>
+                        <span class="badge badge-primary">{{ count }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function refreshStats() {
+    const dateRange = document.getElementById('date_range').value;
+    
+    fetch(`{{ url_for('admin_webhooks.webhook_stats_api') }}?date_range=${dateRange}`)
+        .then(response => response.json())
+        .then(data => {
+            // Actualiser les statistiques sur la page
+            location.reload(); // Pour l'instant, simple rechargement
+        })
+        .catch(error => {
+            console.error('Erreur lors du rafraîchissement des statistiques:', error);
+        });
+}
+
+// Auto-refresh toutes les 30 secondes
+setInterval(refreshStats, 30000);
+</script>
+{% endblock %}

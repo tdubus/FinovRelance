@@ -1,0 +1,161 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}Consentements de {{ user.first_name }} {{ user.last_name }}{% endblock %}
+{% block page_subtitle %}Historique complet des consentements RGPD/Loi 25{% endblock %}
+
+{% block content %}
+<!-- User Info -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    <div class="user-avatar me-3" style="width: 60px; height: 60px; font-size: 24px;">
+                        {{ user.first_name[0] }}{{ user.last_name[0] }}
+                    </div>
+                    <div>
+                        <h5 class="mb-1">{{ user.first_name }} {{ user.last_name }}</h5>
+                        <p class="text-muted mb-0">{{ user.email }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Consent Summary -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="admin-card">
+            <div class="card-body p-4 text-center">
+                <h6 class="text-muted mb-2">CGU</h6>
+                {% if consents_by_type.terms %}
+                    {% if consents_by_type.terms[0].accepted %}
+                        <span class="badge bg-success fs-6">Accepté</span>
+                        <p class="mb-0 mt-2"><small>Version {{ consents_by_type.terms[0].consent_version }}</small></p>
+                        <p class="mb-0"><small class="text-muted">{{ consents_by_type.terms[0].created_at.strftime('%d/%m/%Y') }}</small></p>
+                    {% else %}
+                        <span class="badge bg-danger fs-6">Refusé</span>
+                    {% endif %}
+                {% else %}
+                    <span class="badge bg-secondary fs-6">Aucun</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="admin-card">
+            <div class="card-body p-4 text-center">
+                <h6 class="text-muted mb-2">Confidentialité</h6>
+                {% if consents_by_type.privacy %}
+                    {% if consents_by_type.privacy[0].accepted %}
+                        <span class="badge bg-success fs-6">Accepté</span>
+                        <p class="mb-0 mt-2"><small>Version {{ consents_by_type.privacy[0].consent_version }}</small></p>
+                        <p class="mb-0"><small class="text-muted">{{ consents_by_type.privacy[0].created_at.strftime('%d/%m/%Y') }}</small></p>
+                    {% else %}
+                        <span class="badge bg-danger fs-6">Refusé</span>
+                    {% endif %}
+                {% else %}
+                    <span class="badge bg-secondary fs-6">Aucun</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="admin-card">
+            <div class="card-body p-4 text-center">
+                <h6 class="text-muted mb-2">Cookies</h6>
+                {% if consents_by_type.cookies %}
+                    {% if consents_by_type.cookies[0].accepted %}
+                        <span class="badge bg-success fs-6">Accepté</span>
+                        <p class="mb-0 mt-2"><small>Version {{ consents_by_type.cookies[0].consent_version }}</small></p>
+                        <p class="mb-0"><small class="text-muted">{{ consents_by_type.cookies[0].created_at.strftime('%d/%m/%Y') }}</small></p>
+                    {% else %}
+                        <span class="badge bg-danger fs-6">Refusé</span>
+                        <p class="mb-0 mt-2"><small>Version {{ consents_by_type.cookies[0].consent_version }}</small></p>
+                        <p class="mb-0"><small class="text-muted">{{ consents_by_type.cookies[0].created_at.strftime('%d/%m/%Y') }}</small></p>
+                    {% endif %}
+                {% else %}
+                    <span class="badge bg-secondary fs-6">Aucun</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Complete History -->
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">Historique complet ({{ consents|length }} enregistrements)</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-admin mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date & Heure</th>
+                            <th>Type</th>
+                            <th>Version</th>
+                            <th>Statut</th>
+                            <th>Adresse IP</th>
+                            <th>User Agent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consent in consents %}
+                        <tr>
+                            <td>
+                                <small class="text-muted">{{ consent.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</small>
+                            </td>
+                            <td>
+                                {% if consent.consent_type == 'terms' %}
+                                    <span class="badge bg-primary">CGU</span>
+                                {% elif consent.consent_type == 'privacy' %}
+                                    <span class="badge bg-info">Confidentialité</span>
+                                {% elif consent.consent_type == 'cookies' %}
+                                    <span class="badge bg-warning">Cookies</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ consent.consent_version }}</small>
+                            </td>
+                            <td>
+                                {% if consent.accepted %}
+                                    <span class="badge bg-success">Accepté</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Refusé</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ consent.ip_address or 'N/A' }}</small>
+                            </td>
+                            <td>
+                                <small class="text-muted" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block;">
+                                    {{ consent.user_agent or 'N/A' }}
+                                </small>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                Aucun consentement enregistré pour cet utilisateur
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Back Button -->
+<div class="row mt-4">
+    <div class="col-12">
+        <a href="{{ url_for('admin.consent_logs') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+        </a>
+    </div>
+</div>
+{% endblock %}

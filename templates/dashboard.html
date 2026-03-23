@@ -1,0 +1,1103 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord - {{ company.name }} - FinovRelance{% endblock %}
+
+{% block content %}
+<!-- Page Title -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Tableau de bord</h1>
+        <p class="text-muted">Vue d'ensemble de {{ company.name }}</p>
+    </div>
+
+</div>
+
+<!-- Graphique Évolution des CAR -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <button id="carBackBtn" class="btn btn-sm btn-outline-secondary" style="display: none;" title="Retour">
+                        <i data-feather="arrow-left" style="width: 16px; height: 16px;"></i>
+                    </button>
+                    <h5 class="mb-0">
+                        <i data-feather="trending-up" class="me-2"></i>
+                        <span id="carChartTitle">Évolution des comptes à recevoir</span>
+                    </h5>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <select id="carYearSelect" class="form-select form-select-sm" style="width: auto;">
+                        <option value="">Toutes les années</option>
+                    </select>
+                    <select id="carPeriodSelect" class="form-select form-select-sm" style="width: auto;">
+                        <option value="year">Années</option>
+                        <option value="month" selected>Mois</option>
+                        <option value="week">Semaines</option>
+                        <option value="day">Jour</option>
+                    </select>
+                    <select id="carBucketSelect" class="form-select form-select-sm" style="width: auto;">
+                        <option value="total" selected>Total</option>
+                        <option value="current">Courant</option>
+                        <option value="0-30">0-30 jours</option>
+                        <option value="31-60">31-60 jours</option>
+                        <option value="61-90">61-90 jours</option>
+                        <option value="90+">90+ jours</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="carChartContainer" style="height: 300px; position: relative;">
+                    <canvas id="carEvolutionChart"></canvas>
+                    <div id="carChartNoData" class="text-center text-muted py-5" style="display: none;">
+                        <i data-feather="bar-chart-2" style="width: 48px; height: 48px; opacity: 0.3;"></i>
+                        <p class="mt-3 mb-0">Données insuffisantes</p>
+                        <small>Les données seront disponibles après la prochaine synchronisation ou import.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards Row -->
+<div class="row mb-4 g-3">
+    <div class="col-6 col-md">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i data-feather="users" class="text-primary mb-2" style="width: 32px; height: 32px;"></i>
+                <h3 class="card-title">{{ total_clients }}</h3>
+                <p class="card-text text-muted">Clients</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i data-feather="dollar-sign" class="text-warning mb-2" style="width: 32px; height: 32px;"></i>
+                <h3 class="card-title">{{ format_currency(total_outstanding) }}</h3>
+                <p class="card-text text-muted">À recevoir</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i data-feather="file-text" class="text-danger mb-2" style="width: 32px; height: 32px;"></i>
+                <h3 class="card-title">{{ overdue_invoices }}</h3>
+                <p class="card-text text-muted">Factures en retard</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i data-feather="trending-up" class="text-success mb-2" style="width: 32px; height: 32px;"></i>
+                <h3 class="card-title">{{ clients_with_outstanding_count }}</h3>
+                <p class="card-text text-muted">Clients actifs</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i data-feather="file-text" class="text-info mb-2" style="width: 32px; height: 32px;"></i>
+                {% if global_dmp_invoice is not none %}
+                    {% if global_dmp_invoice < 0 %}
+                        <h3 class="card-title text-success" title="Paiement en moyenne {{ '%.1f'|format(global_dmp_invoice|abs) }} j avant la date de facture">{{ "%.1f"|format(global_dmp_invoice|abs) }} j <small class="fs-6">en avance</small></h3>
+                    {% else %}
+                        <h3 class="card-title text-info">{{ "%.1f"|format(global_dmp_invoice) }} j</h3>
+                    {% endif %}
+                {% else %}
+                    <h3 class="card-title text-muted">—</h3>
+                {% endif %}
+                <p class="card-text text-muted">DMP / Facture</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i data-feather="clock" class="text-warning mb-2" style="width: 32px; height: 32px;"></i>
+                {% if global_dmp_due is not none %}
+                    {% if global_dmp_due < 0 %}
+                        <h3 class="card-title text-success" title="Paiement en moyenne {{ '%.1f'|format(global_dmp_due|abs) }} j avant la date d'échéance">{{ "%.1f"|format(global_dmp_due|abs) }} j <small class="fs-6">en avance</small></h3>
+                    {% else %}
+                        <h3 class="card-title text-warning">{{ "%.1f"|format(global_dmp_due) }} j</h3>
+                    {% endif %}
+                {% else %}
+                    <h3 class="card-title text-muted">—</h3>
+                {% endif %}
+                <p class="card-text text-muted">DMP / Échéance</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Aging Analysis Row -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="pie-chart" class="me-2"></i>
+                    Résumé des comptes à recevoir
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col">
+                        <div class="aging-dot bg-success me-2"></div>
+                        <strong>Courant</strong><br>
+                        <span class="h5 text-success">{{ format_currency(total_current) }}</span><br>
+                        <small class="text-muted">{{ percentage_current }}%</small>
+                    </div>
+                    <div class="col">
+                        <div class="aging-dot bg-info me-2"></div>
+                        <strong>1-30 jours</strong><br>
+                        <span class="h5 text-info">{{ format_currency(total_30_days) }}</span><br>
+                        <small class="text-muted">{{ percentage_30_days }}%</small>
+                    </div>
+                    <div class="col">
+                        <div class="aging-dot bg-warning me-2"></div>
+                        <strong>31-60 jours</strong><br>
+                        <span class="h5" style="color: #fd7e14;">{{ format_currency(total_60_days) }}</span><br>
+                        <small class="text-muted">{{ percentage_60_days }}%</small>
+                    </div>
+                    <div class="col">
+                        <div class="aging-dot bg-dark me-2"></div>
+                        <strong>61-90 jours</strong><br>
+                        <span class="h5" style="color: #6c757d;">{{ format_currency(total_90_days) }}</span><br>
+                        <small class="text-muted">{{ percentage_90_days }}%</small>
+                    </div>
+                    <div class="col">
+                        <div class="aging-dot bg-danger me-2"></div>
+                        <strong>90+ jours</strong><br>
+                        <span class="h5 text-danger">{{ format_currency(total_over_90_days) }}</span><br>
+                        <small class="text-muted">{{ percentage_90_plus }}%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Row -->
+<div class="row">
+    <!-- Left Column -->
+    <div class="col-md-8">
+        <!-- Activity Section -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="activity" class="me-2"></i>
+                    Activité du {{ activity_date.strftime('%d/%m/%Y') }}
+                </h5>
+                <div class="d-flex align-items-center">
+                    <form method="GET" class="d-flex align-items-center gap-2 me-3">
+                        <input type="date" class="form-control form-control-sm" 
+                               name="activity_date" value="{{ activity_date.isoformat() }}" style="width: auto;">
+                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                            <i data-feather="search" class="me-1"></i>
+                            Filtrer
+                        </button>
+                    </form>
+                    <a href="{{ url_for('main.export_activity_csv', activity_date=activity_date.isoformat()) }}" 
+                       class="btn btn-outline-secondary btn-sm">
+                        <i data-feather="download" class="me-1"></i>
+                        CSV
+                    </a>
+                </div>
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                {% if daily_notes %}
+                    {% for note in daily_notes %}
+                    <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                        <div class="flex-shrink-0 me-3">
+                            {% if note.note_type == 'call' %}
+                                <i data-feather="phone" class="text-primary"></i>
+                            {% elif note.note_type == 'email' %}
+                                <i data-feather="mail" class="text-info"></i>
+                            {% elif note.note_type == 'meeting' %}
+                                <i data-feather="users" class="text-success"></i>
+                            {% else %}
+                                <i data-feather="edit" class="text-secondary"></i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h6 class="mb-0">
+                                    <a href="{{ url_for('client.detail_client', id=note.client.id) }}" class="text-decoration-none">
+                                        {{ note.client.name }}
+                                    </a>
+                                </h6>
+                                <small class="text-muted">{{ note.created_at|format_local_datetime('%H:%M') }}</small>
+                            </div>
+                            <p class="mb-1 text-muted">{{ note.note_text[:100] }}{% if note.note_text|length > 100 %}...{% endif %}</p>
+                            <small class="text-muted">
+                                Par {{ note.user.full_name }}
+                                {% if note.note_type == 'call' %} • Appel{% endif %}
+                                {% if note.note_type == 'email' %} • Email{% endif %}
+                                {% if note.note_type == 'meeting' %} • Rencontre{% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i data-feather="calendar" style="width: 32px; height: 32px;" class="mb-2"></i>
+                        <p class="mb-0">Aucune activité pour cette date</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-md-4">
+        <!-- Reminders Section -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">
+                    <i data-feather="bell" class="me-2"></i>
+                    Rappels
+                </h6>
+                <a href="{{ url_for('reminder.list_reminders') }}" class="btn btn-outline-primary btn-sm">
+                    <i data-feather="list" class="me-1"></i>
+                    Voir tout
+                </a>
+            </div>
+            <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
+                {% if reminders %}
+                    {% for reminder in reminders[:5] %}
+                    <div class="reminder-item border-bottom p-3
+                        {% if reminder.is_reminder_overdue() %}bg-light-danger{% endif %}
+                        {% if reminder.is_reminder_today() %}bg-light-warning{% endif %}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <a href="{{ url_for('client.detail_client', id=reminder.client.id) }}" class="text-decoration-none">
+                                        {{ reminder.client.name }}
+                                    </a>
+                                    {% if reminder.is_reminder_overdue() %}
+                                        <span class="badge bg-danger ms-1">En retard</span>
+                                    {% elif reminder.is_reminder_today() %}
+                                        <span class="badge bg-warning ms-1">Aujourd'hui</span>
+                                    {% endif %}
+                                </h6>
+                                <div class="note-preview-container">
+                                    <p class="note-preview mb-1 text-muted small">{{ reminder.note_text[:80] }}{% if reminder.note_text|length > 80 %}...{% endif %}</p>
+                                </div>
+                                <small class="text-muted">
+                                    <i data-feather="calendar" style="width: 12px; height: 12px;"></i>
+                                    {{ reminder.reminder_date|format_local_date('%d/%m/%Y') }}
+                                </small>
+                            </div>
+                            <button class="btn btn-outline-success btn-sm complete-reminder-btn" data-reminder-id="{{ reminder.id }}" title="Marquer comme terminé">
+                                <i data-feather="check"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i data-feather="bell" style="width: 32px; height: 32px;" class="mb-2"></i>
+                        <p class="mb-0">Aucun rappel</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Feather icons
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+
+    // Activity date filter
+    const activityDateInput = document.getElementById('activity-date');
+    if (activityDateInput) {
+        activityDateInput.addEventListener('change', function() {
+            const newDate = this.value;
+            if (newDate) {
+                window.location.href = `{{ url_for('main.dashboard') }}?activity_date=${newDate}`;
+            }
+        });
+    }
+
+    // Get CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+
+
+    // Complete reminder
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.complete-reminder-btn')) {
+            e.preventDefault();
+            const btn = e.target.closest('.complete-reminder-btn');
+            const reminderId = btn.dataset.reminderId;
+
+            // Disable button immediately
+            btn.disabled = true;
+            btn.innerHTML = '<i data-feather="loader"></i>';
+
+            fetch(`/reminders/complete/${reminderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const reminderItem = btn.closest('.reminder-item');
+                    if (reminderItem) {
+                        reminderItem.style.transition = 'opacity 0.3s, transform 0.3s';
+                        reminderItem.style.opacity = '0';
+                        reminderItem.style.transform = 'translateX(20px)';
+                        setTimeout(() => {
+                            reminderItem.remove();
+                        }, 300);
+                    }
+                } else {
+                    // Re-enable button on error
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-feather="check"></i>';
+                    feather.replace();
+                    alert(data.message || 'Erreur');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Re-enable button on error
+                btn.disabled = false;
+                btn.innerHTML = '<i data-feather="check"></i>';
+                feather.replace();
+                alert('Erreur de connexion');
+            });
+        }
+    });
+
+    // Function to show tagged note modal
+    function showTaggedNoteModal(noteData) {
+        // Create modal HTML
+        const modalHtml = `
+            <div class="modal fade" id="taggedNoteModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Détail de la note - ${noteData.client_name}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <strong>Client:</strong> ${noteData.client_name}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Auteur:</strong> ${noteData.author_name}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Date:</strong> ${noteData.created_at}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Type:</strong> ${getNoteTypeDisplay(noteData.note_type)}
+                            </div>
+                            ${noteData.reminder_date ? `<div class="mb-3"><strong>Rappel:</strong> ${formatDate(noteData.reminder_date)}</div>` : ''}
+                            <div class="mb-3">
+                                <strong>Contenu:</strong>
+                                <div class="p-3 bg-light rounded mt-2">
+                                    ${noteData.note_text.replace(/\n/g, '<br>')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Remove existing modal if any
+        const existingModal = document.getElementById('taggedNoteModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // Add modal to page
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('taggedNoteModal'));
+        modal.show();
+
+        // Clean up when modal is hidden
+        document.getElementById('taggedNoteModal').addEventListener('hidden.bs.modal', function() {
+            this.remove();
+        });
+    }
+
+    // Helper functions
+    function getNoteTypeDisplay(noteType) {
+        const types = {
+            'general': 'Général',
+            'call': 'Appel',
+            'email': 'Email',
+            'meeting': 'Rencontre'
+        };
+        return types[noteType] || noteType;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        try {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('fr-FR');
+        } catch {
+            return dateStr;
+        }
+    }
+});
+</script>
+{% endblock %}
+{% block chart_data %}
+// Dashboard chart data
+window.dashboardData = {
+    totalOutstanding: {{ total_outstanding|default(0) }},
+    overdueCount: {{ overdue_count|default(0) }},
+    totalClients: {{ total_clients|default(0) }}
+};
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Reminder filters
+    const filterButtons = document.querySelectorAll('[data-filter]');
+    const reminderItems = document.querySelectorAll('.reminder-item');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+
+            // Filter reminders
+            reminderItems.forEach(item => {
+                const filterType = item.dataset.filterType;
+
+                if (filter === 'all' || filter === filterType) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // View tagged note details
+    const viewTaggedNoteButtons = document.querySelectorAll('.view-tagged-note-btn');
+    viewTaggedNoteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const noteId = this.dataset.noteId;
+            
+            fetch(`/api/note/${noteId}/view-tagged`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Create and show modal with note details
+                        showTaggedNoteModal(data);
+                    } else {
+                        alert('Erreur: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Erreur de connexion');
+                });
+        });
+    });
+
+    // Function to show tagged note modal
+    function showTaggedNoteModal(noteData) {
+        // Create modal HTML
+        const modalHtml = `
+            <div class="modal fade" id="taggedNoteModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Détail de la note - ${noteData.client_name}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <strong>Client:</strong> ${noteData.client_name}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Auteur:</strong> ${noteData.author_name}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Date:</strong> ${noteData.created_at}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Type:</strong> ${getNoteTypeDisplay(noteData.note_type)}
+                            </div>
+                            ${noteData.reminder_date ? `<div class="mb-3"><strong>Rappel:</strong> ${formatDate(noteData.reminder_date)}</div>` : ''}
+                            <div class="mb-3">
+                                <strong>Note:</strong>
+                                <div class="mt-2 p-3 bg-light rounded" style="white-space: pre-wrap; word-wrap: break-word;">${noteData.note_text}</div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Remove existing modal if any
+        const existingModal = document.getElementById('taggedNoteModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // Add modal to page
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('taggedNoteModal'));
+        modal.show();
+
+        // Clean up when modal is hidden
+        document.getElementById('taggedNoteModal').addEventListener('hidden.bs.modal', function() {
+            this.remove();
+        });
+    }
+
+    // Helper functions
+    function getNoteTypeDisplay(noteType) {
+        const types = {
+            'general': 'Général',
+            'call': 'Appel',
+            'email': 'Email',
+            'meeting': 'Rencontre'
+        };
+        return types[noteType] || noteType;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        try {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('fr-FR');
+        } catch {
+            return dateStr;
+        }
+    }
+
+    // Mark tags as read
+    const markReadButtons = document.querySelectorAll('.mark-read-btn');
+    markReadButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const noteId = this.dataset.noteId;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // Disable button immediately to prevent double clicks
+            this.disabled = true;
+            this.innerHTML = '<i data-feather="loader"></i>';
+
+            fetch(`/api/note/${noteId}/mark-tag-read`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.closest('.tag-item').style.transition = 'opacity 0.3s, transform 0.3s';
+                    this.closest('.tag-item').style.opacity = '0';
+                    this.closest('.tag-item').style.transform = 'translateX(20px)';
+                    setTimeout(() => {
+                        this.closest('.tag-item').remove();
+                    }, 300);
+                } else {
+                    // Re-enable button on error
+                    this.disabled = false;
+                    this.innerHTML = '<i data-feather="check"></i>';
+                    alert(data.message || 'Erreur lors du marquage');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Re-enable button on error
+                this.disabled = false;
+                this.innerHTML = '<i data-feather="check"></i>';
+                alert('Erreur lors du marquage');
+            });
+        });
+    });
+
+    // Note detail modal
+    const noteDetailButtons = document.querySelectorAll('[data-bs-target="#noteDetailModal"]');
+    noteDetailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const noteId = this.dataset.noteId;
+            loadNoteDetail(noteId);
+        });
+    });
+
+    // Read more/less functionality
+    function initializeReadMore() {
+        const readMoreButtons = document.querySelectorAll('.read-more-btn:not(.initialized)');
+        readMoreButtons.forEach(button => {
+            button.classList.add('initialized');
+            button.addEventListener('click', function() {
+                const container = this.closest('.note-preview-container');
+                const preview = container.querySelector('.note-preview');
+                const fullText = preview.dataset.fullText;
+
+                if (this.textContent === 'Lire plus') {
+                    // Expand vertically, not horizontally
+                    preview.style.whiteSpace = 'pre-wrap';
+                    preview.style.wordWrap = 'break-word';
+                    preview.style.overflowWrap = 'break-word';
+                    preview.style.maxWidth = '100%';
+                    preview.style.overflowX = 'hidden';
+                    preview.style.display = 'block';
+                    preview.innerHTML = fullText;
+                    this.textContent = 'Lire moins';
+                } else {
+                    // Determine appropriate length based on context
+                    let maxLength = 200;
+                    if (container.closest('.tag-item')) maxLength = 80;
+                    if (container.closest('.reminder-item')) maxLength = 60;
+                    if (container.closest('.note-item')) maxLength = 200;
+
+                    const shortText = fullText.length > maxLength ? fullText.substring(0, maxLength) + '...' : fullText;
+                    preview.innerHTML = shortText;
+                    preview.style.whiteSpace = 'normal';
+                    preview.style.display = 'inline';
+                    this.textContent = 'Lire plus';
+                }
+
+                // Re-initialize feather icons if content changed
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            });
+        });
+    }
+
+    // Initialize read more functionality
+    initializeReadMore();
+
+    // Re-initialize read more after dynamic content changes
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(initializeReadMore, 100);
+    });
+
+    // Function to update reminder badge count
+    function updateReminderBadge() {
+        const reminderItems = document.querySelectorAll('.reminder-item:not([style*="display: none"])');
+        const badge = document.querySelector('.card-header .badge');
+        if (badge) {
+            const count = reminderItems.length;
+            badge.textContent = count;
+            if (count === 0) {
+                badge.style.display = 'none';
+            } else {
+                badge.style.display = 'inline';
+            }
+        }
+    }
+
+    // Complete reminder
+    const completeButtons = document.querySelectorAll('.complete-reminder-btn');
+    completeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const reminderId = this.dataset.reminderId;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch(`/reminders/complete/${reminderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      const reminderItem = this.closest('.reminder-item');
+                      reminderItem.style.transition = 'opacity 0.3s, transform 0.3s';
+                      reminderItem.style.opacity = '0';
+                      reminderItem.style.transform = 'translateX(-20px)';
+                      setTimeout(() => {
+                          reminderItem.remove();
+                          updateReminderBadge();
+                      }, 300);
+                  } else {
+                      alert(data.message || 'Erreur lors de l\'opération');
+                  }
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  alert('Erreur lors de l\'opération');
+              });
+        });
+    });
+
+    // Delete reminder
+    const deleteButtons = document.querySelectorAll('.delete-reminder-btn');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const reminderId = this.dataset.reminderId;
+            if (confirm('Supprimer ce rappel ?')) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                fetch(`/reminders/${reminderId}/delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    }
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          const reminderItem = this.closest('.reminder-item');
+                          reminderItem.style.transition = 'opacity 0.3s, transform 0.3s';
+                          reminderItem.style.opacity = '0';
+                          reminderItem.style.transform = 'translateX(-20px)';
+                          setTimeout(() => {
+                              reminderItem.remove();
+                              updateReminderBadge();
+                          }, 300);
+                      } else {
+                          alert(data.message || 'Erreur lors de l\'opération');
+                                        }
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  alert('Erreur lors de l\'opération');
+              });
+            }
+        });
+    });
+
+    // Initialize note highlighting
+    if (typeof initializeNoteMentionHighlighting === 'function') {
+        initializeNoteMentionHighlighting();
+    }
+
+    // Function to load note detail
+    function loadNoteDetail(noteId) {
+        const modalContent = document.getElementById('noteDetailContent');
+        modalContent.innerHTML = `
+            <div class="text-center">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+            </div>
+        `;
+
+        fetch(`/api/note/${noteId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    modalContent.innerHTML = `
+                        <div class="note-detail">
+                            <div class="mb-3">
+                                <strong>Type:</strong> 
+                                <span class="badge bg-primary">
+                                    ${data.note_type === 'call' ? 'Appel' : 
+                                      data.note_type === 'email' ? 'Email' : 
+                                      data.note_type === 'meeting' ? 'Rencontre' : 'Général'}
+                                </span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Date de la note:</strong> ${data.note_date || 'Non spécifiée'}
+                            </div>
+                            ${data.reminder_date ? `
+                            <div class="mb-3">
+                                <strong>Date de rappel:</strong> 
+                                <span class="text-warning">${new Date(data.reminder_date).toLocaleString('fr-FR')}</span>
+                            </div>
+                            ` : ''}
+                            <div class="mb-3">
+                                <strong>Contenu:</strong>
+                                <div class="mt-2 p-3 bg-light rounded">
+                                    ${data.note_text}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    modalContent.innerHTML = `
+                        <div class="alert alert-danger">
+                            ${data.message || 'Erreur lors du chargement de la note'}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                modalContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        Erreur lors du chargement de la note
+                    </div>
+                `;
+            });
+    }
+});
+</script>
+
+<!-- Script pour le graphique d'évolution des CAR avec navigation drill-down -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let carChart = null;
+    let chartData = [];
+    let navigationStack = [];
+    
+    const ctx = document.getElementById('carEvolutionChart');
+    const noDataDiv = document.getElementById('carChartNoData');
+    const periodSelect = document.getElementById('carPeriodSelect');
+    const bucketSelect = document.getElementById('carBucketSelect');
+    const yearSelect = document.getElementById('carYearSelect');
+    const backBtn = document.getElementById('carBackBtn');
+    const chartTitle = document.getElementById('carChartTitle');
+    
+    if (!ctx) return;
+    
+    const bucketColors = {
+        'total': { border: '#8475EC', background: 'rgba(132, 117, 236, 0.1)' },
+        'current': { border: '#10B981', background: 'rgba(16, 185, 129, 0.1)' },
+        '0-30': { border: '#F59E0B', background: 'rgba(245, 158, 11, 0.1)' },
+        '31-60': { border: '#F97316', background: 'rgba(249, 115, 22, 0.1)' },
+        '61-90': { border: '#EF4444', background: 'rgba(239, 68, 68, 0.1)' },
+        '90+': { border: '#991B1B', background: 'rgba(153, 27, 27, 0.1)' }
+    };
+    
+    const monthNames = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
+                        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('fr-CA', { 
+            style: 'currency', currency: 'CAD',
+            minimumFractionDigits: 0, maximumFractionDigits: 0
+        }).format(value);
+    }
+    
+    function formatDate(dateStr, period) {
+        const date = new Date(dateStr);
+        if (period === 'day') {
+            return date.toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
+        } else if (period === 'week') {
+            return date.toLocaleDateString('fr-CA', { weekday: 'short', day: 'numeric', month: 'short' });
+        } else if (period === 'month') {
+            return date.toLocaleDateString('fr-CA', { month: 'short', year: 'numeric' });
+        } else {
+            return date.getFullYear().toString();
+        }
+    }
+    
+    function updateTitle() {
+        const period = periodSelect.value;
+        const year = yearSelect.value;
+        let title = 'Évolution des comptes à recevoir';
+        
+        if (navigationStack.length > 0) {
+            const last = navigationStack[navigationStack.length - 1];
+            if (last.month) {
+                title = `${monthNames[last.month]} ${last.year}`;
+            } else if (last.year) {
+                title = `Année ${last.year}`;
+            }
+        } else if (year) {
+            title = `Année ${year}`;
+        }
+        
+        chartTitle.textContent = title;
+        backBtn.style.display = navigationStack.length > 0 ? 'inline-flex' : 'none';
+        feather.replace();
+    }
+    
+    function loadYears() {
+        fetch('/api/receivables-years')
+            .then(r => r.json())
+            .then(data => {
+                yearSelect.innerHTML = '<option value="">Toutes les années</option>';
+                (data.years || []).forEach(y => {
+                    yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+                });
+            });
+    }
+    
+    function loadChartData() {
+        const period = periodSelect.value;
+        const bucket = bucketSelect.value;
+        const colors = bucketColors[bucket];
+        
+        let url = `/api/receivables-history?period=${period}&bucket=${encodeURIComponent(bucket)}`;
+        
+        if (navigationStack.length > 0) {
+            const nav = navigationStack[navigationStack.length - 1];
+            if (nav.year) url += `&year=${nav.year}`;
+            if (nav.month) url += `&month=${nav.month}`;
+            if (nav.week_start) url += `&week_start=${nav.week_start}`;
+        } else if (yearSelect.value) {
+            url += `&year=${yearSelect.value}`;
+        }
+        
+        fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                chartData = data.data || [];
+                
+                if (chartData.length === 0) {
+                    ctx.style.display = 'none';
+                    noDataDiv.style.display = 'block';
+                    if (carChart) { carChart.destroy(); carChart = null; }
+                    feather.replace();
+                    updateTitle();
+                    return;
+                }
+                
+                ctx.style.display = 'block';
+                noDataDiv.style.display = 'none';
+                updateTitle();
+                
+                const labels = chartData.map(d => formatDate(d.date, period));
+                const values = chartData.map(d => d.value);
+                
+                if (carChart) carChart.destroy();
+                
+                carChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: bucket,
+                            data: values,
+                            borderColor: colors.border,
+                            backgroundColor: colors.background,
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: colors.border,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointStyle: 'circle'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        onClick: handleChartClick,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => formatCurrency(ctx.parsed.y),
+                                    afterLabel: () => period !== 'day' ? '(Cliquez pour détails)' : ''
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { callback: v => formatCurrency(v) },
+                                grid: { color: 'rgba(0,0,0,0.05)' }
+                            },
+                            x: { grid: { display: false } }
+                        },
+                        interaction: { intersect: false, mode: 'index' }
+                    }
+                });
+            })
+            .catch(err => {
+                console.error('Erreur:', err);
+                ctx.style.display = 'none';
+                noDataDiv.style.display = 'block';
+                feather.replace();
+            });
+    }
+    
+    function handleChartClick(event, elements) {
+        if (elements.length === 0) return;
+        const index = elements[0].index;
+        const point = chartData[index];
+        const period = periodSelect.value;
+        
+        if (period === 'year' && point.year) {
+            navigationStack.push({ year: point.year });
+            periodSelect.value = 'month';
+            loadChartData();
+        } else if (period === 'month' && point.year && point.month) {
+            navigationStack.push({ year: point.year, month: point.month });
+            periodSelect.value = 'week';
+            loadChartData();
+        } else if (period === 'week' && point.date) {
+            const date = new Date(point.date);
+            const dateStr = date.toISOString().split('T')[0];
+            navigationStack.push({ week_start: dateStr, year: point.year, month: point.month });
+            periodSelect.value = 'day';
+            loadChartData();
+        }
+    }
+    
+    function goBack() {
+        if (navigationStack.length > 0) {
+            navigationStack.pop();
+            const periods = ['year', 'month', 'week', 'day'];
+            const currentIdx = periods.indexOf(periodSelect.value);
+            if (currentIdx > 0) {
+                periodSelect.value = periods[currentIdx - 1];
+            }
+            loadChartData();
+        }
+    }
+    
+    periodSelect.addEventListener('change', () => {
+        navigationStack = [];
+        loadChartData();
+    });
+    bucketSelect.addEventListener('change', loadChartData);
+    yearSelect.addEventListener('change', () => {
+        navigationStack = [];
+        loadChartData();
+    });
+    backBtn.addEventListener('click', goBack);
+    
+    loadYears();
+    loadChartData();
+});
+</script>
+
+<!-- Modal de consentement RGPD/Loi 25 pour utilisateurs existants -->
+{% if needs_consent %}
+{% include 'auth/consent_modal.html' %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Afficher automatiquement le modal de consentement
+    const consentModal = new bootstrap.Modal(document.getElementById('consentModal'));
+    consentModal.show();
+});
+</script>
+{% endif %}
+
+{% endblock %}

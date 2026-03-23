@@ -1,0 +1,136 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Configuration Email Système{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i data-feather="mail" class="me-2"></i>
+        Configuration Email Système
+    </h2>
+    <a href="{{ url_for('admin.create_system_email_config') }}" class="btn btn-primary">
+        <i data-feather="plus" class="me-1"></i>
+        Nouvelle Configuration
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if configs %}
+            <div class="table-responsive">
+                <table class="table table-striped" style="table-layout: fixed; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Configuration</th>
+                            <th style="width: 20%;">Adresse Email</th>
+                            <th style="width: 20%;">Description</th>
+                            <th style="width: 15%;">Statut OAuth</th>
+                            <th style="width: 10%;">Statut</th>
+                            <th style="width: 20%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for config in configs %}
+                        <tr>
+                            <td>
+                                <strong>{{ config.config_name }}</strong>
+                            </td>
+                            <td>
+                                <span class="text-primary">{{ config.email_address }}</span>
+                            </td>
+                            <td style="word-wrap: break-word; overflow: hidden;">
+                                <small class="text-muted">{{ config.description or 'Aucune description' }}</small>
+                            </td>
+                            <td>
+                                {% set oauth_status = config.get_outlook_connection_status() %}
+                                {% if oauth_status == 'connecte' %}
+                                    <span class="badge bg-success">
+                                        <i data-feather="check-circle" class="me-1" style="width: 14px; height: 14px;"></i>
+                                        Connecté
+                                    </span>
+                                {% elif oauth_status == 'expire' %}
+                                    <span class="badge bg-warning">
+                                        <i data-feather="alert-triangle" class="me-1" style="width: 14px; height: 14px;"></i>
+                                        Expiré
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i data-feather="x-circle" class="me-1" style="width: 14px; height: 14px;"></i>
+                                        Non connecté
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if config.is_active %}
+                                    <span class="badge bg-success">Actif</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactif</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    {% if oauth_status != 'connecte' %}
+                                        <a href="{{ url_for('admin.connect_system_email_oauth', config_id=config.id) }}" 
+                                           class="btn btn-sm btn-success">
+                                            🔗 Connecter OAuth
+                                        </a>
+                                    {% else %}
+                                        <form method="POST" action="{{ url_for('admin.disconnect_system_email_oauth', config_id=config.id) }}" 
+                                              style="display: inline;" onsubmit="return confirm('Déconnecter OAuth ?')">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                            <button type="submit" class="btn btn-sm btn-warning">
+                                                ❌ Déconnecter
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                    
+                                    <a href="{{ url_for('admin.edit_system_email_config', config_id=config.id) }}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        ✏️ Modifier
+                                    </a>
+                                    
+                                    <form method="POST" action="{{ url_for('admin.delete_system_email_config', config_id=config.id) }}" 
+                                          style="display: inline;" onsubmit="return confirm('Supprimer cette configuration ?')">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            🗑️ Supprimer
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i data-feather="mail" style="width: 48px; height: 48px;" class="text-muted mb-3"></i>
+                <h5 class="text-muted">Aucune configuration email système</h5>
+                <p class="text-muted">Créez une configuration pour les emails automatiques (reset password, notifications, etc.)</p>
+                <a href="{{ url_for('admin.create_system_email_config') }}" class="btn btn-primary">
+                    <i data-feather="plus" class="me-1"></i>
+                    Créer la première configuration
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-4">
+    <div class="alert alert-info">
+        <h6><i data-feather="info" class="me-2"></i>Information</h6>
+        <p class="mb-0">
+            Les configurations email système sont utilisées pour envoyer des emails automatiques comme les réinitialisations de mot de passe, 
+            les notifications système, etc. Elles fonctionnent indépendamment des configurations email des entreprises.
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize Feather icons
+    feather.replace();
+</script>
+{% endblock %}

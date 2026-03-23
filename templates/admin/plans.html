@@ -1,0 +1,177 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}Gestion des forfaits{% endblock %}
+{% block page_subtitle %}Administrer les plans d'abonnement{% endblock %}
+
+{% block content %}
+<!-- Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">{{ plans|length }} forfait(s) configuré(s)</h5>
+            <a href="{{ url_for('admin.create_plan') }}" class="btn btn-admin-primary">
+                <i class="fas fa-plus me-2"></i>Créer un forfait
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Plans Grid -->
+<div class="row">
+    {% for plan in plans %}
+    <div class="col-md-4 mb-4">
+        <div class="admin-card plan-card">
+            <div class="admin-card-header">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="admin-card-title mb-1">{{ plan.display_name }}</h5>
+                        <small class="text-muted">{{ plan.name }}</small>
+                    </div>
+                    <span class="badge {% if plan.is_active %}bg-success{% else %}bg-warning{% endif %}">
+                        {% if plan.is_active %}Actif{% else %}Archivé{% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                {% if plan.description %}
+                <p class="text-muted mb-3">{{ plan.description }}</p>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-semibold">Type</span>
+                        <span class="badge {% if plan.is_free %}bg-success{% else %}bg-primary{% endif %}">
+                            {% if plan.is_free %}Gratuit{% else %}Payant{% endif %}
+                        </span>
+                    </div>
+                    
+                    {% if plan.max_clients %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Limite clients</span>
+                        <span class="badge bg-light text-dark">{{ plan.max_clients }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-2">Fonctionnalités</h6>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-{% if plan.allows_email_sending %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                            Envoi d'emails
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-{% if plan.allows_email_connection %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                            Connexion email
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-{% if plan.allows_accounting_connection %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                            Connexion comptable
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-{% if plan.allows_team_management %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                            Gestion d'équipe
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-{% if plan.allows_email_templates %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                            Modèles d'emails
+                        </div>
+                    </div>
+                </div>
+                
+                {% if not plan.is_free %}
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-2">Stripe</h6>
+                    {% if plan.stripe_price_id %}
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small class="text-muted">ID Prix Stripe</small>
+                        <code class="text-primary">{{ plan.stripe_price_id }}</code>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <div class="mt-4 d-flex gap-2">
+                    <a href="{{ url_for('admin.edit_plan', plan_id=plan.id) }}" class="btn btn-sm btn-outline-primary flex-fill">
+                        <i class="fas fa-edit me-1"></i>Modifier
+                    </a>
+                    <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete({{ plan.id }}, '{{ plan.display_name }}')">
+                        <i class="fas fa-trash me-1"></i>Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not plans %}
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-box-open text-muted mb-3" style="font-size: 3rem;"></i>
+                <h5 class="text-muted mb-3">Aucun forfait configuré</h5>
+                <p class="text-muted mb-4">Créez votre premier forfait pour commencer à gérer les abonnements.</p>
+                <a href="{{ url_for('admin.create_plan') }}" class="btn btn-admin-primary">
+                    <i class="fas fa-plus me-2"></i>Créer le premier forfait
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Hidden forms for plan actions -->
+{% for plan in plans %}
+<form id="delete-form-{{ plan.id }}" method="POST" action="{{ url_for('admin.delete_plan', plan_id=plan.id) }}" style="display: none;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+</form>
+{% endfor %}
+
+{% endblock %}
+
+{% block styles %}
+<style>
+.plan-card {
+    transition: transform 0.2s;
+}
+
+.plan-card:hover {
+    transform: translateY(-2px);
+}
+
+.features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.feature-item i.fa-times {
+    opacity: 0.5;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function confirmDelete(planId, planName) {
+    console.log('Tentative de suppression du plan:', planId, planName);
+    if (confirm(`Êtes-vous sûr de vouloir supprimer le forfait "${planName}" ?\n\nSi des entreprises utilisent ce forfait, il sera archivé (retiré des nouveaux abonnements).\nSi aucune entreprise ne l'utilise, il sera supprimé définitivement.`)) {
+        const form = document.getElementById('delete-form-' + planId);
+        console.log('Formulaire trouvé:', form);
+        if (form) {
+            form.submit();
+        } else {
+            console.error('Formulaire non trouvé pour le plan ID:', planId);
+        }
+    }
+}
+</script>
+{% endblock %}

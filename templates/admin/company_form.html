@@ -1,0 +1,301 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}{{ action }} une entreprise{% endblock %}
+{% block page_subtitle %}Configurer les détails de l'entreprise{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="admin-card-title">{{ action }} une entreprise</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" novalidate>
+                    {{ form.csrf_token }}
+                    
+                    <div class="row">
+                        <!-- Company Information -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Informations de l'entreprise</h6>
+                            
+                            <div class="mb-3">
+                                {{ form.name.label(class="form-label") }}
+                                {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                                {% if form.name.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.name.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.email.label(class="form-label") }}
+                                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                                {% if form.email.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.email.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.phone.label(class="form-label") }}
+                                {{ form.phone(class="form-control" + (" is-invalid" if form.phone.errors else "")) }}
+                                {% if form.phone.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.phone.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.address.label(class="form-label") }}
+                                {{ form.address(class="form-control", rows="3") }}
+                                {% if form.address.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.address.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Subscription Information -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Abonnement et facturation</h6>
+                            
+                            <div class="mb-3">
+                                {{ form.plan_id.label(class="form-label") }}
+                                {{ form.plan_id(class="form-control" + (" is-invalid" if form.plan_id.errors else "")) }}
+                                {% if form.plan_id.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.plan_id.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.plan_status.label(class="form-label") }}
+                                {{ form.plan_status(class="form-control" + (" is-invalid" if form.plan_status.errors else "")) }}
+                                {% if form.plan_status.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.plan_status.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- REFONTE STRIPE 2.0 : Architecture simplifiée -->
+                            <div class="mb-3">
+                                {{ form.quantity_licenses.label(class="form-label") }}
+                                {{ form.quantity_licenses(class="form-control" + (" is-invalid" if form.quantity_licenses.errors else "")) }}
+                                {% if form.quantity_licenses.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.quantity_licenses.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Nombre total de licences utilisateurs</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.client_limit.label(class="form-label") }}
+                                {{ form.client_limit(class="form-control" + (" is-invalid" if form.client_limit.errors else "")) }}
+                                {% if form.client_limit.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.client_limit.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">0 = illimité</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Stripe Information -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Configuration Stripe</h6>
+                            
+                            <div class="mb-3">
+                                {{ form.stripe_customer_id.label(class="form-label") }}
+                                {{ form.stripe_customer_id(class="form-control" + (" is-invalid" if form.stripe_customer_id.errors else "")) }}
+                                {% if form.stripe_customer_id.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.stripe_customer_id.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.stripe_subscription_id.label(class="form-label") }}
+                                {{ form.stripe_subscription_id(class="form-control" + (" is-invalid" if form.stripe_subscription_id.errors else "")) }}
+                                {% if form.stripe_subscription_id.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.stripe_subscription_id.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+
+                        </div>
+                        
+                        <!-- Settings -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Paramètres</h6>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.is_free_account(class="form-check-input") }}
+                                    {{ form.is_free_account.label(class="form-check-label") }}
+                                </div>
+                                {% if form.is_free_account.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.is_free_account.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+
+                        </div>
+                    </div>
+                    
+                    {% if company %}
+                    <!-- Admin Actions -->
+                    <div class="row mt-4 pt-4 border-top">
+                        <div class="col-12">
+                            <h6 class="fw-bold mb-3 text-warning">Actions administratives</h6>
+                            
+                            {% if company.stripe_subscription_id %}
+                            <button type="button" class="btn btn-warning me-3" id="syncStripeBtn">
+                                <i class="fas fa-sync-alt me-2"></i>Synchroniser avec Stripe
+                            </button>
+                            <div class="form-text mb-3">Récupère les informations actuelles depuis Stripe (plan, licences, downgrades programmés)</div>
+                            {% endif %}
+                            
+                            <button type="button" class="btn btn-danger" id="stopSyncBtn">
+                                <i class="fas fa-stop-circle me-2"></i>Arrêter les synchronisations en cours
+                            </button>
+                            <div class="form-text">Arrête immédiatement toutes les synchronisations en cours (QuickBooks, Business Central)</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between pt-4 border-top">
+                        <a href="{{ url_for('admin.companies') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Retour
+                        </a>
+                        <button type="submit" class="btn btn-admin-primary">
+                            <i class="fas fa-save me-2"></i>{{ action }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Toggle subscription fields based on free account checkbox
+document.getElementById('is_free_account').addEventListener('change', function() {
+    const stripeFields = document.querySelectorAll('#stripe_customer_id, #stripe_subscription_id, #plan_id');
+    stripeFields.forEach(field => {
+        field.disabled = this.checked;
+        if (this.checked) {
+            field.value = '';
+        }
+    });
+});
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('is_free_account').checked) {
+        document.getElementById('is_free_account').dispatchEvent(new Event('change'));
+    }
+});
+
+{% if company %}
+// Sync Stripe button handler
+{% if company.stripe_subscription_id %}
+document.getElementById('syncStripeBtn').addEventListener('click', function() {
+    if (!confirm('Synchroniser les informations de l\'abonnement depuis Stripe ?\n\nCela mettra à jour le plan, le nombre de licences et détectera les downgrades programmés.')) {
+        return;
+    }
+    
+    const btn = this;
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Synchronisation...';
+    
+    fetch('{{ url_for("admin.sync_stripe_subscription", company_id=company.id) }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let message = '✅ ' + data.message + '\n\n';
+            message += 'Plan: ' + data.data.plan_name + '\n';
+            message += 'Licences: ' + data.data.new_quantity + '\n';
+            message += 'Status: ' + data.data.subscription_status;
+            
+            if (data.data.pending_changes && data.data.pending_changes.has_schedule) {
+                message += '\n\n⚠️ Modifications programmées détectées (' + data.data.pending_changes.phases + ' phases)';
+            }
+            
+            alert(message);
+            // Recharger la page pour afficher les nouvelles données
+            window.location.reload();
+        } else {
+            alert('❌ ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('❌ Erreur lors de la synchronisation: ' + error.message);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+});
+{% endif %}
+
+// Stop sync button handler
+document.getElementById('stopSyncBtn').addEventListener('click', function() {
+    if (!confirm('Êtes-vous sûr de vouloir arrêter toutes les synchronisations en cours pour cette entreprise ?\n\nCette action est immédiate et irréversible.')) {
+        return;
+    }
+    
+    const btn = this;
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Arrêt en cours...';
+    
+    fetch('{{ url_for("admin.stop_company_sync", company_id=company.id) }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✅ ' + data.message);
+        } else {
+            alert('❌ ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('❌ Erreur lors de l\'arrêt: ' + error.message);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+});
+{% endif %}
+</script>
+{% endblock %}

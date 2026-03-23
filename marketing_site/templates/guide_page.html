@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WZ7KQJ2F');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ guide.title }} – Guide FinovRelance</title>
+    <meta name="description" content="{{ guide.meta_description or 'Guide d\'utilisation FinovRelance' }}">
+    
+    <!-- Balise canonique SEO (dynamique pour chaque page de guide) -->
+    <link rel="canonical" href="https://finov-relance.com/guide/{{ guide.slug }}">
+    
+    <!-- Favicon pour tous les navigateurs et Google -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260316">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png?v=20260316">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=20260316">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=20260316">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260316">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/marketing-static/css/marketing.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "FinovRelance",
+        "url": "https://finov-relance.com",
+        "logo": "https://finov-relance.com/marketing-static/images/logo.png",
+        "email": "support@finov-relance.com",
+        "sameAs": ["https://www.linkedin.com/company/solutions-finova/"]
+    }
+    </script>
+    <style>
+        .guide-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .guide-header {
+            margin-bottom: 3rem;
+        }
+        
+        .guide-meta {
+            display: flex;
+            gap: 2rem;
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .guide-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .guide-featured-image {
+            width: 100%;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .guide-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 3rem;
+        }
+        
+        .guide-content h2 {
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .guide-content h3 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .guide-content h4 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--gray-700);
+        }
+        
+        .guide-content p {
+            margin-bottom: 0;
+            line-height: 1.42;
+            color: var(--gray-700);
+        }
+        
+        .guide-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 2rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .guide-content ul,
+        .guide-content ol {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+        }
+        
+        .guide-content li {
+            margin-bottom: 0;
+            line-height: 1.42;
+            color: var(--gray-700);
+        }
+        
+        .guide-content code {
+            background: var(--gray-100);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--primary);
+        }
+        
+        .guide-content pre {
+            background: var(--gray-100);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        
+        .guide-content pre code {
+            background: none;
+            padding: 0;
+            color: var(--gray-800);
+        }
+        
+        .guide-content blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: var(--gray-600);
+        }
+        
+        .guide-video {
+            margin: 2rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .guide-video iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+        
+        .guide-navigation {
+            background: var(--gray-50);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 3rem;
+        }
+        
+        .guide-navigation h3 {
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+        
+        .guide-nav-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .guide-nav-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .guide-nav-item:hover {
+            transform: translateX(4px);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .guide-nav-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .guide-nav-item:hover .guide-nav-icon {
+            color: white;
+        }
+        
+        .breadcrumb {
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb-separator {
+            margin: 0 0.5rem;
+            color: var(--gray-400);
+        }
+    </style>
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WZ7KQJ2F"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/" class="logo"><img src="/marketing-static/images/logo.png" alt="FinovRelance" style="height: 60px;"></a>
+                
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">Accueil</a></li>
+                    <li><a href="/fonctionnalites" class="nav-link">Fonctionnalités</a></li>
+                    <li><a href="/tarifs" class="nav-link">Tarifs</a></li>
+                    <li><a href="/cas-usage" class="nav-link">Cas d'usage</a></li>
+                    <li><a href="/guide" class="nav-link active">Guide</a></li>
+                    <li><a href="/contact" class="nav-link">Contact</a></li>
+                    
+                    <div class="nav-cta">
+                        <a href="/auth/login" class="btn btn-secondary">Connexion</a>
+                    </div>
+                </ul>
+                
+                <button class="burger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Guide Content -->
+    <section class="section">
+        <div class="container guide-container">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="/">Accueil</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="{{ url_for('marketing.guide') }}">Guide</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>{{ guide.title }}</span>
+            </div>
+            
+            <!-- Guide Header -->
+            <div class="guide-header">
+                <h1>{{ guide.title }}</h1>
+                
+                <div class="guide-meta">
+                    <div class="guide-meta-item">
+                        <i class="far fa-calendar"></i>
+                        <span>{{ guide.created_at.strftime('%d %B %Y') }}</span>
+                    </div>
+                    {% if guide.updated_at and guide.updated_at != guide.created_at %}
+                    <div class="guide-meta-item">
+                        <i class="far fa-clock"></i>
+                        <span>Mis à jour le {{ guide.updated_at.strftime('%d %B %Y') }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Featured Image -->
+            {% if guide.image_url %}
+            <img src="{{ guide.image_url }}" alt="{{ guide.title }}" class="guide-featured-image">
+            {% endif %}
+            
+            <!-- Video (if available) -->
+            {% if guide.video_url %}
+            <div class="guide-video">
+                {% if 'youtube.com' in guide.video_url or 'youtu.be' in guide.video_url %}
+                    {% set video_id = guide.video_url.split('/')[-1].split('?')[0] %}
+                    <iframe src="https://www.youtube.com/embed/{{ video_id }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                {% elif 'vimeo.com' in guide.video_url %}
+                    {% set video_id = guide.video_url.split('/')[-1] %}
+                    <iframe src="https://player.vimeo.com/video/{{ video_id }}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                {% elif guide.video_url.startswith('data:') %}
+                    <video controls style="width: 100%; max-height: 500px; border-radius: 8px;">
+                        <source src="{{ guide.video_url }}">
+                        Votre navigateur ne supporte pas la balise vidéo.
+                    </video>
+                {% else %}
+                    <iframe src="{{ guide.video_url }}" allowfullscreen></iframe>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Guide Content (Rich HTML) -->
+            <div class="guide-content">
+                {{ guide.content|safe }}
+            </div>
+            
+            <!-- Related Guides Navigation -->
+            {% if other_guides %}
+            <div class="guide-navigation">
+                <h3><i class="fas fa-book-reader me-2"></i>Autres guides</h3>
+                <div class="guide-nav-list">
+                    {% for other_guide in other_guides %}
+                    <a href="{{ url_for('marketing.guide_page', slug=other_guide.slug) }}" class="guide-nav-item">
+                        <i class="fas fa-arrow-right guide-nav-icon"></i>
+                        <span>{{ other_guide.title }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Back to Guide List -->
+            <div class="text-center">
+                <a href="{{ url_for('marketing.guide') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Retour aux guides
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Produit</h4>
+                    <ul class="footer-links">
+                        <li><a href="/fonctionnalites">Fonctionnalités</a></li>
+                        <li><a href="/tarifs">Tarifs</a></li>
+                        <li><a href="/cas-usage">Cas d'usage</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Ressources</h4>
+                    <ul class="footer-links">
+                        <li><a href="/guide">Guide d'utilisation</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul class="footer-links">
+                        <li><a href="mailto:support@finov-relance.com">support@finov-relance.com</a></li>
+                        <li><a href="https://finov-relance.com/legal/confidentialite" target="_blank" rel="noopener noreferrer">Politique de confidentialité</a></li>
+                        <li><a href="https://finov-relance.com/legal/cgu" target="_blank" rel="noopener noreferrer">Conditions d'utilisation</a></li>
+                        <li><a href="https://finov-relance.com/legal/cookies" target="_blank" rel="noopener noreferrer">Politique de cookies</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Réseaux sociaux</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://www.linkedin.com/company/solutions-finova/" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin" style="font-size: 1.5rem; margin-right: 0.5rem;"></i>LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p style="color: #ffffff;">&copy; <span id="year"></span> FinovRelance. Tous droits réservés.</p>
+                <p style="margin-top: 0.5rem; color: #ffffff;">Développé et vendu par <a href="https://finova-solutions.com/" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: none;">Finova Solutions</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookieConsent" class="cookie-consent" style="display: none;">
+        <div class="cookie-consent-content">
+            <div class="cookie-consent-text">
+                <p><strong>🍪 Nous utilisons des cookies</strong></p>
+                <p>Nous utilisons des cookies essentiels pour assurer le bon fonctionnement de notre site. En continuant à naviguer, vous acceptez notre <a href="https://finov-relance.com/legal/cookies">politique de cookies</a>.</p>
+            </div>
+            <div class="cookie-consent-actions">
+                <button id="acceptCookies" class="btn btn-primary">Accepter</button>
+                <button id="declineCookies" class="btn btn-secondary">Refuser</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/marketing-static/js/marketing.js"></script>
+    <script src="/marketing-static/js/cookie-consent.js"></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+{% if note_groups %}
+    <div class="notes-container">
+        {% for group in note_groups %}
+        {% set note = group.parent %}
+        {% set children = group.children %}
+        {% set is_conversation = group.is_conversation and group.count > 1 %}
+        
+        <div class="communication-note {% if is_conversation %}has-conversation{% endif %}" id="note-{{ note.id }}">
+            <!-- Wrapper pour le contenu principal (sans les enfants de conversation) -->
+            <div class="note-primary-content">
+                <!-- Actions (visibles au hover) -->
+                {% set can_edit_note = not current_user.is_read_only() and (note.user_id == current_user.id or current_user.is_admin()) %}
+                <div class="note-actions-wrapper">
+                    <div class="note-actions">
+                        <button type="button" onclick="editNote({{ note.id }})" 
+                                class="btn btn-outline-primary" title="{{ 'Modifier' if can_edit_note else 'Voir le détail' }}">
+                            <i data-feather="{{ 'edit' if can_edit_note else 'eye' }}"></i>
+                        </button>
+                        {% if can_edit_note %}
+                        <button type="button" onclick="deleteNoteAjax({{ note.id }}, {{ client.id }})" 
+                                class="btn btn-outline-danger" title="Supprimer">
+                            <i data-feather="trash-2"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Header avec icône et métadonnées -->
+                <div class="note-header-wrapper">
+                <!-- Icône de type optimisée -->
+                <div class="note-type-indicator note-type-{{ note.note_type }}">
+                    {% if note.note_type == 'call' %}
+                        <i data-feather="phone"></i>
+                    {% elif note.note_type == 'email' %}
+                        <i data-feather="mail"></i>
+                    {% elif note.note_type == 'meeting' %}
+                        <i data-feather="users"></i>
+                    {% else %}
+                        <i data-feather="edit-3"></i>
+                    {% endif %}
+                </div>
+
+                <!-- Métadonnées réorganisées -->
+                <div class="note-metadata">
+                    <div class="note-user-info">
+                        <span class="note-author-name">{{ note.user.full_name }}</span>
+                        <span class="note-timestamp">{{ format_local_datetime(note.created_at, '%d/%m/%Y à %H:%M', company.timezone) }}</span>
+                        {# Indicateur de date originale pour les conversations #}
+                        {% if is_conversation and group.original_date %}
+                        <span class="text-muted ms-2" style="font-size: 0.8em;" title="Date du courriel original">
+                            <i data-feather="clock" style="width: 12px; height: 12px;"></i>
+                            Orig: {{ format_local_datetime(group.original_date, '%d/%m/%Y', company.timezone) }}
+                        </span>
+                        {% endif %}
+                        <span class="note-type-badge">
+                            {% if note.note_type == 'call' %}Appel
+                            {% elif note.note_type == 'email' %}Courriel
+                            {% elif note.note_type == 'meeting' %}Rencontre
+                            {% else %}Général{% endif %}
+                        </span>
+                        {% if note.note_type == 'email' and note.email_direction %}
+                        <span class="badge email-direction-badge {{ note.get_email_direction_badge_class() }} ms-1" title="Direction du courriel">
+                            {% if note.email_direction == 'sent' %}
+                                <span class="badge-icon"><i data-feather="send"></i></span>Envoyé
+                            {% elif note.email_direction == 'received' %}
+                                <span class="badge-icon"><i data-feather="inbox"></i></span>Reçu
+                            {% elif note.email_direction == 'reply' %}
+                                <span class="badge-icon"><i data-feather="corner-up-left"></i></span>Réponse
+                            {% elif note.email_direction == 'forward' %}
+                                <span class="badge-icon"><i data-feather="corner-up-right"></i></span>Transféré
+                            {% endif %}
+                        </span>
+                        {% endif %}
+                        {% if note.is_from_sync %}
+                        <span class="badge bg-secondary ms-1" title="Synchronisé automatiquement depuis Outlook">
+                            <i data-feather="refresh-cw" style="width: 10px; height: 10px;"></i>
+                        </span>
+                        {% endif %}
+                        
+                        <!-- Badge conversation avec compteur -->
+                        {% if is_conversation %}
+                        <span class="badge bg-primary conversation-badge ms-2" 
+                              onclick="event.stopPropagation(); toggleClientConversation('{{ note.id }}')"
+                              style="cursor: pointer;"
+                              title="Cliquez pour voir les {{ group.count }} messages de cette conversation">
+                            <i data-feather="message-circle" style="width: 10px; height: 10px;"></i>
+                            {{ group.count }} échanges
+                            <i data-feather="chevron-down" class="conv-chevron-{{ note.id }}" style="width: 12px; height: 12px; transition: transform 0.2s;"></i>
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% if note.reminder_date %}
+                    <div class="note-reminder-inline mt-1">
+                        <span class="reminder-badge-inline {% if note.is_reminder_completed %}reminder-completed{% elif note.is_reminder_overdue() %}reminder-overdue{% elif note.is_reminder_today() %}reminder-today{% else %}reminder-upcoming{% endif %}">
+                            {% if note.is_reminder_completed %}
+                            <i data-feather="check-circle" style="width: 12px; height: 12px;"></i>
+                            <span>Terminé</span>
+                            {% else %}
+                            <i data-feather="bell" style="width: 12px; height: 12px;"></i>
+                            <span>{{ note.reminder_date.strftime('%d/%m/%Y') }}</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Contenu de la note -->
+            <div class="note-content-wrapper">
+                {% if note.email_subject %}
+                    <!-- Note créée via envoi d'email avec email_subject -->
+                    <div class="email-note-content">
+                        <!-- Détails du courriel -->
+                        <div class="email-details mb-2">
+                            {% if note.email_from %}
+                                <small class="text-muted">
+                                    <strong>De:</strong> {{ note.email_from }}
+                                </small><br>
+                            {% else %}
+                                <small class="text-muted">
+                                    <strong>De:</strong> {{ note.user.email or "Non spécifié" }}
+                                </small><br>
+                            {% endif %}
+                            {% if note.email_to %}
+                                <small class="text-muted">
+                                    <strong>À:</strong> {{ note.email_to }}
+                                </small><br>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Objet du courriel -->
+                        <div class="email-subject"><strong>Objet:</strong> {{ note.email_subject }}</div>
+                        
+                        <!-- Corps du courriel avec aperçu nettoyé -->
+                        {% if note.email_body %}
+                            {% set clean_preview = clean_email_preview(note.email_body, 200) %}
+                            {% if clean_preview %}
+                            <div class="email-preview mt-2">
+                                <span class="text-muted">{{ clean_preview }}</span>
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                        
+                        <!-- Pièces jointes -->
+                        {% if note.attachments and note.attachments|length > 0 %}
+                            <div class="email-attachments mt-2">
+                                <small class="text-muted">
+                                    <i data-feather="paperclip" style="width: 14px; height: 14px;"></i>
+                                    <strong>{{ note.attachments|length }} pièce{% if note.attachments|length > 1 %}s{% endif %} jointe{% if note.attachments|length > 1 %}s{% endif %}:</strong>
+                                    {% for attachment in note.attachments %}
+                                        <span class="badge bg-light text-dark ms-1">
+                                            {{ attachment.filename or attachment.name or 'Fichier' }}
+                                            {% if attachment.size %}
+                                                <small>({{ (attachment.size / 1024)|round(0)|int }} Ko)</small>
+                                            {% endif %}
+                                        </span>
+                                    {% endfor %}
+                                </small>
+                            </div>
+                        {% elif note.note_text and 'Pièces jointes:' in note.note_text %}
+                            <!-- Fallback pour anciennes notes sans champ attachments -->
+                            <div class="email-attachments mt-2">
+                                <small class="text-muted">{{ note.note_text.split('Pièces jointes:')[1].split('\n')[0] if 'Pièces jointes:' in note.note_text else '' }}</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% elif note.note_text and note.note_text.startswith('Email envoyé:') %}
+                    <!-- Ancienne note email (format legacy) -->
+                    <div class="email-note-content">
+                        <div class="email-subject">{{ note.note_text.split('\n')[0] }}</div>
+                        {% if note.note_text.split('\n')|length > 1 %}
+                            <div class="email-preview">{{ note.note_text.split('\n')[1] }}</div>
+                        {% endif %}
+                        {% if note.note_text.split('\n')|length > 2 and note.note_text.split('\n')[2].startswith('Pièces jointes:') %}
+                            <div class="email-preview">{{ note.note_text.split('\n')[2] }}</div>
+                        {% endif %}
+                        <div class="email-meta-info">Contenu HTML masqué pour éviter les problèmes d'affichage</div>
+                    </div>
+                {% else %}
+                    <!-- Note traditionnelle (tout type) -->
+                    <div class="note-text-content">{{ note.note_text | replace('\n', '<br>') | safe }}</div>
+                {% endif %}
+            </div>
+            </div><!-- Fin .note-primary-content -->
+            
+            <!-- Conversation enfants (accordéon) -->
+            {% if is_conversation %}
+            <div class="collapse conversation-children" id="conv-{{ note.id }}">
+                <div class="conversation-thread mt-3">
+                    {% for child in children %}
+                    {% set is_original_child = (group.original_id and child.id == group.original_id) %}
+                    <div class="conversation-child-note{% if is_original_child %} conversation-original{% endif %}" id="note-{{ child.id }}">
+                        <!-- Actions enfant -->
+                        {% set can_edit_child = not current_user.is_read_only() and (child.user_id == current_user.id or current_user.is_admin()) %}
+                        <div class="child-note-actions">
+                            <button type="button" onclick="editNote({{ child.id }})" 
+                                    class="btn btn-sm btn-outline-primary" title="{{ 'Modifier' if can_edit_child else 'Voir le détail' }}">
+                                <i data-feather="{{ 'edit' if can_edit_child else 'eye' }}" style="width: 12px; height: 12px;"></i>
+                            </button>
+                            {% if can_edit_child %}
+                            <button type="button" onclick="deleteNoteAjax({{ child.id }}, {{ client.id }})" 
+                                    class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                <i data-feather="trash-2" style="width: 12px; height: 12px;"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Header enfant -->
+                        <div class="child-note-header">
+                            {% if is_original_child %}
+                            <span class="badge bg-warning text-dark me-2" style="font-size: 0.65em;" title="Courriel original">
+                                <span class="badge-icon"><i data-feather="flag"></i></span>Original
+                            </span>
+                            {% endif %}
+                            {% if child.email_direction %}
+                            <span class="badge {{ child.get_email_direction_badge_class() }} me-2" style="font-size: 0.7em;">
+                                {% if child.email_direction == 'sent' %}
+                                    <span class="badge-icon"><i data-feather="send"></i></span>Envoyé
+                                {% elif child.email_direction == 'received' %}
+                                    <span class="badge-icon"><i data-feather="inbox"></i></span>Reçu
+                                {% elif child.email_direction == 'reply' %}
+                                    <span class="badge-icon"><i data-feather="corner-up-left"></i></span>Réponse
+                                {% elif child.email_direction == 'forward' %}
+                                    <span class="badge-icon"><i data-feather="corner-up-right"></i></span>Transféré
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                            <span class="child-note-author">{{ child.user.full_name }}</span>
+                            <span class="child-note-date text-muted">{{ format_local_datetime(child.created_at, '%d/%m/%Y à %H:%M', company.timezone) }}</span>
+                            {% if child.is_from_sync %}
+                            <span class="badge bg-secondary ms-1" title="Synchronisé" style="font-size: 0.65em;">
+                                <i data-feather="refresh-cw" style="width: 8px; height: 8px;"></i>
+                            </span>
+                            {% endif %}
+                            {% if child.reminder_date %}
+                            <span class="reminder-badge-inline ms-2 {% if child.is_reminder_completed %}reminder-completed{% elif child.is_reminder_overdue() %}reminder-overdue{% elif child.is_reminder_today() %}reminder-today{% else %}reminder-upcoming{% endif %}" style="font-size: 0.7em;">
+                                {% if child.is_reminder_completed %}
+                                <i data-feather="check-circle" style="width: 10px; height: 10px;"></i> Terminé
+                                {% else %}
+                                <i data-feather="bell" style="width: 10px; height: 10px;"></i> {{ child.reminder_date.strftime('%d/%m/%Y') }}
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Contenu enfant -->
+                        <div class="child-note-content">
+                            {% if child.email_from %}
+                            <small class="text-muted d-block">De: {{ child.email_from }}</small>
+                            {% endif %}
+                            {% if child.email_subject %}
+                            <div class="child-email-subject"><strong>{{ child.email_subject }}</strong></div>
+                            {% endif %}
+                            {% if child.email_body %}
+                                {% set child_preview = clean_email_preview(child.email_body, 150) %}
+                                {% if child_preview %}
+                                <div class="child-email-preview text-muted">{{ child_preview }}</div>
+                                {% endif %}
+                            {% endif %}
+                            {% if child.attachments and child.attachments|length > 0 %}
+                            <div class="child-email-attachments mt-1">
+                                <small class="text-muted">
+                                    <i data-feather="paperclip" style="width: 12px; height: 12px;"></i>
+                                    {{ child.attachments|length }} PJ
+                                </small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+{% elif notes %}
+    <!-- Fallback si note_groups n'est pas défini (compatibilité) -->
+    <div class="notes-container">
+        {% for note in notes %}
+        <div class="communication-note">
+            <div class="note-primary-content">
+                <!-- Actions (visibles au hover) -->
+                {% set can_edit_note = not current_user.is_read_only() and (note.user_id == current_user.id or current_user.is_admin()) %}
+                <div class="note-actions-wrapper">
+                    <div class="note-actions">
+                        <button type="button" onclick="editNote({{ note.id }})" 
+                                class="btn btn-outline-primary" title="{{ 'Modifier' if can_edit_note else 'Voir le détail' }}">
+                            <i data-feather="{{ 'edit' if can_edit_note else 'eye' }}"></i>
+                        </button>
+                        {% if can_edit_note %}
+                        <button type="button" onclick="deleteNoteAjax({{ note.id }}, {{ client.id }})" 
+                                class="btn btn-outline-danger" title="Supprimer">
+                            <i data-feather="trash-2"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Header avec icône et métadonnées -->
+                <div class="note-header-wrapper">
+                <div class="note-type-indicator note-type-{{ note.note_type }}">
+                    {% if note.note_type == 'call' %}
+                        <i data-feather="phone"></i>
+                    {% elif note.note_type == 'email' %}
+                        <i data-feather="mail"></i>
+                    {% elif note.note_type == 'meeting' %}
+                        <i data-feather="users"></i>
+                    {% else %}
+                        <i data-feather="edit-3"></i>
+                    {% endif %}
+                </div>
+
+                <div class="note-metadata">
+                    <div class="note-user-info">
+                        <span class="note-author-name">{{ note.user.full_name }}</span>
+                        <span class="note-timestamp">{{ format_local_datetime(note.created_at, '%d/%m/%Y à %H:%M', company.timezone) }}</span>
+                        <span class="note-type-badge">
+                            {% if note.note_type == 'call' %}Appel
+                            {% elif note.note_type == 'email' %}Courriel
+                            {% elif note.note_type == 'meeting' %}Rencontre
+                            {% else %}Général{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="note-content-wrapper">
+                {% if note.email_subject %}
+                    <div class="email-note-content">
+                        <div class="email-subject"><strong>Objet:</strong> {{ note.email_subject }}</div>
+                        {% if note.email_body %}
+                            {% set clean_preview = clean_email_preview(note.email_body, 200) %}
+                            {% if clean_preview %}
+                            <div class="email-preview mt-2">
+                                <span class="text-muted">{{ clean_preview }}</span>
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="note-text-content">{{ note.note_text | replace('\n', '<br>') | safe }}</div>
+                {% endif %}
+            </div>
+            </div><!-- Fin .note-primary-content -->
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="notes-empty-state">
+        <i data-feather="message-square"></i>
+        <h6>Aucune note</h6>
+        <p>Commencez à documenter vos communications avec ce client.</p>
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+            <i data-feather="plus" class="me-1"></i>
+            Première note
+        </button>
+    </div>
+{% endif %}

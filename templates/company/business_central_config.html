@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Configuration Business Central - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-cog me-2"></i>Configuration du Connecteur Business Central
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if connection and connection.is_active %}
+                        <!-- Connexion existante -->
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Connecté à Business Central</strong>
+                            <p class="mb-0 mt-2">Dernière synchronisation: 
+                                {% if connection.last_sync_at %}
+                                    {{ connection.last_sync_at.strftime('%d/%m/%Y %H:%M') }}
+                                {% else %}
+                                    Jamais
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        {% if bc_config %}
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">Configuration actuelle</h6>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>URL Clients:</strong><br>
+                                <code>{{ bc_config.customers_odata_url }}</code></p>
+                                <p><strong>URL Factures:</strong><br>
+                                <code>{{ bc_config.invoices_odata_url }}</code></p>
+
+                                {% if bc_config.customers_filter %}
+                                <hr class="my-3">
+                                <p><strong>Filtre Clients:</strong><br>
+                                <code>{{ bc_config.customers_filter }}</code></p>
+                                {% endif %}
+                                
+                                {% if bc_config.invoices_filter %}
+                                <p><strong>Filtre Factures:</strong><br>
+                                <code>{{ bc_config.invoices_filter }}</code></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('company.business_central_field_mapping') }}" class="btn btn-primary">
+                                <i class="fas fa-exchange-alt me-2"></i>Configurer le Mapping
+                            </a>
+                            <form method="POST" action="{{ url_for('company.business_central_sync') }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-sync me-2"></i>Synchroniser
+                                </button>
+                            </form>
+                            <a href="{{ url_for('company.business_central_reconnect', connection_id=connection.id) }}" 
+                               class="btn btn-warning">
+                                <i class="fas fa-sync me-2"></i>Reconnecter
+                            </a>
+                            
+                            <form method="POST" action="{{ url_for('company.business_central_disconnect', connection_id=connection.id) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-danger" 
+                                        onclick="return confirm('Êtes-vous sûr de vouloir déconnecter Business Central ? Le mapping devra être refait.')">
+                                    <i class="fas fa-unlink me-2"></i>Déconnecter
+                                </button>
+                            </form>
+                        </div>
+                        
+                    {% else %}
+                        <!-- Nouvelle configuration -->
+                        <div class="alert alert-info">
+                            <h5 class="alert-heading">Configuration requise</h5>
+                            <p>Pour connecter Business Central, vous devez fournir les URLs OData V4 pour accéder aux tables de données.</p>
+                            <hr>
+                            <p class="mb-0">
+                                <strong>Format exemple:</strong><br>
+                                <code>https://api.businesscentral.dynamics.com/v2.0/[tenant]/[environment]/ODataV4/Company('[company]')/[table]</code>
+                            </p>
+                        </div>
+                        
+                        <form method="POST" action="{{ url_for('company.business_central_save_config') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <div class="mb-3">
+                                <label for="customers_odata_url" class="form-label">
+                                    <i class="fas fa-users me-1"></i>URL OData pour les Clients
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="customers_odata_url" 
+                                       name="customers_odata_url"
+                                       placeholder="https://api.businesscentral.dynamics.com/v2.0/.../Customer"
+                                       required>
+                                <small class="form-text text-muted">
+                                    URL complète pour accéder à la table des clients (Customer)
+                                </small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="invoices_odata_url" class="form-label">
+                                    <i class="fas fa-file-invoice me-1"></i>URL OData pour les Factures
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="invoices_odata_url" 
+                                       name="invoices_odata_url"
+                                       placeholder="https://api.businesscentral.dynamics.com/v2.0/.../SalesInvoice"
+                                       required>
+                                <small class="form-text text-muted">
+                                    URL complète pour accéder à la table des factures (Sales Invoice)
+                                </small>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Important:</strong> Après avoir fourni les URLs, vous serez redirigé vers Microsoft pour autoriser l'accès à Business Central.
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-arrow-right me-2"></i>Continuer vers l'authentification
+                                </button>
+                                <a href="{{ url_for('company.settings') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-2"></i>Annuler
+                                </a>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Section d'aide -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-question-circle me-2"></i>Aide</h6>
+                </div>
+                <div class="card-body">
+                    <h6>Comment obtenir les URLs OData ?</h6>
+                    <ol>
+                        <li>Connectez-vous à votre environnement Business Central</li>
+                        <li>Accédez aux <strong>Web Services</strong> dans la configuration</li>
+                        <li>Vérifiez que les services OData V4 sont publiés pour Customer et Sales Invoice</li>
+                        <li>Copiez les URLs complètes incluant le tenant et l'environnement</li>
+                    </ol>
+                    
+                    <h6 class="mt-3">Prérequis Azure AD</h6>
+                    <ul>
+                        <li>L'application doit être enregistrée dans Azure AD</li>
+                        <li>Les permissions API Business Central doivent être accordées</li>
+                        <li>Les variables BUSINESS_CENTRAL_CLIENT_ID et BUSINESS_CENTRAL_CLIENT_SECRET doivent être configurées</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

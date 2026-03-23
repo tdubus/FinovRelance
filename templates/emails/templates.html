@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}Modèles de courriel - FinovRelance{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Modèles de courriel</h1>
+        <p class="text-muted">Gérez vos modèles de communication avec les clients</p>
+    </div>
+    <div>
+        <a href="{{ url_for('email.new_template') }}" class="btn btn-primary">
+            <i data-feather="plus" class="me-1"></i>
+            Nouveau modèle
+        </a>
+    </div>
+</div>
+
+<!-- Templates List -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i data-feather="mail" class="me-2"></i>
+            Modèles disponibles
+            {% if templates %}
+                <span class="badge badge-secondary ms-2">{{ templates|length }}</span>
+            {% endif %}
+        </h5>
+    </div>
+    
+    {% if templates %}
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Nom du modèle</th>
+                    <th>Sujet</th>
+                    <th>Auteur</th>
+                    <th>Visibilité</th>
+                    <th>Statut</th>
+                    <th>Créé le</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for template in templates %}
+                <tr>
+                    <td>
+                        <div class="fw-bold">{{ template.name }}</div>
+                        {% if template.original_template_id %}
+                            <small>
+                                <span class="badge badge-warning">Dupliqué</span>
+                            </small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="text-truncate" style="max-width: 250px;" data-tooltip="{{ template.subject }}">
+                            {{ template.subject }}
+                        </div>
+                    </td>
+                    <td>
+                        <small class="text-muted">
+                            {% if template.creator %}
+                                {{ template.creator.display_name }}
+                            {% else %}
+                                <em>Inconnu</em>
+                            {% endif %}
+                        </small>
+                    </td>
+                    <td>
+                        {% if template.is_shared %}
+                            <span class="badge badge-success">Partagé avec l'équipe</span>
+                        {% else %}
+                            <span class="badge badge-secondary">Personnel</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if template.is_active %}
+                            <span class="badge badge-success">Actif</span>
+                        {% else %}
+                            <span class="badge badge-secondary">Inactif</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <small class="text-muted">{{ template.created_at|format_local_date('%d/%m/%Y') }}</small>
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-info" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#previewModal"
+                                    data-template-id="{{ template.id }}"
+                                    data-template-name="{{ template.name }}"
+                                    data-template-subject="{{ template.subject }}"
+                                    data-template-content="{{ template.content }}"
+                                    data-tooltip="Aperçu">
+                                <i data-feather="eye"></i>
+                            </button>
+                            {% if template.can_duplicate(current_user) %}
+                            <a href="{{ url_for('email.new_template', duplicate=template.id) }}" 
+                               class="btn btn-outline-secondary" data-tooltip="Dupliquer">
+                                <i data-feather="copy"></i>
+                            </a>
+                            {% endif %}
+                            {% if template.can_edit(current_user) %}
+                            <a href="{{ url_for('email.edit_template', id=template.id) }}" 
+                               class="btn btn-outline-primary" data-tooltip="Modifier">
+                                <i data-feather="edit"></i>
+                            </a>
+                            {% endif %}
+                            {% if template.can_delete(current_user) %}
+                            <button type="button" class="btn btn-outline-danger" 
+                                    onclick="confirmDelete({{ template.id }}, '{{ template.name }}')"
+                                    data-tooltip="Supprimer">
+                                <i data-feather="trash-2"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="card-body text-center py-5">
+        <div class="mb-4">
+            <i data-feather="mail" style="width: 64px; height: 64px; stroke: hsl(var(--text-muted));"></i>
+        </div>
+        <h4 class="text-muted">Aucun modèle de courriel</h4>
+        <p class="text-muted mb-4">
+            Créez votre premier modèle de courriel pour faciliter vos communications avec les clients.
+        </p>
+        <a href="{{ url_for('email.new_template') }}" class="btn btn-primary">
+            <i data-feather="plus" class="me-1"></i>
+            Créer un modèle
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+
+
+<!-- Variables Reference -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h6 class="mb-0">
+            <i data-feather="code" class="me-2"></i>
+            Variables disponibles
+        </h6>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-3">
+            Utilisez ces variables dans vos modèles. Elles seront automatiquement remplacées lors de l'envoi.
+        </p>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-primary">Informations client</h6>
+                <ul class="list-unstyled small">
+                    <li><code>&#123;&#123; client.name &#125;&#125;</code> - Nom du client</li>
+                    <li><code>&#123;&#123; client.email &#125;&#125;</code> - Courriel du client</li>
+                    <li><code>&#123;&#123; client.phone &#125;&#125;</code> - Téléphone du client</li>
+                    <li><code>&#123;&#123; client.address &#125;&#125;</code> - Adresse du client</li>
+                    <li><code>&#123;&#123; client.collector_name &#125;&#125;</code> - Collecteur assigné</li>
+                    <li><code>&#123;&#123; client.representative_name &#125;&#125;</code> - Représentant</li>
+                    <li><code>&#123;&#123; client.payment_terms &#125;&#125;</code> - Termes de paiement</li>
+                    <li><code>&#123;&#123; client.total_outstanding &#125;&#125;</code> - Montant total dû</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-primary">Informations système</h6>
+                <ul class="list-unstyled small">
+                    <li><code>&#123;&#123; user.username &#125;&#125;</code> - Nom de l'utilisateur</li>
+                    <li><code>&#123;&#123; user.email &#125;&#125;</code> - Courriel de l'utilisateur</li>
+                    <li><code>&#123;&#123; company.name &#125;&#125;</code> - Nom de l'entreprise</li>
+                    <li><code>&#123;&#123; company.email &#125;&#125;</code> - Courriel de l'entreprise</li>
+                    <li><code>&#123;&#123; company.phone &#125;&#125;</code> - Téléphone de l'entreprise</li>
+                    <li><code>&#123;&#123; company.address &#125;&#125;</code> - Adresse de l'entreprise</li>
+                    <li><code>&#123;&#123; today &#125;&#125;</code> - Date du jour</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i data-feather="eye" class="me-2"></i>
+                    Aperçu du modèle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nom du modèle :</label>
+                    <div id="previewName"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Sujet :</label>
+                    <div id="previewSubject" class="p-2 bg-light rounded"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Contenu :</label>
+                    <div id="previewContent" class="p-3 bg-light rounded" style="white-space: pre-wrap;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary" id="editFromPreview">
+                    <i data-feather="edit" class="me-1"></i>
+                    Modifier
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Preview modal functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const previewModal = document.getElementById('previewModal');
+    let currentTemplateId = null;
+    
+    previewModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        currentTemplateId = button.getAttribute('data-template-id');
+        
+        document.getElementById('previewName').textContent = button.getAttribute('data-template-name');
+        document.getElementById('previewSubject').textContent = button.getAttribute('data-template-subject');
+        document.getElementById('previewContent').textContent = button.getAttribute('data-template-content');
+    });
+    
+    // Edit from preview
+    document.getElementById('editFromPreview').addEventListener('click', function() {
+        if (currentTemplateId) {
+            window.location.href = `/emails/templates/${currentTemplateId}/edit`;
+        }
+    });
+});
+
+// Delete confirmation
+function confirmDelete(templateId, templateName) {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer le modèle "${templateName}" ?\n\nCette action est irréversible.`)) {
+        // Create and submit delete form
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/emails/templates/${templateId}/delete`;
+        
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrf_token';
+        csrfInput.value = csrfToken;
+        
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+
+</script>
+{% endblock %}

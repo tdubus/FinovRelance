@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Generer des codes de secours - FinovRelance{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-key me-2"></i>
+                        Codes de secours
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-shield-alt text-primary" style="font-size: 3rem;"></i>
+                        <p class="mt-3 text-muted">
+                            Les codes de secours vous permettent de vous connecter si le systeme
+                            de courriel est temporairement indisponible.
+                        </p>
+                    </div>
+
+                    {% if existing_count > 0 %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Vous avez actuellement <strong>{{ existing_count }}</strong> code(s) de secours non utilise(s).
+                        Generer de nouveaux codes invalidera les codes existants.
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Vous n'avez aucun code de secours. Il est recommande d'en generer.
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" action="{{ url_for('auth.generate_recovery_codes') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sync-alt me-2"></i>
+                                {% if existing_count > 0 %}Regenerer les codes{% else %}Generer des codes de secours{% endif %}
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('profile.settings') }}" class="btn btn-link text-muted">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Retour au profil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-primary {
+    background-color: #8475EC;
+    border-color: #8475EC;
+}
+.btn-primary:hover {
+    background-color: #6B5DC0;
+    border-color: #6B5DC0;
+}
+.bg-primary {
+    background-color: #8475EC !important;
+}
+.text-primary {
+    color: #8475EC !important;
+}
+.card {
+    border: none;
+    border-radius: 10px;
+}
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+</style>
+{% endblock %}

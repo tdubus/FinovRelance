@@ -1,0 +1,126 @@
+<!-- Modal de consentement RGPD/Loi 25 pour utilisateurs existants -->
+<div class="modal fade" id="consentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="consentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="consentModalLabel">
+                    <i class="fas fa-shield-alt me-2"></i>Mise à jour de nos conditions
+                </h5>
+            </div>
+            <div class="modal-body p-4">
+                <p class="lead mb-4">
+                    Nous avons mis à jour nos politiques de confidentialité et nos conditions d'utilisation pour mieux protéger vos données.
+                </p>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Conformité RGPD et Loi 25</strong> - Nous devons obtenir votre consentement explicite pour continuer à utiliser nos services.
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-file-contract me-2 text-primary"></i>Conditions Générales d'Utilisation
+                        </h6>
+                        <p class="card-text small text-muted mb-2">
+                            Consultez nos <a href="/legal/cgu" target="_blank">Conditions Générales d'Utilisation</a> pour connaître vos droits et obligations.
+                        </p>
+                        <small class="text-muted">Version : {{ terms_version }}</small>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-user-shield me-2 text-primary"></i>Politique de Confidentialité
+                        </h6>
+                        <p class="card-text small text-muted mb-2">
+                            Consultez notre <a href="/legal/confidentialite" target="_blank">Politique de Confidentialité</a> pour comprendre comment nous traitons vos données.
+                        </p>
+                        <small class="text-muted">Version : {{ privacy_version }}</small>
+                    </div>
+                </div>
+
+                <div class="card mb-3 border-warning">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-cookie-bite me-2 text-warning"></i>Politique des Cookies
+                        </h6>
+                        <p class="card-text small text-muted mb-2">
+                            Consultez notre <a href="/legal/cookies" target="_blank">Politique des Cookies</a> pour comprendre notre utilisation des cookies.
+                        </p>
+                        <small class="text-muted">Version : {{ cookies_version }}</small>
+                        <div class="alert alert-warning mt-2 mb-0">
+                            <small><i class="fas fa-info-circle me-1"></i><strong>Note :</strong> Le cookie de session est strictement nécessaire au fonctionnement de l'application et ne peut pas être désactivé.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-check mb-3 p-3 bg-light rounded">
+                    <input class="form-check-input" type="checkbox" id="acceptConsent" required>
+                    <label class="form-check-label" for="acceptConsent">
+                        <strong>J'accepte les Conditions Générales d'Utilisation, la Politique de Confidentialité et la Politique des Cookies</strong>
+                    </label>
+                </div>
+
+                <p class="small text-muted mb-3">
+                    <i class="fas fa-lock me-1"></i>
+                    Vos données sont protégées selon les normes RGPD et la Loi 25 du Québec.
+                </p>
+
+                <div class="alert alert-warning mb-0">
+                    <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Consentement obligatoire</h6>
+                    <p class="mb-2">L'acceptation de ces politiques est requise pour utiliser FinovRelance car elles définissent les conditions essentielles de notre service (traitement de vos données, sécurité, fonctionnalités).</p>
+                    <p class="mb-0"><strong>Si vous ne souhaitez pas accepter ces conditions</strong>, vous devez supprimer votre entreprise depuis vos paramètres de compte. L'application ne peut pas fonctionner sans votre consentement à ces politiques.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-lg w-100" id="acceptConsentBtn" disabled>
+                    <i class="fas fa-check me-2"></i>Accepter et continuer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const consentCheckbox = document.getElementById('acceptConsent');
+    const acceptBtn = document.getElementById('acceptConsentBtn');
+    
+    // Activer le bouton seulement si la case est cochée
+    if (consentCheckbox && acceptBtn) {
+        consentCheckbox.addEventListener('change', function() {
+            acceptBtn.disabled = !this.checked;
+        });
+    }
+    
+    // Accepter le consentement
+    if (acceptBtn) {
+        acceptBtn.addEventListener('click', function() {
+            fetch('/auth/api/accept-existing-user-consent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ accepted: true })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Fermer le modal et recharger la page
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('consentModal'));
+                    modal.hide();
+                    window.location.reload();
+                } else {
+                    alert('Erreur lors de l\'enregistrement du consentement. Veuillez réessayer.');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de l\'enregistrement du consentement. Veuillez réessayer.');
+            });
+        });
+    }
+});
+</script>

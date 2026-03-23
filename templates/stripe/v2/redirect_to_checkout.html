@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirection vers le paiement...</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #8475EC 0%, #6B5DC0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .redirect-card {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 400px;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: #8475EC;
+        }
+        .stripe-logo {
+            height: 32px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="redirect-card">
+        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/stripe.svg" alt="Stripe" class="stripe-logo" style="filter: invert(45%) sepia(94%) saturate(2135%) hue-rotate(221deg) brightness(101%) contrast(102%);">
+        <h4 class="mb-3">Redirection vers Stripe</h4>
+        <p class="text-muted mb-4">Vous allez être redirigé vers notre partenaire de paiement sécurisé...</p>
+        <div class="spinner-border mb-3" role="status">
+            <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p class="small text-muted">Si la redirection ne fonctionne pas, <a href="{{ checkout_url }}" id="manual-link">cliquez ici</a>.</p>
+    </div>
+
+    <script>
+        (function() {
+            var checkoutUrl = "{{ checkout_url | safe }}";
+            if (checkoutUrl && checkoutUrl.startsWith('https://checkout.stripe.com')) {
+                setTimeout(function() {
+                    window.location.href = checkoutUrl;
+                }, 500);
+            } else {
+                document.querySelector('.redirect-card').innerHTML = '<h4 class="text-danger">Erreur</h4><p>URL de paiement invalide. Veuillez réessayer.</p><a href="/company/settings" class="btn btn-primary">Retour</a>';
+            }
+        })();
+    </script>
+</body>
+</html>

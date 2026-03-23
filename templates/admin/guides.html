@@ -1,0 +1,128 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}Gestion des guides{% endblock %}
+{% block page_subtitle %}Administrer les pages de documentation et tutoriels{% endblock %}
+
+{% block content %}
+<!-- Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">{{ guides|length }} page(s) de guide</h5>
+            <a href="{{ url_for('admin.create_guide') }}" class="btn btn-admin-primary">
+                <i class="fas fa-plus me-2"></i>Créer une page de guide
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Guides Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Slug</th>
+                                <th>Statut</th>
+                                <th>Ordre</th>
+                                <th>Créé le</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for guide in guides %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">{{ guide.title }}</div>
+                                    {% if guide.meta_description %}
+                                    <small class="text-muted">{{ guide.meta_description[:80] }}...</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <code>{{ guide.slug }}</code>
+                                </td>
+                                <td>
+                                    <span class="badge {% if guide.is_published %}bg-success{% else %}bg-warning{% endif %}">
+                                        {% if guide.is_published %}Publié{% else %}Brouillon{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark">{{ guide.order }}</span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ guide.created_at.strftime('%d/%m/%Y') }}</small>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        {% if guide.is_published %}
+                                        <a href="{{ url_for('marketing.guide_page', slug=guide.slug) }}" 
+                                           class="btn btn-outline-secondary" 
+                                           target="_blank"
+                                           title="Voir la page">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% endif %}
+                                        <a href="{{ url_for('admin.edit_guide', guide_id=guide.id) }}" 
+                                           class="btn btn-outline-primary"
+                                           title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button class="btn btn-outline-danger" 
+                                                onclick="confirmDelete({{ guide.id }}, '{{ guide.title }}')"
+                                                title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if not guides %}
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-book-open text-muted mb-3" style="font-size: 3rem;"></i>
+                <h5 class="text-muted mb-3">Aucune page de guide</h5>
+                <p class="text-muted mb-4">Créez votre première page de guide pour aider vos utilisateurs.</p>
+                <a href="{{ url_for('admin.create_guide') }}" class="btn btn-admin-primary">
+                    <i class="fas fa-plus me-2"></i>Créer la première page
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Hidden forms for guide deletion -->
+{% for guide in guides %}
+<form id="delete-form-{{ guide.id }}" method="POST" action="{{ url_for('admin.delete_guide', guide_id=guide.id) }}" style="display: none;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+</form>
+{% endfor %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function confirmDelete(guideId, guideTitle) {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer la page "${guideTitle}" ?\n\nCette action est irréversible.`)) {
+        const form = document.getElementById('delete-form-' + guideId);
+        if (form) {
+            form.submit();
+        }
+    }
+}
+</script>
+{% endblock %}
