@@ -142,21 +142,12 @@ def _run_backup(app, schema_name):
                 _update_state(size_mb=size_mb)
                 logger.info(f"1/4 - Dump termine ({size_mb} MB)")
 
-                # Step 2: Create target schema on backup database
-                logger.info(f"2/4 - Creation du schema {schema_name}...")
-                result = subprocess.run(
-                    ["psql", *_pg_conn_args(dst), "-c",
-                     f'CREATE SCHEMA IF NOT EXISTS "{schema_name}";'],
-                    env=_pg_env(dst["password"]),
-                    capture_output=True, text=True, timeout=30
-                )
-                if result.returncode != 0:
-                    raise RuntimeError(f"CREATE SCHEMA failed: {_sanitize_pg_error(result.stderr)}")
-
-                # Step 3: Restore into the new schema
-                # pg_restore 16 does not have --schema-mapping.
-                # Strategy: restore into public on backup DB, then rename to target schema.
-                logger.info(f"3/4 - Restauration dans {schema_name}...")
+                # Step 2+3: Restore into public, then rename to target schema
+                # pg_restore 16 does not have --schema-mapping, so we:
+                #   a) Drop+recreate public on backup DB
+                #   b) pg_restore into public
+                #   c) Rename public -> backup_YYYYMMDD_HHMMSS
+                logger.info(f"2/4 - Restauration dans {schema_name}...")
 
                 # 3a. Drop public on backup DB (clean slate for this restore)
                 subprocess.run(
@@ -180,10 +171,10 @@ def _run_backup(app, schema_name):
                 if result.returncode == 1:
                     logger.info(f"pg_restore completed with warnings")
 
-                # 3c. Rename public -> backup schema name
+                # 3c. Drop target schema if exists (re-run safety), then rename public
                 result = subprocess.run(
                     ["psql", *_pg_conn_args(dst), "-c",
-                     f'ALTER SCHEMA public RENAME TO "{schema_name}"; CREATE SCHEMA public;'],
+                     f'DROP SCHEMA IF EXISTS "{schema_name}" CASCADE; ALTER SCHEMA public RENAME TO "{schema_name}"; CREATE SCHEMA public;'],
                     env=_pg_env(dst["password"]),
                     capture_output=True, text=True, timeout=30
                 )
