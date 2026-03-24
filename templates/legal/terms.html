@@ -130,7 +130,7 @@
                             <li>Assurer une disponibilité de service de 99% sur base mensuelle (hors maintenance programmée).</li>
                             <li>Maintenir la sécurité des données selon les standards de l'industrie.</li>
                             <li>Fournir le support technique dans un délai de 48h ouvrables.</li>
-                            <li>Effectuer des sauvegardes automatiques quotidiennes vers Supabase.</li>
+                            <li>Effectuer des sauvegardes automatiques biquotidiennes vers une infrastructure de sauvegarde dediee.</li>
                             <li>Notifier les utilisateurs 48h à l'avance de toute maintenance programmée.</li>
                         </ul>
                         
@@ -138,7 +138,7 @@
                             <strong>LIMITATION :</strong> Finova Solutions ne garantit pas une disponibilité de 100% et ne sera pas responsable des interruptions de service dues à :
                             <ul class="mb-0 mt-2">
                                 <li>La maintenance programmée.</li>
-                                <li>Les défaillances de fournisseurs tiers (Stripe, Supabase, hébergement).</li>
+                                <li>Les défaillances de fournisseurs tiers (Stripe, hebergement).</li>
                                 <li>Les cas de force majeure.</li>
                                 <li>Les attaques DDoS ou cyberattaques.</li>
                             </ul>
@@ -154,7 +154,7 @@
                         
                         <div class="alert alert-info mt-3">
                             <i data-feather="shield" class="me-2"></i>
-                            <strong>Protection renforcée des données :</strong> Finova Solutions met en place un système de sauvegarde automatique quotidien vers Supabase, une infrastructure indépendante et certifiée, garantissant ainsi une protection optimale et la récupération de vos données en cas d'incident.
+                            <strong>Protection renforcee des donnees :</strong> Finova Solutions met en place un systeme de sauvegarde automatique biquotidien vers une infrastructure de sauvegarde dediee et independante, garantissant ainsi une protection optimale et la recuperation de vos donnees en cas d'incident.
                         </div>
                     </section>
 
@@ -169,7 +169,7 @@
                         <p>Le traitement des données personnelles est régi par notre <a href="{{ url_for('main.legal_confidentialite') }}" class="text-decoration-none">Politique de Confidentialité</a>, conforme à la Loi 25 du Québec et aux lois canadiennes sur la protection des renseignements personnels.</p>
                         
                         <h3 class="h5 mt-3">6.1 Système de sauvegarde</h3>
-                        <p>Vos données sont automatiquement sauvegardées vers Supabase, un fournisseur tiers certifié SOC 2 et ISO 27001. En acceptant ces CGU, vous consentez également aux <a href="https://supabase.com/terms" target="_blank" class="text-decoration-none">conditions d'utilisation de Supabase</a> et à leur <a href="https://supabase.com/privacy" target="_blank" class="text-decoration-none">politique de confidentialité</a> pour ce qui concerne les services de sauvegarde.</p>
+                        <p>Vos donnees sont automatiquement sauvegardees vers une base de donnees de sauvegarde dediee, hebergee sur notre infrastructure VPS independante. Les sauvegardes sont effectuees deux fois par jour avec une retention de 7 jours.</p>
                     </section>
 
                     <section class="mb-4">

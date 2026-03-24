@@ -88,15 +88,17 @@ SSL : Let's Encrypt
 Les cron jobs doivent etre configures dans cron-job.org ou equivalent.
 Chaque job appelle un endpoint HTTP avec un header d'authentification.
 
-Endpoints :
-- /jobs/apply-pending-changes (token: REPL_CRON_SECRET)
-- /backup/trigger (token: BACKUP_SECRET_TOKEN)
-- /refresh-tokens/trigger (token: REPL_CRON_SECRET)
-- /refresh-accounting-tokens/trigger (token: REPL_CRON_SECRET)
-- /sync-emails-v3/trigger (token: REPL_CRON_SECRET)
+Header : X-Job-Token: <CRON_SECRET>
 
-Mettre a jour les URLs de cron-job.org pour pointer vers le nouveau domaine
-(test.finov-relance.com en staging, puis app.finov-relance.com en prod).
+Endpoints (POST) :
+- /jobs/apply_pending_changes
+- /jobs/database_backup
+- /jobs/refresh_email_tokens
+- /jobs/refresh_accounting_tokens
+- /jobs/sync_email_v3
+- /jobs/cleanup_old_logs
+
+Base URL : https://app.finov-relance.com
 
 ## Etape 6 : Bascule en production
 

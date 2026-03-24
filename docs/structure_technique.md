@@ -22,9 +22,8 @@
 ## Base de données
 
 - **PostgreSQL 16** (Neon) dans les deux environnements
-- Dev : secret `DATABASE_URL` du Repl de développement
-- Prod : secret `DATABASE_URL_PROD` (ou `DATABASE_URL` si non défini) du déploiement
-- Backup séparé vers **Supabase** (secret `SUPABASE_DATABASE_URL`)
+- Prod : `DATABASE_URL` (PostgreSQL 16 sur VPS Coolify)
+- Backup : `BACKUP_DATABASE_URL` (PostgreSQL 16 dedie, schemas horodates, retention 7j)
 
 ---
 
@@ -68,7 +67,7 @@
 | `oauth_callback_bp` | `/` | Callbacks OAuth (connecteurs comptables) |
 | `notification_bp` | `/` | Notifications système |
 | `jobs_bp` | `/jobs` | Cron jobs (sync, maintenance) |
-| `backup_bp` | `/` | Backup base de données → Supabase |
+| `backup_bp` | `/` | Backup base de donnees → DB dediee |
 | `refresh_tokens_bp` | `/` | Refresh tokens email |
 | `refresh_accounting_bp` | `/` | Refresh tokens connecteurs comptables |
 | `sync_emails_v3_bp` | `/` | Sync emails Outlook entrants |
@@ -124,12 +123,8 @@ GET       /auth/switch-company/<id>
 | `BUSINESS_CENTRAL_CLIENT_ID` | OAuth Business Central |
 | `BUSINESS_CENTRAL_CLIENT_SECRET` | OAuth Business Central |
 | `ENCRYPTION_MASTER_KEY` | Chiffrement AES-256 (tokens OAuth stockés) |
-| `REPL_CRON_SECRET` | Authentification des cron jobs |
-| `BACKUP_SECRET_TOKEN` | Authentification des backups |
-| `SUPABASE_USER` | Accès Supabase (backups) |
-| `SUPABASE_PASSWORD` | Accès Supabase (backups) |
-| `SUPABASE_DATABASE_URL` | URL base Supabase |
+| `CRON_SECRET` | Authentification des cron jobs (header X-Job-Token) |
+| `BACKUP_DATABASE_URL` | URL PostgreSQL dedie aux backups |
+| `DATABASE_URL` | URL base de donnees principale |
 | `XERO_CLIENT_ID` | OAuth Xero |
 | `XERO_CLIENT_SECRET` | OAuth Xero |
-| `NEON_DATABASE_URL` | URL base Neon (référence directe) |
-| `DATABASE_URL` | URL base de données principale |

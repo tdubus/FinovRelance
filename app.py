@@ -742,7 +742,7 @@ def bootstrap_app(app):
     app.register_blueprint(jobs_bp)
     csrf.exempt(jobs_bp)
 
-    # Register Backup Blueprint for database backup to Supabase
+    # Register Backup Blueprint for database backup to dedicated PostgreSQL
     from jobs.database_backup import backup_bp
     app.register_blueprint(backup_bp)
     csrf.exempt(backup_bp)
