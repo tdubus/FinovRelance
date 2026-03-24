@@ -3088,6 +3088,11 @@ def delete_company():
             DELETE FROM accounting_connections WHERE company_id = :company_id
         """), {"company_id": company_id})
 
+        # 2b. Delete received payments (FK vers clients et companies)
+        db.session.execute(db.text("""
+            DELETE FROM received_payments WHERE company_id = :company_id
+        """), {"company_id": company_id})
+
         # 3. Delete client-related data avec SQL brut
         db.session.execute(db.text("""
             DELETE FROM client_contacts
