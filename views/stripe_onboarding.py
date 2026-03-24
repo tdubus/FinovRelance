@@ -13,7 +13,7 @@ onboarding_bp = Blueprint('onboarding', __name__, url_prefix='/onboarding')
 def _get_base_url():
     from flask import request as req
     host = req.host_url.rstrip('/')
-    if host.startswith('http://') and 'replit' not in host and 'localhost' not in host:
+    if host.startswith('http://') and 'localhost' not in host:
         host = host.replace('http://', 'https://', 1)
     return host
 

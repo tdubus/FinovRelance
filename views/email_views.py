@@ -457,7 +457,6 @@ def api_list_email_templates():
 def send_email_ajax(client_id):
     """
     Fonction vérifiée par MDF le 30/01/2026.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Send email to client via AJAX - returns JSON response"""

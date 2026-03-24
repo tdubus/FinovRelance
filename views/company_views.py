@@ -809,7 +809,6 @@ def test_smtp():
 def test_microsoft_connection():
     """
     Fonction vérifiée par MDF le 29/01/2026.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Test Microsoft Graph API connection"""

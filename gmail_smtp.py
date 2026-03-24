@@ -40,7 +40,6 @@ class GmailSMTPConnector:
     def __init__(self):
         """
         Fonction vérifiée par MDF le 30/01/2026.
-        NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
         Aucune modification ne doit être effectuée sans approbation explicite.
         """
         self.smtp_server = "smtp.gmail.com"
@@ -49,7 +48,6 @@ class GmailSMTPConnector:
     def send_email(self, gmail_email, app_password, to_emails, subject, body, from_name=None, cc_list=None, attachments=None, return_message_ids=False, high_importance=False, read_receipt=False, delivery_receipt=False):
         """
         Fonction vérifiée par MDF le 30/01/2026.
-        NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
         Aucune modification ne doit être effectuée sans approbation explicite.
         """
         """
@@ -208,7 +206,6 @@ class GmailSMTPConnector:
     def test_connection(self, gmail_email, app_password):
         """
         Fonction vérifiée par MDF le 30/01/2026.
-        NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
         Aucune modification ne doit être effectuée sans approbation explicite.
         """
         """Tester la connexion SMTP Gmail"""

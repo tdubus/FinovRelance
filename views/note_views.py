@@ -196,7 +196,6 @@ def api_search_notes():
 def api_conversation_children():
     """
     Fonction vérifiée par MDF le 30/01/2026.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """API endpoint to load conversation children dynamically for Notes page
@@ -1010,7 +1009,6 @@ def get_client_contacts(client_id):
 def send_email_from_notes():
     """
     Fonction vérifiée par MDF le 30/01/2026.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Send email from notes tab - FULL IMPLEMENTATION with attachments"""

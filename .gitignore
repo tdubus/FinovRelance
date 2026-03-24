@@ -11,9 +11,6 @@ __pycache__/
 venv/
 .venv/
 
-# Replit
-.replit
-replit.nix
 .upm/
 .cache/
 .config/

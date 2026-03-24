@@ -1207,8 +1207,8 @@ def convert_signature_images_to_base64(html_content):
             # CAS 2: URL absolue locale (https://app.finov-relance.com/static/...)
             elif src.startswith('http://') or src.startswith('https://'):
                 parsed = urlparse(src)
-                # Vérifier si c'est notre domaine (finov-relance.com ou localhost/replit)
-                if 'finov-relance.com' in parsed.netloc or 'localhost' in parsed.netloc or 'replit.dev' in parsed.netloc:
+                # Vérifier si c'est notre domaine
+                if 'finov-relance.com' in parsed.netloc or 'localhost' in parsed.netloc:
                     # Extraire le chemin /static/...
                     if parsed.path.startswith('/static/'):
                         file_path = parsed.path.lstrip('/')

@@ -3,8 +3,7 @@ Job HTTP endpoint pour refresh automatique des tokens OAuth comptables (QuickBoo
 
 CONTEXTE:
 Les tokens OAuth QuickBooks, Xero et Business Central expirent après 1 heure.
-En environnement Replit Autoscale, les threads Python ne tournent pas de manière fiable.
-Cette solution utilise un endpoint HTTP appelé par un cron externe (cron-job.org).
+Endpoint HTTP appelé par un cron externe (cron-job.org) toutes les 30 minutes.
 
 ARCHITECTURE:
 - Endpoint: POST /jobs/refresh_accounting_tokens

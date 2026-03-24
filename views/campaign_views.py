@@ -25,7 +25,6 @@ executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="campaign_gen")
 def resume_interrupted_campaigns():
     """
     Fonction vérifiée par MDF le 23/12/2025 et le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """
@@ -155,7 +154,6 @@ def resume_interrupted_campaigns():
 def can_access_campaigns(user, company):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """
@@ -185,7 +183,6 @@ def can_access_campaigns(user, company):
 def can_create_campaign(user, company):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Vérifie si l'utilisateur peut créer des campagnes (alias pour cohérence)"""
@@ -195,7 +192,6 @@ def can_create_campaign(user, company):
 def can_view_campaigns(user, company):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """
@@ -211,7 +207,6 @@ def get_valid_client_ids_for_campaign(client,
                                       preloaded_children=None):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """
@@ -253,7 +248,6 @@ def get_valid_client_ids_for_campaign(client,
 def generate_attachments_on_demand(campaign_email, campaign, company):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """
@@ -409,7 +403,6 @@ def generate_attachments_on_demand(campaign_email, campaign, company):
 def list_campaigns():
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Liste des campagnes"""
@@ -452,7 +445,6 @@ def list_campaigns():
 def create_campaign():
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Créer une nouvelle campagne - Étape 1: Configuration de base"""
@@ -535,7 +527,6 @@ def create_campaign():
 def configure_email(campaign_id):
     """
     Fonction vérifiée par MDF le 23/12/2025 et le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Configurer le contenu de l'email - Étape 3 (après sélection des clients)"""
@@ -617,7 +608,6 @@ def configure_email(campaign_id):
 def preview_clients(campaign_id):
     """
     Fonction vérifiée par MDF le 23/12/2025 et le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Sélectionner les clients cibles - Étape 2"""
@@ -737,7 +727,6 @@ def preview_clients(campaign_id):
 def get_campaign_target_clients(company, campaign):
     """
     Fonction vérifiée par MDF le 23/12/2025 et le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Récupère les clients cibles pour une campagne selon les filtres.
@@ -965,7 +954,6 @@ def get_campaign_target_clients(company, campaign):
 def get_all_clients_with_balance(company):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Récupère tous les clients avec leur solde (pour validation finale)"""
@@ -1003,7 +991,6 @@ def get_all_clients_with_balance(company):
 def search_clients_for_campaign(campaign_id):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Recherche de clients pour ajouter à la campagne"""
@@ -1057,7 +1044,6 @@ def search_clients_for_campaign(campaign_id):
 def start_campaign_generation(campaign_id, company_id, user_id, clients_list):
     """
     Fonction vérifiée par MDF le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Démarre la génération asynchrone des courriels de campagne"""
@@ -1092,7 +1078,6 @@ def start_campaign_generation(campaign_id, company_id, user_id, clients_list):
 def generate_campaign_emails(campaign_id, company_id, user_id, clients_list):
     """
     Fonction vérifiée par MDF le 23/12/2025 et le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """
@@ -1371,7 +1356,6 @@ def replace_campaign_variables_optimized(text, client, company,
                                          total_outstanding):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Version optimisée de replace_campaign_variables qui accepte le total précalculé"""
@@ -1409,7 +1393,6 @@ def replace_campaign_variables_optimized(text, client, company,
 def generate_excel_from_invoices(invoices):
     """
     Fonction vérifiée par MDF le 23/12/2025 et le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Génère un Excel directement depuis une liste de factures (sans requête DB)"""
@@ -1539,7 +1522,6 @@ def generate_excel_from_invoices(invoices):
 def get_recipient_emails(client, campaign):
     """
     Fonction vérifiée par MDF le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Récupère les emails destinataires selon le type de destinataire configuré et le filtre de langue"""
@@ -1580,7 +1562,6 @@ def get_recipient_emails(client, campaign):
 def view_campaign(campaign_id):
     """
     Fonction vérifiée par MDF le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Voir les détails d'une campagne"""
@@ -1636,7 +1617,6 @@ def view_campaign(campaign_id):
 def preview_email(campaign_id, email_id):
     """
     Fonction vérifiée par MDF le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Prévisualiser un courriel de campagne"""
@@ -1701,7 +1681,6 @@ def preview_email(campaign_id, email_id):
 def download_attachment(campaign_id, email_id, attachment_type):
     """
     Fonction vérifiée par MDF le 23/12/2025 et le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """
@@ -1810,7 +1789,6 @@ def download_attachment(campaign_id, email_id, attachment_type):
 def send_emails(campaign_id):
     """
     Fonction vérifiée par MDF le 23/12/2025 et le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Envoyer des courriels sélectionnés ou toute la campagne"""
@@ -1933,7 +1911,6 @@ def start_campaign_sending(campaign_id,
                            is_manual=False):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Démarre l'envoi asynchrone des courriels de campagne"""
@@ -1967,7 +1944,6 @@ def start_campaign_sending(campaign_id,
 def validate_email_before_send(campaign_email, campaign, company_id):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """
@@ -2057,7 +2033,6 @@ def send_campaign_emails(campaign_id,
                          is_manual=False):
     """
     Fonction vérifiée par MDF le 23/12/2025 et le 30/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Envoie les courriels de campagne avec isolation stricte par company_id et client_id"""
@@ -2454,7 +2429,6 @@ def send_campaign_emails(campaign_id,
 def get_campaign_status(campaign_id):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Récupérer le statut de la campagne en temps réel pour le polling AJAX"""
@@ -2537,7 +2511,6 @@ def get_campaign_status(campaign_id):
 def skip_emails(campaign_id):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Marquer des courriels comme ignorés"""
@@ -2582,7 +2555,6 @@ def skip_emails(campaign_id):
 def stop_campaign(campaign_id):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """
@@ -2641,7 +2613,6 @@ def stop_campaign(campaign_id):
 def cancel_campaign(campaign_id):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Annuler une campagne"""
@@ -2676,7 +2647,6 @@ def cancel_campaign(campaign_id):
 def delete_campaign(campaign_id):
     """
     Fonction vérifiée par MDF le 23/12/2025.
-    NOTE IMPORTANTE POUR REPLIT : Cette fonction a été vérifiée.
     Aucune modification ne doit être effectuée sans approbation explicite.
     """
     """Supprimer une campagne"""

@@ -4,7 +4,7 @@
 
 | Environnement | URL |
 |---|---|
-| **Développement** | `workspace--tdubus.repl.co` |
+| **Staging** | `test.finov-relance.com` |
 | **Production — Site marketing** | `finov-relance.com` (`www.finov-relance.com` → redirige en 301) |
 | **Production — Application** | `app.finov-relance.com` |
 
@@ -12,10 +12,9 @@
 
 ## Serveur
 
-- **Gunicorn** sur `0.0.0.0:5000` → port externe `80`
-- Timeout : **600 secondes** (10 min, pour les backups et opérations longues)
-- `reload = True`, `reuse_port = True`
-- Déploiement Replit : mode **autoscale**
+- **Gunicorn** sur `0.0.0.0:5000` (4 workers, 4 threads)
+- Timeout : **120 secondes**
+- Déploiement : Docker via Coolify sur VPS (Montréal)
 
 ---
 
@@ -36,8 +35,8 @@
 
 ## OAuth Microsoft
 
-- **Dev** : `https://workspace--tdubus.repl.co/profile/microsoft/callback`
-- **Prod** : secret `MICROSOFT_REDIRECT_URI`
+- **Dev** : `http://localhost:5000/auth/microsoft/callback`
+- **Prod** : `https://app.finov-relance.com/auth/microsoft/callback` (variable `MICROSOFT_REDIRECT_URI`)
 
 ---
 

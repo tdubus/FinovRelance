@@ -4,8 +4,6 @@
 .env.*
 *.pyc
 __pycache__
-.replit
-replit.nix
 .upm
 .cache
 .config
