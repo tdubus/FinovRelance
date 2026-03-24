@@ -23,8 +23,10 @@ SCHEMA_PREFIX = "backup_"
 
 logger = logging.getLogger(__name__)
 
-# Thread-safe state for concurrent access
+# Concurrency control: prevents two backups from running simultaneously
 _backup_lock = threading.Lock()
+# Separate lock for _last_backup state (avoids deadlock with _backup_lock)
+_state_lock = threading.Lock()
 _last_backup = {
     "status": "idle",
     "started_at": None,
@@ -91,50 +93,38 @@ def _sanitize_pg_error(stderr):
 
 def _update_state(**kwargs):
     """Thread-safe update of _last_backup."""
-    with _backup_lock:
+    with _state_lock:
         _last_backup.update(kwargs)
 
 
 def _get_state():
     """Thread-safe read of _last_backup."""
-    with _backup_lock:
+    with _state_lock:
         return dict(_last_backup)
 
 
 def _run_backup(app, schema_name):
-    """Execute backup in background thread (holds _backup_lock to prevent concurrence)."""
-    import traceback as _tb
+    """Execute backup in background thread."""
 
-    logger.info(f"Backup thread started for {schema_name}")
+    # Create dump file with restrictive permissions (mode 600)
+    fd, dump_path = tempfile.mkstemp(prefix=f"{schema_name}_", suffix=".dump", dir="/tmp")
+    os.close(fd)
+    os.chmod(dump_path, 0o600)
 
-    try:
-        # Create dump file with restrictive permissions (mode 600)
-        fd, dump_path = tempfile.mkstemp(prefix=f"{schema_name}_", suffix=".dump", dir="/tmp")
-        os.close(fd)
-        os.chmod(dump_path, 0o600)
-        logger.info("Dump file created")
+    _update_state(
+        status="running",
+        started_at=datetime.utcnow().isoformat(),
+        completed_at=None,
+        schema=schema_name,
+        error=None,
+        size_mb=None,
+        schemas_purged=0,
+    )
 
-        _update_state(
-            status="running",
-            started_at=datetime.utcnow().isoformat(),
-            completed_at=None,
-            schema=schema_name,
-            error=None,
-            size_mb=None,
-            schemas_purged=0,
-        )
-
-        database_url = os.environ.get("DATABASE_URL")
-        backup_url = os.environ.get("BACKUP_DATABASE_URL")
-        logger.info(f"URLs loaded, parsing...")
-        src = _parse_db_url(database_url)
-        dst = _parse_db_url(backup_url)
-        logger.info(f"Parsed OK: src={src['host']}, dst={dst['host']}")
-    except Exception as e:
-        logger.error(f"Backup init failed: {_tb.format_exc()}")
-        print(f"BACKUP INIT FAILED: {_tb.format_exc()}", flush=True)
-        _update_state(status="failed", error=str(e)[:200], completed_at=datetime.utcnow().isoformat())
-        return
+    database_url = os.environ.get("DATABASE_URL")
+    backup_url = os.environ.get("BACKUP_DATABASE_URL")
+    src = _parse_db_url(database_url)
+    dst = _parse_db_url(backup_url)
 
     try:
         with app.app_context():
@@ -286,15 +276,15 @@ def database_backup():
     if not database_url:
         return jsonify({"status": "error", "message": "DATABASE_URL non configuree"}), 500
 
-    # Prevent concurrent backups (advisory lock is released when HTTP returns)
+    # Prevent concurrent backups
     if not _backup_lock.acquire(blocking=False):
         return jsonify({"status": "skipped", "message": "Backup already in progress"}), 200
 
     schema_name = SCHEMA_PREFIX + datetime.utcnow().strftime("%Y%m%d_%H%M%S")
 
-    def _run_and_release(app, name):
+    def _run_and_release(app_obj, name):
         try:
-            _run_backup(app, name)
+            _run_backup(app_obj, name)
         except Exception as e:
             logger.error(f"Backup thread crashed: {e}")
         finally:
