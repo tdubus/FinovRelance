@@ -98,27 +98,27 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint.startswith('client.') %}active{% endif %}" 
+                        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('client.') %}active{% endif %}" 
                            href="{{ url_for('client.list_clients') }}">
                             <i class="fas fa-users me-1"></i>
                             Clients
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint.startswith('receivable.') %}active{% endif %}" 
+                        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('receivable.') %}active{% endif %}" 
                            href="{{ url_for('receivable.overview') }}">
                             <i class="fas fa-dollar-sign me-1"></i>
                             Comptes à recevoir
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint.startswith('note.') %}active{% endif %}" href="{{ url_for('note.list_notes') }}">
+                        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('note.') %}active{% endif %}" href="{{ url_for('note.list_notes') }}">
                             <i class="fas fa-sticky-note me-1"></i>
                             Notes
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint.startswith('reminder.') %}active{% endif %}" href="{{ url_for('reminder.list_reminders') }}">
+                        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('reminder.') %}active{% endif %}" href="{{ url_for('reminder.list_reminders') }}">
                             <i class="fas fa-bell me-1"></i>
                             Rappels
                         </a>
