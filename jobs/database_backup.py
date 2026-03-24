@@ -51,6 +51,9 @@ def _verify_token():
 
 def _parse_db_url(url):
     """Parse a PostgreSQL URL into connection components."""
+    # Normalize postgres:// to postgresql:// for consistent parsing
+    if url and url.startswith("postgres://"):
+        url = "postgresql://" + url[len("postgres://"):]
     parsed = urlparse(url)
     return {
         "host": parsed.hostname or "localhost",
@@ -100,6 +103,7 @@ def _get_state():
 
 def _run_backup(app, schema_name):
     """Execute backup in background thread (holds _backup_lock to prevent concurrence)."""
+    logger.info(f"Backup thread started for {schema_name}")
 
     # Create dump file with restrictive permissions (mode 600)
     fd, dump_path = tempfile.mkstemp(prefix=f"{schema_name}_", suffix=".dump", dir="/tmp")
@@ -280,6 +284,8 @@ def database_backup():
     def _run_and_release(app, name):
         try:
             _run_backup(app, name)
+        except Exception as e:
+            logger.error(f"Backup thread crashed: {e}")
         finally:
             _backup_lock.release()
 
