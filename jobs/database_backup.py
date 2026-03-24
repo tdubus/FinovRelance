@@ -103,27 +103,38 @@ def _get_state():
 
 def _run_backup(app, schema_name):
     """Execute backup in background thread (holds _backup_lock to prevent concurrence)."""
+    import traceback as _tb
+
     logger.info(f"Backup thread started for {schema_name}")
 
-    # Create dump file with restrictive permissions (mode 600)
-    fd, dump_path = tempfile.mkstemp(prefix=f"{schema_name}_", suffix=".dump", dir="/tmp")
-    os.close(fd)
-    os.chmod(dump_path, 0o600)
+    try:
+        # Create dump file with restrictive permissions (mode 600)
+        fd, dump_path = tempfile.mkstemp(prefix=f"{schema_name}_", suffix=".dump", dir="/tmp")
+        os.close(fd)
+        os.chmod(dump_path, 0o600)
+        logger.info("Dump file created")
 
-    _update_state(
-        status="running",
-        started_at=datetime.utcnow().isoformat(),
-        completed_at=None,
-        schema=schema_name,
-        error=None,
-        size_mb=None,
-        schemas_purged=0,
-    )
+        _update_state(
+            status="running",
+            started_at=datetime.utcnow().isoformat(),
+            completed_at=None,
+            schema=schema_name,
+            error=None,
+            size_mb=None,
+            schemas_purged=0,
+        )
 
-    database_url = os.environ.get("DATABASE_URL")
-    backup_url = os.environ.get("BACKUP_DATABASE_URL")
-    src = _parse_db_url(database_url)
-    dst = _parse_db_url(backup_url)
+        database_url = os.environ.get("DATABASE_URL")
+        backup_url = os.environ.get("BACKUP_DATABASE_URL")
+        logger.info(f"URLs loaded, parsing...")
+        src = _parse_db_url(database_url)
+        dst = _parse_db_url(backup_url)
+        logger.info(f"Parsed OK: src={src['host']}, dst={dst['host']}")
+    except Exception as e:
+        logger.error(f"Backup init failed: {_tb.format_exc()}")
+        print(f"BACKUP INIT FAILED: {_tb.format_exc()}", flush=True)
+        _update_state(status="failed", error=str(e)[:200], completed_at=datetime.utcnow().isoformat())
+        return
 
     try:
         with app.app_context():
