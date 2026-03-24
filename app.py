@@ -343,7 +343,8 @@ def bootstrap_app(app):
             '/stripe/v2/create-portal-session',  # Alternative portail
             '/stripe/v2/sync-subscription-data',  # Synchronisation abonnement
             '/auth/api/log-cookie-consent',  # API de consentement cookies (RGPD/Loi 25)
-            '/auth/api/accept-existing-user-consent'  # API de consentement utilisateurs existants (RGPD/Loi 25)
+            '/auth/api/accept-existing-user-consent',  # API de consentement utilisateurs existants (RGPD/Loi 25)
+            '/api/dismiss-migration-notice'  # Avis de migration VPS (one-time, authentifié via @login_required)
         ]
 
         # Bypass CSRF pour les routes API exemptées (Stripe)
