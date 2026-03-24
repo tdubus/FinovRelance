@@ -1,0 +1,118 @@
+<!-- Modal d'avis de migration — affiché une seule fois après la migration VPS -->
+<div class="modal fade" id="migrationNoticeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="migrationNoticeLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="migrationNoticeLabel">
+                    <i class="fas fa-server me-2"></i>Mise à jour importante de FinovRelance
+                </h5>
+            </div>
+            <div class="modal-body p-4">
+                <p class="lead mb-4">
+                    Nous avons effectué des améliorations majeures à notre infrastructure pour mieux vous servir.
+                </p>
+
+                <!-- Item 1 : Migration serveurs -->
+                <div class="card mb-3" id="notice-server">
+                    <div class="card-body d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title mb-1">
+                                <i class="fas fa-shield-alt me-2 text-success"></i>Hébergement au Canada (Montréal)
+                            </h6>
+                            <p class="card-text small text-muted mb-0">
+                                Vos données sont maintenant hébergées sur des serveurs situés à Montréal, offrant une meilleure conformité avec la Loi 25 du Québec et une latence réduite.
+                            </p>
+                        </div>
+                        <button class="btn btn-sm btn-outline-success ms-3 notice-check-btn flex-shrink-0" data-target="notice-server" onclick="markNoticeRead(this)">
+                            <i class="fas fa-check me-1"></i>Compris
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 2 : TOTP -->
+                <div class="card mb-3" id="notice-totp">
+                    <div class="card-body d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title mb-1">
+                                <i class="fas fa-mobile-alt me-2 text-primary"></i>Authentification TOTP disponible
+                            </h6>
+                            <p class="card-text small text-muted mb-0">
+                                Vous pouvez maintenant activer l'authentification à deux facteurs via une application (Google Authenticator, Microsoft Authenticator, etc.) depuis votre <strong>Profil &gt; Sécurité</strong>.
+                            </p>
+                        </div>
+                        <button class="btn btn-sm btn-outline-success ms-3 notice-check-btn flex-shrink-0" data-target="notice-totp" onclick="markNoticeRead(this)">
+                            <i class="fas fa-check me-1"></i>Compris
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 3 : Reconnexion courriel -->
+                <div class="card mb-3 border-warning" id="notice-email">
+                    <div class="card-body d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title mb-1">
+                                <i class="fas fa-envelope me-2 text-warning"></i>Reconnexion de vos courriels requise
+                            </h6>
+                            <p class="card-text small text-muted mb-0">
+                                Suite à la migration, veuillez reconnecter votre compte courriel (Outlook/Gmail) depuis <strong>Profil &gt; Configuration courriel</strong> pour continuer à envoyer et recevoir des courriels via FinovRelance.
+                            </p>
+                        </div>
+                        <button class="btn btn-sm btn-outline-success ms-3 notice-check-btn flex-shrink-0" data-target="notice-email" onclick="markNoticeRead(this)">
+                            <i class="fas fa-check me-1"></i>Compris
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-lg w-100" id="dismissMigrationNoticeBtn" disabled>
+                    <i class="fas fa-arrow-right me-2"></i>Continuer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    var checkedCount = 0;
+    var totalItems = 3;
+
+    window.markNoticeRead = function(btn) {
+        var card = document.getElementById(btn.getAttribute('data-target'));
+        btn.disabled = true;
+        btn.classList.remove('btn-outline-success');
+        btn.classList.add('btn-success');
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        card.classList.add('border-success');
+        card.style.opacity = '0.7';
+        checkedCount++;
+
+        if (checkedCount >= totalItems) {
+            document.getElementById('dismissMigrationNoticeBtn').disabled = false;
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var dismissBtn = document.getElementById('dismissMigrationNoticeBtn');
+        if (dismissBtn) {
+            dismissBtn.addEventListener('click', function() {
+                fetch('/api/dismiss-migration-notice', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data.success) {
+                        var modal = bootstrap.Modal.getInstance(document.getElementById('migrationNoticeModal'));
+                        modal.hide();
+                    }
+                })
+                .catch(function() {
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('migrationNoticeModal'));
+                    modal.hide();
+                });
+            });
+        }
+    });
+})();
+</script>

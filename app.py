@@ -492,6 +492,7 @@ def bootstrap_app(app):
                 # Migration: colonnes ajoutées post-Neon (absentes du dump de production)
                 _pending_columns = [
                     ('users', 'last_company_id', 'INTEGER REFERENCES companies(id)'),
+                    ('users', 'migration_notice_dismissed', 'BOOLEAN DEFAULT false'),
                     ('campaigns', 'filter_unassigned_collector', 'BOOLEAN DEFAULT false'),
                     ('campaigns', 'filter_without_notes', 'BOOLEAN DEFAULT false'),
                 ]

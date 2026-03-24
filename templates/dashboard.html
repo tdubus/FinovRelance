@@ -1100,4 +1100,15 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 {% endif %}
 
+<!-- Modal d'avis de migration VPS -->
+{% if show_migration_notice %}
+{% include 'auth/migration_notice_modal.html' %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var migrationModal = new bootstrap.Modal(document.getElementById('migrationNoticeModal'));
+    migrationModal.show();
+});
+</script>
+{% endif %}
+
 {% endblock %}

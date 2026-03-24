@@ -458,6 +458,9 @@ def dashboard():
         or check_user_needs_new_consent(current_user.id, 'privacy')
         or check_user_needs_new_consent(current_user.id, 'cookies'))
 
+    # Avis de migration VPS (une seule fois)
+    show_migration_notice = not getattr(current_user, 'migration_notice_dismissed', True)
+
     return render_template(
         'dashboard.html',
         global_dmp=stats['global_dmp'],
@@ -478,6 +481,7 @@ def dashboard():
         total_over_90_days=stats['total_over_90_days'],
         percentage_current=stats['percentage_current'],
         percentage_30_days=stats['percentage_30_days'],
+        show_migration_notice=show_migration_notice,
         needs_consent=needs_consent,
         terms_version=CURRENT_TERMS_VERSION,
         privacy_version=CURRENT_PRIVACY_VERSION,
@@ -486,6 +490,16 @@ def dashboard():
         percentage_90_days=stats['percentage_90_days'],
         percentage_90_plus=stats['percentage_90_plus'],
         company=company)
+
+
+@main_bp.route('/api/dismiss-migration-notice', methods=['POST'])
+@login_required
+def dismiss_migration_notice():
+    """Marquer l'avis de migration comme lu pour l'utilisateur courant."""
+    from flask import jsonify
+    current_user.migration_notice_dismissed = True
+    db.session.commit()
+    return jsonify({'success': True})
 
 
 # REMOVED: auth_bp routes moved to views/auth_views.py

@@ -1265,6 +1265,7 @@ class User(UserMixin, db.Model):
     # OAuth désormais géré au niveau EmailConfiguration
 
     last_company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=True, index=True)
+    migration_notice_dismissed = db.Column(db.Boolean, default=False)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
