@@ -174,7 +174,7 @@ class EncryptionService:
                 return encrypted_value
         except Exception as e:
             # FIX A6-03: logger l'erreur sans details sensibles, retourner None
-            logger.error(f"Decryption failed for {field_name}: type error")
+            logger.error(f"Decryption failed for {field_name}: {type(e).__name__}: {e}")
             return None
 
     def encrypt_token(self, token: str, token_type: str, owner_id: int) -> Optional[str]:
