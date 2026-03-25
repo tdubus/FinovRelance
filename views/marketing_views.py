@@ -13,6 +13,10 @@ marketing_bp = Blueprint(
 def index():
     return render_template('index.html')
 
+@marketing_bp.route('/essai')
+def essai():
+    return render_template('ads.html')
+
 @marketing_bp.route('/fonctionnalites')
 def fonctionnalites():
     return render_template('fonctionnalites.html')
