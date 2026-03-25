@@ -2460,17 +2460,27 @@ function addEmailToField(fieldId, email) {
             .then(r => r.json())
             .then(data => {
                 if (!Array.isArray(data)) { list.style.display = 'none'; return; }
+                // Filtrer les factures déjà sélectionnées
+                const selectedIds = new Set(addedInvoices.map(x => x.id));
+                const available = data.filter(inv => !selectedIds.has(inv.id));
                 list.innerHTML = '';
-                if (data.length === 0) { list.style.display = 'none'; return; }
-                data.forEach(inv => {
+                if (available.length === 0) {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item py-1 px-2 small text-muted';
+                    li.textContent = selectedIds.size > 0 && data.length > 0 ? 'Aucune autre facture disponible' : 'Aucune facture trouvée';
+                    list.appendChild(li);
+                    list.style.display = 'block';
+                    return;
+                }
+                available.forEach(inv => {
                     const li = document.createElement('li');
                     li.className = 'list-group-item list-group-item-action py-1 px-2 small' + (inv.is_paid ? ' text-muted' : '');
                     li.style.cursor = 'pointer';
                     li.textContent = inv.invoice_number + (inv.is_paid ? ' (payée)' : '');
-                    li.addEventListener('click', () => {
+                    li.addEventListener('click', (e) => {
+                        e.stopPropagation();
                         addInvoice(inv);
-                        input.value = '';
-                        list.style.display = 'none';
+                        doSearch(); // Rafraîchir la liste (la facture disparaît)
                     });
                     list.appendChild(li);
                 });
@@ -2479,13 +2489,14 @@ function addEmailToField(fieldId, email) {
             .catch(() => { list.style.display = 'none'; });
         }
 
+        input.addEventListener('focus', () => { doSearch(); });
         input.addEventListener('input', () => {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(doSearch, 250);
         });
         if (btn) btn.addEventListener('click', doSearch);
         document.addEventListener('click', (e) => {
-            if (!input.contains(e.target) && !list.contains(e.target)) list.style.display = 'none';
+            if (!input.contains(e.target) && !list.contains(e.target) && !btn?.contains(e.target)) list.style.display = 'none';
         });
     }
 

@@ -276,7 +276,8 @@ def search_invoices():
     if q:
         query = query.filter(Invoice.invoice_number.ilike(f'{q}%'))
 
-    invoices = query.order_by(Invoice.invoice_number.asc()).limit(10).all()
+    limit = 10 if q else 30
+    invoices = query.order_by(Invoice.invoice_number.asc()).limit(limit).all()
 
     return jsonify([
         {

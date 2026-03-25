@@ -863,17 +863,27 @@
         .then(r => r.json())
         .then(data => {
             if (!Array.isArray(data)) { list.style.display = 'none'; return; }
+            // Filtrer les factures déjà sélectionnées
+            const selectedIds = new Set(noteAddedInvoices.map(x => x.id));
+            const available = data.filter(inv => !selectedIds.has(inv.id));
             list.innerHTML = '';
-            if (data.length === 0) { list.style.display = 'none'; return; }
-            data.forEach(inv => {
+            if (available.length === 0) {
+                const li = document.createElement('li');
+                li.className = 'list-group-item py-1 px-2 small text-muted';
+                li.textContent = selectedIds.size > 0 && data.length > 0 ? 'Aucune autre facture disponible' : 'Aucune facture trouvée';
+                list.appendChild(li);
+                list.style.display = 'block';
+                return;
+            }
+            available.forEach(inv => {
                 const li = document.createElement('li');
                 li.className = 'list-group-item list-group-item-action py-1 px-2 small' + (inv.is_paid ? ' text-muted' : '');
                 li.style.cursor = 'pointer';
                 li.textContent = inv.invoice_number + (inv.is_paid ? ' (payée)' : '');
-                li.addEventListener('click', () => {
+                li.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     noteAddInvoice(inv);
-                    input.value = '';
-                    list.style.display = 'none';
+                    noteDoSearch(); // Rafraîchir la liste (la facture disparaît)
                 });
                 list.appendChild(li);
             });
@@ -932,6 +942,7 @@
         const suggestList = document.getElementById('noteInvoiceSuggestList');
         let searchTimeout;
         if (searchInput) {
+            searchInput.addEventListener('focus', () => { noteDoSearch(); });
             searchInput.addEventListener('input', () => {
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(noteDoSearch, 250);
@@ -939,7 +950,7 @@
         }
         if (searchBtn) searchBtn.addEventListener('click', noteDoSearch);
         document.addEventListener('click', (e) => {
-            if (suggestList && !searchInput?.contains(e.target) && !suggestList.contains(e.target)) {
+            if (suggestList && !searchInput?.contains(e.target) && !suggestList.contains(e.target) && !searchBtn?.contains(e.target)) {
                 suggestList.style.display = 'none';
             }
         });
