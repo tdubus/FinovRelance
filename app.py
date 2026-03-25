@@ -511,6 +511,16 @@ def bootstrap_app(app):
                 except Exception as e:
                     app.logger.warning(f"Migration colonnes post-Neon ignorée: {e}")
 
+                # Migration: élargir clients.email de 120 à 500 pour supporter plusieurs adresses
+                try:
+                    from sqlalchemy import text as _text
+                    with db.engine.connect() as conn:
+                        conn.execute(_text("ALTER TABLE clients ALTER COLUMN email TYPE VARCHAR(500)"))
+                        conn.commit()
+                    app.logger.info("Migration: clients.email élargi à VARCHAR(500)")
+                except Exception as e:
+                    app.logger.warning(f"Migration clients.email VARCHAR(500) ignorée: {e}")
+
                 # Monitoring des synchronisations désormais démarré à la demande
                 # Le monitoring se lance automatiquement quand une sync est déclenchée
                 # et s'arrête après 10 minutes d'inactivité pour économiser les ressources DB

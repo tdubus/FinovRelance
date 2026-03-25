@@ -231,6 +231,13 @@ def format_local_date(date_obj, format_str='%d/%m/%Y', timezone_str=None):
 
     return ''
 
+def split_client_emails(raw):
+    """Split a stored multi-email string (separated by ; or ,) into individual addresses."""
+    if not raw:
+        return []
+    import re
+    return [a.strip() for a in re.split(r'[;,]', raw.strip().rstrip(';,')) if a.strip()]
+
 def clean_note_text(text):
     """Clean note text by removing @ mentions and extra whitespace"""
     if not text:
@@ -415,6 +422,7 @@ __all__ = [
     'get_user_timezone',
     'get_local_now',
     # Text processing functions
+    'split_client_emails',
     'clean_note_text',
     'replace_email_variables',
     'convert_signature_images_to_base64',

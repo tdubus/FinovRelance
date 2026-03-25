@@ -1608,7 +1608,7 @@ class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code_client = db.Column(db.String(50), nullable=False)  # Client code - unique per company
     name = db.Column(db.String(200), nullable=False)
-    email = db.Column(db.String(120))
+    email = db.Column(db.String(500))
     phone = db.Column(db.String(50))
     address = db.Column(db.Text)
     collector_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # Assigned collector from team

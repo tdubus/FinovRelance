@@ -14,6 +14,7 @@ from app import db, limiter
 from models import (Campaign, CampaignEmail, CampaignStatus,
                     CampaignEmailStatus, Client, Invoice, ClientContact,
                     EmailTemplate, UserCompany, User, CommunicationNote)
+from utils import split_client_emails
 from utils.audit_service import log_action, AuditActions, EntityTypes
 from constants import DEFAULT_PAGE_SIZE
 
@@ -1195,9 +1196,9 @@ def generate_campaign_emails(campaign_id, company_id, user_id, clients_list):
                     if lang_filter:
                         client_lang = client.language or 'fr'
                         if client_lang == lang_filter:
-                            to_emails.append(client.email)
+                            to_emails.extend(split_client_emails(client.email))
                     else:
-                        to_emails.append(client.email)
+                        to_emails.extend(split_client_emails(client.email))
 
             if campaign.recipient_type in ['campaign_contacts', 'both']:
                 for contact in contacts_by_client.get(client.id, []):
@@ -1536,9 +1537,9 @@ def get_recipient_emails(client, campaign):
             if lang_filter:
                 client_lang = client.language or 'fr'
                 if client_lang == lang_filter:
-                    emails.append(client.email)
+                    emails.extend(split_client_emails(client.email))
             else:
-                emails.append(client.email)
+                emails.extend(split_client_emails(client.email))
 
     if campaign.recipient_type in ['campaign_contacts', 'both']:
         # Construire la requête des contacts avec filtre de langue si applicable
@@ -1999,9 +2000,10 @@ def validate_email_before_send(campaign_email, campaign, company_id):
     if to_emails:
         valid_emails = set()
 
-        # Email principal du client
+        # Email principal du client (peut contenir plusieurs adresses séparées par ;)
         if client.email:
-            valid_emails.add(client.email.lower())
+            for addr in split_client_emails(client.email):
+                valid_emails.add(addr.lower())
 
         # Ajouter les emails des enfants (valid_client_ids déjà construit au niveau 1)
         if campaign.include_children_in_parent_report:
@@ -2009,7 +2011,8 @@ def validate_email_before_send(campaign_email, campaign, company_id):
                 if child_id != client.id:
                     child = Client.query.filter_by(id=child_id, company_id=company_id).first()
                     if child and child.email:
-                        valid_emails.add(child.email.lower())
+                        for addr in split_client_emails(child.email):
+                            valid_emails.add(addr.lower())
 
         # Contacts autorisés pour campagne
         contacts = ClientContact.query.filter(

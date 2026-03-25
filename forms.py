@@ -2,6 +2,28 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, SelectField, TextAreaField, DecimalField, DateField, HiddenField, BooleanField, SubmitField, IntegerField, RadioField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, NumberRange, Optional, ValidationError, Regexp
+import re as _re
+
+_EMAIL_RE = _re.compile(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$')
+
+
+def multi_email(message=None):
+    """Validator that accepts one or more email addresses separated by ; or ,"""
+    if message is None:
+        message = 'Adresse courriel invalide.'
+
+    def _validate(form, field):
+        if not field.data:
+            return
+        raw = field.data.strip().rstrip(';').rstrip(',')
+        parts = [p.strip() for p in _re.split(r'[;,]', raw) if p.strip()]
+        if not parts:
+            return
+        for addr in parts:
+            if not _EMAIL_RE.match(addr):
+                raise ValidationError(f'{message} « {addr} » n\'est pas valide.')
+    return _validate
+
 from wtforms.widgets import TextArea
 from datetime import date
 # Import moved to functions to avoid circular imports
@@ -124,7 +146,7 @@ class ClientForm(FlaskForm):
     """Form for client creation and editing"""
     code_client = StringField('Code client', validators=[DataRequired(), Length(min=1, max=50)])
     name = StringField('Nom du client', validators=[DataRequired(), Length(max=200)])
-    email = StringField('Email', validators=[Optional(), Email(), Length(max=120)])
+    email = StringField('Email', validators=[Optional(), multi_email(), Length(max=500)])
     phone = StringField('Téléphone', validators=[Optional(), Length(max=50)])
     address = TextAreaField('Adresse', validators=[Optional()])
     collector_id = SelectField('Collecteur assigné', coerce=lambda x: int(x) if x else None, validators=[Optional()])

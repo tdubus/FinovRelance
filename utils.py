@@ -2,6 +2,14 @@
 from datetime import datetime
 from flask import current_app, abort
 import logging
+import re as _re
+
+
+def split_client_emails(raw):
+    """Split a stored multi-email string (separated by ; or ,) into individual addresses."""
+    if not raw:
+        return []
+    return [a.strip() for a in _re.split(r'[;,]', raw.strip().rstrip(';,')) if a.strip()]
 
 
 def company_has_original_amount(company_id):
@@ -821,7 +829,7 @@ def generate_statement_pdf_reportlab(client,
     client_info = f"""<b>{get_translation('client', language)}:</b> {client.name}<br/>
 <b>{get_translation('code', language)}:</b> {client.code_client}<br/>
 {client.address or ''}<br/>
-{client.email or ''}"""
+{(client.email or '').split(';')[0].split(',')[0].strip()}"""
 
     # Create a two-column layout for company and client info
     info_table = Table([[

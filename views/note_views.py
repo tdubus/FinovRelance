@@ -376,11 +376,23 @@ def new_note():
 
     form = NoteForm()
 
-    # Populate client choices (limit to 500 to prevent OOM on large companies)
-    clients = Client.query.filter_by(company_id=company.id).order_by(Client.code_client).limit(500).all()
-    form.client_id.choices = [(0, '-- Sélectionner un client --')] + [
-        (c.id, f"{c.code_client} - {c.name}") for c in clients
-    ]
+    # For AJAX requests from client detail (hidden input), validate client_id manually
+    # to avoid SelectField choices limit issue. For GET (notes list dropdown), populate choices.
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        submitted_client_id = request.form.get('client_id', type=int)
+        if submitted_client_id:
+            client = Client.query.filter_by(id=submitted_client_id, company_id=company.id).first()
+            if client:
+                form.client_id.choices = [(client.id, client.name)]
+            else:
+                return jsonify({'success': False, 'error': 'Client introuvable.'}), 400
+        else:
+            return jsonify({'success': False, 'error': 'Veuillez sélectionner un client.'}), 400
+    else:
+        clients = Client.query.filter_by(company_id=company.id).order_by(Client.code_client).limit(500).all()
+        form.client_id.choices = [(0, '-- Sélectionner un client --')] + [
+            (c.id, f"{c.code_client} - {c.name}") for c in clients
+        ]
 
     if form.validate_on_submit():
         try:
@@ -947,14 +959,17 @@ def get_client_contacts(client_id):
     # Build available contacts list (same logic as email_views.py)
     available_contacts = []
 
-    # Always include main client contact first
+    # Always include main client contact(s) first
     if client.email:
-        available_contacts.append({
-            'email': client.email,
-            'full_name': f"{client.name} (Contact principal)",
-            'language': client.language or 'fr',
-            'client_id': client.id
-        })
+        from utils import split_client_emails
+        client_emails = split_client_emails(client.email)
+        for addr in client_emails:
+            available_contacts.append({
+                'email': addr,
+                'full_name': f"{client.name} (Contact principal)",
+                'language': client.language or 'fr',
+                'client_id': client.id
+            })
 
     # Add secondary contacts
     try:
