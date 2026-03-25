@@ -83,8 +83,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         }
         .lp-hero-visual img {
             width: 100%;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
         }
 
         /* Logos bar */
@@ -101,6 +99,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             margin-bottom: 1.25rem;
             font-weight: 600;
         }
+        .lp-logos .lp-logos-note {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            text-transform: none;
+            letter-spacing: normal;
+            font-weight: 400;
+            margin-top: 1rem;
+            margin-bottom: 0;
+            font-style: italic;
+        }
         .lp-logos-grid {
             display: flex;
             flex-wrap: wrap;
@@ -111,7 +119,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         .lp-logos-grid img {
             height: 36px;
             opacity: 0.7;
-            transition: opacity 0.2s;
+            transition: opacity 0.3s, filter 0.3s;
             filter: grayscale(30%);
         }
         .lp-logos-grid img:hover { opacity: 1; filter: none; }
@@ -179,11 +187,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             border-radius: 12px;
             border: 1px solid var(--gray-200);
             background: white;
-            transition: box-shadow 0.2s, transform 0.2s;
+            transition: box-shadow 0.3s, transform 0.3s;
         }
         .lp-feature-card:hover {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
         }
         .lp-feature-card .feature-icon {
             width: 48px;
@@ -222,6 +230,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             border-radius: 12px;
             background: white;
             border: 1px solid var(--gray-200);
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .lp-trust-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
         }
         .lp-trust-card .stat {
             font-size: 2.5rem;
@@ -256,11 +269,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             background: white;
             text-align: center;
             position: relative;
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .lp-pricing-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
         }
         .lp-pricing-card.featured {
             border-color: var(--primary);
             box-shadow: 0 8px 30px rgba(132, 117, 236, 0.2);
             transform: scale(1.03);
+        }
+        .lp-pricing-card.featured:hover {
+            box-shadow: 0 12px 40px rgba(132, 117, 236, 0.3);
         }
         @media (max-width: 768px) {
             .lp-pricing-card.featured { transform: none; }
@@ -358,7 +378,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             font-size: 1.1rem;
             border-radius: 8px;
             text-decoration: none;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
         .lp-final-cta .btn-cta-white:hover {
             transform: scale(1.05);
@@ -384,6 +404,27 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             margin: 0 0.75rem;
         }
         .lp-footer a:hover { color: var(--primary); }
+
+        /* Scroll-triggered animations (self-contained, no dependency on marketing.js observers) */
+        .lp-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .lp-animate.lp-from-left {
+            transform: translateX(-40px);
+        }
+        .lp-animate.lp-from-right {
+            transform: translateX(40px);
+        }
+        .lp-animate.lp-visible {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+        /* Stagger children */
+        .lp-stagger > .lp-animate:nth-child(2) { transition-delay: 0.1s; }
+        .lp-stagger > .lp-animate:nth-child(3) { transition-delay: 0.2s; }
+        .lp-stagger > .lp-animate:nth-child(4) { transition-delay: 0.3s; }
     </style>
 </head>
 <body>
@@ -413,8 +454,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <a href="/tarifs" class="btn btn-primary btn-large" id="cta-hero">Essai gratuit 14 jours</a>
             </div>
             <div class="lp-hero-reassurance">
-                <span><i class="fas fa-check-circle"></i> Aucune carte de crédit requise</span>
                 <span><i class="fas fa-check-circle"></i> Intégration et onboarding inclus</span>
+                <span><i class="fas fa-check-circle"></i> Opérationnel dès le premier jour</span>
                 <span><i class="fas fa-check-circle"></i> Annulez à tout moment</span>
             </div>
             <div class="lp-hero-visual">
@@ -433,6 +474,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <img src="/marketing-static/images/odoo-logo.png" alt="Odoo" loading="lazy" width="114" height="36">
                 <img src="/marketing-static/images/business-central-logo.png" alt="Business Central" loading="lazy" width="128" height="36">
             </div>
+            <p class="lp-logos-note">D'autres intégrations sont possibles à la demande et incluses dans l'intégration sans frais.</p>
         </div>
     </section>
 
@@ -442,8 +484,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="section-header">
                 <h2>Avant vs après FinovRelance</h2>
             </div>
-            <div class="lp-comparison">
-                <div class="lp-comparison-card lp-card-before fade-in-left">
+            <div class="lp-comparison lp-stagger">
+                <div class="lp-comparison-card lp-card-before lp-animate lp-from-left">
                     <h3><i class="fas fa-times-circle" style="margin-right: 0.5rem;"></i>Sans FinovRelance</h3>
                     <ul>
                         <li><span class="icon">&#10007;</span> Factures impayées dispersées dans plusieurs fichiers Excel</li>
@@ -453,7 +495,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <li><span class="icon">&#10007;</span> Rapports pour la direction : des heures à compiler</li>
                     </ul>
                 </div>
-                <div class="lp-comparison-card lp-card-after fade-in-right">
+                <div class="lp-comparison-card lp-card-after lp-animate lp-from-right">
                     <h3><i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>Avec FinovRelance</h3>
                     <ul>
                         <li><span class="icon">&#10003;</span> Tous vos CAR centralisés dans un seul tableau de bord</li>
@@ -467,36 +509,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </section>
 
-    <!-- 4. FONCTIONNALITES → BENEFICES (4 cartes) -->
+    <!-- 4. FONCTIONNALITES — BENEFICES (4 cartes) -->
     <section class="section section-alt">
         <div class="container">
             <div class="section-header">
                 <h2>Tout ce qu'il faut pour reprendre le contrôle</h2>
                 <p>Les outils qui font vraiment la différence au quotidien.</p>
             </div>
-            <div class="lp-features-grid">
-                <div class="lp-feature-card fade-in-up">
+            <div class="lp-features-grid lp-stagger">
+                <div class="lp-feature-card lp-animate">
                     <div class="feature-icon" style="background: var(--primary-light); color: var(--primary);">
                         <i class="fas fa-sync-alt"></i>
                     </div>
                     <h3>Synchronisation comptable automatique</h3>
                     <p>Vos données CAR sont toujours à jour, sans aucune manipulation manuelle. Connectez QuickBooks, Xero, Odoo ou Business Central en quelques clics.</p>
                 </div>
-                <div class="lp-feature-card fade-in-up">
+                <div class="lp-feature-card lp-animate">
                     <div class="feature-icon" style="background: #ecfdf5; color: var(--success);">
                         <i class="fas fa-paper-plane"></i>
                     </div>
                     <h3>Relances par courriel en lot</h3>
                     <p>Envoyez des relances personnalisées à 50 clients en 2 minutes, directement depuis votre boîte Outlook ou Gmail. Copies de factures incluses.</p>
                 </div>
-                <div class="lp-feature-card fade-in-up">
+                <div class="lp-feature-card lp-animate">
                     <div class="feature-icon" style="background: #fff7ed; color: var(--accent);">
                         <i class="fas fa-bell"></i>
                     </div>
                     <h3>Rappels et dates de suivi</h3>
                     <p>Plus aucun client oublié. Chaque relance est suivie, chaque promesse de paiement tracée. Votre équipe sait exactement quoi faire chaque matin.</p>
                 </div>
-                <div class="lp-feature-card fade-in-up">
+                <div class="lp-feature-card lp-animate">
                     <div class="feature-icon" style="background: #eff6ff; color: #3b82f6;">
                         <i class="fas fa-history"></i>
                     </div>
@@ -513,16 +555,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="section-header">
                 <h2>Conçu pour les PME du Québec</h2>
             </div>
-            <div class="lp-trust-grid">
-                <div class="lp-trust-card fade-in-up">
+            <div class="lp-trust-grid lp-stagger">
+                <div class="lp-trust-card lp-animate">
                     <div class="stat">24,95$</div>
                     <div class="stat-label">par mois seulement<br>pour commencer à automatiser vos relances</div>
                 </div>
-                <div class="lp-trust-card fade-in-up">
+                <div class="lp-trust-card lp-animate">
                     <div class="stat">5 min</div>
                     <div class="stat-label">pour connecter votre logiciel comptable<br>et importer vos premiers CAR</div>
                 </div>
-                <div class="lp-trust-card fade-in-up">
+                <div class="lp-trust-card lp-animate">
                     <div class="stat">100%</div>
                     <div class="stat-label">hébergé au Canada<br>Conforme à la Loi 25, données chiffrées AES-256</div>
                 </div>
@@ -534,7 +576,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <section class="section section-alt" style="padding: 3rem 0;">
         <div class="container" style="text-align: center;">
             <h2 style="margin-bottom: 0.75rem;">Prêt à reprendre le contrôle de vos comptes à recevoir ?</h2>
-            <p style="color: var(--gray-600); margin-bottom: 1.5rem;">Commencez votre essai gratuit en quelques minutes. Aucune carte requise.</p>
+            <p style="color: var(--gray-600); margin-bottom: 1.5rem;">Commencez votre essai gratuit en quelques minutes.</p>
             <a href="/tarifs" class="btn btn-primary btn-large" id="cta-mid">Essai gratuit 14 jours</a>
         </div>
     </section>
@@ -546,9 +588,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <h2>Des forfaits simples et transparents</h2>
                 <p>Pas de frais cachés. Pas de surprise. Intégration et onboarding personnalisé inclus.</p>
             </div>
-            <div class="lp-pricing-grid">
+            <div class="lp-pricing-grid lp-stagger">
                 <!-- Decouverte -->
-                <div class="lp-pricing-card fade-in-up">
+                <div class="lp-pricing-card lp-animate">
                     <span class="plan-badge" style="background: var(--success);">Gratuit</span>
                     <div class="plan-name">Découverte</div>
                     <div class="plan-price">0 $</div>
@@ -566,7 +608,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
 
                 <!-- Relance -->
-                <div class="lp-pricing-card featured fade-in-up">
+                <div class="lp-pricing-card featured lp-animate">
                     <span class="plan-badge" style="background: var(--primary);">Populaire</span>
                     <div class="plan-name">Relance</div>
                     <div class="plan-price">24,95 $</div>
@@ -581,11 +623,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <li><i class="fas fa-check"></i> Onboarding personnalisé inclus</li>
                     </ul>
                     <a href="https://app.finov-relance.com/onboarding/start-trial/14" class="btn btn-primary btn-block">Essai gratuit 14 jours</a>
-                    <div class="plan-trial"><i class="fas fa-clock" style="margin-right: 0.25rem;"></i>Aucune carte requise</div>
                 </div>
 
                 <!-- Relance+ -->
-                <div class="lp-pricing-card fade-in-up">
+                <div class="lp-pricing-card lp-animate">
                     <span class="plan-badge" style="background: var(--accent);">Complet</span>
                     <div class="plan-name">Relance+</div>
                     <div class="plan-price">39,95 $</div>
@@ -600,7 +641,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <li><i class="fas fa-check"></i> Support prioritaire</li>
                     </ul>
                     <a href="https://app.finov-relance.com/onboarding/start-trial/15" class="btn btn-primary btn-block">Essai gratuit 14 jours</a>
-                    <div class="plan-trial"><i class="fas fa-clock" style="margin-right: 0.25rem;"></i>Aucune carte requise</div>
                 </div>
             </div>
         </div>
@@ -620,7 +660,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </button>
                     <div class="faq-answer">
                         <div class="faq-answer-content">
-                            Oui. QuickBooks, Xero, Odoo et Business Central sont supportés nativement. Si vous utilisez un autre logiciel, vous pouvez importer vos données par Excel ou CSV. Nous offrons aussi un outil de conversion CSV personnalisé avec les plans payants.
+                            Oui. QuickBooks, Xero, Odoo et Business Central sont supportés nativement. Si vous utilisez un autre logiciel, nous pouvons développer une connexion à la demande si l'outil le permet. Le cas échéant, nous avons développé un connecteur Excel/CSV intelligent qui garantit un import en quelques minutes.
                         </div>
                     </div>
                 </div>
@@ -632,7 +672,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </button>
                     <div class="faq-answer">
                         <div class="faq-answer-content">
-                            Oui. Le plan Découverte est gratuit et inclut jusqu'à 10 clients. Les plans payants offrent un essai gratuit de 14 jours avec toutes les fonctionnalités. Aucune carte de crédit requise pour commencer.
+                            Oui. Le plan Découverte est gratuit et inclut jusqu'à 10 clients. Les plans payants offrent un essai gratuit de 14 jours avec toutes les fonctionnalités.
                         </div>
                     </div>
                 </div>
@@ -680,7 +720,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </button>
                     <div class="faq-answer">
                         <div class="faq-answer-content">
-                            FinovRelance ne remplace pas votre processus, il l'automatise. Les données sont synchronisées depuis votre logiciel comptable, les relances se font en lot par courriel, et tout l'historique est centralisé. Vous gardez le contrôle, sans le travail manuel.
+                            FinovRelance ne remplace pas votre processus, il l'optimise et automatise. Les données sont synchronisées depuis votre logiciel comptable, les relances se font en lot par courriel, et tout l'historique est centralisé. Vous gardez le contrôle, sans le travail manuel.
                         </div>
                     </div>
                 </div>
@@ -696,7 +736,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <p>Rejoignez les PME qui ont repris le contrôle de leurs comptes à recevoir avec FinovRelance.</p>
                 <a href="/tarifs" class="btn-cta-white" id="cta-final">Essai gratuit 14 jours</a>
                 <div class="cta-reassurance">
-                    <i class="fas fa-lock" style="margin-right: 0.35rem;"></i>Aucune carte requise - Intégration et onboarding inclus - Annulez à tout moment
+                    <i class="fas fa-lock" style="margin-right: 0.35rem;"></i>Intégration et onboarding inclus - Annulez à tout moment
                 </div>
             </div>
         </div>
@@ -719,7 +759,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="cookie-consent-content">
             <div class="cookie-consent-text">
                 <p><strong>Nous utilisons des cookies</strong></p>
-                <p>Nous utilisons des cookies essentiels pour assurer le bon fonctionnement de notre site. En continuant a naviguer, vous acceptez notre <a href="https://finov-relance.com/legal/cookies">politique de cookies</a>.</p>
+                <p>Nous utilisons des cookies essentiels pour assurer le bon fonctionnement de notre site. En continuant à naviguer, vous acceptez notre <a href="https://finov-relance.com/legal/cookies">politique de cookies</a>.</p>
             </div>
             <div class="cookie-consent-actions">
                 <button id="acceptCookies" class="btn btn-primary">Accepter</button>
@@ -732,6 +772,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <script src="/marketing-static/js/cookie-consent.js"></script>
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Scroll-triggered animations for landing page elements
+        (function() {
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('lp-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+            document.querySelectorAll('.lp-animate').forEach(function(el) {
+                observer.observe(el);
+            });
+        })();
     </script>
 </body>
 </html>
