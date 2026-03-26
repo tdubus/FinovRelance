@@ -4985,8 +4985,9 @@ def file_import_invoices():
     store_import_file(import_job.id, file_content)
 
     # Launch background processing via ImportWorker
+    app = current_app._get_current_object()
     worker = get_worker()
-    worker.process_import_job(import_job.id)
+    worker.process_import_job(import_job.id, app=app)
 
     flash('🔄 Synchronisation des factures lancée en arrière-plan. Vous serez notifié à la fin.', 'info')
     return redirect(url_for('company.settings') + '#accounting')

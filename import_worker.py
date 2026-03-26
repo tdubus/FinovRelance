@@ -125,18 +125,28 @@ class ImportWorker:
         self.app = app
         self._thread = None
 
-    def process_import_job(self, job_id):
+    def process_import_job(self, job_id, app=None):
         """
         Process an import job in a background thread
         Creates its own database session to avoid conflicts with main thread
+
+        Args:
+            job_id: ID of the ImportJob to process
+            app: Flask app instance (required for app context in background thread)
         """
         def run_import():
+            try:
+                _run_import_inner()
+            except Exception as e:
+                logger.error(f"Import job {job_id} thread crashed: {e}", exc_info=True)
+
+        def _run_import_inner():
             # Create a new database session for this thread
             database_url = os.environ.get('DATABASE_URL')
             if not database_url:
                 logger.error(f"Import job {job_id} failed: DATABASE_URL environment variable is not set")
                 return
-            engine = create_engine(database_url)
+            engine = create_engine(database_url, pool_pre_ping=True)
             Session = scoped_session(sessionmaker(bind=engine))
             session = Session()
 
@@ -333,8 +343,15 @@ class ImportWorker:
                 Session.remove()
                 engine.dispose()
 
-        # Start thread
-        thread = threading.Thread(target=run_import, daemon=True)
+        # Start thread (with app context if available)
+        def run_with_context():
+            if app:
+                with app.app_context():
+                    run_import()
+            else:
+                run_import()
+
+        thread = threading.Thread(target=run_with_context, daemon=True)
         thread.start()
         logger.info(f"Import job {job_id} started in background thread")
 
