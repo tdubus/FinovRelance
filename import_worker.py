@@ -488,7 +488,7 @@ class ImportWorker:
 
     def _process_invoices(self, session, rows, company_id, job):
         """Process invoice import rows with optional sync mode"""
-        from models import Client, Invoice, CommunicationNote
+        from models import Client, Invoice
         from datetime import datetime
 
         success_count = 0
@@ -523,35 +523,14 @@ class ImportWorker:
             # Compute invoices to delete (exist in DB but not in file)
             invoices_to_delete_numbers = set(existing_invoices.keys()) - incoming_invoice_numbers
 
-            # Delete invoices that are no longer in the file
-            # SECURITY: Block deletion if invoice has communication notes
-            for invoice_number in invoices_to_delete_numbers:
-                invoice = existing_invoices[invoice_number]
-
-                # Check if invoice has communication notes
-                has_notes = session.query(CommunicationNote).filter_by(
-                    invoice_id=invoice.id
-                ).first() is not None
-
-                if has_notes:
-                    errors.append(f'Facture {invoice_number}: Suppression bloquée (notes de communication associées)')
-                    error_count += 1
-                else:
-                    try:
-                        session.delete(invoice)
-                        deleted_count += 1
-
-                        # Commit in batches
-                        if deleted_count % 100 == 0:
-                            session.commit()
-                    except Exception as e:
-                        logger.error(f"Error deleting invoice {invoice_number}: {e}")
-                        errors.append(f'Facture {invoice_number}: Erreur de suppression - {str(e)}')
-                        error_count += 1
-
-            # Final commit for deletions
-            if deleted_count % 100 != 0:
+            # Delete invoices that are no longer in the file (in batches)
+            invoices_to_delete = [existing_invoices[num] for num in invoices_to_delete_numbers]
+            for i in range(0, len(invoices_to_delete), 100):
+                batch = invoices_to_delete[i:i + 100]
+                for invoice in batch:
+                    session.delete(invoice)
                 session.commit()
+                deleted_count += len(batch)
 
             logger.info(f"Sync mode: Deleted {deleted_count} invoices (blocked: {len([e for e in errors if 'bloquée' in e])})")
 
