@@ -582,9 +582,20 @@ def edit_note(note_id):
     # Regular note editing
     form = NoteForm(obj=note)
 
-    # Populate client choices (limit to 500 to prevent OOM on large companies)
-    clients = Client.query.filter_by(company_id=company.id).order_by(Client.code_client).limit(500).all()
-    form.client_id.choices = [(c.id, f"{c.code_client} - {c.name}") for c in clients]
+    # For AJAX requests, validate client_id manually to avoid SelectField choices limit issue
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        submitted_client_id = request.form.get('client_id', type=int)
+        if submitted_client_id:
+            client_obj = Client.query.filter_by(id=submitted_client_id, company_id=company.id).first()
+            if client_obj:
+                form.client_id.choices = [(client_obj.id, client_obj.name)]
+            else:
+                return jsonify({'success': False, 'error': 'Client introuvable.'}), 400
+        else:
+            form.client_id.choices = [(note.client_id, '')]
+    else:
+        clients = Client.query.filter_by(company_id=company.id).order_by(Client.code_client).limit(500).all()
+        form.client_id.choices = [(c.id, f"{c.code_client} - {c.name}") for c in clients]
 
     if form.validate_on_submit():
         try:
