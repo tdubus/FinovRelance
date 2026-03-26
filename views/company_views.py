@@ -4107,8 +4107,11 @@ def file_import_detect_headers():
                 'error': 'Type de fichier non supporté. Utilisez .xlsx ou .csv'
             }), 400
 
-        # Read file content
-        file_content = file.read()
+        # Read file content with size limit
+        from constants import MAX_IMPORT_FILE_SIZE
+        file_content = file.read(MAX_IMPORT_FILE_SIZE + 1)
+        if len(file_content) > MAX_IMPORT_FILE_SIZE:
+            return jsonify({'success': False, 'error': 'Fichier trop volumineux (max 10 Mo)'}), 413
 
         # Detect headers
         headers, error = detect_headers_from_file(file_content, file_type)
@@ -4224,6 +4227,14 @@ def file_import_clients_start():
         file = request.files['import_file']
         if file.filename == '':
             return jsonify({'success': False, 'error': 'Nom de fichier vide'}), 400
+
+        # Check file size before saving
+        from constants import MAX_IMPORT_FILE_SIZE
+        file.seek(0, 2)
+        file_size = file.tell()
+        file.seek(0)
+        if file_size > MAX_IMPORT_FILE_SIZE:
+            return jsonify({'success': False, 'error': 'Fichier trop volumineux (max 10 Mo)'}), 413
 
         # Save file temporarily
         temp_fd, temp_path = tempfile.mkstemp(suffix=os.path.splitext(file.filename)[1])
@@ -4588,8 +4599,12 @@ def file_import_clients():
         progress_session_id = progress_manager.create_session(0)
         progress_manager.update_progress(progress_session_id, 0, 'Lecture du fichier', 'Lecture en cours...')
 
-        # Read and transform file
-        file_content = file.read()
+        # Read and transform file (with size limit)
+        from constants import MAX_IMPORT_FILE_SIZE
+        file_content = file.read(MAX_IMPORT_FILE_SIZE + 1)
+        if len(file_content) > MAX_IMPORT_FILE_SIZE:
+            flash('Fichier trop volumineux (max 10 Mo).', 'error')
+            return redirect(url_for('company.file_import_config'))
 
         # Create ImportJob for logging
         import_job = ImportJob(
@@ -4903,291 +4918,15 @@ def file_import_clients():
         return redirect(url_for('company.file_import_config'))
 
 
-def _sync_invoices_delta(transformed_rows, company_id, sync_log_id=None):
-    """
-    Execute delta sync for invoices: update existing, create new, delete missing
-    Returns: (created_count, updated_count, deleted_count)
-    """
-    from models import Client, Invoice
-    from datetime import datetime
-    from app import db
-
-    created_count = 0
-    updated_count = 0
-    deleted_count = 0
-
-    # NOTE: transformed_rows contient déjà uniquement les données (sans en-tête)
-    data_rows = transformed_rows
-
-    # Build client cache (colonnes legeres: code_client + id seulement)
-    client_rows = db.session.query(Client.code_client, Client.id).filter_by(company_id=company_id).all()
-    clients_cache = {row[0]: row[1] for row in client_rows}
-
-    # Load existing invoices (colonnes legeres: invoice_number + id seulement)
-    from sqlalchemy.orm import load_only
-    existing_invoices = Invoice.query.filter_by(company_id=company_id).options(
-        load_only(Invoice.id, Invoice.invoice_number)
-    ).all()
-    invoices_dict = {inv.invoice_number: inv for inv in existing_invoices}
-
-    # Track which invoices are in the file (for cleanup later)
-    file_invoice_numbers = set()
-
-    # Lists for bulk operations
-    invoices_to_create = []
-    invoices_to_update = []
-
-    # Process all rows from file
-    for row_num, row in enumerate(data_rows, start=2):
-        try:
-            # Standard format from transform_file_to_standard_format:
-            # [code_client, invoice_number, amount, original_amount, issue_date, due_date, project_name (optional)]
-            if len(row) < 6:
-                continue
-
-            code_client = row[0].strip() if row[0] else ''
-            invoice_number = row[1].strip() if row[1] else ''
-            amount_str = row[2].strip() if row[2] else ''
-            original_amount_str = row[3].strip() if row[3] else None
-            issue_date_str = row[4].strip() if row[4] else ''
-            due_date_str = row[5].strip() if row[5] else ''
-            project_name = row[6].strip() if len(row) > 6 and row[6] else None
-
-            if not all([code_client, invoice_number, amount_str, issue_date_str, due_date_str]):
-                continue
-
-            # Track this invoice number
-            file_invoice_numbers.add(invoice_number)
-
-            # Get client ID from cache
-            client_id = clients_cache.get(code_client)
-            if not client_id:
-                continue
-
-            # Parse dates
-            try:
-                invoice_date = datetime.strptime(issue_date_str, '%Y-%m-%d').date()
-                due_date = datetime.strptime(due_date_str, '%Y-%m-%d').date()
-            except ValueError:
-                continue
-
-            # Parse amount
-            try:
-                amount = float(amount_str.replace(',', '.'))
-            except (ValueError, AttributeError):
-                continue
-
-            # Parse original_amount (optional)
-            original_amount = None
-            if original_amount_str:
-                try:
-                    original_amount = float(original_amount_str.replace(',', '.'))
-                except (ValueError, AttributeError):
-                    pass
-
-            # Check if invoice already exists
-            existing_invoice = invoices_dict.get(invoice_number)
-
-            if existing_invoice:
-                # UPDATE existing invoice (only update amount)
-                invoices_to_update.append({
-                    'id': existing_invoice.id,
-                    'amount': amount,
-                    'updated_at': datetime.utcnow()
-                })
-            else:
-                # CREATE new invoice
-                invoices_to_create.append({
-                    'invoice_number': invoice_number,
-                    'client_id': client_id,
-                    'company_id': company_id,
-                    'invoice_date': invoice_date,
-                    'due_date': due_date,
-                    'amount': amount,
-                    'original_amount': original_amount,
-                    'project_name': project_name,
-                    'is_paid': False,
-                    'created_at': datetime.utcnow(),
-                    'updated_at': datetime.utcnow()
-                })
-
-        except Exception as e:
-            current_app.logger.warning(f'Ligne {row_num}: {str(e)}')
-
-    # Execute bulk operations with BATCHING to avoid SSL timeout
-    BATCH_SIZE = 500
-
-    # 1. Bulk insert new invoices (in batches)
-    if invoices_to_create:
-        for i in range(0, len(invoices_to_create), BATCH_SIZE):
-            batch = invoices_to_create[i:i + BATCH_SIZE]
-            db.session.execute(Invoice.__table__.insert(), batch)
-            db.session.commit()
-        created_count = len(invoices_to_create)
-
-    # 2. Bulk update existing invoices (in batches)
-    if invoices_to_update:
-        for i in range(0, len(invoices_to_update), BATCH_SIZE):
-            batch = invoices_to_update[i:i + BATCH_SIZE]
-            db.session.bulk_update_mappings(Invoice, batch)
-            db.session.commit()
-        updated_count = len(invoices_to_update)
-
-    # 3. DELETE missing invoices (in batches)
-    missing_invoice_numbers = set(invoices_dict.keys()) - file_invoice_numbers
-
-    if missing_invoice_numbers:
-        missing_list = list(missing_invoice_numbers)
-        for i in range(0, len(missing_list), BATCH_SIZE):
-            batch = missing_list[i:i + BATCH_SIZE]
-            Invoice.query.filter(
-                Invoice.company_id == company_id,
-                Invoice.invoice_number.in_(batch)
-            ).delete(synchronize_session=False)
-            db.session.commit()
-        deleted_count = len(missing_invoice_numbers)
-
-
-    return created_count, updated_count, deleted_count
-
-
-def _sync_invoices_delta_with_session(session, transformed_rows, company_id):
-    """
-    Execute delta sync for invoices with ISOLATED session (for thread safety)
-    Returns: (created_count, updated_count, deleted_count)
-    """
-    from models import Client, Invoice
-    from datetime import datetime
-
-    created_count = 0
-    updated_count = 0
-    deleted_count = 0
-
-    data_rows = transformed_rows
-
-    # Build client cache using isolated session (colonnes legeres: code_client + id)
-    client_rows = session.query(Client.code_client, Client.id).filter_by(company_id=company_id).all()
-    clients_cache = {row[0]: row[1] for row in client_rows}
-
-    # Load existing invoices (colonnes legeres: invoice_number + id)
-    from sqlalchemy.orm import load_only
-    existing_invoices = session.query(Invoice).filter_by(company_id=company_id).options(
-        load_only(Invoice.id, Invoice.invoice_number)
-    ).all()
-    invoices_dict = {inv.invoice_number: inv for inv in existing_invoices}
-
-    file_invoice_numbers = set()
-    invoices_to_create = []
-    invoices_to_update = []
-
-    for row_num, row in enumerate(data_rows, start=2):
-        try:
-            if len(row) < 6:
-                continue
-
-            code_client = row[0].strip() if row[0] else ''
-            invoice_number = row[1].strip() if row[1] else ''
-            amount_str = row[2].strip() if row[2] else ''
-            original_amount_str = row[3].strip() if row[3] else None
-            issue_date_str = row[4].strip() if row[4] else ''
-            due_date_str = row[5].strip() if row[5] else ''
-            project_name = row[6].strip() if len(row) > 6 and row[6] else None
-
-            if not all([code_client, invoice_number, amount_str, issue_date_str, due_date_str]):
-                continue
-
-            file_invoice_numbers.add(invoice_number)
-
-            client_id = clients_cache.get(code_client)
-            if not client_id:
-                continue
-
-            try:
-                invoice_date = datetime.strptime(issue_date_str, '%Y-%m-%d').date()
-                due_date = datetime.strptime(due_date_str, '%Y-%m-%d').date()
-            except ValueError:
-                continue
-
-            try:
-                amount = float(amount_str.replace(',', '.'))
-            except (ValueError, AttributeError):
-                continue
-
-            original_amount = None
-            if original_amount_str:
-                try:
-                    original_amount = float(original_amount_str.replace(',', '.'))
-                except (ValueError, AttributeError):
-                    pass
-
-            existing_invoice = invoices_dict.get(invoice_number)
-
-            if existing_invoice:
-                invoices_to_update.append({
-                    'id': existing_invoice.id,
-                    'amount': amount,
-                    'updated_at': datetime.utcnow()
-                })
-            else:
-                invoices_to_create.append({
-                    'invoice_number': invoice_number,
-                    'client_id': client_id,
-                    'company_id': company_id,
-                    'invoice_date': invoice_date,
-                    'due_date': due_date,
-                    'amount': amount,
-                    'original_amount': original_amount,
-                    'project_name': project_name,
-                    'is_paid': False,
-                    'created_at': datetime.utcnow(),
-                    'updated_at': datetime.utcnow()
-                })
-
-        except Exception as e:
-            pass  # Skip problematic rows silently
-
-    # Execute bulk operations with BATCHING (using isolated session)
-    BATCH_SIZE = 500
-
-    if invoices_to_create:
-        for i in range(0, len(invoices_to_create), BATCH_SIZE):
-            batch = invoices_to_create[i:i + BATCH_SIZE]
-            session.execute(Invoice.__table__.insert(), batch)
-            session.commit()
-        created_count = len(invoices_to_create)
-
-    if invoices_to_update:
-        for i in range(0, len(invoices_to_update), BATCH_SIZE):
-            batch = invoices_to_update[i:i + BATCH_SIZE]
-            session.bulk_update_mappings(Invoice, batch)
-            session.commit()
-        updated_count = len(invoices_to_update)
-
-    missing_invoice_numbers = set(invoices_dict.keys()) - file_invoice_numbers
-
-    if missing_invoice_numbers:
-        missing_list = list(missing_invoice_numbers)
-        for i in range(0, len(missing_list), BATCH_SIZE):
-            batch = missing_list[i:i + BATCH_SIZE]
-            session.query(Invoice).filter(
-                Invoice.company_id == company_id,
-                Invoice.invoice_number.in_(batch)
-            ).delete(synchronize_session=False)
-            session.commit()
-        deleted_count = len(missing_invoice_numbers)
-
-    return created_count, updated_count, deleted_count
-
 
 @company_bp.route('/file-import-invoices', methods=['POST'])
 @login_required
 def file_import_invoices():
     """Import invoices from Excel/CSV file using saved mapping - ASYNC VERSION"""
-    import threading
-    from datetime import datetime
     from app import db
-    from models import Company, FileImportMapping, SyncLog, ImportJob
+    from models import FileImportMapping, ImportJob
     from file_import_connector import detect_file_type
+    from import_worker import store_import_file, get_worker
 
     company = current_user.get_selected_company()
     if not company:
@@ -5222,10 +4961,14 @@ def file_import_invoices():
         flash("Type de fichier non supporté. Utilisez .xlsx ou .csv", "error")
         return redirect(url_for('company.settings', _anchor='accounting'))
 
-    # Read file content into memory (avoid temp files which may not be accessible across workers)
-    file_content = file.read()
+    # Read file content into memory (with size limit)
+    from constants import MAX_IMPORT_FILE_SIZE
+    file_content = file.read(MAX_IMPORT_FILE_SIZE + 1)
+    if len(file_content) > MAX_IMPORT_FILE_SIZE:
+        flash('Fichier trop volumineux (max 10 Mo).', 'error')
+        return redirect(url_for('company.settings', _anchor='accounting'))
 
-    # Create ImportJob for logging
+    # Create ImportJob in pending state
     import_job = ImportJob(
         company_id=company.id,
         user_id=current_user.id,
@@ -5233,150 +4976,17 @@ def file_import_invoices():
         import_mode='sync',
         filename=file.filename,
         file_size=len(file_content),
-        status='processing'
+        status='pending'
     )
-    import_job.started_at = datetime.utcnow()
     db.session.add(import_job)
     db.session.commit()
-    import_job_id = import_job.id
 
-    # Save IDs and file content before creating thread
-    user_id = current_user.id
-    company_id = company.id
-    mapping_config_id = mapping_config.id
-    # Keep file content in memory for thread (temp files may not be accessible across workers)
-    thread_file_content = file_content
+    # Store file for background thread retrieval (Redis with /tmp fallback)
+    store_import_file(import_job.id, file_content)
 
-    # Start async sync in background thread with ISOLATED DB SESSION
-    def run_async_invoices_sync():
-        """Synchronisation asynchrone des factures en arrière-plan avec session DB isolée"""
-        from sqlalchemy import create_engine
-        from sqlalchemy.orm import scoped_session, sessionmaker
-        import os
-        import logging
-
-        logger = logging.getLogger(__name__)
-
-        # Create a NEW database session for this thread (isolated from Flask's db.session)
-        database_url = os.environ.get('DATABASE_URL')
-        engine = create_engine(database_url, pool_pre_ping=True)
-        Session = scoped_session(sessionmaker(bind=engine))
-        session = Session()
-
-        try:
-            from file_import_connector import transform_file_to_standard_format
-            from models import Client, Invoice, Company, FileImportMapping, ImportJob, Notification, User
-            from utils.project_helper import is_project_feature_enabled
-
-            company = session.query(Company).get(company_id)
-            mapping_config = session.query(FileImportMapping).get(mapping_config_id)
-
-            if not company or not mapping_config:
-                raise Exception(f"Company ou mapping introuvable")
-
-            # Check if project feature is enabled
-            include_project = is_project_feature_enabled(company)
-
-            # Transform file (use thread_file_content passed from main thread)
-            transformed_rows, total_rows, errors = transform_file_to_standard_format(
-                thread_file_content,
-                file_type,
-                mapping_config.invoice_column_mappings,
-                'invoices',
-                include_project_field=include_project
-            )
-
-            if errors and not transformed_rows:
-                raise Exception(f"Transformation error: {'; '.join(errors)}")
-
-            # Execute delta sync with ISOLATED session
-            created_count, updated_count, deleted_count = _sync_invoices_delta_with_session(
-                session, transformed_rows, company_id
-            )
-
-            # Update ImportJob with results
-            job = session.query(ImportJob).get(import_job_id)
-            if job:
-                job.status = 'completed'
-                job.completed_at = datetime.utcnow()
-                job.total_rows = total_rows
-                job.processed_rows = created_count + updated_count + deleted_count
-                job.success_count = created_count + updated_count
-                job.created_count = created_count
-                job.updated_count = updated_count
-                job.deleted_count = deleted_count
-                job.progress = 100
-                job.result_message = f'{created_count} créées, {updated_count} mises à jour, {deleted_count} supprimées'
-                session.commit()
-
-            # Send notification
-            user = session.query(User).get(user_id)
-            if user:
-                notif = Notification(
-                    user_id=user.id,
-                    company_id=company_id,
-                    type='file_import_success',
-                    title='✅ Synchronisation factures terminée',
-                    message=f'Import réussi : {created_count} factures créées, {updated_count} mises à jour, {deleted_count} supprimées',
-                    is_read=False
-                )
-                session.add(notif)
-                session.commit()
-
-            logger.info(f"Import factures terminé: {created_count} créées, {updated_count} mises à jour, {deleted_count} supprimées")
-
-            # Créer un snapshot des comptes à recevoir après import réussi
-            try:
-                from utils.receivables_snapshot import create_receivables_snapshot
-                create_receivables_snapshot(company_id, trigger_type='import', session=session)
-            except Exception as snap_err:
-                logger.warning(f"Erreur création snapshot CAR: {snap_err}")
-
-        except Exception as e:
-            error_msg = str(e)
-            logger.error(f"Erreur synchronisation factures: {error_msg}")
-
-            # Rollback isolated session
-            session.rollback()
-
-            # Update ImportJob with error
-            try:
-                job = session.query(ImportJob).get(import_job_id)
-                if job:
-                    job.status = 'failed'
-                    job.completed_at = datetime.utcnow()
-                    job.result_message = error_msg
-                    session.commit()
-            except Exception as job_error:
-                session.rollback()
-                logger.error(f"Erreur mise à jour ImportJob: {str(job_error)}")
-
-            # Send error notification
-            try:
-                user = session.query(User).get(user_id)
-                if user:
-                    notif = Notification(
-                        user_id=user.id,
-                        company_id=company_id,
-                        type='file_import_error',
-                        title='❌ Erreur synchronisation factures',
-                        message=f'Erreur lors de l\'import : {error_msg}',
-                        is_read=False
-                    )
-                    session.add(notif)
-                    session.commit()
-            except Exception as notif_error:
-                logger.error(f"Erreur envoi notification: {str(notif_error)}")
-        finally:
-            # CRITICAL: Always close the isolated session and dispose engine
-            session.close()
-            Session.remove()
-            engine.dispose()
-
-    # Launch thread
-    thread = threading.Thread(target=run_async_invoices_sync)
-    thread.daemon = True
-    thread.start()
+    # Launch background processing via ImportWorker
+    worker = get_worker()
+    worker.process_import_job(import_job.id)
 
     flash('🔄 Synchronisation des factures lancée en arrière-plan. Vous serez notifié à la fin.', 'info')
     return redirect(url_for('company.settings') + '#accounting')

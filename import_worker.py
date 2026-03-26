@@ -242,6 +242,30 @@ class ImportWorker:
                 session.commit()
                 logger.info(f"Import job {job_id} completed: {success_count} success, {error_count} errors")
 
+                # Send success notification
+                try:
+                    from models import Notification, User
+                    user = session.query(User).get(job.user_id)
+                    if user:
+                        if job.import_mode == 'sync':
+                            msg = f'Import réussi : {created} factures créées, {updated} mises à jour, {deleted} supprimées'
+                        else:
+                            msg = f'Import réussi : {success_count} enregistrements importés'
+                        if error_count > 0:
+                            msg += f', {error_count} erreurs'
+                        notif = Notification(
+                            user_id=user.id,
+                            company_id=job.company_id,
+                            type='file_import_success',
+                            title='Synchronisation terminée',
+                            message=msg,
+                            is_read=False
+                        )
+                        session.add(notif)
+                        session.commit()
+                except Exception as notif_error:
+                    logger.warning(f"Notification non envoyée: {notif_error}")
+
                 try:
                     from models import AuditLog, User, Company
                     from utils.audit_service import AuditActions, EntityTypes
@@ -287,11 +311,27 @@ class ImportWorker:
                     if job:
                         job.mark_as_failed(str(e))
                         session.commit()
+
+                        # Send error notification
+                        from models import Notification, User
+                        user = session.query(User).get(job.user_id)
+                        if user:
+                            notif = Notification(
+                                user_id=user.id,
+                                company_id=job.company_id,
+                                type='file_import_error',
+                                title='Erreur synchronisation',
+                                message=f'Erreur lors de l\'import : {str(e)[:200]}',
+                                is_read=False
+                            )
+                            session.add(notif)
+                            session.commit()
                 except Exception:
                     pass
             finally:
                 session.close()
                 Session.remove()
+                engine.dispose()
 
         # Start thread
         thread = threading.Thread(target=run_import, daemon=True)

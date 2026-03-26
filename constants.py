@@ -67,6 +67,7 @@ FIELD_LENGTH_DISPLAY_NAME_MAX = 100
 # LIMITS
 # =============================================================================
 MAX_RETRY_ATTEMPTS = 3
+MAX_IMPORT_FILE_SIZE = 10 * 1024 * 1024  # 10 MB pour imports Excel/CSV
 
 # =============================================================================
 # SECURITY

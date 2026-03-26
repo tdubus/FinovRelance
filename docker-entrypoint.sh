@@ -71,7 +71,6 @@ exec gunicorn --bind 0.0.0.0:5000 \
     --timeout $GUNICORN_TIMEOUT \
     --workers $GUNICORN_WORKERS \
     --threads 4 \
-    --preload \
     --access-logfile - \
     --error-logfile - \
     main:app

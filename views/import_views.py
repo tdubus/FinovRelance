@@ -27,6 +27,25 @@ def list_jobs():
         flash('Accès refusé.', 'error')
         return redirect(url_for('main.dashboard'))
 
+    # Auto-detect and mark stuck jobs (processing for more than 15 minutes)
+    from datetime import datetime, timedelta
+    from app import db
+
+    stuck_threshold = datetime.utcnow() - timedelta(minutes=15)
+    stuck_jobs = ImportJob.query.filter(
+        ImportJob.company_id == company.id,
+        ImportJob.status.in_(['pending', 'processing']),
+        ImportJob.updated_at < stuck_threshold
+    ).all()
+
+    for job in stuck_jobs:
+        job.status = 'failed'
+        job.completed_at = datetime.utcnow()
+        job.result_message = 'Import interrompu (délai dépassé). Veuillez réessayer.'
+
+    if stuck_jobs:
+        db.session.commit()
+
     # Get all jobs for this company, ordered by most recent first
     jobs = ImportJob.query.filter_by(company_id=company.id).order_by(ImportJob.created_at.desc()).all()
 
