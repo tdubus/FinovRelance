@@ -146,6 +146,9 @@ class ImportWorker:
             if not database_url:
                 logger.error(f"Import job {job_id} failed: DATABASE_URL environment variable is not set")
                 return
+            # Fix postgres:// → postgresql:// (SQLAlchemy 2.0 requirement)
+            if database_url.startswith('postgres://'):
+                database_url = database_url.replace('postgres://', 'postgresql://', 1)
             engine = create_engine(database_url, pool_pre_ping=True)
             Session = scoped_session(sessionmaker(bind=engine))
             session = Session()
