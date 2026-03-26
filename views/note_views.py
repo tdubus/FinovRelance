@@ -614,6 +614,7 @@ def edit_note(note_id):
 
     # Return errors for AJAX
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        current_app.logger.error(f"Note edit validation failed for note {note_id}: {form.errors}, form data: {dict(request.form)}")
         return jsonify({'success': False, 'errors': form.errors}), 400
 
     return render_template('notes/note_form.html', form=form, company=company, title='Modifier note', note=note)
