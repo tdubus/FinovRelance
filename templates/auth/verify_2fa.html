@@ -242,13 +242,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var modeEmail = document.getElementById('mode-email');
     var modeRecovery = document.getElementById('mode-recovery');
     var codeInput = document.getElementById('code');
-    var formSubmitted = false;
-
-    function safeSubmit(form) {
-        if (formSubmitted) return;
-        formSubmitted = true;
-        form.submit();
-    }
 
     function showMode(mode) {
         [modeMain, modeAlts, modeEmail, modeRecovery].forEach(function(m) {
@@ -259,38 +252,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Auto-focus main input
     if (codeInput) codeInput.focus();
-
-    // Auto-submit on 6 digits (main form)
-    if (codeInput) {
-        codeInput.addEventListener('input', function() {
-            if (/^\d{6}$/.test(this.value)) {
-                setTimeout(function() { safeSubmit(codeInput.form); }, 400);
-            }
-        });
-        codeInput.form.addEventListener('submit', function() { formSubmitted = true; });
-    }
-
-    // Auto-submit recovery code
-    var recoveryInput = document.getElementById('recovery-code');
-    if (recoveryInput) {
-        recoveryInput.addEventListener('input', function() {
-            if (/^[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}$/.test(this.value)) {
-                setTimeout(function() { safeSubmit(recoveryInput.form); }, 400);
-            }
-        });
-        recoveryInput.form.addEventListener('submit', function() { formSubmitted = true; });
-    }
-
-    // Auto-submit email code
-    var emailCodeInput = document.getElementById('email-code');
-    if (emailCodeInput) {
-        emailCodeInput.addEventListener('input', function() {
-            if (/^\d{6}$/.test(this.value)) {
-                setTimeout(function() { safeSubmit(emailCodeInput.form); }, 400);
-            }
-        });
-        emailCodeInput.form.addEventListener('submit', function() { formSubmitted = true; });
-    }
 
     // Show alternatives
     var btnAlts = document.getElementById('btn-show-alternatives');

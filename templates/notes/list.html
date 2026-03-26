@@ -144,6 +144,7 @@
             </div>
             <div class="modal-body">
                 <form id="noteForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <input type="hidden" id="noteId" name="note_id">
                     
                     <div class="mb-3">
@@ -199,6 +200,7 @@
             </div>
             <div class="modal-body">
                 <form id="emailForm" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <!-- Client et modèle -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -575,6 +577,7 @@
                 
                 <!-- Editable Section -->
                 <form id="editEmailNoteForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <input type="hidden" id="editEmailNoteId">
                     
                     <div class="card">

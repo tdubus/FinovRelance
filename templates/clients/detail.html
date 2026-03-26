@@ -936,6 +936,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form id="editNoteForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <input type="hidden" id="editNoteId" name="note_id">
                 <input type="hidden" id="editNoteClientId" name="client_id" value="{{ client.id }}">
                 <div class="modal-body">
@@ -1033,6 +1034,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 <!-- Editable Section -->
                 <form id="editEmailNoteForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <input type="hidden" id="editEmailNoteId">
                     
                     <div class="card">
