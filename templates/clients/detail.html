@@ -2427,7 +2427,7 @@ function addEmailToField(fieldId, email) {
                 + (isOk ? 'bg-success-subtle text-success-emphasis border border-success-subtle'
                          : 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle');
             const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
-            const clientSuffix = inv.client_name ? ` <span class="text-muted">(${esc(inv.client_name)})</span>` : '';
+            const clientSuffix = inv.client_code ? ` <span class="text-muted">(${esc(inv.client_code)})</span>` : '';
             badge.innerHTML = (isOk ? '<i data-feather="check-circle" style="width:11px;height:11px;"></i>' : '<i data-feather="clock" style="width:11px;height:11px;"></i>')
                 + ` ${esc(inv.invoice_number)}${clientSuffix} `
                 + `<span style="cursor:pointer;" data-id="${inv.id}">&times;</span>`;
@@ -2448,7 +2448,7 @@ function addEmailToField(fieldId, email) {
 
     function addInvoice(inv) {
         if (addedInvoices.find(x => x.id === inv.id)) return;
-        addedInvoices.push({id: inv.id, invoice_number: inv.invoice_number, client_name: inv.client_name || ''});
+        addedInvoices.push({id: inv.id, invoice_number: inv.invoice_number, client_code: inv.client_code || ''});
         renderAddedInvoices();
         const btn = document.getElementById('prefetchInvoicesBtn');
         if (btn) btn.classList.remove('d-none');
@@ -2488,7 +2488,7 @@ function addEmailToField(fieldId, email) {
                     li.className = 'list-group-item list-group-item-action py-1 px-2 small' + (inv.is_paid ? ' text-muted' : '');
                     li.style.cursor = 'pointer';
                     let label = inv.invoice_number + (inv.is_paid ? ' (payée)' : '');
-                    if (inv.client_name) label += ' — ' + inv.client_name;
+                    if (inv.client_code) label += ' — ' + inv.client_code;
                     li.textContent = label;
                     li.addEventListener('click', (e) => {
                         e.stopPropagation();
