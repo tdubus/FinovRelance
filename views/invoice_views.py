@@ -260,6 +260,7 @@ def search_invoices():
 
     client_id = request.args.get('client_id', type=int)
     q = request.args.get('q', '').strip()
+    include_children = request.args.get('include_children', '0') == '1'
 
     if not client_id:
         return jsonify({'error': 'client_id requis'}), 400
@@ -269,8 +270,17 @@ def search_invoices():
     if not client:
         return jsonify({'error': 'Client introuvable'}), 404
 
+    # Build list of client IDs to search
+    client_ids = [client_id]
+    client_name_map = {client_id: client.name}
+    if include_children and client.is_parent:
+        for child in client.child_clients:
+            if child.company_id == company.id:
+                client_ids.append(child.id)
+                client_name_map[child.id] = child.name
+
     query = Invoice.query.filter(
-        Invoice.client_id == client_id,
+        Invoice.client_id.in_(client_ids),
         Invoice.company_id == company.id
     )
     if q:
@@ -284,7 +294,8 @@ def search_invoices():
             'id': inv.id,
             'invoice_number': inv.invoice_number or '',
             'amount': float(inv.amount) if inv.amount else 0,
-            'is_paid': bool(inv.is_paid)
+            'is_paid': bool(inv.is_paid),
+            'client_name': client_name_map.get(inv.client_id, '') if len(client_ids) > 1 else ''
         }
         for inv in invoices
     ])

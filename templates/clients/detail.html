@@ -2426,8 +2426,10 @@ function addEmailToField(fieldId, email) {
             badge.className = 'badge rounded-pill d-inline-flex align-items-center gap-1 '
                 + (isOk ? 'bg-success-subtle text-success-emphasis border border-success-subtle'
                          : 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle');
+            const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+            const clientSuffix = inv.client_name ? ` <span class="text-muted">(${esc(inv.client_name)})</span>` : '';
             badge.innerHTML = (isOk ? '<i data-feather="check-circle" style="width:11px;height:11px;"></i>' : '<i data-feather="clock" style="width:11px;height:11px;"></i>')
-                + ` ${inv.invoice_number} `
+                + ` ${esc(inv.invoice_number)}${clientSuffix} `
                 + `<span style="cursor:pointer;" data-id="${inv.id}">&times;</span>`;
             badge.querySelector('[data-id]').addEventListener('click', function() {
                 const rid = parseInt(this.dataset.id);
@@ -2446,7 +2448,7 @@ function addEmailToField(fieldId, email) {
 
     function addInvoice(inv) {
         if (addedInvoices.find(x => x.id === inv.id)) return;
-        addedInvoices.push({id: inv.id, invoice_number: inv.invoice_number});
+        addedInvoices.push({id: inv.id, invoice_number: inv.invoice_number, client_name: inv.client_name || ''});
         renderAddedInvoices();
         const btn = document.getElementById('prefetchInvoicesBtn');
         if (btn) btn.classList.remove('d-none');
@@ -2461,7 +2463,9 @@ function addEmailToField(fieldId, email) {
         let searchTimeout;
         function doSearch() {
             const q = input.value.trim();
-            fetch(`/invoices/api/search?client_id=${CLIENT_ID}&q=${encodeURIComponent(q)}`, {
+            const inclChildren = document.getElementById('email_include_children');
+            const inclParam = (inclChildren && inclChildren.checked) ? '&include_children=1' : '';
+            fetch(`/invoices/api/search?client_id=${CLIENT_ID}&q=${encodeURIComponent(q)}${inclParam}`, {
                 headers: {'X-Requested-With': 'XMLHttpRequest'}
             })
             .then(r => r.json())
@@ -2483,7 +2487,9 @@ function addEmailToField(fieldId, email) {
                     const li = document.createElement('li');
                     li.className = 'list-group-item list-group-item-action py-1 px-2 small' + (inv.is_paid ? ' text-muted' : '');
                     li.style.cursor = 'pointer';
-                    li.textContent = inv.invoice_number + (inv.is_paid ? ' (payée)' : '');
+                    let label = inv.invoice_number + (inv.is_paid ? ' (payée)' : '');
+                    if (inv.client_name) label += ' — ' + inv.client_name;
+                    li.textContent = label;
                     li.addEventListener('click', (e) => {
                         e.stopPropagation();
                         addInvoice(inv);
@@ -2578,6 +2584,26 @@ function addEmailToField(fieldId, email) {
     document.addEventListener('DOMContentLoaded', () => {
         setupInvoiceSearch();
         setupPrefetchBtn();
+
+        // Reset invoice copies and refresh search when "Inclure les enfants" checkbox changes
+        const inclChildrenCb = document.getElementById('email_include_children');
+        if (inclChildrenCb) {
+            inclChildrenCb.addEventListener('change', () => {
+                addedInvoices = [];
+                downloadedIds = new Set();
+                const container = document.getElementById('selectedInvoicesList');
+                if (container) container.innerHTML = '';
+                const prefBtn = document.getElementById('prefetchInvoicesBtn');
+                if (prefBtn) prefBtn.classList.add('d-none');
+                const errDiv = document.getElementById('invoicePdfError');
+                if (errDiv) errDiv.style.display = 'none';
+                // Trigger a fresh search with the new include_children state
+                const searchInput = document.getElementById('invoiceSearchInput');
+                if (searchInput) {
+                    searchInput.dispatchEvent(new Event('focus'));
+                }
+            });
+        }
 
         const emailModal = document.getElementById('sendEmailModal');
         if (emailModal) {

@@ -818,8 +818,10 @@
             badge.className = 'badge rounded-pill d-inline-flex align-items-center gap-1 '
                 + (isOk ? 'bg-success-subtle text-success-emphasis border border-success-subtle'
                          : 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle');
+            const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+            const clientSuffix = inv.client_name ? ` <span class="text-muted">(${esc(inv.client_name)})</span>` : '';
             badge.innerHTML = (isOk ? '<i class="fas fa-check-circle" style="font-size:10px;"></i>' : '<i class="fas fa-clock" style="font-size:10px;"></i>')
-                + ` ${inv.invoice_number} `
+                + ` ${esc(inv.invoice_number)}${clientSuffix} `
                 + `<span style="cursor:pointer;" data-id="${inv.id}">&times;</span>`;
             badge.querySelector('[data-id]').addEventListener('click', function() {
                 const rid = parseInt(this.dataset.id);
@@ -835,7 +837,7 @@
 
     function noteAddInvoice(inv) {
         if (noteAddedInvoices.find(x => x.id === inv.id)) return;
-        noteAddedInvoices.push({id: inv.id, invoice_number: inv.invoice_number});
+        noteAddedInvoices.push({id: inv.id, invoice_number: inv.invoice_number, client_name: inv.client_name || ''});
         noteRenderAddedInvoices();
         const btn = document.getElementById('notePrefetchInvoicesBtn');
         if (btn) btn.classList.remove('d-none');
@@ -860,7 +862,9 @@
         const list = document.getElementById('noteInvoiceSuggestList');
         if (!input || !list) return;
         const q = input.value.trim();
-        fetch(`/invoices/api/search?client_id=${noteCurrentClientId}&q=${encodeURIComponent(q)}`, {
+        const inclChildren = document.getElementById('emailIncludeChildren');
+        const inclParam = (inclChildren && !inclChildren.disabled && inclChildren.checked) ? '&include_children=1' : '';
+        fetch(`/invoices/api/search?client_id=${noteCurrentClientId}&q=${encodeURIComponent(q)}${inclParam}`, {
             headers: {'X-Requested-With': 'XMLHttpRequest'}
         })
         .then(r => r.json())
@@ -882,7 +886,9 @@
                 const li = document.createElement('li');
                 li.className = 'list-group-item list-group-item-action py-1 px-2 small' + (inv.is_paid ? ' text-muted' : '');
                 li.style.cursor = 'pointer';
-                li.textContent = inv.invoice_number + (inv.is_paid ? ' (payée)' : '');
+                let label = inv.invoice_number + (inv.is_paid ? ' (payée)' : '');
+                if (inv.client_name) label += ' — ' + inv.client_name;
+                li.textContent = label;
                 li.addEventListener('click', (e) => {
                     e.stopPropagation();
                     noteAddInvoice(inv);
@@ -938,6 +944,28 @@
                 const val = parseInt(document.getElementById('emailClient')?.value || '0');
                 if (val) window._noteInvoicePdfState.setClientId(val);
             };
+        }
+
+        // Reset invoice copies and refresh search when "Inclure les enfants" checkbox changes
+        const inclChildrenCb = document.getElementById('emailIncludeChildren');
+        if (inclChildrenCb) {
+            inclChildrenCb.addEventListener('change', () => {
+                const savedClientId = noteCurrentClientId;
+                // Clear selections but keep client context
+                noteAddedInvoices = [];
+                noteDownloadedIds = new Set();
+                const container = document.getElementById('noteSelectedInvoicesList');
+                if (container) container.innerHTML = '';
+                const prefBtn = document.getElementById('notePrefetchInvoicesBtn');
+                if (prefBtn) prefBtn.classList.add('d-none');
+                const errDiv = document.getElementById('noteInvoicePdfError');
+                if (errDiv) errDiv.style.display = 'none';
+                // Restore client ID (was not reset) and refresh search
+                noteCurrentClientId = savedClientId;
+                if (savedClientId) {
+                    noteDoSearch();
+                }
+            });
         }
 
         const searchInput = document.getElementById('noteInvoiceSearchInput');
