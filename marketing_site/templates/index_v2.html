@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WZ7KQJ2F');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinovRelance – SaaS de gestion des comptes à recevoir</title>
+    <meta name="description" content="Optimisez le suivi de vos comptes à recevoir, relances clients et intégrations comptables avec FinovRelance, le SaaS multi-entreprise.">
+    
+    <!-- Balise canonique SEO -->
+    <link rel="canonical" href="https://finov-relance.com/">
+    
+    <!-- Favicon pour tous les navigateurs et Google -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260316">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png?v=20260316">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=20260316">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=20260316">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260316">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <link rel="stylesheet" href="/marketing-static/css/marketing.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "FinovRelance",
+        "alternateName": "Finova Solutions",
+        "url": "https://finov-relance.com",
+        "logo": "https://finov-relance.com/marketing-static/images/logo.png",
+        "description": "Logiciel SaaS de gestion des comptes à recevoir et relances clients pour entreprises",
+        "email": "support@finov-relance.com",
+        "sameAs": [
+            "https://www.linkedin.com/company/solutions-finova/"
+        ],
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "CA",
+            "addressRegion": "QC"
+        }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "FinovRelance",
+        "applicationCategory": "BusinessApplication",
+        "applicationSubCategory": "Accounts Receivable Management",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "CAD",
+            "lowPrice": "0",
+            "highPrice": "39.95",
+            "offerCount": "3",
+            "offers": [
+                {
+                    "@type": "Offer",
+                    "name": "Découverte",
+                    "price": "0",
+                    "priceCurrency": "CAD",
+                    "description": "Plan gratuit - 1 entreprise, 10 clients"
+                },
+                {
+                    "@type": "Offer",
+                    "name": "Relance",
+                    "price": "24.95",
+                    "priceCurrency": "CAD",
+                    "description": "Plan professionnel - 1 entreprise, factures illimitées"
+                },
+                {
+                    "@type": "Offer",
+                    "name": "Relance+",
+                    "price": "39.95",
+                    "priceCurrency": "CAD",
+                    "description": "Plan entreprise - 3 entreprises, factures illimitées"
+                }
+            ]
+        },
+        "description": "Centralisez vos factures impayées et communications clients, synchronisez vos données comptables et répartissez le travail entre vos équipes.",
+        "featureList": [
+            "Gestion multi-entreprises",
+            "Synchronisation comptable automatique",
+            "Intégration QuickBooks, Business Central, Xero, Odoo",
+            "Suivi des communications clients",
+            "Relances automatisées",
+            "Rapports et statistiques",
+            "Import CSV/Excel"
+        ],
+        "screenshot": "https://finov-relance.com/marketing-static/images/hero-dashboard.png",
+        "softwareVersion": "1.0",
+        "author": {
+            "@type": "Organization",
+            "name": "Finova Solutions",
+            "url": "https://finova-solutions.com"
+        }
+    }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        [id] { scroll-margin-top: 80px; }
+
+        /* Glassmorphism floating navbar */
+        .lp-navbar {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: calc(100% - 32px);
+            max-width: 960px;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 20px;
+            padding: 0.5rem 1.25rem;
+            box-shadow: 0px 8px 24px 0px rgba(0,0,0,0.08), inset 0px 1px 0px 0px rgba(255,255,255,0.6);
+        }
+        .lp-navbar .container { display: flex; align-items: center; justify-content: space-between; max-width: 100%; padding: 0; }
+        .lp-navbar .logo img { height: 36px; }
+        .lp-navbar-links { display: flex; align-items: center; gap: 1.5rem; }
+        .lp-navbar-links a { font-size: 0.85rem; color: #4B5563; text-decoration: none; font-weight: 500; transition: color 0.2s; }
+        .lp-navbar-links a:hover { color: #8475EC; }
+        .lp-navbar-cta { display: flex; align-items: center; gap: 0.5rem; }
+        .lp-navbar-cta .btn-login { font-size: 0.825rem; color: #161819; text-decoration: none; padding: 0.4rem 0.9rem; border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; transition: all 0.2s; font-weight: 500; }
+        .lp-navbar-cta .btn-login:hover { background: rgba(0,0,0,0.04); }
+        .lp-navbar-cta .btn-primary { border-radius: 10px; padding: 0.4rem 1rem; font-weight: 600; font-size: 0.85rem; }
+        @media (max-width: 768px) {
+            .lp-navbar { padding: 0.5rem 1rem; max-width: calc(100% - 24px); }
+            .lp-navbar-links { display: none; }
+            .lp-navbar-cta .btn-login { display: none; }
+        }
+
+        /* Old header removed from DOM */
+
+        /* New hero with gradient */
+        .hero-v2-wrapper { background: linear-gradient(180deg, #EDE9FE 0%, #FCFCFC 60%); padding-top: 7rem; }
+        .hero-v2 { text-align: center; padding: 2rem 0 0; }
+        .hero-v2 h1 { font-size: clamp(1.75rem, 4vw, 2.75rem); line-height: 1.2; max-width: 800px; margin: 0 auto 1.25rem; }
+        .hero-v2-subtitle { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--gray-600); max-width: 640px; margin: 0 auto 2rem; line-height: 1.6; }
+        .hero-v2-cta { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 1rem; }
+        .hero-v2-reassurance { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-top: 1rem; font-size: 0.875rem; color: var(--gray-600); }
+        .hero-v2-reassurance span { display: inline-flex; align-items: center; gap: 0.4rem; }
+        .hero-v2-reassurance i { color: var(--success); font-size: 0.8rem; }
+
+        /* Browser mock */
+        .demo-browser { max-width: 1400px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid #e2e8f0; position: relative; }
+        .demo-titlebar { background: #f1f3f4; padding: 12px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #e2e8f0; }
+        .demo-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .demo-dot-red { background: #FE5F57; }
+        .demo-dot-yellow { background: #FEBD2E; }
+        .demo-dot-green { background: #28C840; }
+        .demo-tab { margin-left: 12px; background: white; padding: 6px 14px; border-radius: 6px 6px 0 0; font-size: 12px; color: #3C4043; display: flex; align-items: center; gap: 6px; }
+        .demo-tab-icon { width: 16px; height: 16px; border-radius: 50%; background: #8475EC; display: flex; align-items: center; justify-content: center; }
+        .demo-tab-icon img { width: 10px; height: 10px; filter: brightness(0) invert(1); }
+        .demo-addressbar { background: white; padding: 8px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #5F6368; }
+        .demo-addressbar svg { width: 16px; height: 16px; color: #9CA3AF; }
+
+        /* Mobile overlay */
+        .demo-mobile-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 20; background: rgba(255,255,255,0.15); backdrop-filter: blur(1px); border-radius: 12px; cursor: default; }
+        .demo-mobile-overlay span { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(132,117,236,0.9); color: white; padding: 0.5rem 1.25rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; white-space: nowrap; box-shadow: 0 4px 12px rgba(132,117,236,0.3); }
+        @media (max-width: 768px) {
+            .demo-mobile-overlay { display: block; }
+            .demo-browser iframe { pointer-events: none; }
+        }
+        @media (max-width: 1024px) {
+            .lp-handwritten { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WZ7KQJ2F"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    
+    <!-- New glassmorphism navbar -->
+    <nav class="lp-navbar">
+        <div class="container">
+            <a href="/" class="logo"><img src="/marketing-static/images/logo.png" alt="FinovRelance" style="height: 36px;"></a>
+            <div class="lp-navbar-links">
+                <a href="/fonctionnalites">Fonctionnalités</a>
+                <a href="/tarifs">Tarifs</a>
+                <a href="/cas-usage">Cas d'usage</a>
+                <a href="/guide">Guide</a>
+                <a href="/contact">Contact</a>
+            </div>
+            <div class="lp-navbar-cta">
+                <a href="/auth/login" class="btn-login">Connexion</a>
+                <a href="/tarifs" class="btn btn-primary" style="font-size: 0.85rem;">Essai gratuit</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Old header removed - use index.html for rollback -->
+
+    <!-- Hero Section + Demo -->
+    <div class="hero-v2-wrapper">
+        <section class="hero-v2">
+            <div class="container">
+                <h1>Simplifiez la gestion de vos <span class="text-highlight">comptes à recevoir</span></h1>
+                <p class="hero-v2-subtitle">
+                    Centralisez vos factures impayées et communications clients, synchronisez vos données comptables et répartissez le travail entre vos équipes.
+                </p>
+                <div class="hero-v2-cta">
+                    <a href="/tarifs" class="btn btn-primary btn-large">Commencez votre essai gratuit</a>
+                    <a href="/tarifs" class="btn btn-secondary btn-large">Voir les tarifs</a>
+                </div>
+                <div class="hero-v2-reassurance">
+                    <span><i class="fas fa-check-circle"></i> Intégration et onboarding inclus</span>
+                    <span><i class="fas fa-check-circle"></i> Opérationnel dès le premier jour</span>
+                    <span><i class="fas fa-check-circle"></i> Annulez à tout moment</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Browser Mock Demo -->
+        <section style="padding: 2rem 2rem 4rem;" id="demo">
+            <!-- Handwritten annotation -->
+            <div style="max-width: 1400px; margin: 0 auto; position: relative;">
+                <div class="lp-handwritten" style="position: absolute; top: -55px; right: 50px; z-index: 10; pointer-events: none; user-select: none;">
+                    <span style="font-family: cursive; font-size: 1.3rem; color: rgba(132,117,236,0.75); white-space: nowrap; display: block; text-align: right; margin-bottom: 4px;">Démo live - Essayez !</span>
+                    <svg width="90" height="55" viewBox="0 0 90 55" fill="none" style="display: block; margin-left: auto; margin-right: 15px;">
+                        <path d="M45 2 C 50 12, 52 28, 48 48" stroke="#8475EC" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6"/>
+                        <path d="M42 42 L48 50 L53 40" stroke="#8475EC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.6"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="demo-browser" style="max-width: 1400px; margin: 0 auto;">
+                <div class="demo-mobile-overlay">
+                    <span><i class="fas fa-desktop me-2"></i>Passez sur un ordinateur pour interagir !</span>
+                </div>
+                <div class="demo-titlebar">
+                    <div class="demo-dot demo-dot-red"></div>
+                    <div class="demo-dot demo-dot-yellow"></div>
+                    <div class="demo-dot demo-dot-green"></div>
+                    <div class="demo-tab">
+                        <div class="demo-tab-icon"><img src="/favicon.png" alt=""></div>
+                        FinovRelance | Démo
+                    </div>
+                </div>
+                <div class="demo-addressbar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
+                    <span id="demo-url">app.finov-relance.com/dashboard</span>
+                </div>
+                <iframe src="/demo-iframe" id="demo-iframe" style="width: 100%; height: 750px; border: none; display: block; background: #FCFCFC;"></iframe>
+            </div>
+        </section>
+    </div>
+
+    <!-- Section Problème / Solution -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Vos défis quotidiens méritent de meilleures solutions</h2>
+            </div>
+            
+            <!-- Première ligne : Sans FinovRelance (gauche) + Image (droite) -->
+            <div class="comparison-row fade-in-left">
+                <div class="comparison-content">
+                    <div class="card">
+                        <h3>Sans FinovRelance</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: #6B7280;">
+                                <span style="color: #EF4444; font-weight: 700;">✗</span>
+                                Vos factures impayées sont dispersées dans plusieurs fichiers Excel
+                            </li>
+                            <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: #6B7280;">
+                                <span style="color: #EF4444; font-weight: 700;">✗</span>
+                                Vous perdez du temps à chercher l'historique des relances pour chaque client
+                            </li>
+                            <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: #6B7280;">
+                                <span style="color: #EF4444; font-weight: 700;">✗</span>
+                                Les données comptables doivent être saisies manuellement dans votre système
+                            </li>
+                            <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: #6B7280;">
+                                <span style="color: #EF4444; font-weight: 700;">✗</span>
+                                Difficile de savoir qui relancer et quand le faire
+                            </li>
+                            <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: #6B7280;">
+                                <span style="color: #EF4444; font-weight: 700;">✗</span>
+                                Les rapports de suivi prennent des heures à compiler
+                            </li>
+                            <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: #6B7280;">
+                                <span style="color: #EF4444; font-weight: 700;">✗</span>
+                                Chaque commis gère ses clients différemment
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="comparison-image">
+                    <img src="/marketing-static/images/sans-finov-relance.png" alt="Gestion manuelle des factures - Processus désorganisé et inefficace">
+                </div>
+            </div>
+            
+            <!-- Deuxième ligne : Image (gauche) + Avec FinovRelance (droite) -->
+            <div class="comparison-row fade-in-right">
+                <div class="comparison-image">
+                    <img src="/marketing-static/images/avec-finov-relance.png" alt="Automatisation des relances clients avec FinovRelance - Processus optimisé">
+                </div>
+                <div class="comparison-content">
+                    <div class="card" style="background: linear-gradient(135deg, #EDE9FE 0%, #FCFCFC 100%); border-color: var(--primary);">
+                        <h3 style="color: var(--primary);">Avec FinovRelance</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: #374151;">
+                                <span style="color: #10B981; font-weight: 700;">✓</span>
+                                Toutes vos factures centralisées dans un tableau de bord clair et accessible
+                            </li>
+                            <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: #374151;">
+                                <span style="color: #10B981; font-weight: 700;">✓</span>
+                                Historique complet des communications et notes pour chaque client
+                            </li>
+                            <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: #374151;">
+                                <span style="color: #10B981; font-weight: 700;">✓</span>
+                                Synchronisation automatique avec votre système comptable*
+                            </li>
+                            <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: #374151;">
+                                <span style="color: #10B981; font-weight: 700;">✓</span>
+                                Alertes intelligentes pour savoir exactement qui relancer
+                            </li>
+                            <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: #374151;">
+                                <span style="color: #10B981; font-weight: 700;">✓</span>
+                                Rapports générés en quelques clics (PDF et Excel)
+                            </li>
+                            <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: #374151;">
+                                <span style="color: #10B981; font-weight: 700;">✓</span>
+                                Processus standardisé pour toute votre équipe
+                            </li>
+                        </ul>
+                        <p style="margin-top: 16px; font-size: 12px; color: #6B7280; font-style: italic;">
+                            * Selon la disponibilité des connecteurs comptables
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Fonctionnalités clés -->
+    <section class="section section-alt section-features">
+        <div class="container">
+            <div class="section-header section-fade-in">
+                <h2>Tout ce dont vous avez besoin pour gérer vos comptes clients</h2>
+            </div>
+            
+            <div class="grid grid-features">
+                <!-- Carte 1 -->
+                <div class="card card-fade-in">
+                    <div class="card-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Vos clients, tous au même endroit</h3>
+                    <p>Centralisez les informations de vos clients avec leurs contacts, historique de paiement et notes importantes. Consultez en un coup d'œil qui doit être relancé.</p>
+                    <a href="/fonctionnalites#clients" class="card-link">
+                        En savoir plus <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- Carte 2 -->
+                <div class="card card-fade-in">
+                    <div class="card-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <h3>Gardez le contrôle sur vos factures impayées</h3>
+                    <p>Visualisez toutes vos factures en retard, triez par ancienneté, montant ou client. Suivez l'évolution de vos comptes à recevoir en temps réel.</p>
+                    <a href="/fonctionnalites#factures" class="card-link">
+                        En savoir plus <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- Carte 3 -->
+                <div class="card card-fade-in">
+                    <div class="card-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>Ne manquez plus jamais une relance</h3>
+                    <p>Créez des modèles d'emails personnalisés et envoyez vos relances directement depuis FinovRelance. Planifiez vos suivis et gardez une trace de chaque communication.</p>
+                    <a href="/fonctionnalites#communications" class="card-link">
+                        En savoir plus <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- Carte 4 -->
+                <div class="card card-fade-in">
+                    <div class="card-icon">
+                        <i class="fas fa-sticky-note"></i>
+                    </div>
+                    <h3>Documentez chaque interaction</h3>
+                    <p>Ajoutez des notes détaillées sur vos échanges avec les clients. Votre équipe reste informée et peut reprendre le dossier facilement.</p>
+                    <a href="/fonctionnalites#communications" class="card-link">
+                        En savoir plus <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- Carte 5 -->
+                <div class="card card-fade-in">
+                    <div class="card-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3>Des rapports professionnels en un clic</h3>
+                    <p>Générez des états de compte détaillés, des rapports de vieillissement des comptes et des analyses de performance. Exportez en PDF pour vos clients ou en Excel pour vos analyses.</p>
+                    <a href="/fonctionnalites#rapports" class="card-link">
+                        En savoir plus <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Pourquoi FinovRelance -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Pourquoi choisir FinovRelance ?</h2>
+            </div>
+            
+            <div class="grid grid-4">
+                <div class="card text-center">
+                    <div class="card-icon" style="margin: 0 auto 1.5rem;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4>Gain de temps immédiat</h4>
+                    <p>Réduisez de 50% le temps consacré au suivi des comptes clients. Plus de fichiers Excel à chercher, plus de doubles saisies : tout est centralisé et automatisé.</p>
+                </div>
+                
+                <div class="card text-center">
+                    <div class="card-icon" style="margin: 0 auto 1.5rem;">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h4>Intégrations comptables</h4>
+                    <p>Synchronisation bidirectionnelle avec vos systèmes comptables. Vos factures, clients et paiements sont toujours à jour, sans intervention manuelle.</p>
+                </div>
+                
+                <div class="card text-center">
+                    <div class="card-icon" style="margin: 0 auto 1.5rem;">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4>Meilleure trésorerie</h4>
+                    <p>Relancez vos clients au bon moment avec les bonnes informations. Nos utilisateurs constatent une réduction de leurs délais de paiement grâce à un suivi plus rigoureux.</p>
+                </div>
+                
+                <div class="card text-center">
+                    <div class="card-icon" style="margin: 0 auto 1.5rem;">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <h4>Équipe synchronisée</h4>
+                    <p>Toute votre équipe travaille sur la même plateforme. Finies les informations perdues entre collègues : notes, emails et historique partagés en temps réel.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Intégrations -->
+    <section class="section section-alt">
+        <div class="container">
+            <div class="section-header">
+                <h2>S'intègre parfaitement à votre système comptable</h2>
+                <p>FinovRelance se connecte directement à votre système comptable* pour synchroniser automatiquement vos données. Configuration simple en quelques clics, aucune expertise technique requise.</p>
+                <p style="margin-top: 1.5rem; font-size: 0.875rem; font-style: italic; color: #6b7280; opacity: 0.9;">* Selon la disponibilité des connecteurs comptables</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto;">
+                <div class="card text-center" style="padding: 2rem;">
+                    <div style="display: flex; justify-content: center; align-items: center; height: 120px; padding: 20px 0;">
+                        <img src="/marketing-static/images/quickbooks-logo.png" alt="Intégration QuickBooks - Synchronisation automatique des factures" style="max-width: 200px; max-height: 70px; height: auto;">
+                    </div>
+                </div>
+                
+                <div class="card text-center" style="padding: 2rem;">
+                    <div style="display: flex; justify-content: center; align-items: center; height: 120px; padding: 20px 0;">
+                        <img src="/marketing-static/images/business-central-logo.png" alt="Intégration Microsoft Dynamics 365 Business Central - Connexion comptable automatisée" style="max-width: 200px; max-height: 70px; height: auto;">
+                    </div>
+                </div>
+                
+                <div class="card text-center" style="padding: 2rem;">
+                    <div style="display: flex; justify-content: center; align-items: center; height: 120px; padding: 20px 0;">
+                        <img src="/marketing-static/images/xero-logo.png" alt="Intégration Xero Accounting - Synchronisation automatique des données" style="max-width: 120px; max-height: 100px; height: auto;">
+                    </div>
+                </div>
+                
+                <div class="card text-center" style="padding: 2rem;">
+                    <div style="display: flex; justify-content: center; align-items: center; height: 120px; padding: 20px 0;">
+                        <img src="/marketing-static/images/odoo-logo.png" alt="Intégration Odoo ERP - Synchronisation XML-RPC automatique" style="max-width: 200px; max-height: 70px; height: auto;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Produit</h4>
+                    <ul class="footer-links">
+                        <li><a href="/fonctionnalites">Fonctionnalités</a></li>
+                        <li><a href="/tarifs">Tarifs</a></li>
+                        <li><a href="/cas-usage">Cas d'usage</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Ressources</h4>
+                    <ul class="footer-links">
+                        <li><a href="/guide">Guide d'utilisation</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul class="footer-links">
+                        <li><a href="mailto:support@finov-relance.com">support@finov-relance.com</a></li>
+                        <li><a href="https://finov-relance.com/legal/confidentialite" target="_blank" rel="noopener noreferrer">Politique de confidentialité</a></li>
+                        <li><a href="https://finov-relance.com/legal/cgu" target="_blank" rel="noopener noreferrer">Conditions d'utilisation</a></li>
+                        <li><a href="https://finov-relance.com/legal/cookies" target="_blank" rel="noopener noreferrer">Politique de cookies</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Réseaux sociaux</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://www.linkedin.com/company/solutions-finova/" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin" style="font-size: 1.5rem; margin-right: 0.5rem;"></i>LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p style="color: #ffffff;">&copy; <span id="year"></span> FinovRelance. Tous droits réservés.</p>
+                <p style="margin-top: 0.5rem; color: #ffffff;">Développé et vendu par <a href="https://finova-solutions.com/" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: none;">Finova Solutions</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookieConsent" class="cookie-consent" style="display: none;">
+        <div class="cookie-consent-content">
+            <div class="cookie-consent-text">
+                <p><strong>🍪 Nous utilisons des cookies</strong></p>
+                <p>Nous utilisons des cookies essentiels pour assurer le bon fonctionnement de notre site. En continuant à naviguer, vous acceptez notre <a href="https://finov-relance.com/legal/cookies">politique de cookies</a>.</p>
+            </div>
+            <div class="cookie-consent-actions">
+                <button id="acceptCookies" class="btn btn-primary">Accepter</button>
+                <button id="declineCookies" class="btn btn-secondary">Refuser</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/marketing-static/js/marketing.js"></script>
+    <script src="/marketing-static/js/cookie-consent.js"></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Listen for URL updates from demo iframe (origin-validated)
+        window.addEventListener('message', function(e) {
+            if (e.origin !== window.location.origin) return;
+            if (e.data && e.data.type === 'demo-url') {
+                var urlEl = document.getElementById('demo-url');
+                if (urlEl) urlEl.textContent = e.data.url;
+            }
+        });
+    </script>
+</body>
+</html>

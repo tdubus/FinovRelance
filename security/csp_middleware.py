@@ -93,6 +93,9 @@ def get_csp_directives(nonce=None):
             "'self'",
             "https://js.stripe.com",
             "https://hooks.stripe.com",
+            "https://www.youtube.com",
+            "https://www.youtube-nocookie.com",
+            "https://player.vimeo.com",
         ],
 
         'frame-ancestors': ["'self'"],

@@ -11,7 +11,7 @@ marketing_bp = Blueprint(
 
 @marketing_bp.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index_v2.html')
 
 @marketing_bp.route('/essai')
 def essai():
@@ -131,6 +131,7 @@ def contact():
             return redirect(url_for('marketing.contact'))
 
         safe_name = str(escape(name))
+        safe_name = str(safe_name).replace('\r', '').replace('\n', '')
         safe_email = str(escape(email))
         safe_company = str(escape(company))
         safe_message = str(escape(message))
@@ -214,11 +215,48 @@ def guide_page(slug):
     """Afficher une page de guide individuelle"""
     from models import GuidePage
     from flask import abort
+    import bleach
 
     guide = GuidePage.query.filter_by(slug=slug, is_published=True).first()
 
     if not guide:
         abort(404)
+
+    # Sanitize guide content to prevent XSS
+    allowed_tags = [
+        'p', 'br', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'pre',
+        'code', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
+        'div', 'span', 'hr', 'sub', 'sup',
+    ]
+    allowed_attrs = {
+        'a': ['href', 'title', 'target', 'rel'],
+        'img': ['src', 'alt', 'title', 'width', 'height'],
+        'td': ['colspan', 'rowspan'],
+        'th': ['colspan', 'rowspan'],
+        'div': ['class'],
+        'span': ['class'],
+        'p': ['class'],
+        'pre': ['class'],
+        'code': ['class'],
+    }
+    if guide.content:
+        guide.content = bleach.clean(
+            guide.content,
+            tags=allowed_tags,
+            attributes=allowed_attrs,
+            strip=True,
+        )
+
+    # Validate video_url - only allow trusted embed domains
+    if guide.video_url:
+        allowed_video_prefixes = (
+            'https://www.youtube.com/',
+            'https://www.youtube-nocookie.com/',
+            'https://player.vimeo.com/',
+        )
+        if not guide.video_url.startswith(allowed_video_prefixes):
+            guide.video_url = None
 
     # Récupérer les autres guides pour la navigation
     other_guides = GuidePage.query.filter(

@@ -1029,72 +1029,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             });
         });
 
-        // Demo Chart.js - real line chart
-        var ctx = document.getElementById('carEvolutionChart');
-        if (ctx) {
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Avr 25', 'Mai 25', 'Juin 25', 'Juil 25', 'Août 25', 'Sep 25', 'Oct 25', 'Nov 25', 'Déc 25', 'Jan 26', 'Fév 26', 'Mars 26'],
-                    datasets: [{
-                        label: '90+ jours',
-                        data: [310000, 295000, 280000, 265000, 248000, 235000, 220000, 210000, 198000, 192000, 185000, 179350],
-                        borderColor: '#EF4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.08)',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#EF4444'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.parsed.y.toLocaleString('fr-CA') + ' $';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            ticks: {
-                                callback: function(value) {
-                                    return (value / 1000) + 'k $';
-                                }
-                            },
-                            grid: { color: 'rgba(0,0,0,0.05)' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
-        }
+        // Chart.js removed - chart is inside the demo iframe
 
         // Demo is inside an iframe - no demoNav/showDemoToast needed in parent
 
-        // Fix anchor scroll - marketing.js looks for .header which was removed
-        // Re-bind navbar anchor links with correct offset
-        document.querySelectorAll('a[href^="#"]').forEach(function(link) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                var href = this.getAttribute('href');
-                var target = document.querySelector(href);
-                if (!target) return;
-                var navbarHeight = document.querySelector('.lp-navbar').offsetHeight;
-                window.scrollTo({
-                    top: target.offsetTop - navbarHeight - 30,
-                    behavior: 'smooth'
-                });
-            });
-        });
+        // Anchor scroll now handled by marketing.js (with null guard fix for .header/.lp-navbar)
     });
     </script>
 </body>

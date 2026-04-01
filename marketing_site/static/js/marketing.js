@@ -51,7 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const target = document.querySelector(href);
             if (!target) return;
 
-            const headerHeight = document.querySelector('.header').offsetHeight;
+            const headerEl = document.querySelector('.header') || document.querySelector('.lp-navbar');
+            const headerHeight = headerEl ? headerEl.offsetHeight : 80;
             const targetPosition = target.offsetTop - headerHeight - 20;
 
             window.scrollTo({
@@ -83,28 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
-    // ==========================================================================
-    // Pricing Toggle (Monthly/Annual)
-    // ==========================================================================
-
-    const pricingToggle = document.querySelector('#pricing-toggle');
-    const monthlyPrices = document.querySelectorAll('.price-monthly');
-    const annualPrices = document.querySelectorAll('.price-annual');
-
-    if (pricingToggle) {
-        pricingToggle.addEventListener('change', function() {
-            if (this.checked) {
-                // Show annual prices
-                monthlyPrices.forEach(price => price.style.display = 'none');
-                annualPrices.forEach(price => price.style.display = 'block');
-            } else {
-                // Show monthly prices
-                monthlyPrices.forEach(price => price.style.display = 'block');
-                annualPrices.forEach(price => price.style.display = 'none');
-            }
-        });
-    }
 
     // ==========================================================================
     // Form Validation (Contact Form)
@@ -187,31 +166,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return re.test(email);
     }
 
-    function showSuccess(message) {
-        const successDiv = document.createElement('div');
-        successDiv.className = 'alert alert-success';
-        successDiv.textContent = message;
-        successDiv.style.cssText = `
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            background-color: var(--success);
-            color: white;
-            padding: 16px 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 9999;
-            animation: slideIn 0.3s ease-out;
-        `;
-
-        document.body.appendChild(successDiv);
-
-        setTimeout(() => {
-            successDiv.style.animation = 'slideOut 0.3s ease-out';
-            setTimeout(() => successDiv.remove(), 300);
-        }, 3000);
-    }
-
     // ==========================================================================
     // Scroll Animations (Fade in on scroll)
     // ==========================================================================
@@ -265,17 +219,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const header = document.querySelector('.header');
     let lastScroll = 0;
 
-    window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
+    if (header) {
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
 
-        if (currentScroll > 100) {
-            header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-        } else {
-            header.style.boxShadow = 'none';
-        }
+            if (currentScroll > 100) {
+                header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+            } else {
+                header.style.boxShadow = 'none';
+            }
 
-        lastScroll = currentScroll;
-    });
+            lastScroll = currentScroll;
+        });
+    }
 
 });
 
