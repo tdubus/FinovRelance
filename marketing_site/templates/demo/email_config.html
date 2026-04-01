@@ -1,0 +1,309 @@
+<div class="demo-page" id="demo-page-email-config">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-envelope-square me-2"></i>
+                    Connexion Courriel - Distribution Materiaux Quebec Inc.
+                </h1>
+            </div>
+
+            <!-- Configuration courriel -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-envelope me-2"></i>
+                        Configuration des adresses de courriel
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form onsubmit="event.preventDefault(); showDemoToast('Configuration sauvegardee (demo)');">
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card border-primary">
+                                    <div class="card-header bg-primary text-white">
+                                        <h6 class="mb-0">
+                                            <i class="fab fa-microsoft me-2"></i>
+                                            Outlook / Exchange
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="demo-outlook-email">Adresse courriel Outlook</label>
+                                            <input class="form-control" id="demo-outlook-email" type="email" placeholder="exemple@outlook.com" value="marie.lemieux@dmq.ca">
+                                        </div>
+
+                                        <!-- Statut de connexion OAuth - Connecte -->
+                                        <div class="alert alert-success py-2 mb-3">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            <strong>Connecte</strong> - marie.lemieux@dmq.ca
+                                            <small class="d-block text-muted">
+                                                Connecte le 15/01/2026 a 09:32
+                                            </small>
+                                        </div>
+                                        <div class="d-grid gap-2 d-md-flex">
+                                            <a href="javascript:void(0)"
+                                               onclick="showDemoToast('Action non disponible en demo')"
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-sync-alt me-1"></i>
+                                                Reconnecter
+                                            </a>
+                                            <a href="javascript:void(0)"
+                                               onclick="showDemoToast('Action non disponible en demo')"
+                                               class="btn btn-outline-danger btn-sm">
+                                                <i class="fas fa-unlink me-1"></i>
+                                                Deconnecter
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card border-danger">
+                                    <div class="card-header bg-danger text-white">
+                                        <h6 class="mb-0">
+                                            <i class="fab fa-google me-2"></i>
+                                            Gmail
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="demo-gmail-email">Adresse courriel Gmail</label>
+                                            <input class="form-control" id="demo-gmail-email" type="email" placeholder="exemple@gmail.com" value="">
+                                        </div>
+
+                                        <!-- Gmail - Non connecte (Outlook deja connecte) -->
+                                        <div class="alert alert-warning py-2">
+                                            <small>Deconnectez Outlook d'abord pour connecter Gmail</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Signature Courriel -->
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-signature me-2"></i>
+                                            Signature Courriel
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <!-- Onglets pour Templates et Editeur -->
+                                            <ul class="nav nav-tabs mb-3" id="demo-signature-tabs" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="demo-templates-tab" data-bs-toggle="tab" data-bs-target="#demo-templates-pane" type="button" role="tab">
+                                                        <i class="fas fa-th-large me-1"></i> Templates
+                                                    </button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link active" id="demo-editor-tab" data-bs-toggle="tab" data-bs-target="#demo-editor-pane" type="button" role="tab">
+                                                        <i class="fas fa-edit me-1"></i> Editeur
+                                                    </button>
+                                                </li>
+                                            </ul>
+
+                                            <div class="tab-content" id="demo-signature-tab-content">
+                                                <!-- Onglet Templates -->
+                                                <div class="tab-pane fade" id="demo-templates-pane" role="tabpanel">
+                                                    <div class="row g-3">
+                                                        <!-- Template 1 -->
+                                                        <div class="col-md-6">
+                                                            <div class="card signature-template" onclick="showDemoToast('Selection de template (demo)')" style="cursor: pointer;">
+                                                                <div class="card-header bg-primary text-white">
+                                                                    <h6 class="mb-0">Template 1</h6>
+                                                                </div>
+                                                                <div class="card-body p-3" style="background-color: #f8f9fa;">
+                                                                    <div class="d-flex align-items-start">
+                                                                        <div class="me-3">
+                                                                            <div style="width: 60px; height: 40px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                                                <i class="fas fa-image text-muted"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="flex-grow-1">
+                                                                            <div style="width: 100%; height: 8px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 80%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 70%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 8px;"></div>
+                                                                            <div class="d-flex gap-2">
+                                                                                <div style="width: 12px; height: 12px; background-color: #17a2b8; border-radius: 50%;"></div>
+                                                                                <div style="width: 12px; height: 12px; background-color: #17a2b8; border-radius: 50%;"></div>
+                                                                                <div style="width: 12px; height: 12px; background-color: #17a2b8; border-radius: 50%;"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="text-success">
+                                                                            <i class="fas fa-check-circle fa-lg"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Template 2 -->
+                                                        <div class="col-md-6">
+                                                            <div class="card signature-template" onclick="showDemoToast('Selection de template (demo)')" style="cursor: pointer;">
+                                                                <div class="card-header bg-primary text-white">
+                                                                    <h6 class="mb-0">Template 2</h6>
+                                                                </div>
+                                                                <div class="card-body p-3" style="background-color: #f8f9fa;">
+                                                                    <div class="d-flex align-items-start">
+                                                                        <div class="flex-grow-1 me-3">
+                                                                            <div style="width: 100%; height: 8px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 85%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 75%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 8px;"></div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div style="width: 50px; height: 35px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                                                                                <i class="fas fa-image text-muted"></i>
+                                                                            </div>
+                                                                            <div class="d-flex gap-1 justify-content-center">
+                                                                                <div style="width: 8px; height: 8px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                                <div style="width: 8px; height: 8px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                                <div style="width: 8px; height: 8px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Template 3 -->
+                                                        <div class="col-md-6">
+                                                            <div class="card signature-template" onclick="showDemoToast('Selection de template (demo)')" style="cursor: pointer;">
+                                                                <div class="card-header bg-primary text-white">
+                                                                    <h6 class="mb-0">Template 3</h6>
+                                                                </div>
+                                                                <div class="card-body p-3" style="background-color: #f8f9fa;">
+                                                                    <div class="d-flex align-items-start">
+                                                                        <div class="me-3">
+                                                                            <div style="width: 50px; height: 35px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                                                <i class="fas fa-image text-muted"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="flex-grow-1">
+                                                                            <div style="width: 100%; height: 8px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 90%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 60%; height: 4px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 8px;"></div>
+                                                                            <div class="d-flex gap-1">
+                                                                                <div style="width: 10px; height: 10px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                                <div style="width: 10px; height: 10px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                                <div style="width: 10px; height: 10px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Template 4 -->
+                                                        <div class="col-md-6">
+                                                            <div class="card signature-template" onclick="showDemoToast('Selection de template (demo)')" style="cursor: pointer;">
+                                                                <div class="card-header bg-primary text-white">
+                                                                    <h6 class="mb-0">Template 4</h6>
+                                                                </div>
+                                                                <div class="card-body p-3" style="background-color: #f8f9fa;">
+                                                                    <div class="d-flex align-items-start">
+                                                                        <div class="flex-grow-1 me-3">
+                                                                            <div style="width: 70%; height: 8px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 100%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 4px;"></div>
+                                                                            <div style="width: 85%; height: 6px; background-color: #dee2e6; border-radius: 2px; margin-bottom: 8px;"></div>
+                                                                            <div class="d-flex gap-1">
+                                                                                <div style="width: 10px; height: 10px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                                <div style="width: 10px; height: 10px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                                <div style="width: 10px; height: 10px; background-color: #6c757d; border-radius: 50%;"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div style="width: 45px; height: 32px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                                                <i class="fas fa-image text-muted"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Onglet Editeur -->
+                                                <div class="tab-pane fade show active" id="demo-editor-pane" role="tabpanel">
+                                                    <div class="border rounded p-3" style="min-height: 200px; background: #fff;">
+                                                        <table style="font-family: Arial, sans-serif; border-collapse: collapse; max-width: 500px; border: none;">
+                                                            <tr>
+                                                                <td style="padding-right: 15px; vertical-align: top; border: none;">
+                                                                    <div style="width: 80px; height: 60px; background-color: #e9ecef; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                                        <span style="color: #495057; font-size: 12px;">LOGO</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="vertical-align: top; border: none;">
+                                                                    <div style="margin-bottom: 8px;">
+                                                                        <strong style="font-size: 16px; color: #333;">Marie Lemieux</strong>
+                                                                    </div>
+                                                                    <div style="margin-bottom: 4px; color: #666; font-size: 14px;">Directrice des comptes recevables</div>
+                                                                    <div style="margin-bottom: 4px; color: #666; font-size: 14px;">Distribution Materiaux Quebec Inc.</div>
+                                                                    <div style="margin-bottom: 4px; color: #007bff; font-size: 14px;">marie.lemieux@dmq.ca</div>
+                                                                    <div style="color: #666; font-size: 14px;">(418) 555-0142</div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Indicateur de taille et bouton de sauvegarde -->
+                                        <div class="mt-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-info-circle me-1"></i>
+                                                    Taille: <span>1.2 KB</span> / 2.5 MB max
+                                                </small>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="progress" style="width: 200px; height: 6px;">
+                                                        <div class="progress-bar" role="progressbar" style="width: 2%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>
+                                Sauvegarder la configuration
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.signature-template:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.signature-template {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.signature-template.selected {
+    border-color: #8475EC;
+    box-shadow: 0 4px 12px rgba(132, 117, 236, 0.25);
+}
+</style>
+</div>

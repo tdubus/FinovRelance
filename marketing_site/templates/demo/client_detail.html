@@ -1,0 +1,667 @@
+<div class="demo-page" id="demo-page-client-detail">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0)" onclick="demoNav('clients')">Clients</a></li>
+                <li class="breadcrumb-item active">Constructions Bergeron &amp; Fils</li>
+            </ol>
+        </nav>
+        <h1 class="h3 mb-1">Constructions Bergeron &amp; Fils <span class="badge bg-secondary ms-2">BERG-001</span></h1>
+    </div>
+    <div class="d-flex gap-2">
+        <!-- Menu Actions -->
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i data-feather="more-horizontal" class="me-1"></i>
+                Actions
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="javascript:void(0)" onclick="demoNav('receivables')">
+                    <i data-feather="arrow-left" class="me-2"></i>
+                    Comptes &agrave; recevoir
+                </a></li>
+                <li><a class="dropdown-item" href="javascript:void(0)">
+                    <i data-feather="edit" class="me-2"></i>
+                    Modifier
+                </a></li>
+                <li><a class="dropdown-item" href="javascript:void(0)">
+                    <i data-feather="download" class="me-2"></i>
+                    Export PDF
+                </a></li>
+            </ul>
+        </div>
+
+        <button type="button" class="btn btn-success" onclick="event.preventDefault()">
+            <i data-feather="mail" class="me-1"></i>
+            Envoyer courriel
+        </button>
+    </div>
+</div>
+
+<!-- Client Information -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="user" class="me-2"></i>
+                    Informations du client
+                </h5>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Nom</label>
+                            <div class="fw-bold">Constructions Bergeron &amp; Fils</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Code client</label>
+                            <div class="fw-bold">BERG-001</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Courriel</label>
+                            <div>
+                                <a href="javascript:void(0)" class="text-decoration-none">
+                                    m.bergeron@bergeron.ca
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">T&eacute;l&eacute;phone</label>
+                            <div>
+                                <a href="javascript:void(0)" class="text-decoration-none">
+                                    (418) 555-3421
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Langue</label>
+                            <div>
+                                <span class="badge text-success border border-success" style="background-color: transparent;">
+                                    Fran&ccedil;ais
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="text-muted small">Adresse</label>
+                    <div>1250, boul. Industriel, Qu&eacute;bec, QC G1P 4N8</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Collecteur</label>
+                            <div>
+                                <span class="badge bg-secondary">Marie-Claude Tremblay</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="text-muted small">Repr&eacute;sentant</label>
+                            <div>
+                                Alain Bergeron
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-0">
+                    <label class="text-muted small">Termes de paiement</label>
+                    <div>Net 30</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="pie-chart" class="me-2"></i>
+                    R&eacute;sum&eacute;
+                </h5>
+
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="row flex-grow-1">
+                    <!-- Left Column: Total and Aging Details -->
+                    <div class="col-lg-7 d-flex flex-column justify-content-center">
+                        <!-- Total Outstanding -->
+                        <div class="mb-4">
+                            <div class="h3 mb-1 text-primary fw-bold">42 350,00 $</div>
+                            <div class="text-muted">Total &agrave; recevoir</div>
+                        </div>
+
+                        <!-- Aging Breakdown -->
+                        <div class="aging-list">
+                            <div class="aging-row d-flex justify-content-between align-items-center py-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="aging-dot me-3" style="background-color: #28a745;"></div>
+                                    <span>Courant</span>
+                                </div>
+                                <span class="fw-bold">12 500,00 $</span>
+                            </div>
+                            <div class="aging-row d-flex justify-content-between align-items-center py-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="aging-dot me-3" style="background-color: #ffc107;"></div>
+                                    <span>1 - 30 jours</span>
+                                </div>
+                                <span class="fw-bold">15 200,00 $</span>
+                            </div>
+                            <div class="aging-row d-flex justify-content-between align-items-center py-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="aging-dot me-3" style="background-color: #fd7e14;"></div>
+                                    <span>31 - 60 jours</span>
+                                </div>
+                                <span class="fw-bold">8 750,00 $</span>
+                            </div>
+                            <div class="aging-row d-flex justify-content-between align-items-center py-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="aging-dot me-3" style="background-color: #dc3545;"></div>
+                                    <span>61 - 90 jours</span>
+                                </div>
+                                <span class="fw-bold">3 400,00 $</span>
+                            </div>
+                            <div class="aging-row d-flex justify-content-between align-items-center py-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="aging-dot me-3" style="background-color: #6c757d;"></div>
+                                    <span>90+ jours</span>
+                                </div>
+                                <span class="fw-bold">2 500,00 $</span>
+                            </div>
+                        </div>
+
+                        <!-- DMP client -->
+                        <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center text-muted">
+                                <i data-feather="file-text" class="me-2" style="width:16px;height:16px;"></i>
+                                <span>DMP / Date facture</span>
+                            </div>
+                            <span class="fw-bold text-info">38.2 jours</span>
+                        </div>
+                        <div class="mt-2 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center text-muted">
+                                <i data-feather="clock" class="me-2" style="width:16px;height:16px;"></i>
+                                <span>DMP / Date &eacute;ch&eacute;ance</span>
+                            </div>
+                            <span class="fw-bold text-warning">8.2 jours</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Chart -->
+                    <div class="col-lg-5 d-flex align-items-center">
+                        <div class="donut-chart-container w-100">
+                            <div class="chart-with-legend">
+                                <svg width="160" height="160" viewBox="0 0 160 160" class="donut-chart">
+                                <!-- Background circle -->
+                                <circle cx="80" cy="80" r="60" fill="none" stroke="#f8f9fa" stroke-width="20"></circle>
+
+                                <!-- Current segment: 12500/42350 = 29.5% -->
+                                <circle cx="80" cy="80" r="60" fill="none"
+                                        stroke="#28a745" stroke-width="20"
+                                        stroke-dasharray="111.2 377.0"
+                                        stroke-dashoffset="0"
+                                        transform="rotate(-90 80 80)">
+                                    <title>Courant: 12 500,00 $</title>
+                                </circle>
+
+                                <!-- 1-30 days: 15200/42350 = 35.9% -->
+                                <circle cx="80" cy="80" r="60" fill="none"
+                                        stroke="#ffc107" stroke-width="20"
+                                        stroke-dasharray="135.3 377.0"
+                                        stroke-dashoffset="-111.2"
+                                        transform="rotate(-90 80 80)">
+                                    <title>1-30 jours: 15 200,00 $</title>
+                                </circle>
+
+                                <!-- 31-60 days: 8750/42350 = 20.7% -->
+                                <circle cx="80" cy="80" r="60" fill="none"
+                                        stroke="#fd7e14" stroke-width="20"
+                                        stroke-dasharray="77.8 377.0"
+                                        stroke-dashoffset="-246.5"
+                                        transform="rotate(-90 80 80)">
+                                    <title>31-60 jours: 8 750,00 $</title>
+                                </circle>
+
+                                <!-- 61-90 days: 3400/42350 = 8.0% -->
+                                <circle cx="80" cy="80" r="60" fill="none"
+                                        stroke="#dc3545" stroke-width="20"
+                                        stroke-dasharray="30.2 377.0"
+                                        stroke-dashoffset="-324.3"
+                                        transform="rotate(-90 80 80)">
+                                    <title>61-90 jours: 3 400,00 $</title>
+                                </circle>
+
+                                <!-- 90+ days: 2500/42350 = 5.9% -->
+                                <circle cx="80" cy="80" r="60" fill="none"
+                                        stroke="#6c757d" stroke-width="20"
+                                        stroke-dasharray="22.3 377.0"
+                                        stroke-dashoffset="-354.5"
+                                        transform="rotate(-90 80 80)">
+                                    <title>90+ jours: 2 500,00 $</title>
+                                </circle>
+
+                                </svg>
+
+                                <!-- Chart legend with percentages -->
+                                <div class="chart-legend mt-2">
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #28a745;"></div>
+                                        <span class="legend-text">30%</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #ffc107;"></div>
+                                        <span class="legend-text">36%</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #fd7e14;"></div>
+                                        <span class="legend-text">21%</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #dc3545;"></div>
+                                        <span class="legend-text">8%</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #6c757d;"></div>
+                                        <span class="legend-text">6%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section Contacts -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="users" class="me-2"></i>
+                    Contacts
+                </h5>
+                <button type="button" class="btn btn-primary btn-sm" onclick="event.preventDefault()">
+                    <i data-feather="plus" class="me-1"></i>
+                    Ajouter un contact
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Courriel</th>
+                                <th>T&eacute;l&eacute;phone</th>
+                                <th>Fonction</th>
+                                <th>Langue</th>
+                                <th>Principal</th>
+                                <th>Campagne</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    Michel Bergeron
+                                    <span class="badge badge-outline ms-1 text-success">
+                                        FR
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="javascript:void(0)" class="text-decoration-none">
+                                        m.bergeron@bergeron.ca
+                                    </a>
+                                </td>
+                                <td>(418) 555-3421</td>
+                                <td>Pr&eacute;sident</td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        Fran&ccedil;ais
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">Principal</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success"><i class="fas fa-bullhorn me-1"></i>Autoris&eacute;</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="javascript:void(0)" class="btn btn-outline-primary btn-sm" title="Modifier">
+                                            <i data-feather="edit-2" class="small"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="event.preventDefault()">
+                                            <i data-feather="trash-2" class="small"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Julie Tremblay
+                                    <span class="badge badge-outline ms-1 text-success">
+                                        FR
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="javascript:void(0)" class="text-decoration-none">
+                                        j.tremblay@bergeron.ca
+                                    </a>
+                                </td>
+                                <td>(418) 555-3422</td>
+                                <td>Comptabilit&eacute;</td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        Fran&ccedil;ais
+                                    </span>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <span class="badge bg-success"><i class="fas fa-bullhorn me-1"></i>Autoris&eacute;</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="javascript:void(0)" class="btn btn-outline-primary btn-sm" title="Modifier">
+                                            <i data-feather="edit-2" class="small"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="event.preventDefault()">
+                                            <i data-feather="trash-2" class="small"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notes Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="message-square" class="me-2"></i>
+                    Notes de communication
+                    <span class="badge bg-secondary ms-2">4</span>
+                </h5>
+                <div class="d-flex gap-2">
+                    <!-- Bouton de synchronisation des courriels (Outlook uniquement) -->
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="event.preventDefault()"
+                            title="R&eacute;cup&eacute;rer les r&eacute;ponses et transferts depuis Outlook">
+                        <i data-feather="refresh-cw" class="me-1"></i>
+                        <span class="sync-text">Actualiser &eacute;changes</span>
+                    </button>
+
+                    <a href="javascript:void(0)" class="btn btn-sm btn-outline-success">
+                        <i data-feather="download" class="me-1"></i>
+                        Export Excel
+                    </a>
+
+                    <form class="d-flex align-items-center gap-2" onsubmit="event.preventDefault()">
+                        <input type="date" class="form-control form-control-sm" name="date_from" value="" placeholder="Date de">
+                        <input type="date" class="form-control form-control-sm" name="date_to" value="" placeholder="Date &agrave;">
+                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                            <i data-feather="filter"></i>
+                        </button>
+                    </form>
+
+                    <button type="button" class="btn btn-sm btn-primary" onclick="event.preventDefault()">
+                        Ajouter note
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="notes-content">
+                    <!-- Note 1 -->
+                    <div class="card mb-3 border-start border-primary border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="badge bg-primary me-2">
+                                        <i data-feather="mail" style="width:12px;height:12px;" class="me-1"></i>Courriel
+                                    </span>
+                                    <small class="text-muted">28 mars 2026 - Marie-Claude Tremblay</small>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-outline-primary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></button>
+                                    <button class="btn btn-outline-danger btn-sm" title="Supprimer"><i data-feather="trash-2" class="small"></i></button>
+                                </div>
+                            </div>
+                            <p class="mt-2 mb-0">Envoi du relev&eacute; de compte mensuel avec d&eacute;tail des factures en souffrance. Client avis&eacute; que la facture F-2024-0892 est en retard de 67 jours.</p>
+                        </div>
+                    </div>
+
+                    <!-- Note 2 -->
+                    <div class="card mb-3 border-start border-success border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="badge bg-success me-2">
+                                        <i data-feather="phone" style="width:12px;height:12px;" class="me-1"></i>Appel
+                                    </span>
+                                    <small class="text-muted">25 mars 2026 - Marie-Claude Tremblay</small>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-outline-primary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></button>
+                                    <button class="btn btn-outline-danger btn-sm" title="Supprimer"><i data-feather="trash-2" class="small"></i></button>
+                                </div>
+                            </div>
+                            <p class="mt-2 mb-0">Appel avec Michel Bergeron. Il confirme que le paiement de 15 200 $ pour les factures F-2024-0934 et F-2024-0951 sera effectu&eacute; d'ici vendredi prochain. Promesse de paiement not&eacute;e.</p>
+                            <div class="mt-2">
+                                <span class="badge bg-warning text-dark"><i data-feather="bell" style="width:12px;height:12px;" class="me-1"></i>Rappel: 4 avril 2026</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Note 3 -->
+                    <div class="card mb-3 border-start border-primary border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="badge bg-primary me-2">
+                                        <i data-feather="mail" style="width:12px;height:12px;" class="me-1"></i>Courriel
+                                    </span>
+                                    <small class="text-muted">18 mars 2026 - Marie-Claude Tremblay</small>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-outline-primary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></button>
+                                    <button class="btn btn-outline-danger btn-sm" title="Supprimer"><i data-feather="trash-2" class="small"></i></button>
+                                </div>
+                            </div>
+                            <p class="mt-2 mb-0">Premier avis de retard envoy&eacute; pour la facture F-2024-0892 (&eacute;chue depuis 58 jours). Copie du relev&eacute; PDF en pi&egrave;ce jointe.</p>
+                        </div>
+                    </div>
+
+                    <!-- Note 4 -->
+                    <div class="card mb-3 border-start border-secondary border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="badge bg-secondary me-2">
+                                        <i data-feather="file-text" style="width:12px;height:12px;" class="me-1"></i>G&eacute;n&eacute;ral
+                                    </span>
+                                    <small class="text-muted">10 mars 2026 - Marie-Claude Tremblay</small>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-outline-primary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></button>
+                                    <button class="btn btn-outline-danger btn-sm" title="Supprimer"><i data-feather="trash-2" class="small"></i></button>
+                                </div>
+                            </div>
+                            <p class="mt-2 mb-0">Nouveau projet de construction confirm&eacute; avec le client. Limite de cr&eacute;dit r&eacute;vis&eacute;e &agrave; 75 000 $. Surveiller le solde total en cons&eacute;quence.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoices Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" data-section="invoices">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="file-text" class="me-2"></i>
+                    Factures
+                    <span id="invoice-count-badge" class="badge bg-secondary ms-2">6</span>
+                </h5>
+                <div class="d-flex gap-2" id="invoice-actions">
+                    <a href="javascript:void(0)" class="btn btn-sm btn-outline-success">
+                        <i data-feather="download" class="me-1"></i>
+                        Export Excel
+                    </a>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="event.preventDefault()">
+                        <i data-feather="plus" class="me-1"></i>
+                        Ajouter facture
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div id="invoices-content">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>N&deg; Facture</th>
+                                    <th>Date facture</th>
+                                    <th>Date &eacute;ch&eacute;ance</th>
+                                    <th>Montant original</th>
+                                    <th>Solde</th>
+                                    <th>Retard</th>
+                                    <th>Statut</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-bold">F-2024-0892</td>
+                                    <td>2025-12-15</td>
+                                    <td>2026-01-14</td>
+                                    <td>4 200,00 $</td>
+                                    <td class="fw-bold">2 500,00 $</td>
+                                    <td><span class="text-danger fw-bold">77 jours</span></td>
+                                    <td><span class="badge bg-danger">En souffrance</span></td>
+                                    <td class="text-end">
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-outline-primary btn-sm" title="D&eacute;tails"><i data-feather="eye" class="small"></i></button>
+                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">F-2024-0934</td>
+                                    <td>2026-01-10</td>
+                                    <td>2026-02-09</td>
+                                    <td>8 750,00 $</td>
+                                    <td class="fw-bold">3 400,00 $</td>
+                                    <td><span class="text-danger fw-bold">51 jours</span></td>
+                                    <td><span class="badge bg-danger">En souffrance</span></td>
+                                    <td class="text-end">
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-outline-primary btn-sm" title="D&eacute;tails"><i data-feather="eye" class="small"></i></button>
+                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">F-2024-0951</td>
+                                    <td>2026-01-28</td>
+                                    <td>2026-02-27</td>
+                                    <td>12 400,00 $</td>
+                                    <td class="fw-bold">8 750,00 $</td>
+                                    <td><span class="text-warning fw-bold">33 jours</span></td>
+                                    <td><span class="badge bg-warning text-dark">Retard</span></td>
+                                    <td class="text-end">
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-outline-primary btn-sm" title="D&eacute;tails"><i data-feather="eye" class="small"></i></button>
+                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">F-2025-0012</td>
+                                    <td>2026-02-14</td>
+                                    <td>2026-03-16</td>
+                                    <td>15 200,00 $</td>
+                                    <td class="fw-bold">15 200,00 $</td>
+                                    <td><span class="text-warning fw-bold">16 jours</span></td>
+                                    <td><span class="badge bg-warning text-dark">Retard</span></td>
+                                    <td class="text-end">
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-outline-primary btn-sm" title="D&eacute;tails"><i data-feather="eye" class="small"></i></button>
+                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">F-2025-0038</td>
+                                    <td>2026-03-05</td>
+                                    <td>2026-04-04</td>
+                                    <td>7 800,00 $</td>
+                                    <td class="fw-bold">7 800,00 $</td>
+                                    <td><span class="text-muted">-3 jours</span></td>
+                                    <td><span class="badge bg-success">Courant</span></td>
+                                    <td class="text-end">
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-outline-primary btn-sm" title="D&eacute;tails"><i data-feather="eye" class="small"></i></button>
+                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">F-2025-0055</td>
+                                    <td>2026-03-20</td>
+                                    <td>2026-04-19</td>
+                                    <td>4 700,00 $</td>
+                                    <td class="fw-bold">4 700,00 $</td>
+                                    <td><span class="text-muted">-18 jours</span></td>
+                                    <td><span class="badge bg-success">Courant</span></td>
+                                    <td class="text-end">
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-outline-primary btn-sm" title="D&eacute;tails"><i data-feather="eye" class="small"></i></button>
+                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

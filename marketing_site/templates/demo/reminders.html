@@ -1,0 +1,368 @@
+<div class="demo-page" id="demo-page-reminders">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Gestion des rappels</h1>
+        <p class="text-muted">Gérer tous vos rappels et notifications</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Sidebar with filters -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Filtres</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="javascript:void(0)" onclick="demoFilterReminders('all')"
+                   class="list-group-item list-group-item-action active" id="demo-filter-all">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Tous les rappels</span>
+                        <span class="badge bg-secondary">10</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" onclick="demoFilterReminders('overdue')"
+                   class="list-group-item list-group-item-action" id="demo-filter-overdue">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i data-feather="alert-circle" class="me-1"></i>En retard</span>
+                        <span class="badge bg-danger">4</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" onclick="demoFilterReminders('today')"
+                   class="list-group-item list-group-item-action" id="demo-filter-today">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i data-feather="calendar" class="me-1"></i>Aujourd'hui</span>
+                        <span class="badge bg-warning">3</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" onclick="demoFilterReminders('upcoming')"
+                   class="list-group-item list-group-item-action" id="demo-filter-upcoming">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i data-feather="clock" class="me-1"></i>À venir</span>
+                        <span class="badge bg-info">3</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" onclick="demoFilterReminders('completed')"
+                   class="list-group-item list-group-item-action" id="demo-filter-completed">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i data-feather="check-circle" class="me-1"></i>Terminés</span>
+                        <span class="badge bg-success">0</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h6 class="mb-0">
+                            <span id="filterTitle">Tous les rappels</span>
+                            <span class="badge bg-secondary ms-2" id="totalCount">10</span>
+                        </h6>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" id="searchInputReminders" placeholder="Rechercher par nom ou code client...">
+                            <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+                                <i data-feather="x"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="remindersContainer">
+                    <!-- Overdue reminders -->
+                    <div class="mb-4" id="demo-section-overdue">
+                        <h6 class="text-danger mb-3">
+                            <i data-feather="alert-circle" class="me-1"></i>
+                            En retard (4)
+                        </h6>
+
+                        <div class="card mb-2 border-start border-danger border-4 bg-light-danger">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="fw-bold">
+                                            <a href="javascript:void(0)" onclick="demoNav('client-detail')">C-1001 - Groupe Construction Laval</a>
+                                        </div>
+                                        <div class="text-muted small">Suivi de paiement - Relancer le client concernant les factures #4501 et #4502 en souffrance depuis 95 jours.</div>
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger">27 mars 2026</span>
+                                            <small class="text-muted ms-2">Créé par Marie-Claude Tremblay</small>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-success" onclick="showDemoToast('Rappel complété')" title="Compléter">
+                                            <i data-feather="check"></i> Compléter
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier le rappel')" title="Modifier">
+                                            <i data-feather="edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2 border-start border-danger border-4 bg-light-danger">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="fw-bold">
+                                            <a href="javascript:void(0)" onclick="demoNav('client-detail')">C-1003 - Industries Métalliques Saguenay</a>
+                                        </div>
+                                        <div class="text-muted small">Envoyer la mise en demeure formelle. Le compte dépasse 12 000 $ en 90+ jours sans réponse aux relances précédentes.</div>
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger">25 mars 2026</span>
+                                            <small class="text-muted ms-2">Créé par Sophie Lavoie</small>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-success" onclick="showDemoToast('Rappel complété')" title="Compléter">
+                                            <i data-feather="check"></i> Compléter
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier le rappel')" title="Modifier">
+                                            <i data-feather="edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2 border-start border-danger border-4 bg-light-danger">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="fw-bold">
+                                            <a href="javascript:void(0)" onclick="demoNav('client-detail')">C-1004 - Plomberie Côté & Fils</a>
+                                        </div>
+                                        <div class="text-muted small">Vérifier si l'entente de paiement proposée a été signée et retournée par le client.</div>
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger">30 mars 2026</span>
+                                            <small class="text-muted ms-2">Créé par Marie-Claude Tremblay</small>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-success" onclick="showDemoToast('Rappel complété')" title="Compléter">
+                                            <i data-feather="check"></i> Compléter
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier le rappel')" title="Modifier">
+                                            <i data-feather="edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2 border-start border-danger border-4 bg-light-danger">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="fw-bold">
+                                            <a href="javascript:void(0)" onclick="demoNav('client-detail')">C-1007 - Électricité Beauce Pro</a>
+                                        </div>
+                                        <div class="text-muted small">Confirmer la réception du virement bancaire mentionné dans le dernier courriel du client.</div>
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger">28 mars 2026</span>
+                                            <small class="text-muted ms-2">Créé par Marie-Claude Tremblay</small>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-success" onclick="showDemoToast('Rappel complété')" title="Compléter">
+                                            <i data-feather="check"></i> Compléter
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier le rappel')" title="Modifier">
+                                            <i data-feather="edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today reminders -->
+                    <div class="mb-4" id="demo-section-today">
+                        <h6 class="text-warning mb-3">
+                            <i data-feather="calendar" class="me-1"></i>
+                            Aujourd'hui (3)
+                        </h6>
+
+                        <div class="card mb-2 border-start border-warning border-4 bg-light-warning">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="fw-bold">
+                                            <a href="javascript:void(0)" onclick="demoNav('client-detail')">C-1002 - Transport Québec Express</a>
+                                        </div>
+                                        <div class="text-muted small">Préparer le dossier de litige pour la facture #4521. Rassembler les bons de livraison et confirmations de réception.</div>
+                                        <div class="mt-1">
+                                            <span class="badge bg-warning text-dark">1 avril 2026</span>
+                                            <small class="text-muted ms-2">Créé par Jean-François Bouchard</small>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-success" onclick="showDemoToast('Rappel complété')" title="Compléter">
+                                            <i data-feather="check"></i> Compléter
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier le rappel')" title="Modifier">
+                                            <i data-feather="edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2 border-start border-warning border-4 bg-light-warning">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="fw-bold">
+                                            <a href="javascript:void(0)" onclick="demoNav('client-detail')">C-1006 - Alimentation Boréale inc.</a>
+                                        </div>
+                                        <div class="text-muted small">Envoyer le nouveau contrat avec les termes Net 45 tel que convenu lors de la rencontre du 31 mars.</div>
+                                        <div class="mt-1">
+                                            <span class="badge bg-warning text-dark">1 avril 2026</span>
+                                            <small class="text-muted ms-2">Créé par Sophie Lavoie</small>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-success" onclick="showDemoToast('Rappel complété')" title="Compléter">
+                                            <i data-feather="check"></i> Compléter
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier le rappel')" title="Modifier">
+                                            <i data-feather="edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2 border-start border-warning border-4 bg-light-warning">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="fw-bold">
+                                            <a href="javascript:void(0)" onclick="demoNav('client-detail')">C-1009 - Nettoyage Industriel Lévis</a>
+                                        </div>
+                                        <div class="text-muted small">Vérifier avec la comptabilité si le crédit de 1 200 $ a été appliqué au compte avant d'envoyer le relevé.</div>
+                                        <div class="mt-1">
+                                            <span class="badge bg-warning text-dark">1 avril 2026</span>
+                                            <small class="text-muted ms-2">Créé par Sophie Lavoie</small>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-success" onclick="showDemoToast('Rappel complété')" title="Compléter">
+                                            <i data-feather="check"></i> Compléter
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier le rappel')" title="Modifier">
+                                            <i data-feather="edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming reminders -->
+                    <div class="mb-4" id="demo-section-upcoming">
+                        <h6 class="text-info mb-3">
+                            <i data-feather="clock" class="me-1"></i>
+                            À venir (3)
+                        </h6>
+
+                        <div class="card mb-2 border-start border-info border-4">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="fw-bold">
+                                            <a href="javascript:void(0)" onclick="demoNav('client-detail')">C-1001 - Groupe Construction Laval</a>
+                                        </div>
+                                        <div class="text-muted small">Suivi du paiement promis lors de la conversation du 1er avril. Le client a indiqué que le chèque serait émis cette semaine.</div>
+                                        <div class="mt-1">
+                                            <span class="badge bg-info">5 avril 2026</span>
+                                            <small class="text-muted ms-2">Créé par Marie-Claude Tremblay</small>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-success" onclick="showDemoToast('Rappel complété')" title="Compléter">
+                                            <i data-feather="check"></i> Compléter
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier le rappel')" title="Modifier">
+                                            <i data-feather="edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2 border-start border-info border-4">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="fw-bold">
+                                            <a href="javascript:void(0)" onclick="demoNav('client-detail')">C-1005 - Services Informatiques Montréal</a>
+                                        </div>
+                                        <div class="text-muted small">Relancer le client pour le paiement des factures #5102 et #5103 promis cette semaine. Vérifier aussi le statut de la facture #5104.</div>
+                                        <div class="mt-1">
+                                            <span class="badge bg-info">7 avril 2026</span>
+                                            <small class="text-muted ms-2">Créé par Jean-François Bouchard</small>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-success" onclick="showDemoToast('Rappel complété')" title="Compléter">
+                                            <i data-feather="check"></i> Compléter
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier le rappel')" title="Modifier">
+                                            <i data-feather="edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2 border-start border-info border-4">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="fw-bold">
+                                            <a href="javascript:void(0)" onclick="demoNav('client-detail')">C-1008 - Location d'Équipement Mauricie</a>
+                                        </div>
+                                        <div class="text-muted small">Vérifier la réception du chèque de 8 500 $ envoyé par la poste le 28 mars couvrant les factures #3201 et #3202.</div>
+                                        <div class="mt-1">
+                                            <span class="badge bg-info">10 avril 2026</span>
+                                            <small class="text-muted ms-2">Créé par Jean-François Bouchard</small>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-success" onclick="showDemoToast('Rappel complété')" title="Compléter">
+                                            <i data-feather="check"></i> Compléter
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier le rappel')" title="Modifier">
+                                            <i data-feather="edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="card-footer">
+                <div id="paginationContainer">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mb-0">
+                            <li class="page-item active"><a class="page-link" href="javascript:void(0)">1</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

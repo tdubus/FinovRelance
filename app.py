@@ -250,7 +250,7 @@ def bootstrap_app(app):
         # Liste des routes marketing (SANS la racine "/" qui doit aller à l'app)
         marketing_routes = [
             '/fonctionnalites', '/tarifs', '/cas-usage', '/contact', '/guide',
-            '/essai'
+            '/essai', '/demo-iframe'
         ]
 
         # Routes légales et SEO qui doivent toujours être sur finov-relance.com
@@ -279,7 +279,10 @@ def bootstrap_app(app):
             # Si ce n'est PAS une route marketing ni un fichier statique
             # Rediriger vers app.finov-relance.com
             elif path not in marketing_routes and not path.startswith(
-                    '/marketing-static/'):
+                    '/marketing-static/') and not path.startswith(
+                    '/static/css/') and not path.startswith(
+                    '/static/logo') and not path.startswith(
+                    '/static/fonts/'):
                 return redirect(
                     f"https://app.finov-relance.com{request.full_path}",
                     code=301)

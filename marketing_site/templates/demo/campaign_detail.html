@@ -1,0 +1,316 @@
+<div class="demo-page" id="demo-page-campaign-detail">
+<style>
+    .email-preview-modal .modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    .email-content-preview {
+        white-space: pre-wrap;
+        font-family: inherit;
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+</style>
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)" onclick="demoNav('campaigns')">Campagnes</a></li>
+            <li class="breadcrumb-item active">Relance 60 jours+ - Mars 2026</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-0">Relance 60 jours+ - Mars 2026</h1>
+            <span class="badge bg-success mt-2">Terminee</span>
+        </div>
+        <div class="col-md-4 text-end">
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary mb-0">8</h3>
+                    <small class="text-muted">Total courriels</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success mb-0">8</h3>
+                    <small class="text-muted">Envoyes</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-danger mb-0">0</h3>
+                    <small class="text-muted">Echecs</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="progress mb-2" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar"
+                             style="width: 100%">
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    <small class="text-muted">Progression</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h5 class="mb-0">Courriels de la campagne</h5>
+                <div class="d-flex gap-2 align-items-center">
+                    <select class="form-select form-select-sm" style="width: auto;" disabled>
+                        <option value="all" selected>Tous les statuts</option>
+                        <option value="generated">Prets</option>
+                        <option value="sent">Envoyes (batch)</option>
+                        <option value="sent_manually">Envoyes manuellement</option>
+                        <option value="failed">Echecs</option>
+                        <option value="skipped">Ignores</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Client</th>
+                            <th>Destinataires</th>
+                            <th>Objet</th>
+                            <th class="text-end">Solde</th>
+                            <th>Statut</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>CLI-001</strong><br>
+                                <small class="text-muted">Construction ABC Inc.</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">comptabilite@abc-construction.com</span>
+                            </td>
+                            <td>
+                                <span class="text-truncate d-inline-block" style="max-width: 250px;">Rappel - Factures en souffrance</span>
+                            </td>
+                            <td class="text-end">12 450,00 $</td>
+                            <td>
+                                <span class="badge bg-success">Envoye</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary" title="Previsualiser" disabled>
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" title="PDF" disabled>
+                                        <i class="fas fa-file-pdf"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>CLI-004</strong><br>
+                                <small class="text-muted">Plomberie Dupont</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">info@plomberie-dupont.ca</span>
+                            </td>
+                            <td>
+                                <span class="text-truncate d-inline-block" style="max-width: 250px;">Rappel - Factures en souffrance</span>
+                            </td>
+                            <td class="text-end">3 200,00 $</td>
+                            <td>
+                                <span class="badge bg-success">Envoye</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary" title="Previsualiser" disabled>
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" title="PDF" disabled>
+                                        <i class="fas fa-file-pdf"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>CLI-007</strong><br>
+                                <small class="text-muted">Transport Lavoie</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">ap@transport-lavoie.com</span>
+                            </td>
+                            <td>
+                                <span class="text-truncate d-inline-block" style="max-width: 250px;">Rappel - Factures en souffrance</span>
+                            </td>
+                            <td class="text-end">8 750,00 $</td>
+                            <td>
+                                <span class="badge bg-success">Envoye</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary" title="Previsualiser" disabled>
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" title="PDF" disabled>
+                                        <i class="fas fa-file-pdf"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>CLI-012</strong><br>
+                                <small class="text-muted">Electricite Gagnon</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">factures@elec-gagnon.ca</span>
+                            </td>
+                            <td>
+                                <span class="text-truncate d-inline-block" style="max-width: 250px;">Rappel - Factures en souffrance</span>
+                            </td>
+                            <td class="text-end">5 100,00 $</td>
+                            <td>
+                                <span class="badge bg-success">Envoye</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary" title="Previsualiser" disabled>
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" title="PDF" disabled>
+                                        <i class="fas fa-file-pdf"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>CLI-015</strong><br>
+                                <small class="text-muted">Menuiserie Pelletier</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">admin@menuiserie-pelletier.com</span>
+                            </td>
+                            <td>
+                                <span class="text-truncate d-inline-block" style="max-width: 250px;">Rappel - Factures en souffrance</span>
+                            </td>
+                            <td class="text-end">2 890,00 $</td>
+                            <td>
+                                <span class="badge bg-success">Envoye</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary" title="Previsualiser" disabled>
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" title="PDF" disabled>
+                                        <i class="fas fa-file-pdf"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>CLI-018</strong><br>
+                                <small class="text-muted">Toitures Bergeron</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">comptable@toitures-bergeron.ca</span>
+                            </td>
+                            <td>
+                                <span class="text-truncate d-inline-block" style="max-width: 250px;">Rappel - Factures en souffrance</span>
+                            </td>
+                            <td class="text-end">6 320,00 $</td>
+                            <td>
+                                <span class="badge bg-success">Envoye</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary" title="Previsualiser" disabled>
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" title="PDF" disabled>
+                                        <i class="fas fa-file-pdf"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>CLI-022</strong><br>
+                                <small class="text-muted">Paysagement Roy</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">info@paysagement-roy.com</span>
+                            </td>
+                            <td>
+                                <span class="text-truncate d-inline-block" style="max-width: 250px;">Rappel - Factures en souffrance</span>
+                            </td>
+                            <td class="text-end">4 560,00 $</td>
+                            <td>
+                                <span class="badge bg-success">Envoye</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary" title="Previsualiser" disabled>
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" title="PDF" disabled>
+                                        <i class="fas fa-file-pdf"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>CLI-025</strong><br>
+                                <small class="text-muted">Excavation Morin</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">payables@excavation-morin.ca</span>
+                            </td>
+                            <td>
+                                <span class="text-truncate d-inline-block" style="max-width: 250px;">Rappel - Factures en souffrance</span>
+                            </td>
+                            <td class="text-end">9 180,00 $</td>
+                            <td>
+                                <span class="badge bg-success">Envoye</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary" title="Previsualiser" disabled>
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" title="PDF" disabled>
+                                        <i class="fas fa-file-pdf"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

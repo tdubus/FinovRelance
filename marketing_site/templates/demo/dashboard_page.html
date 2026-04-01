@@ -1,0 +1,405 @@
+                        <div class="demo-page active" id="demo-page-dashboard">
+                            <!-- Page Title -->
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h1 class="h3 mb-1">Tableau de bord</h1>
+                                    <p class="text-muted">Vue d'ensemble de Distribution Matériaux Québec Inc.</p>
+                                </div>
+                            </div>
+
+                            <!-- Graphique Évolution des CAR -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <h5 class="mb-0">
+                                                    <i data-feather="trending-up" class="me-2"></i>
+                                                    <span>Évolution des comptes à recevoir</span>
+                                                </h5>
+                                            </div>
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <select class="form-select form-select-sm" style="width: auto;" disabled>
+                                                    <option value="">Toutes les années</option>
+                                                </select>
+                                                <select class="form-select form-select-sm" style="width: auto;" disabled>
+                                                    <option value="month" selected>Mois</option>
+                                                </select>
+                                                <select class="form-select form-select-sm" style="width: auto;" disabled>
+                                                    <option value="total">Total</option>
+                                                    <option value="current">Courant</option>
+                                                    <option value="0-30">0-30 jours</option>
+                                                    <option value="31-60">31-60 jours</option>
+                                                    <option value="61-90">61-90 jours</option>
+                                                    <option value="90+" selected>90+ jours</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div style="height: 300px; position: relative;">
+                                                <canvas id="carEvolutionChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Summary Cards Row -->
+                            <div class="row mb-4 g-3">
+                                <div class="col-6 col-md">
+                                    <div class="card text-center h-100">
+                                        <div class="card-body">
+                                            <i data-feather="users" class="text-primary mb-2" style="width: 32px; height: 32px;"></i>
+                                            <h3 class="card-title">30</h3>
+                                            <p class="card-text text-muted">Clients</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md">
+                                    <div class="card text-center h-100">
+                                        <div class="card-body">
+                                            <i data-feather="dollar-sign" class="text-warning mb-2" style="width: 32px; height: 32px;"></i>
+                                            <h3 class="card-title">685 350 $</h3>
+                                            <p class="card-text text-muted">À recevoir</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md">
+                                    <div class="card text-center h-100">
+                                        <div class="card-body">
+                                            <i data-feather="file-text" class="text-danger mb-2" style="width: 32px; height: 32px;"></i>
+                                            <h3 class="card-title">23</h3>
+                                            <p class="card-text text-muted">Factures en retard</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md">
+                                    <div class="card text-center h-100">
+                                        <div class="card-body">
+                                            <i data-feather="trending-up" class="text-success mb-2" style="width: 32px; height: 32px;"></i>
+                                            <h3 class="card-title">28</h3>
+                                            <p class="card-text text-muted">Clients actifs</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md">
+                                    <div class="card text-center h-100">
+                                        <div class="card-body">
+                                            <i data-feather="file-text" class="text-info mb-2" style="width: 32px; height: 32px;"></i>
+                                            <h3 class="card-title text-info">42.5 j</h3>
+                                            <p class="card-text text-muted">DMP / Facture</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md">
+                                    <div class="card text-center h-100">
+                                        <div class="card-body">
+                                            <i data-feather="clock" class="text-warning mb-2" style="width: 32px; height: 32px;"></i>
+                                            <h3 class="card-title text-warning">12.3 j</h3>
+                                            <p class="card-text text-muted">DMP / Échéance</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Aging Analysis Row -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">
+                                                <i data-feather="pie-chart" class="me-2"></i>
+                                                Résumé des comptes à recevoir
+                                            </h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row text-center">
+                                                <div class="col">
+                                                    <div class="aging-dot bg-success me-2"></div>
+                                                    <strong>Courant</strong><br>
+                                                    <span class="h5 text-success">45 200 $</span><br>
+                                                    <small class="text-muted">7%</small>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="aging-dot bg-info me-2"></div>
+                                                    <strong>1-30 jours</strong><br>
+                                                    <span class="h5 text-info">125 800 $</span><br>
+                                                    <small class="text-muted">18%</small>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="aging-dot bg-warning me-2"></div>
+                                                    <strong>31-60 jours</strong><br>
+                                                    <span class="h5" style="color: #fd7e14;">189 400 $</span><br>
+                                                    <small class="text-muted">28%</small>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="aging-dot bg-dark me-2"></div>
+                                                    <strong>61-90 jours</strong><br>
+                                                    <span class="h5" style="color: #6c757d;">145 600 $</span><br>
+                                                    <small class="text-muted">21%</small>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="aging-dot bg-danger me-2"></div>
+                                                    <strong>90+ jours</strong><br>
+                                                    <span class="h5 text-danger">179 350 $</span><br>
+                                                    <small class="text-muted">26%</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Content Row -->
+                            <div class="row">
+                                <!-- Left Column -->
+                                <div class="col-md-8">
+                                    <!-- Activity Section -->
+                                    <div class="card mb-4">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">
+                                                <i data-feather="activity" class="me-2"></i>
+                                                Activité du 31/03/2026
+                                            </h5>
+                                            <div class="d-flex align-items-center">
+                                                <form class="d-flex align-items-center gap-2 me-3">
+                                                    <input type="date" class="form-control form-control-sm" value="2026-03-31" style="width: auto;" disabled>
+                                                    <button type="button" class="btn btn-outline-primary btn-sm" disabled>
+                                                        <i data-feather="search" class="me-1"></i>
+                                                        Filtrer
+                                                    </button>
+                                                </form>
+                                                <button class="btn btn-outline-secondary btn-sm" disabled>
+                                                    <i data-feather="download" class="me-1"></i>
+                                                    CSV
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+
+                                            <!-- Activity item 1 -->
+                                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <i data-feather="phone" class="text-primary"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                                        <h6 class="mb-0">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                                Constructions Bergeron &amp; Fils
+                                                            </a>
+                                                        </h6>
+                                                        <small class="text-muted">14:30</small>
+                                                    </div>
+                                                    <p class="mb-1 text-muted">Confirmé : paiement de 12 500 $ prévu le 28 mars...</p>
+                                                    <small class="text-muted">
+                                                        Par Marie Lemieux • Appel
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Activity item 2 -->
+                                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <i data-feather="mail" class="text-info"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                                        <h6 class="mb-0">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                                Béton Armé St-Laurent
+                                                            </a>
+                                                        </h6>
+                                                        <small class="text-muted">11:15</small>
+                                                    </div>
+                                                    <p class="mb-1 text-muted">Confirmation paiement partiel de 10 000 $ effectué...</p>
+                                                    <small class="text-muted">
+                                                        Par Jean Beauregard • Email
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Activity item 3 -->
+                                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <i data-feather="edit" class="text-secondary"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                                        <h6 class="mb-0">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                                Structures Métalliques Desjardins
+                                                            </a>
+                                                        </h6>
+                                                        <small class="text-muted">10:45</small>
+                                                    </div>
+                                                    <p class="mb-1 text-muted">Plan de paiement accepté : 20 000 $ cette semaine...</p>
+                                                    <small class="text-muted">
+                                                        Par Sophie Dion
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Activity item 4 -->
+                                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <i data-feather="mail" class="text-info"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                                        <h6 class="mb-0">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                                Usinages Précision Beauce
+                                                            </a>
+                                                        </h6>
+                                                        <small class="text-muted">09:30</small>
+                                                    </div>
+                                                    <p class="mb-1 text-muted">Chèque de 14 500 $ reçu et déposé...</p>
+                                                    <small class="text-muted">
+                                                        Par Jean Beauregard • Email
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Activity item 5 -->
+                                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <i data-feather="phone" class="text-primary"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                                        <h6 class="mb-0">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                                Composantes Hydrauliques SN
+                                                            </a>
+                                                        </h6>
+                                                        <small class="text-muted">09:00</small>
+                                                    </div>
+                                                    <p class="mb-1 text-muted">Alain reste sur sa position : paiement le 15 avril...</p>
+                                                    <small class="text-muted">
+                                                        Par Marie Lemieux • Appel
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column -->
+                                <div class="col-md-4">
+                                    <!-- Reminders Section -->
+                                    <div class="card mb-4">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">
+                                                <i data-feather="bell" class="me-2"></i>
+                                                Rappels
+                                            </h6>
+                                            <a href="javascript:void(0)" class="btn btn-outline-primary btn-sm" onclick="demoNav('reminders')">
+                                                <i data-feather="list" class="me-1"></i>
+                                                Voir tout
+                                            </a>
+                                        </div>
+                                        <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
+
+                                            <!-- Reminder 1 - overdue -->
+                                            <div class="reminder-item border-bottom p-3 bg-light-danger">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                                Constructions Bergeron &amp; Fils
+                                                            </a>
+                                                            <span class="badge bg-danger ms-1">En retard</span>
+                                                        </h6>
+                                                        <div class="note-preview-container">
+                                                            <p class="note-preview mb-1 text-muted small">Vérifier réception paiement...</p>
+                                                        </div>
+                                                        <small class="text-muted">
+                                                            <i data-feather="calendar" style="width: 12px; height: 12px;"></i>
+                                                            28/03/2026
+                                                        </small>
+                                                    </div>
+                                                    <button class="btn btn-outline-success btn-sm" title="Marquer comme terminé">
+                                                        <i data-feather="check"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Reminder 2 - overdue -->
+                                            <div class="reminder-item border-bottom p-3 bg-light-danger">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                                Béton Armé St-Laurent
+                                                            </a>
+                                                            <span class="badge bg-danger ms-1">En retard</span>
+                                                        </h6>
+                                                        <div class="note-preview-container">
+                                                            <p class="note-preview mb-1 text-muted small">Relancer BASL si pas de paiement...</p>
+                                                        </div>
+                                                        <small class="text-muted">
+                                                            <i data-feather="calendar" style="width: 12px; height: 12px;"></i>
+                                                            25/03/2026
+                                                        </small>
+                                                    </div>
+                                                    <button class="btn btn-outline-success btn-sm" title="Marquer comme terminé">
+                                                        <i data-feather="check"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Reminder 3 - today -->
+                                            <div class="reminder-item border-bottom p-3 bg-light-warning">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                                Structures Métalliques Desjardins
+                                                            </a>
+                                                            <span class="badge bg-warning ms-1">Aujourd'hui</span>
+                                                        </h6>
+                                                        <div class="note-preview-container">
+                                                            <p class="note-preview mb-1 text-muted small">Confirmer réception 20 000 $...</p>
+                                                        </div>
+                                                        <small class="text-muted">
+                                                            <i data-feather="calendar" style="width: 12px; height: 12px;"></i>
+                                                            31/03/2026
+                                                        </small>
+                                                    </div>
+                                                    <button class="btn btn-outline-success btn-sm" title="Marquer comme terminé">
+                                                        <i data-feather="check"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Reminder 4 - today -->
+                                            <div class="reminder-item border-bottom p-3 bg-light-warning">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                                Composantes Hydrauliques SN
+                                                            </a>
+                                                            <span class="badge bg-warning ms-1">Aujourd'hui</span>
+                                                        </h6>
+                                                        <div class="note-preview-container">
+                                                            <p class="note-preview mb-1 text-muted small">Suivre engagement CHSN...</p>
+                                                        </div>
+                                                        <small class="text-muted">
+                                                            <i data-feather="calendar" style="width: 12px; height: 12px;"></i>
+                                                            31/03/2026
+                                                        </small>
+                                                    </div>
+                                                    <button class="btn btn-outline-success btn-sm" title="Marquer comme terminé">
+                                                        <i data-feather="check"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- end demo-page-dashboard -->

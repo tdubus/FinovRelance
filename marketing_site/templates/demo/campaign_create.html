@@ -1,0 +1,187 @@
+<div class="demo-page" id="demo-page-campaign-create">
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)" onclick="demoNav('campaigns')">Campagnes</a></li>
+                    <li class="breadcrumb-item active">Nouvelle campagne</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-primary rounded-pill me-3">1</span>
+                        <div>
+                            <h5 class="mb-0">Configuration de la campagne</h5>
+                            <small class="text-muted">Etape 1 sur 3 : Parametres de ciblage</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form onsubmit="event.preventDefault(); demoNav('campaigns');">
+
+                        <div class="mb-4">
+                            <label for="demo-name" class="form-label fw-semibold">Nom de la campagne <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="demo-name" value="Relance Avril 2026" readonly>
+                        </div>
+
+                        <hr class="my-4">
+                        <h6 class="text-muted mb-3"><i class="fas fa-filter me-2"></i>Filtres de ciblage</h6>
+
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Par defaut :</strong> Seuls les clients ayant un solde positif (factures impayees) sont inclus.
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="demo-collector" class="form-label">Collecteur</label>
+                                <select class="form-select" id="demo-collector" disabled>
+                                    <option value="">Tous les collecteurs</option>
+                                    <option value="unassigned">Non assigne</option>
+                                    <option value="1">Marie Tremblay</option>
+                                    <option value="2">Jean-Philippe Bouchard</option>
+                                </select>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    " Non assigne " = clients sans collecteur attribue.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="demo-age" class="form-label">Age minimum des factures</label>
+                                <select class="form-select" id="demo-age" disabled>
+                                    <option value="0">Tous (inclus Courant)</option>
+                                    <option value="1">1 jour et plus</option>
+                                    <option value="31">31 jours et plus</option>
+                                    <option value="61" selected>61 jours et plus</option>
+                                    <option value="91">91 jours et plus</option>
+                                    <option value="121">121 jours et plus</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="demo-without-notes" disabled>
+                                    <label class="form-check-label" for="demo-without-notes">
+                                        <i class="fas fa-comment-slash me-1"></i> Sans note uniquement
+                                    </label>
+                                    <div class="form-text">
+                                        Si coche, seuls les clients n'ayant aucune note de communication seront inclus.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="demo-representative" class="form-label">Representant</label>
+                            <select class="form-select" id="demo-representative" disabled>
+                                <option value="">Tous les representants</option>
+                                <option value="Sylvie Lapointe">Sylvie Lapointe</option>
+                                <option value="Marc Belanger">Marc Belanger</option>
+                            </select>
+                        </div>
+
+                        <hr class="my-4">
+                        <h6 class="text-muted mb-3"><i class="fas fa-sitemap me-2"></i>Parametres parent/enfants</h6>
+
+                        <div class="form-check form-switch mb-4">
+                            <input class="form-check-input" type="checkbox" id="demo-include-children" checked disabled>
+                            <label class="form-check-label" for="demo-include-children">
+                                Inclure les comptes enfants dans le releve du parent
+                            </label>
+                            <div class="form-text">
+                                Si active, les enfants seront exclus de la liste des destinataires pour eviter les doublons.
+                                Sinon, chaque client (parent et enfants) recevra son propre courriel.
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h6 class="text-muted mb-3"><i class="fas fa-envelope me-2"></i>Parametres destinataire</h6>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Adresses courriel a utiliser</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="demo-recipient-type" id="demo-recipient-primary" value="primary" checked disabled>
+                                    <label class="form-check-label" for="demo-recipient-primary">
+                                        Courriel principal uniquement
+                                        <small class="text-muted d-block">Utilise le courriel de la fiche client</small>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="demo-recipient-type" id="demo-recipient-contacts" value="campaign_contacts" disabled>
+                                    <label class="form-check-label" for="demo-recipient-contacts">
+                                        Contacts autorises uniquement
+                                        <small class="text-muted d-block">Utilise les contacts avec "Campagne autorise" active</small>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="demo-recipient-type" id="demo-recipient-both" value="both" disabled>
+                                    <label class="form-check-label" for="demo-recipient-both">
+                                        Les deux
+                                        <small class="text-muted d-block">Courriel principal + contacts autorises</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="demo-contact-language" class="form-label">Langue des contacts</label>
+                                <select class="form-select" id="demo-contact-language" disabled>
+                                    <option value="">Toutes les langues</option>
+                                    <option value="fr" selected>Francais uniquement</option>
+                                    <option value="en">Anglais uniquement</option>
+                                </select>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Si une langue est selectionnee, seuls les clients ayant au moins un contact dans cette langue seront inclus.
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h6 class="text-muted mb-3"><i class="fas fa-paperclip me-2"></i>Pieces jointes</h6>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="demo-attach-pdf" checked disabled>
+                                    <label class="form-check-label" for="demo-attach-pdf">
+                                        <i class="fas fa-file-pdf text-danger me-1"></i> Releve de compte PDF
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="demo-attach-excel" disabled>
+                                    <label class="form-check-label" for="demo-attach-excel">
+                                        <i class="fas fa-file-excel text-success me-1"></i> Releve de compte Excel
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-secondary mb-4">
+                            <i class="fas fa-language me-2"></i>
+                            <strong>Langue des pieces jointes :</strong> determinee automatiquement selon la langue du contact ou du client.
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                            <a href="javascript:void(0)" onclick="demoNav('campaigns')" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Continuer<i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- EXACT same CSS stack as the real app (from base.html) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/custom.css" rel="stylesheet">
+
+    <style>
+        /* Remove body margin for iframe */
+        body { margin: 0; overflow-x: hidden; }
+        /* Demo page sections */
+        .demo-page { display: none; }
+        .demo-page.active { display: block; }
+        /* Override any fixed/sticky positioning inside demo */
+        .navbar { position: relative !important; }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR - copied exactly from base.html lines 81-286, Jinja replaced with hardcoded values -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="javascript:void(0)" onclick="demoNav('dashboard')">
+                <img src="/static/logo-finov-relance.png" alt="FinovRelance" class="navbar-logo">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDemo">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNavDemo">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="javascript:void(0)" onclick="demoNav('dashboard')" data-demo-page="dashboard">
+                            <i class="fas fa-home me-1"></i>
+                            Tableau de bord
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:void(0)" onclick="demoNav('clients')" data-demo-page="clients">
+                            <i class="fas fa-users me-1"></i>
+                            Clients
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:void(0)" onclick="demoNav('receivables')" data-demo-page="receivables">
+                            <i class="fas fa-dollar-sign me-1"></i>
+                            Comptes à recevoir
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:void(0)" onclick="demoNav('notes')" data-demo-page="notes">
+                            <i class="fas fa-sticky-note me-1"></i>
+                            Notes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:void(0)" onclick="demoNav('reminders')" data-demo-page="reminders">
+                            <i class="fas fa-bell me-1"></i>
+                            Rappels
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="toolsDropdownDemo" role="button" data-bs-toggle="dropdown" data-demo-page="tools">
+                            <i class="fas fa-tools me-1"></i>
+                            Outils
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="demoNav('email-templates')">
+                                <i class="fas fa-envelope me-1"></i>
+                                Modèles de courriel
+                            </a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="demoNav('campaigns')">
+                                <i class="fas fa-bullhorn me-1"></i>
+                                Campagnes
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="demoNav('users')">
+                                <i class="fas fa-users-cog me-1"></i>
+                                Gestion de l'équipe
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <!-- Notification bell -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bell" style="font-size: 1.1rem;"></i>
+                            <!-- No notification badge in demo -->
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 350px;">
+                            <li>
+                                <h6 class="dropdown-header d-flex justify-content-between align-items-center">
+                                    <span>Notifications</span>
+                                    <button class="btn btn-sm btn-link text-muted p-0">Tout marquer comme lu</button>
+                                </h6>
+                            </li>
+                            <li><hr class="dropdown-divider mt-0"></li>
+                            <li>
+                                <div class="px-3">
+                                    <div class="text-muted text-center py-3">
+                                        <i class="fas fa-bell-slash mb-2"></i><br>
+                                        Aucune nouvelle notification
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- User dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>
+                            <span class="user-name">Marie Lemieux</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="demoNav('profile')">
+                                <i class="fas fa-user-cog me-1"></i>
+                                Mon profil
+                                <span class="badge bg-primary ms-2">Admin</span>
+                            </a></li>
+                            <li>
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="demoNav('email-config')">
+                                    <i class="fas fa-envelope-square me-1"></i>
+                                    Connexion Courriel
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="showDemoToast('Gestion multi-entreprises disponible dans la version complète.')">
+                                <i class="fas fa-building me-1"></i>
+                                Mes entreprises
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="demoNav('company-settings')">
+                                <i class="fas fa-building me-1"></i>
+                                Paramètres de l'entreprise
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="showDemoToast('Déconnexion non disponible en démo.')">
+                                <i class="fas fa-sign-out-alt me-1"></i>
+                                Déconnexion
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container-fluid mt-4">
+
+        <!-- Dashboard page (inline, copied from dashboard.html) -->
+        {% include 'demo/dashboard_page.html' %}
+
+        <!-- All other pages -->
+        {% include 'demo/clients_list.html' %}
+        {% include 'demo/client_detail.html' %}
+        {% include 'demo/receivables.html' %}
+        {% include 'demo/notes.html' %}
+        {% include 'demo/reminders.html' %}
+        {% include 'demo/email_templates.html' %}
+        {% include 'demo/campaigns_list.html' %}
+        {% include 'demo/campaign_detail.html' %}
+        {% include 'demo/campaign_create.html' %}
+        {% include 'demo/users_list.html' %}
+        {% include 'demo/profile.html' %}
+        {% include 'demo/email_config.html' %}
+        {% include 'demo/company_settings.html' %}
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-4 bg-light border-top">
+        <div class="container text-center">
+            <p class="mb-1 text-muted">&copy; 2026 FinovRelance - Gestion des Comptes à Recevoir</p>
+            <small class="d-block mb-2 text-muted">Distribution Matériaux Québec Inc. | Connecté en tant que Marie Lemieux</small>
+        </div>
+    </footer>
+
+    <!-- JavaScript - same stack as real app -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Feather icons
+        try { if (typeof feather !== 'undefined') feather.replace(); } catch(e) {}
+
+        // Chart.js - CAR evolution (90+ jours, downward trend)
+        var ctx = document.getElementById('carEvolutionChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Avr 25','Mai 25','Juin 25','Juil 25','Août 25','Sep 25','Oct 25','Nov 25','Déc 25','Jan 26','Fév 26','Mars 26'],
+                    datasets: [{
+                        label: '90+ jours',
+                        data: [310000,295000,280000,265000,248000,235000,220000,210000,198000,192000,185000,179350],
+                        borderColor: '#EF4444',
+                        backgroundColor: 'rgba(239,68,68,0.08)',
+                        fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#EF4444'
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.parsed.y.toLocaleString('fr-CA') + ' $'; } } } },
+                    scales: { y: { ticks: { callback: function(v) { return (v/1000)+'k $'; } }, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
+        // Demo navigation
+        var urls = {
+            'dashboard':'app.finov-relance.com/dashboard',
+            'clients':'app.finov-relance.com/clients',
+            'client-detail':'app.finov-relance.com/clients/1',
+            'receivables':'app.finov-relance.com/receivables',
+            'notes':'app.finov-relance.com/notes',
+            'reminders':'app.finov-relance.com/reminders',
+            'email-templates':'app.finov-relance.com/emails/templates',
+            'campaigns':'app.finov-relance.com/campaigns',
+            'campaign-detail':'app.finov-relance.com/campaigns/1',
+            'campaign-create':'app.finov-relance.com/campaigns/create',
+            'users':'app.finov-relance.com/users',
+            'profile':'app.finov-relance.com/profile/settings',
+            'email-config':'app.finov-relance.com/profile/email',
+            'company-settings':'app.finov-relance.com/company/settings'
+        };
+        var navMap = {
+            'dashboard':'dashboard','clients':'clients','client-detail':'clients',
+            'receivables':'receivables','notes':'notes','reminders':'reminders',
+            'email-templates':'tools','campaigns':'tools','campaign-detail':'tools',
+            'campaign-create':'tools','users':'tools',
+            'profile':'profile','email-config':'profile','company-settings':'tools'
+        };
+
+        window.demoNav = function(page) {
+            // Update active nav
+            var activeNav = navMap[page] || page;
+            document.querySelectorAll('.navbar-nav .nav-link[data-demo-page]').forEach(function(l) {
+                l.classList.remove('active');
+                if (l.getAttribute('data-demo-page') === activeNav) l.classList.add('active');
+            });
+            // Show/hide pages
+            document.querySelectorAll('.demo-page').forEach(function(p) { p.classList.remove('active'); });
+            var target = document.getElementById('demo-page-' + page);
+            if (target) target.classList.add('active');
+            // Scroll to top
+            window.scrollTo(0, 0);
+            // Replace feather icons
+            try { if (typeof feather !== 'undefined') setTimeout(function(){ feather.replace(); }, 50); } catch(e) {}
+            // Notify parent of URL change
+            if (window.parent !== window) {
+                window.parent.postMessage({ type: 'demo-url', url: urls[page] || 'app.finov-relance.com/dashboard' }, window.location.origin);
+            }
+        };
+
+        window.showDemoToast = function(msg) {
+            var t = document.createElement('div');
+            t.className = 'alert alert-info position-fixed shadow';
+            t.style.cssText = 'bottom:20px;right:20px;z-index:9999;max-width:320px;font-size:0.85rem;';
+            t.textContent = msg || 'Cette fonctionnalité est disponible dans la version complète.';
+            document.body.appendChild(t);
+            setTimeout(function(){ t.remove(); }, 2500);
+        };
+
+        window.demoFilterReminders = function(filter) {
+            showDemoToast('Filtre rappels : ' + filter);
+        };
+
+        // Toggle conversation children (email threads in Notes)
+        window.toggleConversation = function(badge) {
+            var parentRow = badge.closest('tr');
+            if (!parentRow) return;
+            var childrenRow = parentRow.nextElementSibling;
+            if (!childrenRow || !childrenRow.classList.contains('conversation-children-container')) return;
+            var isVisible = childrenRow.style.display !== 'none';
+            childrenRow.style.display = isVisible ? 'none' : 'table-row';
+            // Toggle chevron
+            var chevron = badge.querySelector('.conv-chevron');
+            if (chevron) {
+                chevron.classList.toggle('fa-chevron-down', isVisible);
+                chevron.classList.toggle('fa-chevron-up', !isVisible);
+            }
+        };
+    });
+    </script>
+</body>
+</html>

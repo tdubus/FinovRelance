@@ -1,0 +1,115 @@
+<div class="demo-page" id="demo-page-profile">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-user-cog me-2"></i>
+                    Mon Profil
+                </h1>
+            </div>
+
+            <!-- Informations personnelles -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>
+                        Informations personnelles
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form onsubmit="event.preventDefault(); showDemoToast('Profil sauvegarde (demo)');">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="demo-first-name">Prenom</label>
+                                    <input class="form-control" id="demo-first-name" type="text" value="Marie">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="demo-last-name">Nom</label>
+                                    <input class="form-control" id="demo-last-name" type="text" value="Lemieux">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="demo-email">Adresse courriel</label>
+                            <input class="form-control" id="demo-email" type="email" value="marie.lemieux@dmq.ca">
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">Sauvegarder</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Securite -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Securite
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- TOTP -->
+                    <div class="mb-4">
+                        <h6><i class="fas fa-mobile-alt me-2"></i>Authentification TOTP (Google Authenticator)</h6>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Actif</span>
+                            <form onsubmit="event.preventDefault(); showDemoToast('Action non disponible en demo');" class="d-inline">
+                                <div class="input-group input-group-sm" style="max-width: 350px;">
+                                    <input type="password" name="password" class="form-control"
+                                           placeholder="Mot de passe pour confirmer" required>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="fas fa-times me-1"></i>Desactiver
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Recovery codes -->
+                    <div>
+                        <h6><i class="fas fa-key me-2"></i>Codes de secours</h6>
+                        <p class="text-muted small mb-2">
+                            Les codes de secours vous permettent de vous connecter si le systeme de courriel ou
+                            votre application TOTP est indisponible.
+                            Vous avez <strong>5</strong> code(s) restant(s).
+                        </p>
+                        <a href="javascript:void(0)" onclick="showDemoToast('Action non disponible en demo')" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-sync-alt me-1"></i>
+                            Regenerer les codes
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<style>
+.connection-card {
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+}
+
+.connection-logo {
+    flex-shrink: 0;
+}
+
+.nav-tabs .nav-link {
+    border-bottom-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+    border-bottom-color: var(--bs-primary);
+    background: none;
+}
+</style>
+</div>

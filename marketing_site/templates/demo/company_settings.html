@@ -1,0 +1,600 @@
+<div class="demo-page" id="demo-page-company-settings">
+
+<style>
+.subscription-status {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.subscription-section {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.subscription-section h6 {
+    color: #495057;
+    font-weight: 600;
+}
+
+.plan-change-option, .upgrade-options .d-flex {
+    transition: all 0.2s ease;
+}
+
+.plan-change-option:hover, .upgrade-options .d-flex:hover {
+    background-color: #f8f9fa;
+    border-color: #dee2e6 !important;
+}
+
+.license-count {
+    padding: 0.5rem;
+}
+
+.status-header {
+    margin-bottom: 1rem;
+}
+
+.status-header h6 {
+    font-weight: 600;
+    color: #495057;
+}
+
+.license-form .form-control {
+    border-radius: 4px;
+}
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1">Parametres de l'entreprise</h1>
+                <p class="text-muted">Configurez votre entreprise et ses connexions comptables</p>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4" id="demoSettingsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active"
+                        id="demo-general-tab" data-bs-toggle="tab"
+                        data-bs-target="#demo-general" type="button" role="tab">
+                    <i data-feather="briefcase" class="me-2"></i>
+                    Informations generales
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link"
+                        id="demo-subscription-tab" data-bs-toggle="tab"
+                        data-bs-target="#demo-subscription" type="button" role="tab">
+                    <i data-feather="credit-card" class="me-2"></i>
+                    Abonnement
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="demo-accounting-tab" data-bs-toggle="tab"
+                        data-bs-target="#demo-accounting" type="button" role="tab">
+                    <i data-feather="link" class="me-2"></i>
+                    Connexions comptables
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="demoSettingsTabContent">
+            <!-- General Settings Tab -->
+            <div class="tab-pane fade show active" id="demo-general" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i data-feather="settings" class="me-2"></i>
+                            Parametres generaux
+                        </h5>
+                    </div>
+
+                    <form onsubmit="event.preventDefault(); showDemoToast('Parametres sauvegardes (demo)');">
+                        <div class="card-body">
+                            <!-- Company Basic Information -->
+                            <h6 class="border-bottom pb-2 mb-3">
+                                <i data-feather="briefcase" class="me-2"></i>
+                                Informations generales
+                            </h6>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="demo-company-name">Nom de l'entreprise</label>
+                                        <input class="form-control form-control-lg" id="demo-company-name" type="text" placeholder="Nom de votre entreprise" value="Distribution Materiaux Quebec Inc.">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Logo</label>
+
+                                        <!-- Current logo preview -->
+                                        <div class="current-logo-preview mb-3">
+                                            <label class="form-label text-muted small">Logo actuel :</label>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div style="max-width: 120px; max-height: 60px; border: 1px solid #dee2e6; border-radius: 4px; padding: 4px; background: white; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="font-weight: bold; color: #007bff; font-size: 14px;">DMQ</span>
+                                                </div>
+                                                <div class="d-flex flex-column gap-2">
+                                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                                            onclick="showDemoToast('Action non disponible en demo')">
+                                                        <i data-feather="trash-2" width="16" height="16" class="me-1"></i>
+                                                        Supprimer
+                                                    </button>
+                                                    <small class="text-muted">Telechargez un nouveau fichier pour remplacer</small>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <input class="form-control" type="file" accept=".jpg,.jpeg,.png,.gif" disabled>
+                                        <small class="text-muted">Formats acceptes: JPG, PNG, GIF</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <h6 class="border-bottom pb-2 mb-3 mt-4">
+                                <i data-feather="phone" class="me-2"></i>
+                                Informations de contact
+                            </h6>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="demo-company-email">Courriel</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i data-feather="mail"></i>
+                                            </span>
+                                            <input class="form-control" id="demo-company-email" type="email" placeholder="contact@votre-entreprise.com" value="info@dmq.ca">
+                                        </div>
+                                        <small class="text-muted">Courriel principal de l'entreprise</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="demo-company-phone">Telephone</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i data-feather="phone"></i>
+                                            </span>
+                                            <input class="form-control" id="demo-company-phone" type="tel" placeholder="(514) 555-0123" value="(418) 555-0142">
+                                        </div>
+                                        <small class="text-muted">Numero de telephone principal</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label" for="demo-company-address">Adresse</label>
+                                <textarea class="form-control" id="demo-company-address" rows="3" placeholder="Adresse complete de l'entreprise...">1245 rue de l'Industrie bureau 200
+Quebec QC G1N 4T2</textarea>
+                                <small class="text-muted">Adresse qui apparaitra sur les documents</small>
+                            </div>
+
+                            <!-- Brand Customization -->
+                            <h6 class="border-bottom pb-2 mb-3 mt-4">
+                                <i data-feather="palette" class="me-2"></i>
+                                Personnalisation de la marque
+                            </h6>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Couleur principale</label>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="color-picker-container">
+                                                <input class="form-control form-control-color" type="color"
+                                                       style="width: 60px; height: 40px; border-radius: 8px; border: 2px solid #dee2e6;"
+                                                       value="#007bff">
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <input type="text" class="form-control" value="#007bff" placeholder="#007bff">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">Couleur principale pour les en-tetes et elements importants</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Couleur secondaire</label>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="color-picker-container">
+                                                <input class="form-control form-control-color" type="color"
+                                                       style="width: 60px; height: 40px; border-radius: 8px; border: 2px solid #dee2e6;"
+                                                       value="#6c757d">
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <input type="text" class="form-control" value="#6c757d" placeholder="#6c757d">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">Couleur secondaire pour les textes et elements secondaires</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Regional and Business Configuration -->
+                            <h6 class="border-bottom pb-2 mb-3 mt-4">
+                                <i data-feather="globe" class="me-2"></i>
+                                Configuration regionale et metier
+                            </h6>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Fuseau horaire</label>
+                                        <select class="form-select">
+                                            <option selected>America/Toronto</option>
+                                            <option>America/Montreal</option>
+                                            <option>America/Vancouver</option>
+                                        </select>
+                                        <small class="text-muted">Fuseau horaire pour l'affichage des dates et heures</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Devise</label>
+                                        <select class="form-select">
+                                            <option selected>CAD - Dollar canadien</option>
+                                            <option>USD - Dollar americain</option>
+                                            <option>EUR - Euro</option>
+                                        </select>
+                                        <small class="text-muted">Devise pour l'affichage des montants</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Methode de calcul de l'age</label>
+                                        <select class="form-select">
+                                            <option selected>Date de facture</option>
+                                            <option>Date d'echeance</option>
+                                        </select>
+                                        <small class="text-muted">Methode de calcul pour l'age des creances</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info">
+                                <div class="d-flex">
+                                    <i data-feather="info" class="me-2 mt-1"></i>
+                                    <div>
+                                        <strong>Configuration des calculs :</strong>
+                                        <ul class="mb-0 mt-1">
+                                            <li><strong>Fuseau horaire :</strong> Affecte l'affichage des heures et la determination des rappels quotidiens</li>
+                                            <li><strong>Date de facture :</strong> L'age est calcule depuis la date d'emission de la facture</li>
+                                            <li><strong>Date d'echeance :</strong> L'age est calcule depuis la date d'echeance de la facture</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Project Field Configuration -->
+                            <h6 class="border-bottom pb-2 mb-3 mt-4">
+                                <i data-feather="folder" class="me-2"></i>
+                                Champ projet (hierarchie optionnelle)
+                            </h6>
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="demo-project-field-enabled">
+                                <label class="form-check-label fw-bold" for="demo-project-field-enabled">Activer le champ projet</label>
+                                <small class="d-block text-muted ms-4">
+                                    Permet d'organiser vos factures par projet/contrat au sein de chaque client
+                                </small>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <div class="d-flex">
+                                    <i data-feather="alert-triangle" class="me-2 mt-1"></i>
+                                    <div>
+                                        <strong>Important :</strong> Ce champ est disponible <strong>uniquement pour les imports Excel/CSV</strong>.
+                                        Les connecteurs comptables (QuickBooks, Business Central, etc.) ignorent ce champ.
+                                        <ul class="mb-0 mt-2">
+                                            <li>Organisez vos factures : <strong>Client > Projet > Factures</strong></li>
+                                            <li>Visible dans les comptes a recevoir, le detail client et les rapports</li>
+                                            <li>Vous pouvez changer le nom du champ a tout moment</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="card-footer d-flex justify-content-between">
+                            <a href="javascript:void(0)" onclick="demoNav('dashboard')" class="btn btn-outline-secondary">
+                                <i data-feather="arrow-left" class="me-1"></i>
+                                Retour au tableau de bord
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i data-feather="save" class="me-1"></i>
+                                Sauvegarder
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Subscription Tab -->
+            <div class="tab-pane fade" id="demo-subscription" role="tabpanel">
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i data-feather="credit-card" class="me-2"></i>
+                            Gestion de l'abonnement
+                        </h5>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Informations abonnement actuel -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="subscription-status">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="badge bg-success me-2">Actif</span>
+                                        <h6 class="mb-0">Relance+</h6>
+                                    </div>
+                                    <p class="text-muted">Plan actuel de votre entreprise</p>
+                                    <div class="mt-2">
+                                        <strong class="fs-4">39,95 $</strong><span class="text-muted"> / mois</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="license-summary">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h6 class="border-bottom pb-2 mb-0 flex-grow-1">Licences</h6>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Licences utilisees :</span>
+                                        <strong>3</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Licences disponibles :</span>
+                                        <strong>2</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Total payant :</span>
+                                        <strong>5</strong>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between text-muted">
+                                        <span>Lecteurs (gratuit) :</span>
+                                        <span>0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions principales -->
+                        <div class="row">
+                            <div class="col-12">
+                                <!-- Abonnement Stripe actif - Redirection vers portail -->
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">
+                                        <i data-feather="info" class="me-2"></i>
+                                        Gestion via Stripe
+                                    </h6>
+                                    <p class="mb-3">
+                                        Toutes les modifications d'abonnement (changement de plan, quantite de licences, annulation)
+                                        se font desormais exclusivement via le portail securise de Stripe.
+                                    </p>
+                                    <button type="button" class="btn btn-primary"
+                                            onclick="showDemoToast('Action non disponible en demo')">
+                                        Gerer mon abonnement
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accounting Connections Tab -->
+            <div class="tab-pane fade" id="demo-accounting" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i data-feather="link" class="me-2"></i>
+                            Connexions comptables
+                        </h5>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- SECTION 1: Connecteur selectionne -->
+                        <div class="mb-5">
+                            <h6 class="text-muted mb-3">
+                                <i data-feather="check-circle" class="me-2"></i>Connecteur selectionne
+                            </h6>
+
+                            <!-- Connecteur actif - QuickBooks Online -->
+                            <div class="card border-primary shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="me-3" style="min-width: 80px; display: flex; align-items: center; justify-content: center;">
+                                            <img src="/marketing-static/images/quickbooks-logo.png"
+                                                 alt="QuickBooks Online" style="max-height: 48px; max-width: 80px; width: auto; height: auto; object-fit: contain;"
+                                                 onerror="this.parentElement.innerHTML='<div class=\'rounded p-2\' style=\'background: #2CA01C;\'><i class=\'fas fa-book text-white\' style=\'font-size: 32px;\'></i></div>'">
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">QuickBooks Online</h5>
+                                            <p class="text-muted small mb-0">Synchronisation automatique avec QuickBooks Online</p>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-success">Actif</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- API Connector Details -->
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <small class="text-muted">Derniere synchronisation</small>
+                                            <div class="fw-bold">
+                                                01/04/2026 a 05:30
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <small class="text-muted">Statut</small>
+                                            <div class="fw-bold">
+                                                <span class="text-success">Connecte</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <div class="alert alert-success p-2 small mb-0">
+                                            <i data-feather="check-circle" class="me-2" style="width: 16px; height: 16px;"></i>
+                                            <strong>Derniere sync :</strong>
+                                            2 clients crees,
+                                            5 mis a jour,
+                                            8 factures creees,
+                                            12 mises a jour.
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <div class="d-flex gap-2">
+                                            <button type="button" class="btn btn-sm btn-primary" onclick="showDemoToast('Synchronisation lancee (demo)')">
+                                                Synchroniser maintenant
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                    onclick="showDemoToast('Action non disponible en demo')">
+                                                Deconnecter
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 2: Connecteurs disponibles -->
+                        <div>
+                            <h6 class="text-muted mb-3">
+                                <i data-feather="grid" class="me-2"></i>Connecteurs disponibles
+                            </h6>
+
+                            <div class="row g-3">
+                                <!-- Excel/CSV -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="me-3" style="min-width: 60px; display: flex; align-items: center; justify-content: center;">
+                                                    <div class="rounded p-1" style="background: #1e7e34;">
+                                                        <i class="fas fa-file-excel text-white" style="font-size: 24px; padding: 4px;"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1">Excel / CSV</h6>
+                                                    <p class="text-muted small mb-0">Import manuel via fichiers Excel ou CSV</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-auto">
+                                                <button class="btn btn-sm btn-success" onclick="showDemoToast('Action non disponible en demo')">
+                                                    <i class="fas fa-cog me-1"></i>Configurer
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Xero -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="me-3" style="min-width: 60px; display: flex; align-items: center; justify-content: center;">
+                                                    <img src="/marketing-static/images/xero-logo.png"
+                                                         alt="Xero" style="max-height: 32px; max-width: 60px; width: auto; height: auto; object-fit: contain;"
+                                                         onerror="this.parentElement.innerHTML='<div class=\'rounded p-2\' style=\'background: #13B5EA;\'><i class=\'fas fa-book text-white\' style=\'font-size: 24px;\'></i></div>'">
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1">Xero</h6>
+                                                    <p class="text-muted small mb-0">Synchronisation avec Xero</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-auto">
+                                                <button class="btn btn-sm btn-primary" onclick="showDemoToast('Action non disponible en demo')">
+                                                    Connecter Xero
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Business Central -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="me-3" style="min-width: 60px; display: flex; align-items: center; justify-content: center;">
+                                                    <img src="/marketing-static/images/business-central-logo.png"
+                                                         alt="Business Central" style="max-height: 32px; max-width: 60px; width: auto; height: auto; object-fit: contain;"
+                                                         onerror="this.parentElement.innerHTML='<div class=\'rounded p-2\' style=\'background: #00188F;\'><i class=\'fab fa-microsoft text-white\' style=\'font-size: 24px;\'></i></div>'">
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1">Business Central</h6>
+                                                    <p class="text-muted small mb-0">Synchronisation avec Microsoft Dynamics 365 Business Central</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-auto">
+                                                <button class="btn btn-sm btn-primary" onclick="showDemoToast('Action non disponible en demo')">
+                                                    Configurer Business Central
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Odoo -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="me-3" style="min-width: 60px; display: flex; align-items: center; justify-content: center;">
+                                                    <img src="/marketing-static/images/odoo-logo.png"
+                                                         alt="Odoo" style="max-height: 32px; max-width: 60px; width: auto; height: auto; object-fit: contain;"
+                                                         onerror="this.parentElement.innerHTML='<div class=\'rounded p-2\' style=\'background: #714B67;\'><i class=\'fas fa-book text-white\' style=\'font-size: 24px;\'></i></div>'">
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1">Odoo</h6>
+                                                    <p class="text-muted small mb-0">Synchronisation avec Odoo</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-auto">
+                                                <button class="btn btn-sm btn-primary" onclick="showDemoToast('Action non disponible en demo')">
+                                                    Configurer Odoo
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Re-initialize feather icons for this demo page
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+});
+</script>
+</div>

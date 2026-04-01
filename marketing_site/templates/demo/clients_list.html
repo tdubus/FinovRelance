@@ -1,0 +1,259 @@
+<div class="demo-page" id="demo-page-clients">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Clients</h1>
+        <p class="text-muted">Gestion de vos clients et contacts</p>
+    </div>
+    <div>
+        <a href="javascript:void(0)" class="btn btn-primary" onclick="event.preventDefault()">
+            <i class="fas fa-plus me-1"></i>
+            Nouveau client
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label for="searchInputClients" class="form-label">Rechercher</label>
+                <input type="text" id="searchInputClients" class="form-control"
+                       placeholder="Nom ou code client..." value="">
+                <small class="form-text text-muted">La recherche se fait automatiquement</small>
+            </div>
+            <div class="col-md-2">
+                <label for="balanceFilter" class="form-label">Filtre par solde</label>
+                <select id="balanceFilter" class="form-select">
+                    <option value="">Tous</option>
+                    <option value="with_balance">Avec solde</option>
+                    <option value="without_balance">Sans solde</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="collectorFilter" class="form-label">Collecteur</label>
+                <select id="collectorFilter" class="form-select">
+                    <option value="">Tous les collecteurs</option>
+                    <option value="unassigned">Non assign&eacute;</option>
+                    <option value="1">Marie-Claude Tremblay</option>
+                    <option value="2">Jean-Philippe Roy</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-flex gap-2">
+                    <button type="button" id="clearFilters" class="btn btn-outline-secondary flex-grow-1" onclick="event.preventDefault()">
+                        <i class="fas fa-times me-1"></i>
+                        Effacer
+                    </button>
+                    <button type="button" id="exportExcel" class="btn btn-success" title="Exporter en Excel" onclick="event.preventDefault()">
+                        <i class="fas fa-file-excel"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Clients Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-users me-2"></i>
+            Liste des clients
+            <span class="badge bg-secondary ms-2" id="totalCount">10</span>
+        </h5>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-outline-danger" id="delete-selected" style="display: none;">
+                <i class="fas fa-trash me-1"></i>
+                Supprimer s&eacute;lectionn&eacute;s
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body" id="clientsContainer">
+        <div class="table-responsive" id="clientsTableWrapper">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th width="50">
+                            <input type="checkbox" id="select-all" class="form-check-input">
+                        </th>
+                        <th>Code client</th>
+                        <th>Nom du client</th>
+                        <th>Contact</th>
+                        <th>Collecteur</th>
+                        <th>Repr&eacute;sentant</th>
+                        <th>Solde &agrave; recevoir</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsTableBody">
+                    <tr>
+                        <td><input type="checkbox" name="client_ids" value="1" class="form-check-input"></td>
+                        <td>BERG-001</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Constructions Bergeron &amp; Fils</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">m.bergeron@bergeron.ca</a></td>
+                        <td><span class="badge bg-secondary">Marie-Claude Tremblay</span></td>
+                        <td>Alain Bergeron</td>
+                        <td class="fw-bold text-danger">42 350,00 $</td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i data-feather="eye" class="small"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="client_ids" value="2" class="form-check-input"></td>
+                        <td>LAV-002</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Plomberie Lavoie inc.</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">info@plomberielavoie.ca</a></td>
+                        <td><span class="badge bg-secondary">Jean-Philippe Roy</span></td>
+                        <td>Sylvie Lavoie</td>
+                        <td class="fw-bold text-warning">18 750,00 $</td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i data-feather="eye" class="small"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="client_ids" value="3" class="form-check-input"></td>
+                        <td>TQM-003</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">TQM Solutions</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">comptabilite@tqm.ca</a></td>
+                        <td><span class="badge bg-secondary">Marie-Claude Tremblay</span></td>
+                        <td>Patrick Morin</td>
+                        <td class="fw-bold text-danger">31 200,00 $</td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i data-feather="eye" class="small"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="client_ids" value="4" class="form-check-input"></td>
+                        <td>SIM-004</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Toitures Simard</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">p.simard@toituressimard.ca</a></td>
+                        <td><span class="badge bg-secondary">Jean-Philippe Roy</span></td>
+                        <td>Pierre Simard</td>
+                        <td class="fw-bold text-warning">8 900,00 $</td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i data-feather="eye" class="small"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="client_ids" value="5" class="form-check-input"></td>
+                        <td>BASL-005</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">BASL &Eacute;lectrique</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">admin@baslelectrique.com</a></td>
+                        <td><span class="badge bg-secondary">Marie-Claude Tremblay</span></td>
+                        <td>Louis Bherer</td>
+                        <td class="fw-bold text-danger">67 500,00 $</td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i data-feather="eye" class="small"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="client_ids" value="6" class="form-check-input"></td>
+                        <td>COT-006</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Excavation C&ocirc;t&eacute;</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">j.cote@excavationcote.ca</a></td>
+                        <td><span class="badge bg-secondary">Jean-Philippe Roy</span></td>
+                        <td>Jacques C&ocirc;t&eacute;</td>
+                        <td class="fw-bold text-warning">12 400,00 $</td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i data-feather="eye" class="small"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="client_ids" value="7" class="form-check-input"></td>
+                        <td>PEL-007</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Pelletier M&eacute;canique</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">info@pelletiermec.ca</a></td>
+                        <td><span class="badge bg-secondary">Marie-Claude Tremblay</span></td>
+                        <td>Ren&eacute; Pelletier</td>
+                        <td class="fw-bold text-warning">22 100,00 $</td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i data-feather="eye" class="small"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="client_ids" value="8" class="form-check-input"></td>
+                        <td>SMD-008</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">SMD Construction</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">comptable@smdconstruction.ca</a></td>
+                        <td><span class="badge bg-secondary">Jean-Philippe Roy</span></td>
+                        <td>Marc Desrosiers</td>
+                        <td class="fw-bold text-danger">54 800,00 $</td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i data-feather="eye" class="small"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="client_ids" value="9" class="form-check-input"></td>
+                        <td>FEN-009</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Fenestration Qu&eacute;bec</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">info@fenestrationqc.ca</a></td>
+                        <td><span class="badge bg-secondary">Marie-Claude Tremblay</span></td>
+                        <td>Nathalie Gagnon</td>
+                        <td class="fw-bold text-warning">15 600,00 $</td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i data-feather="eye" class="small"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="client_ids" value="10" class="form-check-input"></td>
+                        <td>ISO-010</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Isolation Nord-Sud</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">facturation@isolationnordsud.ca</a></td>
+                        <td><span class="badge bg-secondary">Jean-Philippe Roy</span></td>
+                        <td>Caroline Bouchard</td>
+                        <td class="fw-bold text-warning">9 800,00 $</td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i data-feather="eye" class="small"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i data-feather="edit-2" class="small"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination container -->
+    <div class="card-footer" id="paginationContainer">
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">Affichage de 1 &agrave; 10 sur 10 clients</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item active"><a class="page-link" href="javascript:void(0)">1</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+</div>

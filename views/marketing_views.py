@@ -15,7 +15,11 @@ def index():
 
 @marketing_bp.route('/essai')
 def essai():
-    return render_template('ads.html')
+    return render_template('ads_v2.html')
+
+@marketing_bp.route('/demo-iframe')
+def demo_iframe():
+    return render_template('demo_iframe.html')
 
 @marketing_bp.route('/fonctionnalites')
 def fonctionnalites():

@@ -1,0 +1,698 @@
+<div class="demo-page" id="demo-page-notes">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Notes et Courriels</h1>
+        <p class="text-muted">Gestion centralisée de toutes les communications</p>
+    </div>
+    <div>
+        <a href="javascript:void(0)" onclick="showDemoToast('Export Excel')" class="btn btn-outline-success me-2">
+            <i class="fas fa-file-excel me-1"></i>
+            Exporter Excel
+        </a>
+        <button type="button" class="btn btn-success me-2" onclick="showDemoToast('Nouveau courriel')">
+            <i class="fas fa-envelope me-1"></i>
+            Nouveau courriel
+        </button>
+        <button type="button" class="btn btn-primary" onclick="showDemoToast('Nouvelle note')">
+            <i class="fas fa-sticky-note me-1"></i>
+            Nouvelle note
+        </button>
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-5">
+                <label for="searchInputNotes" class="form-label">Rechercher un client</label>
+                <input type="text" id="searchInputNotes" class="form-control"
+                       placeholder="Nom ou code client..." value="">
+                <small class="form-text text-muted">La recherche se fait automatiquement</small>
+            </div>
+            <div class="col-md-3">
+                <label for="collectorFilter" class="form-label">Collecteur</label>
+                <select id="collectorFilter" class="form-select">
+                    <option value="">Tous les collecteurs</option>
+                    <option value="1">Marie-Claude Tremblay</option>
+                    <option value="2">Jean-François Bouchard</option>
+                    <option value="3">Sophie Lavoie</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="typeFilter" class="form-label">Type</label>
+                <select id="typeFilter" class="form-select">
+                    <option value="">Tous les types</option>
+                    <option value="general">Général</option>
+                    <option value="call">Appel</option>
+                    <option value="email">Courriel</option>
+                    <option value="meeting">Rencontre</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <label class="form-label">&nbsp;</label>
+                <button type="button" id="clearFilters" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notes List -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-list me-2"></i>
+            Liste des notes
+            <span class="badge bg-secondary ms-2" id="totalCount">15</span>
+        </h5>
+    </div>
+
+    <div class="card-body" id="notesContainer">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th width="140">Date</th>
+                        <th width="100">Type</th>
+                        <th width="200">Client</th>
+                        <th width="150">Auteur</th>
+                        <th>Contenu</th>
+                        <th width="100" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="notesTableBody">
+                    <!-- Note 1: Email sent with conversation thread -->
+                    <tr class="conversation-parent-row" style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-04-01 09:15</small>
+                            <br>
+                            <small class="text-muted" style="font-size: 0.75em;" title="Date du courriel original">
+                                <i class="fas fa-clock me-1"></i>Orig: 28/03/2026
+                            </small>
+                            <span class="reminder-badge-inline reminder-upcoming">
+                                <i class="fas fa-bell"></i>
+                                05/04/2026
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info"><i class="fas fa-envelope me-1"></i>Courriel</span>
+                        </td>
+                        <td>
+                            <div><strong>C-1001</strong></div>
+                            <small class="text-muted">Groupe Construction Laval</small>
+                        </td>
+                        <td><small>Marie-Claude Tremblay</small></td>
+                        <td>
+                            <span class="badge bg-primary conversation-toggle-badge me-2"
+                                  style="cursor: pointer; padding: 0.4em 0.6em;"
+                                  title="Cliquez pour voir 3 échanges"
+                                  onclick="event.stopPropagation(); toggleConversation(this);">
+                                <i class="fas fa-comments me-1"></i> 3 échanges
+                                <i class="fas fa-chevron-down ms-1 conv-chevron"></i>
+                            </span>
+                            <div>
+                                <small><strong>RE: Suivi de paiement - Factures en souffrance</strong></small>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.85em;">
+                                Bonjour, nous avons bien reçu votre message. Le paiement sera effectué d'ici vendredi...
+                            </div>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="conversation-children-container" style="display: none;">
+                        <td colspan="6" class="p-0">
+                            <div class="conversation-children-wrapper p-3" style="background: #f8f9fa; border-left: 3px solid #8475EC;">
+                                <div class="card mb-2">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <div>
+                                                <span class="badge bg-primary"><i class="fas fa-paper-plane me-1"></i>Envoy&#233;</span>
+                                                <strong class="ms-2">Marie-Claude Tremblay</strong>
+                                            </div>
+                                            <small class="text-muted">28/03/2026 10:15</small>
+                                        </div>
+                                        <p class="mb-0 small">Bonjour, nous souhaitons faire le suivi concernant vos factures en souffrance. Le solde total de votre compte s'&#233;l&#232;ve &#224; 125 400 $. Pourriez-vous nous indiquer quand le paiement sera effectu&#233;?</p>
+                                    </div>
+                                </div>
+                                <div class="card mb-2">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <div>
+                                                <span class="badge bg-success"><i class="fas fa-envelope-open me-1"></i>Re&#231;u</span>
+                                                <strong class="ms-2">Pierre Lafleur (Groupe Construction Laval)</strong>
+                                            </div>
+                                            <small class="text-muted">30/03/2026 08:45</small>
+                                        </div>
+                                        <p class="mb-0 small">Bonjour Marie-Claude, nous avons pris connaissance de votre message. Nous avons un d&#233;lai de traitement interne. Le paiement partiel de 60 000 $ sera effectu&#233; d'ici vendredi.</p>
+                                    </div>
+                                </div>
+                                <div class="card mb-2">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <div>
+                                                <span class="badge bg-success"><i class="fas fa-envelope-open me-1"></i>Re&#231;u</span>
+                                                <strong class="ms-2">Pierre Lafleur (Groupe Construction Laval)</strong>
+                                            </div>
+                                            <small class="text-muted">01/04/2026 09:15</small>
+                                        </div>
+                                        <p class="mb-0 small">Bonjour, nous avons bien re&#231;u votre message. Le paiement sera effectu&#233; d'ici vendredi. Le solde restant de 65 400 $ sera r&#233;gl&#233; le mois prochain.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 2: Phone call -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-04-01 08:45</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-success"><i class="fas fa-phone me-1"></i>Appel</span>
+                        </td>
+                        <td>
+                            <div><strong>C-1002</strong></div>
+                            <small class="text-muted">Transport Québec Express</small>
+                        </td>
+                        <td><small>Jean-François Bouchard</small></td>
+                        <td>
+                            <small>Appel de suivi concernant les factures #4521 et #4522. Le client mentionne un litige sur la facture #4521 pour un montant de 3 200 $. Demande une copie de...</small>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 3: Email sent -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-31 16:30</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info"><i class="fas fa-envelope me-1"></i>Courriel</span>
+                            <br>
+                            <span class="badge bg-primary mt-1" style="font-size: 0.7em;">
+                                <i class="fas fa-paper-plane me-1"></i>Envoyé
+                            </span>
+                        </td>
+                        <td>
+                            <div><strong>C-1003</strong></div>
+                            <small class="text-muted">Industries Métalliques Saguenay</small>
+                        </td>
+                        <td><small>Sophie Lavoie</small></td>
+                        <td>
+                            <div>
+                                <small><strong>Rappel de paiement - Compte #C-1003</strong></small>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.85em;">
+                                Bonjour, nous vous rappelons que votre compte présente un solde impayé de 74 600 $. Nous vous prions de bien vouloir...
+                            </div>
+                            <div class="mt-1">
+                                <small class="text-muted">
+                                    <i class="fas fa-paperclip"></i> 2 PJ
+                                </small>
+                            </div>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 4: General note -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-31 14:20</small>
+                            <span class="reminder-badge-inline reminder-overdue">
+                                <i class="fas fa-bell"></i>
+                                30/03/2026
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary"><i class="fas fa-sticky-note me-1"></i>Note</span>
+                        </td>
+                        <td>
+                            <div><strong>C-1004</strong></div>
+                            <small class="text-muted">Plomberie Côté & Fils</small>
+                        </td>
+                        <td><small>Marie-Claude Tremblay</small></td>
+                        <td>
+                            <small>Client en difficulté financière. Proposition d'entente de paiement sur 6 mois pour le solde de 59 000 $. En attente de la confirmation du client.</small>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 5: Email received -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-31 11:05</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info"><i class="fas fa-envelope me-1"></i>Courriel</span>
+                            <br>
+                            <span class="badge bg-success mt-1" style="font-size: 0.7em;">
+                                <i class="fas fa-inbox me-1"></i>Reçu
+                            </span>
+                        </td>
+                        <td>
+                            <div><strong>C-1005</strong></div>
+                            <small class="text-muted">Services Informatiques Montréal</small>
+                        </td>
+                        <td><small>Jean-François Bouchard</small></td>
+                        <td>
+                            <div>
+                                <small><strong>RE: Relevé de compte mars 2026</strong></small>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.85em;">
+                                Merci pour le relevé. Nous procédons au paiement des factures #5102 et #5103 cette semaine. Pour la facture #5104, nous aimerions...
+                            </div>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Voir le détail')" title="Voir le détail">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 6: Meeting -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-31 10:00</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning"><i class="fas fa-users me-1"></i>Rencontre</span>
+                        </td>
+                        <td>
+                            <div><strong>C-1006</strong></div>
+                            <small class="text-muted">Alimentation Boréale inc.</small>
+                        </td>
+                        <td><small>Sophie Lavoie</small></td>
+                        <td>
+                            <small>Rencontre avec le directeur financier. Discussion sur les termes de paiement. Accord verbal pour passer de Net 30 à Net 45 en échange d'un paiement immédiat du solde en retard.</small>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 7: Email sent with conversation -->
+                    <tr class="conversation-parent-row" style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-30 15:45</small>
+                            <br>
+                            <small class="text-muted" style="font-size: 0.75em;" title="Date du courriel original">
+                                <i class="fas fa-clock me-1"></i>Orig: 25/03/2026
+                            </small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info"><i class="fas fa-envelope me-1"></i>Courriel</span>
+                        </td>
+                        <td>
+                            <div><strong>C-1007</strong></div>
+                            <small class="text-muted">Électricité Beauce Pro</small>
+                        </td>
+                        <td><small>Marie-Claude Tremblay</small></td>
+                        <td>
+                            <span class="badge bg-primary conversation-toggle-badge me-2"
+                                  style="cursor: pointer; padding: 0.4em 0.6em;"
+                                  title="Cliquez pour voir 2 échanges"
+                                  onclick="event.stopPropagation(); toggleConversation(this);">
+                                <i class="fas fa-comments me-1"></i> 2 échanges
+                                <i class="fas fa-chevron-down ms-1 conv-chevron"></i>
+                            </span>
+                            <div>
+                                <small><strong>RE: Mise en demeure - Compte en souffrance 90+ jours</strong></small>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.85em;">
+                                Nous prenons acte de votre mise en demeure. Veuillez trouver ci-joint la preuve de virement bancaire...
+                            </div>
+                            <div class="mt-1">
+                                <small class="text-muted">
+                                    <i class="fas fa-paperclip"></i> 1 PJ
+                                </small>
+                            </div>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="conversation-children-container" style="display: none;">
+                        <td colspan="6" class="p-0">
+                            <div class="conversation-children-wrapper p-3" style="background: #f8f9fa; border-left: 3px solid #8475EC;">
+                                <div class="card mb-2">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <div>
+                                                <span class="badge bg-primary"><i class="fas fa-paper-plane me-1"></i>Envoy&#233;</span>
+                                                <strong class="ms-2">Marie-Claude Tremblay</strong>
+                                            </div>
+                                            <small class="text-muted">25/03/2026 14:00</small>
+                                        </div>
+                                        <p class="mb-0 small">Mise en demeure formelle - Votre compte pr&#233;sente un solde impay&#233; de 42 800 $ depuis plus de 90 jours. Sans paiement dans les 10 jours ouvrables, nous transf&#233;rerons le dossier &#224; notre service juridique.</p>
+                                    </div>
+                                </div>
+                                <div class="card mb-2">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <div>
+                                                <span class="badge bg-success"><i class="fas fa-envelope-open me-1"></i>Re&#231;u</span>
+                                                <strong class="ms-2">Alain Bergeron (&#201;lectricit&#233; Beauce Pro)</strong>
+                                            </div>
+                                            <small class="text-muted">30/03/2026 15:45</small>
+                                        </div>
+                                        <p class="mb-0 small">Nous prenons acte de votre mise en demeure. Veuillez trouver ci-joint la preuve de virement bancaire de 42 800 $ effectu&#233; aujourd'hui. Nous nous excusons pour ce d&#233;lai.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 8: Phone call -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-30 13:30</small>
+                            <span class="reminder-badge-inline reminder-completed">
+                                <i class="fas fa-check-circle"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success"><i class="fas fa-phone me-1"></i>Appel</span>
+                        </td>
+                        <td>
+                            <div><strong>C-1008</strong></div>
+                            <small class="text-muted">Location d'Équipement Mauricie</small>
+                        </td>
+                        <td><small>Jean-François Bouchard</small></td>
+                        <td>
+                            <small>Appel au comptable du client. Confirme le paiement par chèque envoyé par la poste le 28 mars. Montant de 8 500 $ couvrant les factures #3201 et #3202.</small>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 9: General note (internal) -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-30 11:15</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary"><i class="fas fa-sticky-note me-1"></i>Note</span>
+                        </td>
+                        <td>
+                            <div><strong>C-1009</strong></div>
+                            <small class="text-muted">Nettoyage Industriel Lévis</small>
+                        </td>
+                        <td><small>Sophie Lavoie</small></td>
+                        <td>
+                            <small>Note interne : Vérifier avec la comptabilité si le crédit de 1 200 $ a été appliqué au compte du client avant d'envoyer le prochain relevé.</small>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 10: Email sent -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-29 16:00</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info"><i class="fas fa-envelope me-1"></i>Courriel</span>
+                            <br>
+                            <span class="badge bg-primary mt-1" style="font-size: 0.7em;">
+                                <i class="fas fa-paper-plane me-1"></i>Envoyé
+                            </span>
+                        </td>
+                        <td>
+                            <div><strong>C-1010</strong></div>
+                            <small class="text-muted">Consultation RH Gatineau</small>
+                        </td>
+                        <td><small>Marie-Claude Tremblay</small></td>
+                        <td>
+                            <div>
+                                <small><strong>Relevé de compte - Mars 2026</strong></small>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.85em;">
+                                Veuillez trouver ci-joint votre relevé de compte pour le mois de mars 2026. Votre solde actuel est de 7 000 $...
+                            </div>
+                            <div class="mt-1">
+                                <small class="text-muted">
+                                    <i class="fas fa-paperclip"></i> 1 PJ
+                                </small>
+                            </div>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 11: Phone call -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-29 14:30</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-success"><i class="fas fa-phone me-1"></i>Appel</span>
+                        </td>
+                        <td>
+                            <div><strong>C-1001</strong></div>
+                            <small class="text-muted">Groupe Construction Laval</small>
+                        </td>
+                        <td><small>Marie-Claude Tremblay</small></td>
+                        <td>
+                            <small>Appel de relance. Le client indique que le chèque sera émis la semaine prochaine. Demande un délai supplémentaire de 15 jours pour le solde de 90+ jours.</small>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 12: Email received -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-29 10:20</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info"><i class="fas fa-envelope me-1"></i>Courriel</span>
+                            <br>
+                            <span class="badge bg-success mt-1" style="font-size: 0.7em;">
+                                <i class="fas fa-inbox me-1"></i>Reçu
+                            </span>
+                        </td>
+                        <td>
+                            <div><strong>C-1004</strong></div>
+                            <small class="text-muted">Plomberie Côté & Fils</small>
+                        </td>
+                        <td><small>Jean-François Bouchard</small></td>
+                        <td>
+                            <div>
+                                <small><strong>Demande d'entente de paiement</strong></small>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.85em;">
+                                Suite à notre conversation téléphonique, nous souhaitons formaliser une entente de paiement mensuel de 10 000 $...
+                            </div>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Voir le détail')" title="Voir le détail">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 13: General note -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-28 16:45</small>
+                            <span class="reminder-badge-inline reminder-today">
+                                <i class="fas fa-bell"></i>
+                                01/04/2026
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary"><i class="fas fa-sticky-note me-1"></i>Note</span>
+                        </td>
+                        <td>
+                            <div><strong>C-1002</strong></div>
+                            <small class="text-muted">Transport Québec Express</small>
+                        </td>
+                        <td><small>Jean-François Bouchard</small></td>
+                        <td>
+                            <small>Préparer le dossier de litige pour la facture #4521. Rassembler les bons de livraison et confirmations de réception signées par le client.</small>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 14: Email forwarded -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-28 11:00</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info"><i class="fas fa-envelope me-1"></i>Courriel</span>
+                            <br>
+                            <span class="badge bg-secondary mt-1" style="font-size: 0.7em;">
+                                <i class="fas fa-share me-1"></i>Transféré
+                            </span>
+                        </td>
+                        <td>
+                            <div><strong>C-1006</strong></div>
+                            <small class="text-muted">Alimentation Boréale inc.</small>
+                        </td>
+                        <td><small>Sophie Lavoie</small></td>
+                        <td>
+                            <div>
+                                <small><strong>TR: Confirmation de rencontre - Termes de paiement</strong></small>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.85em;">
+                                Je vous transfère la confirmation de rencontre avec le directeur financier d'Alimentation Boréale pour discussion...
+                            </div>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Note 15: Phone call -->
+                    <tr style="cursor: pointer;" onclick="showDemoToast('Détail de la note')">
+                        <td>
+                            <small>2026-03-28 09:30</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-success"><i class="fas fa-phone me-1"></i>Appel</span>
+                        </td>
+                        <td>
+                            <div><strong>C-1003</strong></div>
+                            <small class="text-muted">Industries Métalliques Saguenay</small>
+                        </td>
+                        <td><small>Sophie Lavoie</small></td>
+                        <td>
+                            <small>Tentative d'appel - pas de réponse. Message laissé sur la boîte vocale demandant un retour d'appel concernant le solde impayé de 74 600 $.</small>
+                        </td>
+                        <td class="text-end" onclick="event.stopPropagation()">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDemoToast('Modifier la note')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="showDemoToast('Supprimer')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation" class="mt-3" id="paginationContainer">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item active">
+                    <a class="page-link" href="javascript:void(0)">1</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</div>
