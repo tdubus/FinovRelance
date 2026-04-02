@@ -8,7 +8,7 @@
 
     var CONSENT_KEY = 'finova_cookie_consent';
     var CONSENT_VERSION = '1.0';
-    var VISITORS_TOKEN = 'a12454d2-5688-434c-90fc-20768462efd9';
+    // Visitors Analytics loaded unconditionally in <head> per vendor instructions
 
     // ── GTM Consent Mode (default denied) ─────────────────────
     window.dataLayer = window.dataLayer || [];
@@ -67,15 +67,7 @@
             ad_personalization: adsGranted
         });
 
-        // Load Visitors Analytics only if statistics accepted
-        if (prefs.statistics && !document.getElementById('visitors-analytics-script')) {
-            var s = document.createElement('script');
-            s.id = 'visitors-analytics-script';
-            s.src = 'https://cdn.visitors.now/v.js';
-            s.setAttribute('data-token', VISITORS_TOKEN);
-            s.setAttribute('data-persist', '');
-            document.head.appendChild(s);
-        }
+        // Visitors Analytics loaded unconditionally in <head> per vendor instructions
     }
 
     // ── Log to server ─────────────────────────────────────────
