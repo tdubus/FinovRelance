@@ -52,6 +52,7 @@ def get_csp_directives(nonce=None):
             "https://js.stripe.com",
             "https://static.cloudflareinsights.com",
             "https://www.googletagmanager.com",
+            "https://cdn.visitors.now",
             "'unsafe-inline'",
         ],
 
@@ -87,6 +88,8 @@ def get_csp_directives(nonce=None):
             "https://www.google-analytics.com",
             "https://stats.g.doubleclick.net",
             "https://region1.google-analytics.com",
+            "https://cdn.visitors.now",
+            "https://*.visitors.now",
         ],
 
         'frame-src': [

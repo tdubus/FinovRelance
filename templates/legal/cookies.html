@@ -29,7 +29,7 @@
                 <div class="card-body">
                     <div class="alert alert-info">
                         <i data-feather="info" class="me-2"></i>
-                        <strong>Dernière mise à jour :</strong> 29 décembre 2025
+                        <strong>Dernière mise à jour :</strong> 2 avril 2026
                     </div>
 
                     <section class="mb-4">
@@ -172,10 +172,10 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><code>cookieConsent</code></td>
-                                            <td>Mémoriser votre choix d'acceptation ou de refus de la bannière de cookies sur le site marketing</td>
+                                            <td><code>finova_cookie_consent</code></td>
+                                            <td>Mémoriser vos préférences granulaires de cookies (essentiels, statistiques, marketing) ainsi que l'acceptation des CGU et politique de confidentialité</td>
                                             <td>Permanent (jusqu'à suppression manuelle)</td>
-                                            <td>localStorage (pas un cookie)</td>
+                                            <td>localStorage (pas un cookie) - Essentiel</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -189,36 +189,53 @@
                     </section>
 
                     <section class="mb-4">
-                        <h2 class="h4 text-primary mb-3">3. Cookies tiers essentiels</h2>
-                        <p>FinovRelance utilise uniquement des cookies tiers <strong>ESSENTIELS</strong> à la sécurité :</p>
-                        
+                        <h2 class="h4 text-primary mb-3">3. Cookies tiers</h2>
+
                         <div class="card border-success mb-3">
                             <div class="card-body">
-                                <h6 class="text-success"><i data-feather="check" class="me-2"></i>Cloudflare (cookies de sécurité) :</h6>
+                                <h6 class="text-success"><i data-feather="shield" class="me-2"></i>Cookies essentiels (sécurité) :</h6>
                                 <ul class="mb-0">
-                                    <li><code>__cf_bm</code> et <code>cf_clearance</code> pour la protection anti-bot</li>
-                                    <li>Strictement nécessaires à la sécurité de l'application</li>
-                                    <li>Aucune finalité marketing ou publicitaire</li>
+                                    <li><strong>Cloudflare</strong> : <code>__cf_bm</code> et <code>cf_clearance</code> pour la protection anti-bot. Strictement nécessaires, aucune finalité marketing.</li>
                                 </ul>
                             </div>
                         </div>
 
-                        <div class="card border-danger">
+                        <div class="card border-info mb-3">
                             <div class="card-body">
-                                <h6 class="text-danger"><i data-feather="x" class="me-2"></i>Cookies tiers que nous n'utilisons PAS :</h6>
-                                <ul class="mb-0">
-                                    <li>Cookies publicitaires (Google Ads, Facebook Ads)</li>
-                                    <li>Cookies d'analyse (Google Analytics, etc.)</li>
-                                    <li>Cookies de réseaux sociaux (Facebook, Twitter, LinkedIn)</li>
-                                    <li>Cookies de profilage comportemental</li>
-                                    <li>Cookies marketing de tiers</li>
-                                </ul>
+                                <h6 class="text-info"><i data-feather="bar-chart-2" class="me-2"></i>Cookies statistiques (optionnels, soumis à votre consentement) :</h6>
+                                <table class="table table-bordered mt-2 mb-0">
+                                    <thead>
+                                        <tr><th>Service</th><th>Cookie</th><th>Finalité</th><th>Durée</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Google Analytics 4</strong> (via GTM)</td>
+                                            <td><code>_ga</code>, <code>_ga_*</code></td>
+                                            <td>Statistiques de navigation anonymisées</td>
+                                            <td>2 ans</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Visitors Analytics</strong> (visitors.now)</td>
+                                            <td><code>visitor</code></td>
+                                            <td>Analytics de trafic et attribution de revenus</td>
+                                            <td>Persistant</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p class="mt-2 mb-0"><small>Ces cookies ne sont chargés que si vous acceptez les cookies statistiques dans le panneau de préférences. Vous pouvez modifier vos choix à tout moment via le lien "Gérer les cookies" dans le pied de page.</small></p>
+                            </div>
+                        </div>
+
+                        <div class="card border-secondary mb-3">
+                            <div class="card-body">
+                                <h6 class="text-secondary"><i data-feather="target" class="me-2"></i>Cookies marketing (optionnels, soumis à votre consentement) :</h6>
+                                <p class="mb-0">Google Ads - Permettent d'afficher des publicités pertinentes. Ces cookies ne sont activés que si vous les acceptez explicitement.</p>
                             </div>
                         </div>
 
                         <div class="alert alert-info mt-3">
                             <i data-feather="info" class="me-2"></i>
-                            <strong>Note importante :</strong> Stripe (notre processeur de paiement) fonctionne côté serveur via API et ne dépose aucun cookie dans votre navigateur.
+                            <strong>Note importante :</strong> Stripe (notre processeur de paiement) fonctionne côté serveur via API et ne dépose aucun cookie dans votre navigateur. Le cookie <code>visitor</code> de Visitors Analytics est transmis dans les métadonnées de la session Stripe pour permettre l'attribution de revenus aux visiteurs.
                         </div>
                     </section>
 
@@ -228,14 +245,13 @@
                             <i data-feather="x-circle" class="me-2"></i>
                             <p class="mb-2"><strong>FinovRelance respecte votre vie privée. Nous n'utilisons PAS :</strong></p>
                             <ul class="mb-0">
-                                <li>Cookies publicitaires ou de ciblage</li>
-                                <li>Cookies de suivi tiers (Google Analytics, Facebook Pixel, etc.)</li>
-                                <li>Cookies de réseaux sociaux</li>
+                                <li>Cookies de réseaux sociaux (Facebook, Twitter, LinkedIn)</li>
                                 <li>Cookies de profilage comportemental</li>
+                                <li>Facebook Pixel ou équivalent</li>
                                 <li>Cookies de partage de données avec des tiers à des fins commerciales</li>
                                 <li>Cookies de préférences non essentiels</li>
-                                <li>Cookies marketing ou statistiques</li>
                             </ul>
+                            <p class="mt-2 mb-0"><small><strong>Note :</strong> Les cookies statistiques (Google Analytics, Visitors) et marketing (Google Ads) sont optionnels et ne sont activés qu'avec votre consentement explicite. Vous pouvez les gérer à tout moment via le lien "Gérer les cookies" dans le pied de page.</small></p>
                         </div>
 
                         <div class="card border-primary mt-3">
@@ -268,7 +284,12 @@
 
                     <section class="mb-4">
                         <h2 class="h4 text-primary mb-3">5. Gestion de vos cookies</h2>
-                        
+
+                        <div class="alert alert-info mb-4">
+                            <i data-feather="settings" class="me-2"></i>
+                            <strong>Panneau de préférences :</strong> Vous pouvez modifier vos choix de cookies à tout moment en cliquant sur le lien <strong>"Gérer les cookies"</strong> dans le pied de page de chaque page du site. Le panneau vous permet d'activer ou désactiver individuellement les cookies statistiques et marketing. Les cookies essentiels ne peuvent pas être désactivés.
+                        </div>
+
                         <div class="accordion" id="cookieManagementAccordion">
                             <div class="accordion-item">
                                 <h3 class="accordion-header">
@@ -341,7 +362,7 @@
                                             <li>Ouvrir les outils de développement (F12)</li>
                                             <li>Aller dans l'onglet "Application" (Chrome) ou "Stockage" (Firefox)</li>
                                             <li>Sélectionner "Local Storage"</li>
-                                            <li>Supprimer l'entrée <code>cookieConsent</code></li>
+                                            <li>Supprimer l'entrée <code>finova_cookie_consent</code></li>
                                         </ol>
                                         <p class="mb-0 small text-muted">La bannière de consentement réapparaîtra lors de votre prochaine visite du site marketing.</p>
                                     </div>

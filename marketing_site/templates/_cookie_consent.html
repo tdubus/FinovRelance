@@ -1,0 +1,123 @@
+<!-- Cookie Consent Banner (Loi 25 / PIPEDA) -->
+<div id="cookieConsentBanner" class="cc-banner" style="display: none;">
+    <div class="cc-card">
+        <div class="cc-header">
+            <div class="cc-icon">
+                <i class="fas fa-cookie-bite"></i>
+            </div>
+            <div>
+                <h2 class="cc-title">Gestion des cookies</h2>
+                <p class="cc-subtitle">Conformité Loi 25 et PIPEDA</p>
+            </div>
+        </div>
+
+        <p class="cc-description">
+            Nous utilisons des cookies pour améliorer votre expérience. Vous pouvez accepter, refuser ou personnaliser vos préférences.
+            Les cookies essentiels sont nécessaires au fonctionnement du site.
+        </p>
+
+        <!-- Vue simple -->
+        <div id="ccSimpleView">
+            <div class="cc-buttons">
+                <button onclick="ccAcceptAll()" class="cc-btn cc-btn-outline">
+                    <i class="fas fa-check me-1"></i> Tout accepter
+                </button>
+                <button onclick="ccRejectAll()" class="cc-btn cc-btn-outline">
+                    <i class="fas fa-times me-1"></i> Tout refuser
+                </button>
+            </div>
+            <button onclick="ccShowCustomize()" class="cc-btn-ghost">
+                <i class="fas fa-cog me-1"></i> Personnaliser mes choix
+                <i class="fas fa-chevron-down ms-1"></i>
+            </button>
+            <p class="cc-legal-note">
+                En continuant, vous acceptez nos
+                <a href="https://finov-relance.com/legal/cgu">CGU</a> et notre
+                <a href="https://finov-relance.com/legal/confidentialite">Politique de confidentialité</a>
+                (obligatoire).
+            </p>
+        </div>
+
+        <!-- Vue personnalisation -->
+        <div id="ccCustomizeView" style="display: none;">
+            <button onclick="ccShowSimple()" class="cc-btn-ghost cc-btn-back">
+                <i class="fas fa-chevron-up me-1"></i> Retour
+            </button>
+
+            <div class="cc-categories">
+                <!-- Essentiels -->
+                <div class="cc-category">
+                    <div class="cc-category-header">
+                        <div class="cc-category-info">
+                            <i class="fas fa-shield-alt cc-cat-icon" style="color: #10B981;"></i>
+                            <div>
+                                <p class="cc-cat-name">Cookies essentiels</p>
+                                <p class="cc-cat-desc">Nécessaires au fonctionnement du site</p>
+                            </div>
+                        </div>
+                        <label class="cc-switch cc-switch-disabled">
+                            <input type="checkbox" checked disabled>
+                            <span class="cc-slider"></span>
+                        </label>
+                    </div>
+                    <p class="cc-cat-detail">Session, préférences, consentement. Ces cookies ne peuvent pas être désactivés.</p>
+                </div>
+
+                <!-- Statistiques -->
+                <div class="cc-category">
+                    <div class="cc-category-header">
+                        <div class="cc-category-info">
+                            <i class="fas fa-chart-bar cc-cat-icon" style="color: #3B82F6;"></i>
+                            <div>
+                                <p class="cc-cat-name">Cookies statistiques</p>
+                                <p class="cc-cat-desc">Google Analytics, Visitors Analytics</p>
+                            </div>
+                        </div>
+                        <label class="cc-switch">
+                            <input type="checkbox" id="ccStatistics">
+                            <span class="cc-slider"></span>
+                        </label>
+                    </div>
+                    <p class="cc-cat-detail">Nous aident à comprendre comment les visiteurs utilisent le site.</p>
+                </div>
+
+                <!-- Marketing -->
+                <div class="cc-category">
+                    <div class="cc-category-header">
+                        <div class="cc-category-info">
+                            <i class="fas fa-bullhorn cc-cat-icon" style="color: #F59E0B;"></i>
+                            <div>
+                                <p class="cc-cat-name">Cookies marketing</p>
+                                <p class="cc-cat-desc">Google Ads</p>
+                            </div>
+                        </div>
+                        <label class="cc-switch">
+                            <input type="checkbox" id="ccMarketing">
+                            <span class="cc-slider"></span>
+                        </label>
+                    </div>
+                    <p class="cc-cat-detail">Permettent d'afficher des publicités pertinentes.</p>
+                </div>
+            </div>
+
+            <p class="cc-legal-note">
+                En enregistrant, vous acceptez nos
+                <a href="https://finov-relance.com/legal/cgu">CGU</a> et notre
+                <a href="https://finov-relance.com/legal/confidentialite">Politique de confidentialité</a>
+                (obligatoire).
+            </p>
+
+            <button onclick="ccSavePreferences()" class="cc-btn cc-btn-primary cc-btn-full">
+                <i class="fas fa-check me-1"></i> Enregistrer mes préférences
+            </button>
+        </div>
+
+        <div class="cc-footer-links">
+            <a href="https://finov-relance.com/legal/cookies">Politique de cookies</a>
+            <span>·</span>
+            <a href="https://finov-relance.com/legal/confidentialite">Confidentialité</a>
+            <span>·</span>
+            <a href="https://finov-relance.com/legal/cgu">CGU</a>
+        </div>
+    </div>
+</div>

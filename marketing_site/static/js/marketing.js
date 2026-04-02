@@ -33,6 +33,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Glassmorphism navbar mobile burger
+    const lpBurger = document.querySelector('.lp-navbar-burger');
+    const lpMobile = document.querySelector('.lp-navbar-mobile');
+    if (lpBurger && lpMobile) {
+        lpBurger.addEventListener('click', () => {
+            lpMobile.classList.toggle('open');
+        });
+        document.addEventListener('click', (e) => {
+            if (!lpBurger.contains(e.target) && !lpMobile.contains(e.target)) {
+                lpMobile.classList.remove('open');
+            }
+        });
+    }
+
     // ==========================================================================
     // Smooth Scroll for Anchor Links
     // ==========================================================================

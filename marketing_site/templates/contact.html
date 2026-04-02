@@ -231,6 +231,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <li><a href="https://finov-relance.com/legal/confidentialite" target="_blank" rel="noopener noreferrer">Politique de confidentialité</a></li>
                         <li><a href="https://finov-relance.com/legal/cgu" target="_blank" rel="noopener noreferrer">Conditions d'utilisation</a></li>
                         <li><a href="https://finov-relance.com/legal/cookies" target="_blank" rel="noopener noreferrer">Politique de cookies</a></li>
+                        <li><a href="javascript:void(0)" onclick="openCookieSettings()">Gérer les cookies</a></li>
                     </ul>
                 </div>
                 
@@ -249,19 +250,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </footer>
 
-    <!-- Cookie Consent Banner -->
-    <div id="cookieConsent" class="cookie-consent" style="display: none;">
-        <div class="cookie-consent-content">
-            <div class="cookie-consent-text">
-                <p><strong>🍪 Nous utilisons des cookies</strong></p>
-                <p>Nous utilisons des cookies essentiels pour assurer le bon fonctionnement de notre site. En continuant à naviguer, vous acceptez notre <a href="https://finov-relance.com/legal/cookies">politique de cookies</a>.</p>
-            </div>
-            <div class="cookie-consent-actions">
-                <button id="acceptCookies" class="btn btn-primary">Accepter</button>
-                <button id="declineCookies" class="btn btn-secondary">Refuser</button>
-            </div>
-        </div>
-    </div>
+    {% include '_cookie_consent.html' %}
 
     <script src="/marketing-static/js/marketing.js"></script>
     <script src="/marketing-static/js/cookie-consent.js"></script>
