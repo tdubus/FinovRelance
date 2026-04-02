@@ -1008,15 +1008,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (typeof feather !== 'undefined') feather.replace();
         } catch(e) { console.warn('Feather replace error:', e); }
 
-        // FAQ toggle
-        document.querySelectorAll('.faq-question').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                var item = this.parentElement;
-                var isOpen = item.classList.contains('active');
-                document.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('active'); });
-                if (!isOpen) item.classList.add('active');
-            });
-        });
+        // FAQ toggle handled by marketing.js
 
         // Chart.js removed - chart is inside the demo iframe
 
