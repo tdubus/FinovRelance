@@ -2106,7 +2106,7 @@ class AccountingConnection(db.Model):
 
     @validates('system_type')
     def validate_system_type(self, key, system_type):
-        allowed_types = ['quickbooks', 'sage', 'xero', 'wave', 'freshbooks', 'business_central', 'odoo']
+        allowed_types = ['quickbooks', 'sage', 'xero', 'wave', 'freshbooks', 'business_central', 'odoo', 'pennylane']
         if system_type not in allowed_types:
             raise ValueError(f"System type must be one of: {', '.join(allowed_types)}")
         return system_type

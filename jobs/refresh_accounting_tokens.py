@@ -239,6 +239,11 @@ def _refresh_connection_token(connection):
             connector = BusinessCentralConnector(connection_id=connection.id)
             return connector.refresh_access_token()
 
+        elif connection.system_type == 'pennylane':
+            from pennylane_connector import PennylaneConnector
+            connector = PennylaneConnector(connection_id=connection.id, company_id=connection.company_id)
+            return connector.refresh_access_token()
+
         else:
             current_app.logger.warning(f"Unsupported system type for refresh: {connection.system_type}")
             return False

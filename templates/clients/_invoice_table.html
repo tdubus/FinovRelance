@@ -64,7 +64,7 @@
                                 {% if not current_user.is_read_only() and (current_user.get_role_in_company(current_user.get_selected_company().id) in ['admin', 'super_admin']) %}
                                 <td class="text-center">
                                     <div class="d-flex gap-1 justify-content-center">
-                                        {% set supports_pdf = accounting_system_type in ['quickbooks', 'xero', 'odoo'] and invoice.invoice_id_external %}
+                                        {% set supports_pdf = accounting_system_type in ['quickbooks', 'xero', 'odoo', 'pennylane'] and invoice.invoice_id_external %}
                                         {% set supports_bc_pdf = accounting_system_type == 'business_central' and invoice.invoice_number %}
                                         {% if has_accounting_connection and (supports_pdf or supports_bc_pdf) %}
                                         <a href="{{ url_for('invoice.download_invoice_pdf', invoice_id=invoice.id) }}" 
@@ -153,7 +153,7 @@
                 {% if not current_user.is_read_only() and (current_user.get_role_in_company(current_user.get_selected_company().id) in ['admin', 'super_admin']) %}
                 <td class="text-center">
                     <div class="d-flex gap-1 justify-content-center">
-                        {% set supports_pdf = accounting_system_type in ['quickbooks', 'xero', 'odoo'] and invoice.invoice_id_external %}
+                        {% set supports_pdf = accounting_system_type in ['quickbooks', 'xero', 'odoo', 'pennylane'] and invoice.invoice_id_external %}
                         {% set supports_bc_pdf = accounting_system_type == 'business_central' and invoice.invoice_number %}
                         {% if has_accounting_connection and (supports_pdf or supports_bc_pdf) %}
                         <a href="{{ url_for('invoice.download_invoice_pdf', invoice_id=invoice.id) }}" 

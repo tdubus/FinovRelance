@@ -167,7 +167,8 @@ def build_accounting_connector_context(company):
                 'quickbooks': 'QuickBooks Online',
                 'xero': 'Xero Accounting',
                 'business_central': 'Microsoft Business Central',
-                'odoo': 'Odoo ERP'
+                'odoo': 'Odoo ERP',
+                'pennylane': 'Pennylane'
             }.get(conn.system_type, conn.system_type),
             'logo': f"{conn.system_type.replace('_', '-')}-logo.png",
             'is_configured': conn.is_active,
@@ -180,7 +181,8 @@ def build_accounting_connector_context(company):
                 'quickbooks': 'Synchronisez automatiquement vos clients et factures depuis QuickBooks',
                 'xero': 'Synchronisez automatiquement vos clients et factures depuis Xero',
                 'business_central': 'Synchronisez automatiquement vos clients et factures via OData V4',
-                'odoo': 'Synchronisez automatiquement vos clients et factures depuis Odoo via XML-RPC'
+                'odoo': 'Synchronisez automatiquement vos clients et factures depuis Odoo via XML-RPC',
+                'pennylane': 'Synchronisez automatiquement vos clients et factures depuis Pennylane'
             }.get(conn.system_type, '')
         }
 
@@ -214,7 +216,7 @@ def build_accounting_connector_context(company):
 
     # Add non-connected API connectors
     connected_types = [conn.system_type for conn in api_connections]
-    for system_type in ['quickbooks', 'xero', 'business_central', 'odoo']:
+    for system_type in ['quickbooks', 'xero', 'business_central', 'odoo', 'pennylane']:
         if system_type not in connected_types:
             all_connectors.append({
                 'type': system_type,
@@ -222,7 +224,8 @@ def build_accounting_connector_context(company):
                     'quickbooks': 'QuickBooks Online',
                     'xero': 'Xero Accounting',
                     'business_central': 'Microsoft Business Central',
-                    'odoo': 'Odoo ERP'
+                    'odoo': 'Odoo ERP',
+                    'pennylane': 'Pennylane'
                 }.get(system_type),
                 'logo': f"{system_type.replace('_', '-')}-logo.png",
                 'is_configured': False,
@@ -235,7 +238,8 @@ def build_accounting_connector_context(company):
                     'quickbooks': 'Synchronisez automatiquement vos clients et factures depuis QuickBooks',
                     'xero': 'Synchronisez automatiquement vos clients et factures depuis Xero',
                     'business_central': 'Synchronisez automatiquement vos clients et factures via OData V4',
-                    'odoo': 'Synchronisez automatiquement vos clients et factures depuis Odoo via XML-RPC'
+                    'odoo': 'Synchronisez automatiquement vos clients et factures depuis Odoo via XML-RPC',
+                    'pennylane': 'Synchronisez automatiquement vos clients et factures depuis Pennylane'
                 }.get(system_type, '')
             })
 
@@ -3591,6 +3595,409 @@ def xero_sync():
     sync_thread.start()
 
     flash("Synchronisation Xero lancée en arrière-plan. Vous serez notifié à la fin.", "success")
+    return redirect(url_for('company.settings', _anchor='accounting'))
+
+
+# =====================================================
+# PENNYLANE ACCOUNTING ROUTES
+# =====================================================
+
+@company_bp.route('/pennylane-connect')
+@login_required
+def pennylane_connect():
+    """Initiate Pennylane OAuth connection"""
+    from pennylane_connector import PennylaneConnector
+
+    company = current_user.get_selected_company()
+    if not company:
+        flash('Aucune entreprise selectionnee.', 'error')
+        return redirect(url_for('auth.logout'))
+
+    if not current_user.can_access_company_settings():
+        flash('Acces refuse.', 'error')
+        return redirect(url_for('main.dashboard'))
+
+    # Verifier les permissions d'acces aux connexions comptables
+    from utils.permissions_helper import check_accounting_access
+    permission = check_accounting_access(current_user, company)
+
+    if not permission['allowed']:
+        flash(permission['restriction_reason'], 'error')
+        return redirect(url_for('company.settings', _anchor='accounting'))
+
+    try:
+        connector = PennylaneConnector()
+
+        if not connector.client_id:
+            flash('PENNYLANE_CLIENT_ID non configure. Contactez l\'administrateur.', 'error')
+            return redirect(url_for('company.settings'))
+
+        if not connector.client_secret:
+            flash('PENNYLANE_CLIENT_SECRET non configure. Contactez l\'administrateur.', 'error')
+            return redirect(url_for('company.settings'))
+
+        import secrets
+        state = secrets.token_urlsafe(32)
+        auth_url = connector.get_authorization_url(state)
+
+        session['pennylane_company_id'] = company.id
+        session['pennylane_state'] = state
+
+        return redirect(auth_url)
+
+    except Exception as e:
+        current_app.logger.error(f"Error connecting Pennylane: {e}")
+        flash('Une erreur est survenue lors de la connexion Pennylane. Veuillez reessayer.', 'error')
+        return redirect(url_for('company.settings'))
+
+
+@company_bp.route('/pennylane/callback')
+@login_required
+def pennylane_callback():
+    """Handle Pennylane OAuth callback"""
+    from app import db
+    from models import AccountingConnection
+    from pennylane_connector import PennylaneConnector
+    from datetime import datetime, timedelta
+
+    # Get parameters from callback
+    authorization_code = request.args.get('code')
+    state = request.args.get('state')
+    error = request.args.get('error')
+
+    # Check for errors
+    if error:
+        safe_error = str(error)[:100].replace('<', '').replace('>', '')
+        flash(f'Erreur Pennylane: {safe_error}', 'error')
+        return redirect(url_for('company.settings'))
+
+    # Verify required parameters
+    if not authorization_code:
+        flash('Code d\'autorisation manquant dans la reponse Pennylane.', 'error')
+        return redirect(url_for('company.settings'))
+
+    # Verify state parameter
+    if state != session.get('pennylane_state'):
+        flash('Etat de securite invalide. Veuillez reessayer.', 'error')
+        return redirect(url_for('company.settings'))
+
+    # Get company from session
+    company_id = session.get('pennylane_company_id')
+    if not company_id:
+        flash('Session expiree. Veuillez reessayer.', 'error')
+        return redirect(url_for('company.settings'))
+
+    # SECURITE CRITIQUE: Verifier que l'utilisateur a toujours acces a cette entreprise
+    from models import UserCompany
+    user_access = UserCompany.query.filter_by(
+        user_id=current_user.id,
+        company_id=company_id
+    ).first()
+
+    if not user_access:
+        flash('Acces non autorise a cette entreprise.', 'error')
+        session.pop('pennylane_state', None)
+        session.pop('pennylane_company_id', None)
+        return redirect(url_for('auth.logout'))
+
+    try:
+        # Initialize connector and exchange code for tokens
+        connector = PennylaneConnector()
+        token_data = connector.exchange_code_for_tokens(authorization_code, state)
+
+        # Check if connection already exists
+        existing_connection = AccountingConnection.query.filter_by(
+            company_id=company_id,
+            system_type='pennylane'
+        ).first()
+
+        if existing_connection:
+            # Update existing connection
+            existing_connection.access_token = token_data['access_token']
+            existing_connection.refresh_token = token_data['refresh_token']
+            existing_connection.token_expires_at = datetime.utcnow() + timedelta(seconds=token_data['expires_in'])
+            existing_connection.company_id_external = token_data['account_id']
+            existing_connection.is_active = True
+            existing_connection.updated_at = datetime.utcnow()
+
+            flash('Connexion Pennylane mise a jour avec succes!', 'success')
+        else:
+            # Create new connection
+            new_connection = AccountingConnection(
+                company_id=company_id,
+                system_type='pennylane',
+                system_name='Pennylane',
+                access_token=token_data['access_token'],
+                refresh_token=token_data['refresh_token'],
+                token_expires_at=datetime.utcnow() + timedelta(seconds=token_data['expires_in']),
+                company_id_external=token_data['account_id'],
+                is_active=True,
+                updated_at=datetime.utcnow()
+            )
+            db.session.add(new_connection)
+
+            flash('Connexion Pennylane etablie avec succes!', 'success')
+
+        db.session.commit()
+
+        # Clean up session
+        session.pop('pennylane_state', None)
+        session.pop('pennylane_company_id', None)
+
+        return redirect(url_for('company.settings', _anchor='accounting'))
+
+    except Exception as e:
+        current_app.logger.error(f'Error in Pennylane callback: {e}')
+        flash('Une erreur est survenue lors de la connexion a Pennylane. Veuillez reessayer.', 'error')
+        return redirect(url_for('company.settings'))
+
+
+@company_bp.route('/pennylane-disconnect/<int:connection_id>', methods=['POST'])
+@login_required
+def pennylane_disconnect(connection_id):
+    """Disconnect Pennylane"""
+    from app import db
+    from models import AccountingConnection
+
+    company = current_user.get_selected_company()
+    if not company:
+        flash('Aucune entreprise selectionnee.', 'error')
+        return redirect(url_for('auth.logout'))
+
+    if not current_user.can_access_company_settings():
+        flash('Acces refuse.', 'error')
+        return redirect(url_for('main.dashboard'))
+
+    connection = AccountingConnection.query.filter_by(
+        id=connection_id, company_id=company.id).first_or_404()
+
+    # Desactiver la connexion
+    connection.is_active = False
+
+    # Supprimer les tokens OAuth pour securite
+    connection.access_token = None
+    connection.refresh_token = None
+    connection.token_expires_at = None
+
+    # Reinitialiser les statistiques de sync
+    connection.sync_stats = None
+
+    db.session.commit()
+
+    log_action(AuditActions.OAUTH_DISCONNECTED, entity_type=EntityTypes.OAUTH,
+              entity_id=connection_id, entity_name='pennylane',
+              details={'company_id': company.id})
+
+    flash('Pennylane a ete deconnecte avec succes.', 'success')
+    return redirect(url_for('company.settings'))
+
+
+@company_bp.route('/pennylane-sync', methods=['POST'])
+@login_required
+def pennylane_sync():
+    """Trigger Pennylane synchronization"""
+    from app import db
+    from models import AccountingConnection, SyncLog
+    from pennylane_connector import PennylaneConnector
+    import threading
+    from datetime import datetime
+
+    company = current_user.get_selected_company()
+    if not company:
+        flash('Aucune entreprise selectionnee.', 'error')
+        return redirect(url_for('auth.logout'))
+
+    if not current_user.can_access_company_settings():
+        flash('Acces refuse.', 'error')
+        return redirect(url_for('main.dashboard'))
+
+    connection = AccountingConnection.query.filter_by(
+        company_id=company.id,
+        system_type='pennylane',
+        is_active=True
+    ).first()
+
+    if not connection:
+        flash("Aucune connexion Pennylane active trouvee", "danger")
+        return redirect(url_for('company.settings'))
+
+    # Concurrent sync guard: prevent multiple simultaneous syncs
+    running_sync = SyncLog.query.filter_by(
+        connection_id=connection.id, status='running'
+    ).first()
+    if running_sync:
+        flash("Une synchronisation est deja en cours. Veuillez patienter.", "warning")
+        return redirect(url_for('company.settings', _anchor='accounting'))
+
+    # Sauvegarder les IDs necessaires AVANT de creer le thread
+    user_id = current_user.id
+    company_id = company.id
+    connection_id = connection.id
+
+    def run_sync():
+        import logging
+
+        from app import app
+
+        with app.app_context():
+            from models import SyncLog
+            sync_log = None
+
+            try:
+
+                thread_connection = AccountingConnection.query.get(connection_id)
+
+                if not thread_connection:
+                    current_app.logger.error(f"SYNC ERROR: Connexion {connection_id} introuvable")
+                    return
+
+                if thread_connection.company_id != company_id:
+                    current_app.logger.error(
+                        f"SECURITE: Connexion {connection_id} appartient a company {thread_connection.company_id}, "
+                        f"mais demandee pour company {company_id}"
+                    )
+                    return
+
+                # Creer un SyncLog pour tracker cette synchronisation
+                sync_log = SyncLog(
+                    connection_id=connection_id,
+                    sync_type='both',
+                    status='running',
+                    started_at=datetime.utcnow()
+                )
+                db.session.add(sync_log)
+                db.session.commit()
+
+                # Initialiser le connecteur avec validation de securite
+                connector = PennylaneConnector(thread_connection.id, company_id)
+                customers_created, customers_updated = connector.sync_customers(company_id, sync_log_id=sync_log.id)
+
+                # Verifier si la sync a ete arretee manuellement
+                db.session.refresh(sync_log)
+                if sync_log.status == 'stopped_manual':
+                    return
+
+                invoices_created, invoices_updated = connector.sync_invoices(company_id, sync_log_id=sync_log.id)
+
+                # Verifier a nouveau si arret manuel
+                db.session.refresh(sync_log)
+                if sync_log.status == 'stopped_manual':
+                    from notification_system import send_notification
+                    send_notification(
+                        user_id=user_id,
+                        company_id=company_id,
+                        type='warning',
+                        title='Synchronisation Pennylane arretee',
+                        message=f"La synchronisation a ete arretee manuellement. Clients: {customers_created} crees, {customers_updated} mis a jour. Factures: {invoices_created} creees, {invoices_updated} mises a jour.",
+                        data={
+                            'customers_created': customers_created,
+                            'customers_updated': customers_updated,
+                            'invoices_created': invoices_created,
+                            'invoices_updated': invoices_updated,
+                        }
+                    )
+                    return
+
+                payments_created = connector.sync_payments(company_id, sync_log_id=sync_log.id)
+                current_app.logger.info(f"Pennylane payment sync: {payments_created} enregistrements crees")
+
+                # Mettre a jour le SyncLog
+                sync_log.status = 'completed'
+                sync_log.clients_synced = customers_created + customers_updated
+                sync_log.invoices_synced = invoices_created + invoices_updated
+                sync_log.completed_at = datetime.utcnow()
+
+                # Mettre a jour la derniere sync
+                thread_connection.last_sync_at = datetime.utcnow()
+
+                # Mettre a jour sync_stats
+                thread_connection.sync_stats = {
+                    'customers_created': customers_created,
+                    'customers_updated': customers_updated,
+                    'invoices_created': invoices_created,
+                    'invoices_updated': invoices_updated,
+                    'payments_created': payments_created,
+                    'last_sync': datetime.utcnow().isoformat()
+                }
+
+                db.session.commit()
+
+                # Log audit for sync completion
+                from models import AuditLog, User, Company
+                sync_user = User.query.get(user_id)
+                sync_company = Company.query.get(company_id)
+                AuditLog.log_with_session(
+                    db.session,
+                    action=AuditActions.SYNC_COMPLETED,
+                    entity_type=EntityTypes.SYNC,
+                    entity_name='Pennylane',
+                    details={
+                        'sync_type': 'pennylane',
+                        'stats': {
+                            'customers_created': customers_created,
+                            'customers_updated': customers_updated,
+                            'invoices_created': invoices_created,
+                            'invoices_updated': invoices_updated,
+                            'payments_created': payments_created
+                        }
+                    },
+                    user=sync_user,
+                    company=sync_company
+                )
+
+                # Envoyer notification de succes
+                from notification_system import send_notification
+                send_notification(
+                    user_id=user_id,
+                    company_id=company_id,
+                    type='success',
+                    title='Synchronisation Pennylane reussie',
+                    message=f"Clients: {customers_created} crees, {customers_updated} mis a jour. Factures: {invoices_created} creees, {invoices_updated} mises a jour. Paiements: {payments_created} enregistres.",
+                    data={
+                        'customers_created': customers_created,
+                        'customers_updated': customers_updated,
+                        'invoices_created': invoices_created,
+                        'invoices_updated': invoices_updated,
+                        'payments_created': payments_created,
+                    }
+                )
+
+            except Exception as e:
+                current_app.logger.error(f"PENNYLANE SYNC ERROR: {str(e)}", exc_info=True)
+
+                if sync_log:
+                    sync_log.status = 'failed'
+                    sync_log.error_message = str(e)[:500]
+                    sync_log.completed_at = datetime.utcnow()
+                    db.session.commit()
+
+                from notification_system import send_notification
+                send_notification(
+                    user_id=user_id,
+                    company_id=company_id,
+                    type='error',
+                    title='Erreur de synchronisation Pennylane',
+                    message="La synchronisation a echoue. Veuillez reessayer ou contacter le support.",
+                    data={'error_ref': sync_log.id if sync_log else 'unknown'}
+                )
+
+    # Verifier le quota de synchronisation journalier
+    from models import CompanySyncUsage
+    if not CompanySyncUsage.check_company_sync_limit(company_id):
+        flash('Quota de synchronisations journalier atteint pour votre forfait. Veuillez reessayer demain ou passer a un forfait superieur.', 'error')
+        return redirect(url_for('company.settings') + '#accounting')
+
+    CompanySyncUsage.increment_company_sync_count(company_id)
+
+    # Demarrer le monitoring pour surveiller cette synchronisation
+    from sync_monitor import ensure_monitoring_started
+    ensure_monitoring_started()
+
+    # Demarrer le thread de synchronisation
+    sync_thread = threading.Thread(target=run_sync, daemon=True)
+    sync_thread.start()
+
+    flash("Synchronisation Pennylane lancee en arriere-plan. Vous serez notifie a la fin.", "success")
     return redirect(url_for('company.settings', _anchor='accounting'))
 
 

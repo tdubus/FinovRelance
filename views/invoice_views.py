@@ -200,6 +200,16 @@ def download_invoice_pdf(invoice_id):
             connector = OdooConnector(connection.id, company.id)
             pdf_content = connector.download_invoice_pdf(invoice.invoice_id_external)
 
+        elif connection.system_type == 'pennylane':
+            # Pennylane : Verifier que l'ID externe existe
+            if not invoice.invoice_id_external:
+                flash('Cette facture n\'a pas ete synchronisee avec Pennylane.', 'warning')
+                return redirect(url_for('client.detail_client', id=invoice.client_id))
+
+            from pennylane_connector import PennylaneConnector
+            connector = PennylaneConnector(connection.id, company.id)
+            pdf_content = connector.download_invoice_pdf(invoice.invoice_id_external)
+
         elif connection.system_type == 'business_central':
             # Business Central : utilise invoice_number (invoice_id_external est NULL pour BC)
             if not invoice.invoice_number:

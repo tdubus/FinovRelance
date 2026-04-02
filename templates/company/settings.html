@@ -600,13 +600,24 @@
                                                                 Déconnecter
                                                             </button>
                                                         </form>
+                                                    {% elif conn.type == 'pennylane' %}
+                                                        <button id="sync-btn-pennylane" type="button" class="btn btn-sm btn-primary" onclick="triggerPennylaneSync()">
+                                                            Synchroniser maintenant
+                                                        </button>
+                                                        <form method="POST" action="{{ url_for('company.pennylane_disconnect', connection_id=conn.connection_id) }}" class="d-inline">
+                                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                                    onclick="return confirm('Etes-vous sur de vouloir deconnecter Pennylane ?')">
+                                                                Deconnecter
+                                                            </button>
+                                                        </form>
                                                     {% elif conn.type == 'odoo' %}
                                                         <button id="sync-btn-odoo" type="button" class="btn btn-sm btn-primary" onclick="syncOdoo('clients')">
                                                             <i data-feather="refresh-cw" class="me-1"></i>Synchroniser
                                                         </button>
                                                         <form method="POST" action="{{ url_for('company.odoo_disconnect', connection_id=conn.connection_id) }}" class="d-inline">
                                                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger"
                                                                     onclick="return confirm('Êtes-vous sûr de vouloir déconnecter Odoo ?')">
                                                                 Déconnecter
                                                             </button>
@@ -710,9 +721,20 @@
                                                             Configurer Odoo
                                                         </a>
                                                         {% else %}
-                                                        <button class="btn btn-sm btn-outline-secondary" disabled 
+                                                        <button class="btn btn-sm btn-outline-secondary" disabled
                                                                 title="{{ accounting_permission.restriction_reason }}">
                                                             <i class="fas fa-lock me-1"></i>Configurer
+                                                        </button>
+                                                        {% endif %}
+                                                    {% elif connector.type == 'pennylane' %}
+                                                        {% if accounting_permission.allowed %}
+                                                        <a href="{{ url_for('company.pennylane_connect') }}" class="btn btn-sm btn-primary">
+                                                            Connecter Pennylane
+                                                        </a>
+                                                        {% else %}
+                                                        <button class="btn btn-sm btn-outline-secondary" disabled
+                                                                title="{{ accounting_permission.restriction_reason }}">
+                                                            <i class="fas fa-lock me-1"></i>Connecter
                                                         </button>
                                                         {% endif %}
                                                     {% endif %}
@@ -1466,6 +1488,56 @@ function triggerXeroSync() {
         setTimeout(() => {
             button.disabled = false;
             button.innerHTML = originalText;
+        }, 2000);
+    });
+}
+
+function triggerPennylaneSync() {
+    const button = document.getElementById('sync-btn-pennylane');
+    if (!button) return;
+
+    const originalText = button.textContent;
+
+    button.disabled = true;
+    button.textContent = 'Synchronisation...';
+
+    fetch('{{ url_for("company.pennylane_sync") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: new URLSearchParams({
+            'csrf_token': '{{ csrf_token() }}'
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json().catch(() => ({ success: true, message: 'Synchronisation lancee' }));
+        } else {
+            throw new Error('Erreur de synchronisation');
+        }
+    })
+    .then(data => {
+        if (data.success) {
+            button.textContent = 'Synchronisation lancee';
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        } else {
+            button.textContent = 'Erreur';
+            setTimeout(() => {
+                button.disabled = false;
+                button.textContent = originalText;
+            }, 2000);
+        }
+    })
+    .catch(error => {
+        console.error('Pennylane sync error:', error);
+        button.textContent = 'Erreur';
+        setTimeout(() => {
+            button.disabled = false;
+            button.textContent = originalText;
         }, 2000);
     });
 }

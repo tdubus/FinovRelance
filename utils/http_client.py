@@ -357,6 +357,19 @@ def create_xero_session() -> RobustHTTPSession:
         status_forcelist=[429, 500, 502, 503, 504]  # Rate limiting + server errors
     )
 
+def create_pennylane_session() -> RobustHTTPSession:
+    """Session optimisée pour Pennylane API v2
+
+    Rate limit: 25 requêtes par fenêtre de 5 secondes.
+    Backoff factor plus agressif pour respecter le rate limit strict.
+    """
+    return RobustHTTPSession(
+        timeout=30,
+        max_retries=3,
+        backoff_factor=2,
+        status_forcelist=[429, 500, 502, 503, 504]
+    )
+
 def create_odoo_session() -> RobustHTTPSession:
     """Session optimisée pour Odoo XML-RPC API
 
