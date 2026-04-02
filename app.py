@@ -294,13 +294,15 @@ def bootstrap_app(app):
 
         # Si on est sur app.finov-relance.com
         elif 'app.finov-relance.com' in host:
+            # Racine "/" → rediriger vers le site marketing
+            if path == '/':
+                return redirect("https://finov-relance.com/", code=301)
             # Si c'est une route légale ou SEO, rediriger vers finov-relance.com
-            if any(path.startswith(route)
+            elif any(path.startswith(route)
                    for route in legal_routes) or path in seo_routes:
                 return redirect(
                     f"https://finov-relance.com{request.full_path}", code=301)
-            # Si c'est une route marketing (sans la racine)
-            # Rediriger vers finov-relance.com
+            # Si c'est une route marketing, rediriger vers finov-relance.com
             elif path in marketing_routes:
                 return redirect(
                     f"https://finov-relance.com{request.full_path}", code=301)
