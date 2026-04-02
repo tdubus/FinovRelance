@@ -54,33 +54,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <nav class="nav">
-                <a href="/" class="logo"><img src="/marketing-static/images/logo.png" alt="FinovRelance - Logiciel de gestion des comptes à recevoir" style="height: 60px;"></a>
-                
-                <ul class="nav-menu">
-                    <li><a href="/" class="nav-link">Accueil</a></li>
-                    <li><a href="/fonctionnalites" class="nav-link">Fonctionnalités</a></li>
-                    <li><a href="/tarifs" class="nav-link">Tarifs</a></li>
-                    <li><a href="/cas-usage" class="nav-link">Cas d'usage</a></li>
-                    <li><a href="/guide" class="nav-link">Guide</a></li>
-                    <li><a href="/contact" class="nav-link">Contact</a></li>
-                    
-                    <li class="nav-cta">
-                        <a href="/auth/login" class="btn btn-secondary">Connexion</a>
-                    </li>
-                </ul>
-                
-                <button class="burger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-            </nav>
-        </div>
-    </header>
+    <style>.hero{margin-top:-80px;padding-top:calc(var(--space-20) + 80px)}</style>
+    {% include '_navbar.html' %}
 
     <!-- Hero Section -->
     <section class="hero" style="min-height: 30vh;">
@@ -252,8 +227,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     {% include '_cookie_consent.html' %}
 
-    <script src="/marketing-static/js/marketing.js"></script>
-    <script src="/marketing-static/js/cookie-consent.js"></script>
+    <script src="/marketing-static/js/marketing.js?v=2"></script>
+    <script src="/marketing-static/js/cookie-consent.js?v=2"></script>
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
     </script>

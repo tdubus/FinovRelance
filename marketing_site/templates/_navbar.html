@@ -1,0 +1,28 @@
+<nav class="lp-navbar">
+    <div class="container">
+        <a href="/" class="logo"><img src="/marketing-static/images/logo.png" alt="FinovRelance"></a>
+        <div class="lp-navbar-links">
+            <a href="/">Accueil</a>
+            <a href="/fonctionnalites" {% if active_page == 'fonctionnalites' %}class="active"{% endif %}>Fonctionnalités</a>
+            <a href="/tarifs" {% if active_page == 'tarifs' %}class="active"{% endif %}>Tarifs</a>
+            <a href="/cas-usage" {% if active_page == 'cas-usage' %}class="active"{% endif %}>Cas d'usage</a>
+            <a href="/guide" {% if active_page == 'guide' %}class="active"{% endif %}>Guide</a>
+            <a href="/contact" {% if active_page == 'contact' %}class="active"{% endif %}>Contact</a>
+        </div>
+        <div class="lp-navbar-cta">
+            <a href="/auth/login" class="btn-login">Connexion</a>
+            <a href="/tarifs" class="btn btn-primary">Essai gratuit</a>
+        </div>
+        <button class="lp-navbar-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+    <div class="lp-navbar-mobile">
+        <a href="/">Accueil</a>
+        <a href="/fonctionnalites" {% if active_page == 'fonctionnalites' %}class="active"{% endif %}>Fonctionnalités</a>
+        <a href="/tarifs" {% if active_page == 'tarifs' %}class="active"{% endif %}>Tarifs</a>
+        <a href="/cas-usage" {% if active_page == 'cas-usage' %}class="active"{% endif %}>Cas d'usage</a>
+        <a href="/guide" {% if active_page == 'guide' %}class="active"{% endif %}>Guide</a>
+        <a href="/contact" {% if active_page == 'contact' %}class="active"{% endif %}>Contact</a>
+        <a href="/auth/login">Connexion</a>
+    </div>
+</nav>
+<div class="lp-navbar-spacer"></div>

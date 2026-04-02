@@ -11,7 +11,7 @@ marketing_bp = Blueprint(
 
 @marketing_bp.route('/')
 def index():
-    return render_template('index_v2.html')
+    return render_template('index_v2.html', active_page='accueil')
 
 @marketing_bp.route('/essai')
 def essai():
@@ -23,15 +23,15 @@ def demo_iframe():
 
 @marketing_bp.route('/fonctionnalites')
 def fonctionnalites():
-    return render_template('fonctionnalites.html')
+    return render_template('fonctionnalites.html', active_page='fonctionnalites')
 
 @marketing_bp.route('/tarifs')
 def tarifs():
-    return render_template('tarifs.html')
+    return render_template('tarifs.html', active_page='tarifs')
 
 @marketing_bp.route('/cas-usage')
 def cas_usage():
-    return render_template('cas-usage.html')
+    return render_template('cas-usage.html', active_page='cas-usage')
 
 @marketing_bp.route('/contact', methods=['GET', 'POST'])
 @limiter.limit("3 per hour", methods=["POST"])
@@ -195,7 +195,7 @@ def contact():
     import secrets
     form_token = f"{time.time()}_{secrets.token_hex(16)}"
     session['contact_form_token'] = form_token
-    return render_template('contact.html', form_timestamp=form_token)
+    return render_template('contact.html', form_timestamp=form_token, active_page='contact')
 
 @marketing_bp.route('/guide')
 def guide():
@@ -207,7 +207,7 @@ def guide():
         GuidePage.created_at.desc()
     ).all()
 
-    return render_template('guide.html', guides=guides)
+    return render_template('guide.html', guides=guides, active_page='guide')
 
 
 @marketing_bp.route('/guide/<slug>')
@@ -264,4 +264,4 @@ def guide_page(slug):
         GuidePage.is_published == True
     ).order_by(GuidePage.order.asc()).limit(5).all()
 
-    return render_template('guide_page.html', guide=guide, other_guides=other_guides)
+    return render_template('guide_page.html', guide=guide, other_guides=other_guides, active_page='guide')
