@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template
-from app import limiter
+from flask import Blueprint, render_template, make_response
+from app import limiter, cache
 
 marketing_bp = Blueprint(
     'marketing',
@@ -9,29 +9,42 @@ marketing_bp = Blueprint(
     static_url_path='/marketing-static'
 )
 
+def _cached_page(template, **kwargs):
+    """Render template with public cache headers for Cloudflare edge + browser."""
+    resp = make_response(render_template(template, **kwargs))
+    resp.headers['Cache-Control'] = 'public, max-age=3600, s-maxage=86400'
+    return resp
+
+
 @marketing_bp.route('/')
+@cache.cached(timeout=3600)
 def index():
-    return render_template('index_v2.html', active_page='accueil')
+    return _cached_page('index_v2.html', active_page='accueil')
 
 @marketing_bp.route('/essai')
+@cache.cached(timeout=3600)
 def essai():
-    return render_template('ads_v2.html')
+    return _cached_page('ads_v2.html')
 
 @marketing_bp.route('/demo-iframe')
+@cache.cached(timeout=3600)
 def demo_iframe():
-    return render_template('demo_iframe.html')
+    return _cached_page('demo_iframe.html')
 
 @marketing_bp.route('/fonctionnalites')
+@cache.cached(timeout=3600)
 def fonctionnalites():
-    return render_template('fonctionnalites.html', active_page='fonctionnalites')
+    return _cached_page('fonctionnalites.html', active_page='fonctionnalites')
 
 @marketing_bp.route('/tarifs')
+@cache.cached(timeout=3600)
 def tarifs():
-    return render_template('tarifs.html', active_page='tarifs')
+    return _cached_page('tarifs.html', active_page='tarifs')
 
 @marketing_bp.route('/cas-usage')
+@cache.cached(timeout=3600)
 def cas_usage():
-    return render_template('cas-usage.html', active_page='cas-usage')
+    return _cached_page('cas-usage.html', active_page='cas-usage')
 
 @marketing_bp.route('/contact', methods=['GET', 'POST'])
 @limiter.limit("3 per hour", methods=["POST"])
@@ -175,21 +188,24 @@ def contact():
         </html>
         """
 
-        try:
-            send_email_via_system_config(
-                to_email='support@finov-relance.com',
-                subject=email_subject,
-                html_content=html_content
-            )
+        import threading
 
-            current_app.logger.info(f"Contact form email sent from {safe_email}")
-            flash('Merci pour votre message ! Nous vous répondrons sous 24 heures.', 'success')
-            return redirect(url_for('marketing.contact'))
+        def _send_async(app_obj, to, subj, html):
+            with app_obj.app_context():
+                try:
+                    send_email_via_system_config(to_email=to, subject=subj, html_content=html)
+                    app_obj.logger.info(f"Contact form email sent from {safe_email}")
+                except Exception as exc:
+                    app_obj.logger.error(f"Failed to send contact form email: {exc}")
 
-        except Exception as e:
-            current_app.logger.error(f"Failed to send contact form email: {str(e)}")
-            flash('Une erreur s\'est produite lors de l\'envoi du message. Veuillez réessayer ou nous contacter directement par email.', 'error')
-            return redirect(url_for('marketing.contact'))
+        threading.Thread(
+            target=_send_async,
+            args=(current_app._get_current_object(), 'support@finov-relance.com', email_subject, html_content),
+            daemon=True,
+        ).start()
+
+        flash('Merci pour votre message ! Nous vous répondrons sous 24 heures.', 'success')
+        return redirect(url_for('marketing.contact'))
 
     import time
     import secrets
@@ -198,6 +214,7 @@ def contact():
     return render_template('contact.html', form_timestamp=form_token, active_page='contact')
 
 @marketing_bp.route('/guide')
+@cache.cached(timeout=600)
 def guide():
     """Liste des pages de guide publiées"""
     from models import GuidePage
@@ -207,10 +224,11 @@ def guide():
         GuidePage.created_at.desc()
     ).all()
 
-    return render_template('guide.html', guides=guides, active_page='guide')
+    return _cached_page('guide.html', guides=guides, active_page='guide')
 
 
 @marketing_bp.route('/guide/<slug>')
+@cache.cached(timeout=600)
 def guide_page(slug):
     """Afficher une page de guide individuelle"""
     from models import GuidePage
@@ -264,4 +282,4 @@ def guide_page(slug):
         GuidePage.is_published == True
     ).order_by(GuidePage.order.asc()).limit(5).all()
 
-    return render_template('guide_page.html', guide=guide, other_guides=other_guides, active_page='guide')
+    return _cached_page('guide_page.html', guide=guide, other_guides=other_guides, active_page='guide')

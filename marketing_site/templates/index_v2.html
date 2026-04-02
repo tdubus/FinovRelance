@@ -24,7 +24,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260316">
     <link rel="manifest" href="/site.webmanifest">
     
-    <link rel="stylesheet" href="/marketing-static/css/marketing.css?v=2">
+    <link rel="stylesheet" href="/marketing-static/css/marketing.min.css?v=3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Schema.org Structured Data -->
@@ -145,7 +145,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             .lp-handwritten { display: none !important; }
         }
     </style>
-    <script src="https://cdn.visitors.now/v.js" data-token="{{ visitors_token }}" data-persist></script>
+    <script async src="https://cdn.visitors.now/v.js" data-token="{{ visitors_token }}" data-persist></script>
 </head>
 <body>
     <!-- Google Tag Manager (noscript) -->
@@ -252,14 +252,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
                 </div>
                 <div class="comparison-image">
-                    <img src="/marketing-static/images/sans-finov-relance.png" alt="Gestion manuelle des factures - Processus désorganisé et inefficace">
+                    <img src="/marketing-static/images/sans-finov-relance.webp" alt="Gestion manuelle des factures - Processus désorganisé et inefficace" loading="lazy" width="600" height="400">
                 </div>
             </div>
             
             <!-- Deuxième ligne : Image (gauche) + Avec FinovRelance (droite) -->
             <div class="comparison-row fade-in-right">
                 <div class="comparison-image">
-                    <img src="/marketing-static/images/avec-finov-relance.png" alt="Automatisation des relances clients avec FinovRelance - Processus optimisé">
+                    <img src="/marketing-static/images/avec-finov-relance.webp" alt="Automatisation des relances clients avec FinovRelance - Processus optimisé" loading="lazy" width="600" height="400">
                 </div>
                 <div class="comparison-content">
                     <div class="card" style="background: linear-gradient(135deg, #EDE9FE 0%, #FCFCFC 100%); border-color: var(--primary);">
@@ -425,25 +425,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto;">
                 <div class="card text-center" style="padding: 2rem;">
                     <div style="display: flex; justify-content: center; align-items: center; height: 120px; padding: 20px 0;">
-                        <img src="/marketing-static/images/quickbooks-logo.png" alt="Intégration QuickBooks - Synchronisation automatique des factures" style="max-width: 200px; max-height: 70px; height: auto;">
+                        <img src="/marketing-static/images/quickbooks-logo.webp" alt="Intégration QuickBooks - Synchronisation automatique des factures" loading="lazy" width="200" height="70" style="max-width: 200px; max-height: 70px; height: auto;">
                     </div>
                 </div>
                 
                 <div class="card text-center" style="padding: 2rem;">
                     <div style="display: flex; justify-content: center; align-items: center; height: 120px; padding: 20px 0;">
-                        <img src="/marketing-static/images/business-central-logo.png" alt="Intégration Microsoft Dynamics 365 Business Central - Connexion comptable automatisée" style="max-width: 200px; max-height: 70px; height: auto;">
+                        <img src="/marketing-static/images/business-central-logo.webp" alt="Intégration Microsoft Dynamics 365 Business Central - Connexion comptable automatisée" loading="lazy" width="200" height="70" style="max-width: 200px; max-height: 70px; height: auto;">
                     </div>
                 </div>
                 
                 <div class="card text-center" style="padding: 2rem;">
                     <div style="display: flex; justify-content: center; align-items: center; height: 120px; padding: 20px 0;">
-                        <img src="/marketing-static/images/xero-logo.png" alt="Intégration Xero Accounting - Synchronisation automatique des données" style="max-width: 120px; max-height: 100px; height: auto;">
+                        <img src="/marketing-static/images/xero-logo.webp" alt="Intégration Xero Accounting - Synchronisation automatique des données" loading="lazy" width="120" height="100" style="max-width: 120px; max-height: 100px; height: auto;">
                     </div>
                 </div>
                 
                 <div class="card text-center" style="padding: 2rem;">
                     <div style="display: flex; justify-content: center; align-items: center; height: 120px; padding: 20px 0;">
-                        <img src="/marketing-static/images/odoo-logo.png" alt="Intégration Odoo ERP - Synchronisation XML-RPC automatique" style="max-width: 200px; max-height: 70px; height: auto;">
+                        <img src="/marketing-static/images/odoo-logo.webp" alt="Intégration Odoo ERP - Synchronisation XML-RPC automatique" loading="lazy" width="200" height="70" style="max-width: 200px; max-height: 70px; height: auto;">
                     </div>
                 </div>
             </div>
@@ -498,8 +498,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     {% include '_cookie_consent.html' %}
 
-    <script src="/marketing-static/js/marketing.js?v=2"></script>
-    <script src="/marketing-static/js/cookie-consent.js?v=2"></script>
+    <script defer src="/marketing-static/js/marketing.min.js?v=3"></script>
+    <script defer src="/marketing-static/js/cookie-consent.min.js?v=3"></script>
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
 

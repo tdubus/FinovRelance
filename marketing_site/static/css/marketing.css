@@ -9,7 +9,8 @@
 
 @font-face {
   font-family: 'Host Grotesk';
-  src: url('../fonts/HostGrotesk-ExtraBold.ttf') format('truetype');
+  src: url('../fonts/HostGrotesk-ExtraBold.woff2') format('woff2'),
+       url('../fonts/HostGrotesk-ExtraBold.ttf') format('truetype');
   font-weight: 800;
   font-style: normal;
   font-display: swap;
@@ -17,7 +18,8 @@
 
 @font-face {
   font-family: 'Onest';
-  src: url('../fonts/Onest-Regular.ttf') format('truetype');
+  src: url('../fonts/Onest-Regular.woff2') format('woff2'),
+       url('../fonts/Onest-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -25,7 +27,8 @@
 
 @font-face {
   font-family: 'Onest';
-  src: url('../fonts/Onest-SemiBold.ttf') format('truetype');
+  src: url('../fonts/Onest-SemiBold.woff2') format('woff2'),
+       url('../fonts/Onest-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -33,7 +36,8 @@
 
 @font-face {
   font-family: 'Onest';
-  src: url('../fonts/Onest-Bold.ttf') format('truetype');
+  src: url('../fonts/Onest-Bold.woff2') format('woff2'),
+       url('../fonts/Onest-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -1052,6 +1056,20 @@ p {
 
 .faq-item.active .faq-answer {
   max-height: 500px;
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes slideOut {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(100%); opacity: 0; }
 }
 
 /* ==========================================================================

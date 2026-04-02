@@ -1,54 +1,10 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-WZ7KQJ2F');</script>
-    <!-- End Google Tag Manager -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fonctionnalités – FinovRelance | Gestion complète des comptes à recevoir</title>
-    <meta name="description" content="Découvrez toutes les fonctionnalités de FinovRelance : gestion clients, suivi factures, relances automatisées et rapports.">
-    
-    <!-- Balise canonique SEO -->
-    <link rel="canonical" href="https://finov-relance.com/fonctionnalites">
-    
-    <!-- Favicon pour tous les navigateurs et Google -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260316">
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png?v=20260316">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=20260316">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=20260316">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260316">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="stylesheet" href="/marketing-static/css/marketing.css?v=2">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Schema.org Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "FinovRelance",
-        "url": "https://finov-relance.com",
-        "logo": "https://finov-relance.com/marketing-static/images/logo.png",
-        "email": "support@finov-relance.com",
-        "sameAs": ["https://www.linkedin.com/company/solutions-finova/"]
-    }
-    </script>
-    <script src="https://cdn.visitors.now/v.js" data-token="{{ visitors_token }}" data-persist></script>
-</head>
-<body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WZ7KQJ2F"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
-    
-    <style>.hero{margin-top:-80px;padding-top:calc(var(--space-20) + 80px)}</style>
-    {% include '_navbar.html' %}
+{% extends '_base_marketing.html' %}
 
+{% block title %}Fonctionnalités – FinovRelance | Gestion complète des comptes à recevoir{% endblock %}
+{% block description %}Découvrez toutes les fonctionnalités de FinovRelance : gestion clients, suivi factures, relances automatisées et rapports.{% endblock %}
+{% block canonical_path %}/fonctionnalites{% endblock %}
+
+{% block content %}
     <!-- Hero Section -->
     <section class="hero" style="min-height: 50vh;">
         <div class="container">
@@ -76,7 +32,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="container">
             <h2 class="mb-8 text-center">Gestion des clients et factures</h2>
         </div>
-        
+
         <!-- Feature 1.1 - Toutes les informations au même endroit (Image à droite) -->
         <div class="feature-fullwidth fade-in-right">
             <div class="feature-fullwidth-content">
@@ -90,14 +46,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </ul>
             </div>
             <div class="feature-fullwidth-image">
-                <img src="/marketing-static/images/feature-client-detail.png" alt="Fiche client complète avec contacts, historique et solde - FinovRelance">
+                <img src="/marketing-static/images/feature-client-detail.webp" alt="Fiche client complète avec contacts, historique et solde - FinovRelance" loading="lazy" width="600" height="400">
             </div>
         </div>
-        
+
         <!-- Feature 1.2 - Visualisez l'état de vos comptes (Image à gauche) -->
         <div class="feature-fullwidth feature-fullwidth-reverse fade-in-left">
             <div class="feature-fullwidth-image">
-                <img src="/marketing-static/images/feature-dashboard.png" alt="Tableau de bord des comptes à recevoir avec filtres et indicateurs - FinovRelance">
+                <img src="/marketing-static/images/feature-dashboard.webp" alt="Tableau de bord des comptes à recevoir avec filtres et indicateurs - FinovRelance" loading="lazy" width="600" height="400">
             </div>
             <div class="feature-fullwidth-content">
                 <h3>Visualisez l'état de vos comptes en un coup d'œil</h3>
@@ -117,7 +73,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="container">
             <h2 class="mb-8 text-center">Communications et relances</h2>
         </div>
-        
+
         <!-- Feature - Modèles d'emails (Image à droite) -->
         <div class="feature-fullwidth fade-in-right">
             <div class="feature-fullwidth-content">
@@ -131,14 +87,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </ul>
             </div>
             <div class="feature-fullwidth-image">
-                <img src="/marketing-static/images/feature-email-templates.png" alt="Éditeur de modèles d'emails de relance personnalisables - FinovRelance">
+                <img src="/marketing-static/images/feature-email-templates.webp" alt="Éditeur de modèles d'emails de relance personnalisables - FinovRelance" loading="lazy" width="600" height="400">
             </div>
         </div>
-        
+
         <!-- Feature - Envoi d'emails (Image à gauche) -->
         <div class="feature-fullwidth feature-fullwidth-reverse fade-in-left">
             <div class="feature-fullwidth-image">
-                <img src="/marketing-static/images/feature-send-email.png" alt="Interface d'envoi d'emails de relance avec historique automatique - FinovRelance">
+                <img src="/marketing-static/images/feature-send-email.webp" alt="Interface d'envoi d'emails de relance avec historique automatique - FinovRelance" loading="lazy" width="600" height="400">
             </div>
             <div class="feature-fullwidth-content">
                 <h3>Relancez vos clients sans quitter FinovRelance</h3>
@@ -151,11 +107,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </ul>
             </div>
         </div>
-        
+
         <!-- Feature - Notes et rappels (Image à gauche) -->
         <div class="feature-fullwidth feature-fullwidth-reverse fade-in-right">
             <div class="feature-fullwidth-image">
-                <img src="/marketing-static/images/feature-notes.png" alt="Système de notes et rappels pour suivi client - FinovRelance">
+                <img src="/marketing-static/images/feature-notes.webp" alt="Système de notes et rappels pour suivi client - FinovRelance" loading="lazy" width="600" height="400">
             </div>
             <div class="feature-fullwidth-content">
                 <h3>Documentez chaque interaction avec vos clients</h3>
@@ -175,7 +131,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="container">
             <h2 class="mb-8 text-center">Rapports et analyses</h2>
         </div>
-        
+
         <!-- Feature - États de compte PDF (Image à droite) -->
         <div class="feature-fullwidth fade-in-left">
             <div class="feature-fullwidth-content">
@@ -189,7 +145,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </ul>
             </div>
             <div class="feature-fullwidth-image">
-                <img src="/marketing-static/images/feature-pdf.png" alt="Génération d'états de compte PDF professionnels - FinovRelance">
+                <img src="/marketing-static/images/feature-pdf.webp" alt="Génération d'états de compte PDF professionnels - FinovRelance" loading="lazy" width="600" height="400">
             </div>
         </div>
     </section>
@@ -199,7 +155,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="container">
             <h2 class="mb-4 text-center">Intégrations</h2>
         </div>
-        
+
         <!-- Feature - Import CSV (Image à droite) -->
         <div class="feature-fullwidth fade-in-right">
             <div class="feature-fullwidth-content">
@@ -213,10 +169,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </ul>
             </div>
             <div class="feature-fullwidth-image">
-                <img src="/marketing-static/images/feature-import-csv.png" alt="Système d'importation CSV avec validation automatique - FinovRelance">
+                <img src="/marketing-static/images/feature-import-csv.webp" alt="Système d'importation CSV avec validation automatique - FinovRelance" loading="lazy" width="600" height="400">
             </div>
         </div>
-        
+
         <!-- Section Intégrations comptables -->
         <div class="section">
             <div class="container">
@@ -225,29 +181,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <p>FinovRelance se connecte directement à votre système comptable* pour synchroniser automatiquement vos données. Configuration simple en quelques clics, aucune expertise technique requise.</p>
                     <p style="margin-top: 1.5rem; font-size: 0.875rem; font-style: italic; color: #6b7280; opacity: 0.9;">* Selon la disponibilité des connecteurs comptables</p>
                 </div>
-                
+
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto;">
                     <div class="card text-center" style="padding: 2rem;">
                         <div style="display: flex; justify-content: center; align-items: center; height: 120px; padding: 20px 0;">
-                            <img src="/marketing-static/images/quickbooks-logo.png" alt="Intégration QuickBooks - Synchronisation automatique des factures" style="max-width: 200px; max-height: 70px; height: auto;">
+                            <img src="/marketing-static/images/quickbooks-logo.webp" alt="Intégration QuickBooks - Synchronisation automatique des factures" loading="lazy" width="200" height="70" style="max-width: 200px; max-height: 70px; height: auto;">
                         </div>
                     </div>
-                    
+
                     <div class="card text-center" style="padding: 2rem;">
                         <div style="display: flex; justify-content: center; align-items: center; height: 120px; padding: 20px 0;">
-                            <img src="/marketing-static/images/business-central-logo.png" alt="Intégration Microsoft Dynamics 365 Business Central - Connexion comptable automatisée" style="max-width: 200px; max-height: 70px; height: auto;">
+                            <img src="/marketing-static/images/business-central-logo.webp" alt="Intégration Microsoft Dynamics 365 Business Central - Connexion comptable automatisée" loading="lazy" width="200" height="70" style="max-width: 200px; max-height: 70px; height: auto;">
                         </div>
                     </div>
-                    
+
                     <div class="card text-center" style="padding: 2rem;">
                         <div style="display: flex; justify-content: center; align-items: center; height: 120px; padding: 20px 0;">
-                            <img src="/marketing-static/images/xero-logo.png" alt="Intégration Xero Accounting - Synchronisation automatique des données" style="max-width: 120px; max-height: 100px; height: auto;">
+                            <img src="/marketing-static/images/xero-logo.webp" alt="Intégration Xero Accounting - Synchronisation automatique des données" loading="lazy" width="120" height="100" style="max-width: 120px; max-height: 100px; height: auto;">
                         </div>
                     </div>
-                    
+
                     <div class="card text-center" style="padding: 2rem;">
                         <div style="display: flex; justify-content: center; align-items: center; height: 120px; padding: 20px 0;">
-                            <img src="/marketing-static/images/odoo-logo.png" alt="Intégration Odoo ERP - Synchronisation XML-RPC automatique" style="max-width: 200px; max-height: 70px; height: auto;">
+                            <img src="/marketing-static/images/odoo-logo.webp" alt="Intégration Odoo ERP - Synchronisation XML-RPC automatique" loading="lazy" width="200" height="70" style="max-width: 200px; max-height: 70px; height: auto;">
                         </div>
                     </div>
                 </div>
@@ -262,59 +218,4 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <a href="/onboarding/register-free" class="btn btn-primary btn-large">Essayer gratuitement</a>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>Produit</h4>
-                    <ul class="footer-links">
-                        <li><a href="/fonctionnalites">Fonctionnalités</a></li>
-                        <li><a href="/tarifs">Tarifs</a></li>
-                        <li><a href="/cas-usage">Cas d'usage</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h4>Ressources</h4>
-                    <ul class="footer-links">
-                        <li><a href="/guide">Guide d'utilisation</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h4>Contact</h4>
-                    <ul class="footer-links">
-                        <li><a href="mailto:support@finov-relance.com">support@finov-relance.com</a></li>
-                        <li><a href="https://finov-relance.com/legal/confidentialite" target="_blank" rel="noopener noreferrer">Politique de confidentialité</a></li>
-                        <li><a href="https://finov-relance.com/legal/cgu" target="_blank" rel="noopener noreferrer">Conditions d'utilisation</a></li>
-                        <li><a href="https://finov-relance.com/legal/cookies" target="_blank" rel="noopener noreferrer">Politique de cookies</a></li>
-                        <li><a href="javascript:void(0)" onclick="openCookieSettings()">Gérer les cookies</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h4>Réseaux sociaux</h4>
-                    <ul class="footer-links">
-                        <li><a href="https://www.linkedin.com/company/solutions-finova/" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin" style="font-size: 1.5rem; margin-right: 0.5rem;"></i>LinkedIn</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <p style="color: #ffffff;">&copy; <span id="year"></span> FinovRelance. Tous droits réservés.</p>
-                <p style="margin-top: 0.5rem; color: #ffffff;">Développé et vendu par <a href="https://finova-solutions.com/" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: none;">Finova Solutions</a></p>
-            </div>
-        </div>
-    </footer>
-
-    {% include '_cookie_consent.html' %}
-
-    <script src="/marketing-static/js/marketing.js?v=2"></script>
-    <script src="/marketing-static/js/cookie-consent.js?v=2"></script>
-    <script>
-        document.getElementById('year').textContent = new Date().getFullYear();
-    </script>
-</body>
-</html>
+{% endblock %}

@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=20260316">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260316">
     <link rel="manifest" href="/site.webmanifest">
-    <link rel="stylesheet" href="/marketing-static/css/marketing.css?v=2">
+    <link rel="stylesheet" href="/marketing-static/css/marketing.min.css?v=3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Schema.org Structured Data -->
@@ -155,7 +155,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         ]
     }
     </script>
-    <script src="https://cdn.visitors.now/v.js" data-token="{{ visitors_token }}" data-persist></script>
+    <script async src="https://cdn.visitors.now/v.js" data-token="{{ visitors_token }}" data-persist></script>
 </head>
 <body>
     <!-- Google Tag Manager (noscript) -->
@@ -821,8 +821,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     {% include '_cookie_consent.html' %}
 
-    <script src="/marketing-static/js/marketing.js?v=2"></script>
-    <script src="/marketing-static/js/cookie-consent.js?v=2"></script>
+    <script defer src="/marketing-static/js/marketing.min.js?v=3"></script>
+    <script defer src="/marketing-static/js/cookie-consent.min.js?v=3"></script>
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
         

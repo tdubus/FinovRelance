@@ -227,54 +227,27 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ==========================================================================
-    // Sticky Header Effect
+    // Sticky Header Effect (IntersectionObserver — no scroll listener)
     // ==========================================================================
 
     const header = document.querySelector('.header');
-    let lastScroll = 0;
 
     if (header) {
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
+        const sentinel = document.createElement('div');
+        sentinel.style.height = '100px';
+        sentinel.style.position = 'absolute';
+        sentinel.style.top = '0';
+        sentinel.style.left = '0';
+        sentinel.style.width = '1px';
+        sentinel.style.pointerEvents = 'none';
+        document.body.prepend(sentinel);
 
-            if (currentScroll > 100) {
-                header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-            } else {
-                header.style.boxShadow = 'none';
-            }
-
-            lastScroll = currentScroll;
+        const headerObserver = new IntersectionObserver(([entry]) => {
+            header.style.boxShadow = entry.isIntersecting
+                ? 'none'
+                : '0 2px 10px rgba(0, 0, 0, 0.1)';
         });
+        headerObserver.observe(sentinel);
     }
 
 });
-
-// ==========================================================================
-// CSS Animations (to be added via <style> tag if needed)
-// ==========================================================================
-
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);

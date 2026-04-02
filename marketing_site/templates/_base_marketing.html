@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WZ7KQJ2F');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FinovRelance{% endblock %}</title>
+    <meta name="description" content="{% block description %}{% endblock %}">
+
+    <!-- Balise canonique SEO -->
+    <link rel="canonical" href="https://finov-relance.com{% block canonical_path %}/{% endblock %}">
+
+    <!-- Favicon pour tous les navigateurs et Google -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260316">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png?v=20260316">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=20260316">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=20260316">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260316">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/marketing-static/css/marketing.min.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    {% block structured_data %}
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "FinovRelance",
+        "url": "https://finov-relance.com",
+        "logo": "https://finov-relance.com/marketing-static/images/logo.png",
+        "email": "support@finov-relance.com",
+        "sameAs": ["https://www.linkedin.com/company/solutions-finova/"]
+    }
+    </script>
+    {% endblock %}
+    <script async src="https://cdn.visitors.now/v.js" data-token="{{ visitors_token }}" data-persist></script>
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WZ7KQJ2F"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <style>.hero{margin-top:-80px;padding-top:calc(var(--space-20) + 80px)}</style>
+    {% include '_navbar.html' %}
+
+    {% block content %}{% endblock %}
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Produit</h4>
+                    <ul class="footer-links">
+                        <li><a href="/fonctionnalites">Fonctionnalités</a></li>
+                        <li><a href="/tarifs">Tarifs</a></li>
+                        <li><a href="/cas-usage">Cas d'usage</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Ressources</h4>
+                    <ul class="footer-links">
+                        <li><a href="/guide">Guide d'utilisation</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul class="footer-links">
+                        <li><a href="mailto:support@finov-relance.com">support@finov-relance.com</a></li>
+                        <li><a href="https://finov-relance.com/legal/confidentialite" target="_blank" rel="noopener noreferrer">Politique de confidentialité</a></li>
+                        <li><a href="https://finov-relance.com/legal/cgu" target="_blank" rel="noopener noreferrer">Conditions d'utilisation</a></li>
+                        <li><a href="https://finov-relance.com/legal/cookies" target="_blank" rel="noopener noreferrer">Politique de cookies</a></li>
+                        <li><a href="javascript:void(0)" onclick="openCookieSettings()">Gérer les cookies</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Réseaux sociaux</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://www.linkedin.com/company/solutions-finova/" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin" style="font-size: 1.5rem; margin-right: 0.5rem;"></i>LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p style="color: #ffffff;">&copy; <span id="year"></span> FinovRelance. Tous droits réservés.</p>
+                <p style="margin-top: 0.5rem; color: #ffffff;">Développé et vendu par <a href="https://finova-solutions.com/" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: none;">Finova Solutions</a></p>
+            </div>
+        </div>
+    </footer>
+
+    {% include '_cookie_consent.html' %}
+
+    <script defer src="/marketing-static/js/marketing.min.js?v=3"></script>
+    <script defer src="/marketing-static/js/cookie-consent.min.js?v=3"></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+    {% block scripts_extra %}{% endblock %}
+</body>
+</html>
