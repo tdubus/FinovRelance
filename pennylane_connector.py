@@ -558,8 +558,8 @@ class PennylaneConnector:
             all_invoices = []
             cursor = None
 
-            # Filter: exclude drafts
-            filter_param = json.dumps([{"field": "draft", "operator": "eq", "value": False}])
+            # Filter: exclude drafts (Pennylane uses 'filters' plural, field 'status', string values)
+            filter_param = json.dumps([{"field": "status", "operator": "not_eq", "value": "draft"}])
 
             while True:
                 # Check for manual stop
@@ -571,7 +571,7 @@ class PennylaneConnector:
 
                 params = {
                     'limit': self.PAGE_LIMIT,
-                    'filter': filter_param
+                    'filters': filter_param
                 }
                 if cursor:
                     params['cursor'] = cursor
@@ -875,14 +875,14 @@ class PennylaneConnector:
                     logger.warning(f"Failed to fetch invoice {invoice_id}: {e}")
                     continue
         else:
-            # Full scan: fetch all paid invoices
+            # Full scan: fetch all paid invoices (exclude drafts)
             cursor = None
-            filter_param = json.dumps([{"field": "draft", "operator": "eq", "value": False}])
+            filter_param = json.dumps([{"field": "status", "operator": "not_eq", "value": "draft"}])
 
             while True:
                 params = {
                     'limit': self.PAGE_LIMIT,
-                    'filter': filter_param
+                    'filters': filter_param
                 }
                 if cursor:
                     params['cursor'] = cursor
