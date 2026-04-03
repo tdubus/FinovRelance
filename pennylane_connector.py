@@ -993,14 +993,12 @@ class PennylaneConnector:
 
         client_data['name'] = name
 
-        # Code client: reference > generated from name
-        # Note: external_reference is ignored — Pennylane auto-fills it with a UUID
-        # and there's no way to distinguish a default UUID from a user-customized value.
-        reference = pl_customer.get('reference')
-
-        if reference and reference.strip():
-            client_data['code_client'] = reference.strip()
+        # Code client: external_reference from Pennylane (UUID or user-customized)
+        external_ref = pl_customer.get('external_reference')
+        if external_ref and external_ref.strip():
+            client_data['code_client'] = external_ref.strip()
         else:
+            # Fallback: generate from name + Pennylane ID
             import re
             clean_name = re.sub(r'[^a-zA-Z0-9]', '', name)[:10].upper()
             pl_id = str(pl_customer.get('id', 'unknown'))[:8]
