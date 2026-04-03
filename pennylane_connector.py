@@ -605,9 +605,10 @@ class PennylaneConnector:
             logger.info(f"Total factures recuperees de Pennylane: {len(all_invoices)}")
 
             # Pre-load all existing invoices into a dict for O(1) lookups (N+1 fix)
-            existing_invoices_by_number = {
-                inv.invoice_number: inv for inv in Invoice.query.filter_by(company_id=company_id).all()
-            }
+            # Key is (client_id, invoice_number) to handle same invoice_number across different clients
+            existing_invoices_by_key = {}
+            for inv in Invoice.query.filter_by(company_id=company_id).all():
+                existing_invoices_by_key[(inv.client_id, inv.invoice_number)] = inv
 
             # Process invoices
             for pl_invoice in all_invoices:
@@ -618,12 +619,20 @@ class PennylaneConnector:
                 if not invoice_number:
                     continue
 
+                # Resolve client_id early for proper lookup key
+                customer_data = pl_invoice.get('customer')
+                resolved_client_id = None
+                if customer_data and customer_data.get('id'):
+                    resolved_client_id = customer_id_to_client.get(customer_data['id'])
+
+                lookup_key = (resolved_client_id, invoice_number)
+
                 # Delete paid invoices from local DB (clean slate approach)
                 if is_paid or status == 'paid':
-                    existing_paid_invoice = existing_invoices_by_number.get(invoice_number)
-                    if existing_paid_invoice:
-                        db.session.delete(existing_paid_invoice)
-                        del existing_invoices_by_number[invoice_number]
+                    existing_paid = existing_invoices_by_key.get(lookup_key)
+                    if existing_paid:
+                        db.session.delete(existing_paid)
+                        del existing_invoices_by_key[lookup_key]
                         logger.info(f"Deleted paid invoice {invoice_number} from local database")
                     continue
 
@@ -643,10 +652,10 @@ class PennylaneConnector:
 
                 # Skip fully paid (remaining == 0)
                 if remaining_amount <= 0:
-                    existing_zero = existing_invoices_by_number.get(invoice_number)
+                    existing_zero = existing_invoices_by_key.get(lookup_key)
                     if existing_zero:
                         db.session.delete(existing_zero)
-                        del existing_invoices_by_number[invoice_number]
+                        del existing_invoices_by_key[lookup_key]
                         logger.info(f"Deleted zero-balance invoice {invoice_number}")
                     continue
 
@@ -656,7 +665,8 @@ class PennylaneConnector:
                 if not invoice_data:
                     continue
 
-                existing_invoice = existing_invoices_by_number.get(invoice_data['invoice_number'])
+                inv_key = (invoice_data['client_id'], invoice_data['invoice_number'])
+                existing_invoice = existing_invoices_by_key.get(inv_key)
 
                 if existing_invoice:
                     # Update existing invoice
@@ -668,6 +678,7 @@ class PennylaneConnector:
                     # Create new invoice
                     new_invoice = Invoice(**invoice_data)
                     db.session.add(new_invoice)
+                    existing_invoices_by_key[inv_key] = new_invoice
                     created_count += 1
 
             # NOTE: Quota increment is done once in the route handler (pennylane_sync),
