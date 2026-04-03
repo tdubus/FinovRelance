@@ -727,14 +727,14 @@
                                                         </button>
                                                         {% endif %}
                                                     {% elif connector.type == 'pennylane' %}
-                                                        {% if accounting_permission.allowed and current_user.is_super_admin() %}
+                                                        {% if accounting_permission.allowed %}
                                                         <a href="{{ url_for('company.pennylane_connect') }}" class="btn btn-sm btn-primary">
                                                             Connecter Pennylane
                                                         </a>
                                                         {% else %}
                                                         <button class="btn btn-sm btn-outline-secondary" disabled
-                                                                title="Connecteur en phase de deploiement - reserve aux super-administrateurs">
-                                                            <i class="fas fa-lock me-1"></i>Bientot disponible
+                                                                title="{{ accounting_permission.restriction_reason }}">
+                                                            <i class="fas fa-lock me-1"></i>Connecter
                                                         </button>
                                                         {% endif %}
                                                     {% endif %}
