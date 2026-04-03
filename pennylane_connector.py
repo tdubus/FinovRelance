@@ -275,9 +275,21 @@ class PennylaneConnector:
         }
 
         session = self._get_session()
+        token_refreshed = False
 
         for attempt in range(max_retries):
             response = session.request(method, url, headers=headers, params=params)
+
+            # Handle 401: token expired or revoked — refresh once and retry
+            if response.status_code == 401 and not token_refreshed:
+                logger.warning("Pennylane 401 received, attempting token refresh...")
+                if self.refresh_access_token():
+                    token_refreshed = True
+                    # Update Authorization header with new token
+                    headers['Authorization'] = f'Bearer {self.connection.access_token}'
+                    continue
+                else:
+                    raise ValueError("Pennylane access token expired and refresh failed. Please reconnect.")
 
             # Handle rate limiting with retry loop
             if response.status_code == 429:
