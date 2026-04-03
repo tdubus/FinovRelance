@@ -3613,6 +3613,11 @@ def pennylane_connect():
         flash('Aucune entreprise selectionnee.', 'error')
         return redirect(url_for('auth.logout'))
 
+    # Pennylane est en phase de deploiement - reserve aux super-admins
+    if not current_user.is_super_admin():
+        flash('Le connecteur Pennylane est en phase de deploiement. Contactez votre administrateur.', 'error')
+        return redirect(url_for('company.settings'))
+
     if not current_user.can_access_company_settings():
         flash('Acces refuse.', 'error')
         return redirect(url_for('main.dashboard'))
@@ -3764,6 +3769,11 @@ def pennylane_disconnect(connection_id):
         flash('Aucune entreprise selectionnee.', 'error')
         return redirect(url_for('auth.logout'))
 
+    # Pennylane est en phase de deploiement - reserve aux super-admins
+    if not current_user.is_super_admin():
+        flash('Le connecteur Pennylane est en phase de deploiement.', 'error')
+        return redirect(url_for('company.settings'))
+
     if not current_user.can_access_company_settings():
         flash('Acces refuse.', 'error')
         return redirect(url_for('main.dashboard'))
@@ -3806,6 +3816,11 @@ def pennylane_sync():
     if not company:
         flash('Aucune entreprise selectionnee.', 'error')
         return redirect(url_for('auth.logout'))
+
+    # Pennylane est en phase de deploiement - reserve aux super-admins
+    if not current_user.is_super_admin():
+        flash('Le connecteur Pennylane est en phase de deploiement.', 'error')
+        return redirect(url_for('company.settings'))
 
     if not current_user.can_access_company_settings():
         flash('Acces refuse.', 'error')
