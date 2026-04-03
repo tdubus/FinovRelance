@@ -993,15 +993,19 @@ class PennylaneConnector:
 
         client_data['name'] = name
 
-        # Code client: priority external_reference > name
+        # Code client: priority external_reference > reference > generated
         external_ref = pl_customer.get('external_reference')
+        reference = pl_customer.get('reference')
+
         if external_ref and external_ref.strip():
             client_data['code_client'] = external_ref.strip()
+        elif reference and reference.strip():
+            client_data['code_client'] = reference.strip()
         else:
-            # Generate from name + Pennylane ID for uniqueness
+            # Generate from name + 8 first chars of Pennylane ID for uniqueness
             import re
             clean_name = re.sub(r'[^a-zA-Z0-9]', '', name)[:10].upper()
-            pl_id = pl_customer.get('id', 'unknown')
+            pl_id = str(pl_customer.get('id', 'unknown'))[:8]
             client_data['code_client'] = f"{clean_name}_{pl_id}"
 
         # Email (first from array)
