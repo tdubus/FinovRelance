@@ -993,11 +993,16 @@ class PennylaneConnector:
 
         client_data['name'] = name
 
-        # Code client: priority external_reference > reference > generated
+        # Code client: priority external_reference (if customized) > reference > generated
+        # Pennylane auto-fills external_reference with a UUID — skip those
+        import re
         external_ref = pl_customer.get('external_reference')
         reference = pl_customer.get('reference')
 
-        if external_ref and external_ref.strip():
+        uuid_pattern = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', re.IGNORECASE)
+        is_custom_ref = external_ref and external_ref.strip() and not uuid_pattern.match(external_ref.strip())
+
+        if is_custom_ref:
             client_data['code_client'] = external_ref.strip()
         elif reference and reference.strip():
             client_data['code_client'] = reference.strip()
