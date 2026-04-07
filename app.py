@@ -255,7 +255,7 @@ def bootstrap_app(app):
         # Liste des routes marketing (SANS la racine "/" qui doit aller à l'app)
         marketing_routes = [
             '/fonctionnalites', '/tarifs', '/cas-usage', '/contact', '/guide',
-            '/essai', '/demo-iframe'
+            '/essai', '/essai-fr', '/demo-iframe'
         ]
 
         # Routes légales et SEO qui doivent toujours être sur finov-relance.com

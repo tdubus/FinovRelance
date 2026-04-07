@@ -26,6 +26,11 @@ def index():
 def essai():
     return _cached_page('ads_v2.html')
 
+@marketing_bp.route('/essai-fr')
+@cache.cached(timeout=3600)
+def essai_fr():
+    return _cached_page('ads_fr.html')
+
 @marketing_bp.route('/demo-iframe')
 @cache.cached(timeout=3600)
 def demo_iframe():
