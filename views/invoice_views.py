@@ -361,28 +361,24 @@ def _fetch_invoice_pdf_bytes(invoice, connection):
     return pdf_content, filename
 
 
-def _purge_expired_pdf_cache():
-    """Supprime les entrées expirées du cache PDF temporaire."""
-    cache = current_app.pdf_temp_cache
-    now = datetime.utcnow()
-    expired_keys = [k for k, v in cache.items() if v['expires'] < now]
-    for k in expired_keys:
-        del cache[k]
-
-
 # ---------------------------------------------------------------------------
-# T003 — Pré-téléchargement PDF vers le cache serveur
+# T003 — Pré-téléchargement PDF vers le cache partagé (Redis)
 # ---------------------------------------------------------------------------
 
 @invoice_bp.route('/api/prefetch-pdfs', methods=['POST'])
 @login_required
 def prefetch_invoice_pdfs():
     """
-    Télécharge les PDF des factures demandées et les stocke dans le cache mémoire
-    (current_app.pdf_temp_cache) avec un TTL de 30 minutes.
+    Télécharge les PDF des factures demandées et les stocke dans le cache partagé
+    (Redis via Flask-Caching) avec un TTL de 30 minutes. Le cache est partagé
+    entre tous les workers Gunicorn pour garantir que les PDF sont retrouvés
+    lors de l'envoi du courriel, peu importe quel worker traite la requête.
+
     Body JSON : {invoice_ids: [1, 2, 3]}
     Retourne : {results: {invoice_id: {success, filename, error}}}
     """
+    from utils.pdf_temp_cache import set_pdf
+
     company = current_user.get_selected_company()
     if not company:
         return jsonify({'error': 'Aucune entreprise sélectionnée'}), 400
@@ -403,10 +399,7 @@ def prefetch_invoice_pdfs():
     if not connection:
         return jsonify({'error': 'Aucune connexion comptable active.'}), 400
 
-    _purge_expired_pdf_cache()
-
     results = {}
-    ttl = timedelta(minutes=30)
 
     for inv_id in invoice_ids:
         try:
@@ -422,13 +415,7 @@ def prefetch_invoice_pdfs():
 
         try:
             pdf_bytes, filename = _fetch_invoice_pdf_bytes(invoice, connection)
-            cache_key = (current_user.id, inv_id)
-            current_app.pdf_temp_cache[cache_key] = {
-                'bytes': pdf_bytes,
-                'filename': filename,
-                'company_id': company.id,
-                'expires': datetime.utcnow() + ttl
-            }
+            set_pdf(current_user.id, inv_id, pdf_bytes, filename, company.id)
             results[str(inv_id)] = {'success': True, 'filename': filename, 'error': None}
         except Exception as exc:
             current_app.logger.warning(f'prefetch_invoice_pdfs: invoice {inv_id} → {exc}')

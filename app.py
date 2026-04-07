@@ -122,10 +122,10 @@ if not secret_key:
 app.secret_key = secret_key
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# Cache temporaire en mémoire pour les PDF de factures à joindre aux courriels.
-# Clé: (user_id, invoice_id) → {bytes, filename, expires: datetime}
-# Vidé après envoi ; jamais persisté en base de données.
-app.pdf_temp_cache = {}
+# Cache temporaire pour les PDF de factures a joindre aux courriels.
+# Implementation : Redis via Flask-Caching (voir utils/pdf_temp_cache.py).
+# Le cache doit etre partage entre les workers Gunicorn — un dict en memoire
+# ne fonctionne PAS car chaque worker a sa propre memoire.
 
 # Configuration de sécurité - HTTPS en production
 app.config['SESSION_COOKIE_SECURE'] = is_production
@@ -379,6 +379,16 @@ def bootstrap_app(app):
     # Initialize Flask-Caching avec la config Redis/Simple
     app.config.update(_cache_config)
     cache.init_app(app)
+
+    # Avertissement critique si Redis n'est pas configure en production
+    # SimpleCache est per-process : avec plusieurs workers Gunicorn, le cache PDF
+    # de factures ne sera PAS partage et les pieces jointes seront perdues
+    if is_production and not _redis_url:
+        app.logger.error(
+            "CRITIQUE: REDIS_URL non defini en production. Le cache PDF ne sera pas "
+            "partage entre les workers Gunicorn. Les pieces jointes de factures "
+            "risquent de ne pas suivre dans les courriels. Configurer REDIS_URL."
+        )
 
     # Gestionnaire d'erreur pour Rate Limiting (429)
     @app.errorhandler(429)

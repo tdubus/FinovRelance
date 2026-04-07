@@ -647,27 +647,28 @@ def send_email_ajax(client_id):
                             'content_type': content_types.get(file_ext, 'application/octet-stream')
                         })
 
-        # Copies de factures depuis le cache PDF temporaire
+        # Copies de factures depuis le cache PDF temporaire (Redis partage entre workers)
+        from utils.pdf_temp_cache import get_pdf
         invoice_pdf_ids = request.form.getlist('invoice_pdf_ids')
         cached_pdf_invoice_ids = []
+        missing_pdf_ids = []
         if invoice_pdf_ids:
-            from datetime import datetime as _dt
-            now = _dt.utcnow()
             for raw_id in invoice_pdf_ids:
                 try:
                     inv_id = int(raw_id)
                 except (ValueError, TypeError):
+                    missing_pdf_ids.append(str(raw_id))
                     continue
-                cache_key = (current_user.id, inv_id)
-                entry = current_app.pdf_temp_cache.get(cache_key)
-                if entry and entry['expires'] > now:
-                    # SÉCURITÉ : vérifier que le PDF appartient à l'entreprise active
+                entry = get_pdf(current_user.id, inv_id)
+                if entry:
+                    # SECURITE : verifier que le PDF appartient a l'entreprise active
                     if entry.get('company_id') != company.id:
                         current_app.logger.warning(
-                            f'send_email_ajax: TENTATIVE D\'ACCÈS INTER-ENTREPRISE '
+                            f'send_email_ajax: TENTATIVE D\'ACCES INTER-ENTREPRISE '
                             f'user={current_user.id} invoice_id={inv_id} '
                             f'cache_company={entry.get("company_id")} current_company={company.id}'
                         )
+                        missing_pdf_ids.append(str(inv_id))
                         continue
                     attachments.append({
                         'filename': entry['filename'],
@@ -677,8 +678,22 @@ def send_email_ajax(client_id):
                     cached_pdf_invoice_ids.append(inv_id)
                 else:
                     current_app.logger.warning(
-                        f'send_email_ajax: cache PDF absent ou expiré pour invoice_id={raw_id}'
+                        f'send_email_ajax: cache PDF absent ou expire pour invoice_id={raw_id}'
                     )
+                    missing_pdf_ids.append(str(raw_id))
+
+        # BLOCAGE : si certaines PDF demandees sont absentes du cache, refuser l'envoi
+        # plutot que d'envoyer le courriel sans pieces jointes (perte silencieuse)
+        if missing_pdf_ids:
+            return jsonify({
+                'success': False,
+                'error': (
+                    f"Certaines copies de factures ne sont plus disponibles "
+                    f"(cache expire ou non telecharge). Veuillez recliquer sur "
+                    f"\"Telecharger les copies de factures\" puis renvoyer le courriel. "
+                    f"Factures concernees : {', '.join(missing_pdf_ids)}"
+                )
+            }), 400
 
         import re
         email_regex = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
@@ -850,8 +865,9 @@ def send_email_ajax(client_id):
             )
 
             # Vider le cache PDF temporaire pour les factures envoyées
+            from utils.pdf_temp_cache import delete_pdf
             for inv_id in cached_pdf_invoice_ids:
-                current_app.pdf_temp_cache.pop((current_user.id, inv_id), None)
+                delete_pdf(current_user.id, inv_id)
 
             return jsonify({'success': True, 'message': 'Courriel envoyé avec succès'})
         else:
