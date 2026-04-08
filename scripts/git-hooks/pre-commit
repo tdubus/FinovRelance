@@ -1,0 +1,110 @@
+#!/usr/bin/env python
+"""
+Git pre-commit hook : archivage automatique des politiques légales.
+
+Détecte les changements staged dans templates/legal/*.html (hors dossier
+archives) et archive la nouvelle version dans templates/legal/archives/
+avec la date du jour. L'archive est ajoutée au commit en cours.
+
+Installation :
+    git config core.hooksPath scripts/git-hooks
+
+Contournement exceptionnel :
+    git commit --no-verify
+
+Comportement :
+  - Lit le contenu STAGED (pas le working tree) via `git show :path`
+  - Nom d'archive : {policy_name}_{YYYY-MM-DD}.html
+  - En cas de collision, suffixe -v2, -v3, etc.
+  - Les archives créées sont ajoutées au commit automatiquement
+"""
+import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
+
+
+POLICY_FILES = {
+    'templates/legal/terms.html': 'terms',
+    'templates/legal/privacy.html': 'privacy',
+    'templates/legal/cookies.html': 'cookies',
+}
+
+ARCHIVES_DIR = Path('templates/legal/archives')
+
+
+def run(cmd):
+    """Exécute une commande git et retourne stdout en bytes.
+
+    Mode bytes intentionnel : sur Windows, `text=True` utilise
+    locale.getpreferredencoding() (souvent cp1252) pour décoder la sortie
+    de git qui est en UTF-8, ce qui corrompt les caractères non-ASCII.
+    En restant en bytes, les archives sont des clones byte-parfaits.
+    """
+    result = subprocess.run(cmd, capture_output=True, check=False)
+    if result.returncode != 0:
+        sys.stderr.write(f"[pre-commit] Erreur commande: {' '.join(cmd)}\n")
+        if result.stderr:
+            sys.stderr.write(result.stderr.decode('utf-8', errors='replace'))
+        sys.exit(1)
+    return result.stdout
+
+
+def staged_files():
+    """Liste des fichiers staged (ajoutés ou modifiés)."""
+    out = run(['git', 'diff', '--cached', '--name-only', '--diff-filter=AM'])
+    return [
+        line.strip().replace('\\', '/')
+        for line in out.decode('utf-8', errors='replace').splitlines()
+        if line.strip()
+    ]
+
+
+def staged_content(path):
+    """Contenu staged d'un fichier en bytes (ce qui sera effectivement commité)."""
+    return run(['git', 'show', f':{path}'])
+
+
+def unique_archive_path(policy_name, date_str):
+    """Retourne un path d'archive qui n'existe pas encore (suffixe -vN si besoin)."""
+    base = ARCHIVES_DIR / f"{policy_name}_{date_str}.html"
+    if not base.exists():
+        return base
+    version = 2
+    while True:
+        candidate = ARCHIVES_DIR / f"{policy_name}_{date_str}-v{version}.html"
+        if not candidate.exists():
+            return candidate
+        version += 1
+
+
+def main():
+    staged = staged_files()
+    legal_changes = [f for f in staged if f in POLICY_FILES]
+
+    if not legal_changes:
+        return 0
+
+    ARCHIVES_DIR.mkdir(parents=True, exist_ok=True)
+    date_str = datetime.now().strftime('%Y-%m-%d')
+    created = []
+
+    for path in legal_changes:
+        policy_name = POLICY_FILES[path]
+        content = staged_content(path)
+
+        archive_path = unique_archive_path(policy_name, date_str)
+        archive_path.write_bytes(content)
+
+        run(['git', 'add', str(archive_path).replace('\\', '/')])
+        created.append(str(archive_path))
+        print(f"[pre-commit] Politique archivée : {archive_path}")
+
+    if created:
+        print(f"[pre-commit] {len(created)} archive(s) ajoutée(s) au commit.")
+
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
