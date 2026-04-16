@@ -8,7 +8,6 @@
 
     var CONSENT_KEY = 'finova_cookie_consent';
     var CONSENT_VERSION = '1.0';
-    // Visitors Analytics loaded unconditionally in <head> per vendor instructions
 
     // ── GTM Consent Mode (default denied) ─────────────────────
     window.dataLayer = window.dataLayer || [];
@@ -53,7 +52,7 @@
         logConsentToServer(data);
     }
 
-    // ── Apply consent (GTM + Visitors) ────────────────────────
+    // ── Apply consent (GTM) ────────────────────────────────────
     function applyConsent(data) {
         var prefs = data.preferences;
 
@@ -67,7 +66,6 @@
             ad_personalization: adsGranted
         });
 
-        // Visitors Analytics loaded unconditionally in <head> per vendor instructions
     }
 
     // ── Log to server ─────────────────────────────────────────

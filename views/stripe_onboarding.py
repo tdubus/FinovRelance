@@ -77,8 +77,7 @@ def start_trial(plan_id):
             cancel_url=f'{_get_base_url()}/tarifs',
             metadata={
                 'registration_type': 'stripe_onboarding',
-                'plan_id': str(plan.id),
-                'visitor': request.cookies.get('visitor', '')
+                'plan_id': str(plan.id)
             }
         )
 
@@ -194,8 +193,7 @@ def add_company_start(plan_id):
             'cancel_url': f'{_get_base_url()}/onboarding/add-company/plan-selection',
             'metadata': {
                 'registration_type': 'stripe_onboarding',
-                'plan_id': str(plan.id),
-                'visitor': request.cookies.get('visitor', '')
+                'plan_id': str(plan.id)
             }
         }
 

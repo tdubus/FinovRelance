@@ -91,8 +91,7 @@ def plan_selection():
                             'plan_id': str(plan.id),
                             'quantity_licenses': str(company.quantity_licenses or 1),
                             'user_id': str(current_user.id),
-                            'auto_checkout': 'true',
-                            'visitor': request.cookies.get('visitor', '')
+                            'auto_checkout': 'true'
                         },
                         subscription_data={
                             **({'trial_period_days': 14} if not company.stripe_subscription_id else {}),
@@ -263,8 +262,7 @@ def create_checkout_session():
                     'company_id': str(company.id),
                     'plan_id': str(plan.id),
                     'quantity_licenses': str(quantity_licenses),
-                    'user_id': str(current_user.id),
-                    'visitor': request.cookies.get('visitor', '')
+                    'user_id': str(current_user.id)
                 },
                 subscription_data={
                     **({'trial_period_days': 14} if is_eligible_for_trial else {}),

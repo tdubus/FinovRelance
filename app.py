@@ -207,11 +207,6 @@ def bootstrap_app(app):
     import stripe
     stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
-    # Inject VISITORS_TOKEN into all Jinja2 templates
-    @app.context_processor
-    def inject_visitors_token():
-        return {'visitors_token': os.environ.get('VISITORS_TOKEN', '')}
-
     # Gestionnaire personnalisé pour les erreurs SSL lors du teardown
     @app.teardown_request
     def handle_db_errors_on_teardown(exception=None):
