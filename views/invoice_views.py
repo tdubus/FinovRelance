@@ -141,10 +141,12 @@ def download_invoice_pdf(invoice_id):
             flash('Aucune entreprise sélectionnée.', 'error')
             return redirect(url_for('auth.logout'))
 
-        # Vérifier les permissions (admin/super_admin seulement)
-        user_role = current_user.get_role_in_company(company.id)
-        if user_role not in ['super_admin', 'admin']:
-            flash('Accès refusé. Seuls les administrateurs peuvent télécharger des PDF de factures.', 'error')
+        # Vérifier les permissions : tout membre actif non read-only peut télécharger
+        if current_user.is_read_only():
+            flash('Accès refusé. Votre profil est en lecture seule.', 'error')
+            return redirect(url_for('client.list_clients'))
+        if not current_user.is_active_in_company(company.id):
+            flash('Accès refusé.', 'error')
             return redirect(url_for('client.list_clients'))
 
         # Récupérer la facture

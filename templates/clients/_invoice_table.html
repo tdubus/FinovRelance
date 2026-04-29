@@ -28,8 +28,13 @@
                                 <th>Montant Original</th>
                                 {% endif %}
                                 <th>Montant</th>
-                                {% if not current_user.is_read_only() and (current_user.get_role_in_company(current_user.get_selected_company().id) in ['admin', 'super_admin']) %}
-                                <th width="80px" class="text-center">Actions</th>
+                                {% set _can_download_pdf = not current_user.is_read_only() and has_accounting_connection %}
+                                {% set _can_admin_actions = not current_user.is_read_only() and (current_user.get_role_in_company(current_user.get_selected_company().id) in ['admin', 'super_admin']) %}
+                                {% if _can_download_pdf %}
+                                <th width="50px" class="text-center">PDF</th>
+                                {% endif %}
+                                {% if _can_admin_actions %}
+                                <th width="60px" class="text-center">Actions</th>
                                 {% endif %}
                             </tr>
                         </thead>
@@ -61,27 +66,29 @@
                                 <td class="text-muted">{{ format_currency(invoice.original_amount) if invoice.original_amount else '-' }}</td>
                                 {% endif %}
                                 <td class="fw-bold">{{ format_currency(invoice.amount) }}</td>
-                                {% if not current_user.is_read_only() and (current_user.get_role_in_company(current_user.get_selected_company().id) in ['admin', 'super_admin']) %}
+                                {% set supports_pdf = accounting_system_type in ['quickbooks', 'xero', 'odoo', 'pennylane'] and invoice.invoice_id_external %}
+                                {% set supports_bc_pdf = accounting_system_type == 'business_central' and invoice.invoice_number %}
+                                {% if _can_download_pdf %}
                                 <td class="text-center">
-                                    <div class="d-flex gap-1 justify-content-center">
-                                        {% set supports_pdf = accounting_system_type in ['quickbooks', 'xero', 'odoo', 'pennylane'] and invoice.invoice_id_external %}
-                                        {% set supports_bc_pdf = accounting_system_type == 'business_central' and invoice.invoice_number %}
-                                        {% if has_accounting_connection and (supports_pdf or supports_bc_pdf) %}
-                                        <a href="{{ url_for('invoice.download_invoice_pdf', invoice_id=invoice.id) }}" 
-                                           class="btn btn-sm btn-outline-primary" 
-                                           title="Télécharger le PDF depuis {{ accounting_system_type|capitalize }}">
-                                            <i data-feather="download" style="width: 16px; height: 16px;"></i>
-                                        </a>
-                                        {% endif %}
-                                        <form method="POST" action="{{ url_for('invoice.delete_invoice', invoice_id=invoice.id) }}" 
-                                              class="d-inline" onsubmit="return confirmSingleDelete('{{ invoice.invoice_number }}')">
-                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                                    title="Supprimer la facture {{ invoice.invoice_number }}">
-                                                <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
-                                            </button>
-                                        </form>
-                                    </div>
+                                    {% if supports_pdf or supports_bc_pdf %}
+                                    <a href="{{ url_for('invoice.download_invoice_pdf', invoice_id=invoice.id) }}"
+                                       class="btn btn-sm btn-outline-primary"
+                                       title="Télécharger le PDF depuis {{ accounting_system_type|capitalize }}">
+                                        <i data-feather="download" style="width: 16px; height: 16px;"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+                                {% if _can_admin_actions %}
+                                <td class="text-center">
+                                    <form method="POST" action="{{ url_for('invoice.delete_invoice', invoice_id=invoice.id) }}"
+                                          class="d-inline" onsubmit="return confirmSingleDelete('{{ invoice.invoice_number }}')">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                title="Supprimer la facture {{ invoice.invoice_number }}">
+                                            <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
+                                        </button>
+                                    </form>
                                 </td>
                                 {% endif %}
                             </tr>
@@ -114,8 +121,13 @@
                 {% if is_project_enabled %}
                 <th>{{ project_label }}</th>
                 {% endif %}
-                {% if not current_user.is_read_only() and (current_user.get_role_in_company(current_user.get_selected_company().id) in ['admin', 'super_admin']) %}
-                <th width="80px" class="text-center">Actions</th>
+                {% set _can_download_pdf = not current_user.is_read_only() and has_accounting_connection %}
+                {% set _can_admin_actions = not current_user.is_read_only() and (current_user.get_role_in_company(current_user.get_selected_company().id) in ['admin', 'super_admin']) %}
+                {% if _can_download_pdf %}
+                <th width="50px" class="text-center">PDF</th>
+                {% endif %}
+                {% if _can_admin_actions %}
+                <th width="60px" class="text-center">Actions</th>
                 {% endif %}
             </tr>
         </thead>
@@ -150,27 +162,29 @@
                 {% if is_project_enabled %}
                 <td class="text-muted"><small>{{ invoice.project_name if invoice.project_name else '-' }}</small></td>
                 {% endif %}
-                {% if not current_user.is_read_only() and (current_user.get_role_in_company(current_user.get_selected_company().id) in ['admin', 'super_admin']) %}
+                {% set supports_pdf = accounting_system_type in ['quickbooks', 'xero', 'odoo', 'pennylane'] and invoice.invoice_id_external %}
+                {% set supports_bc_pdf = accounting_system_type == 'business_central' and invoice.invoice_number %}
+                {% if _can_download_pdf %}
                 <td class="text-center">
-                    <div class="d-flex gap-1 justify-content-center">
-                        {% set supports_pdf = accounting_system_type in ['quickbooks', 'xero', 'odoo', 'pennylane'] and invoice.invoice_id_external %}
-                        {% set supports_bc_pdf = accounting_system_type == 'business_central' and invoice.invoice_number %}
-                        {% if has_accounting_connection and (supports_pdf or supports_bc_pdf) %}
-                        <a href="{{ url_for('invoice.download_invoice_pdf', invoice_id=invoice.id) }}" 
-                           class="btn btn-sm btn-outline-primary" 
-                           title="Télécharger le PDF depuis {{ accounting_system_type|capitalize }}">
-                            <i data-feather="download" style="width: 16px; height: 16px;"></i>
-                        </a>
-                        {% endif %}
-                        <form method="POST" action="{{ url_for('invoice.delete_invoice', invoice_id=invoice.id) }}" 
-                              class="d-inline" onsubmit="return confirmSingleDelete('{{ invoice.invoice_number }}')">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                            <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                    title="Supprimer la facture {{ invoice.invoice_number }}">
-                                <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
-                            </button>
-                        </form>
-                    </div>
+                    {% if supports_pdf or supports_bc_pdf %}
+                    <a href="{{ url_for('invoice.download_invoice_pdf', invoice_id=invoice.id) }}"
+                       class="btn btn-sm btn-outline-primary"
+                       title="Télécharger le PDF depuis {{ accounting_system_type|capitalize }}">
+                        <i data-feather="download" style="width: 16px; height: 16px;"></i>
+                    </a>
+                    {% endif %}
+                </td>
+                {% endif %}
+                {% if _can_admin_actions %}
+                <td class="text-center">
+                    <form method="POST" action="{{ url_for('invoice.delete_invoice', invoice_id=invoice.id) }}"
+                          class="d-inline" onsubmit="return confirmSingleDelete('{{ invoice.invoice_number }}')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                title="Supprimer la facture {{ invoice.invoice_number }}">
+                            <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
+                        </button>
+                    </form>
                 </td>
                 {% endif %}
             </tr>
