@@ -839,6 +839,22 @@ def bootstrap_app(app):
                 )
         return response
 
+    @app.after_request
+    def _force_no_store_for_authenticated(response):
+        # SECURITE: empeche tout proxy/CDN/navigateur de cacher des reponses
+        # contenant des donnees utilisateur (fuite cross-tenant). Les assets
+        # statiques et les pages marketing publiques sont exclus.
+        from flask import request
+        path = request.path or ''
+        if path.startswith(('/static/', '/marketing-assets/')):
+            return response
+        existing_cc = response.headers.get('Cache-Control', '')
+        if existing_cc.startswith(('public', 's-maxage')):
+            return response
+        response.headers['Cache-Control'] = 'private, no-store, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        return response
+
     @app.errorhandler(Exception)
     def _handle_unhandled_exception(e):
         """Logue les exceptions non capturees avec le traceback complet"""
