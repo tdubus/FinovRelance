@@ -195,7 +195,7 @@ function updateReceivablesTable(receivables) {
                 <td class="text-end">
                     <strong>${window.formatCurrency(data.total_outstanding)}</strong>
                 </td>
-                <td>
+                <td class="text-end actions-cell">
                     <div class="dropstart">
                         <button class="btn btn-sm btn-outline-secondary"
                                 type="button"

@@ -392,8 +392,20 @@
   padding-bottom: var(--s-12);
 }
 
+/* Transition de navigation — fade + léger glissement vers le haut au chargement
+   de chaque page. Désactivée si l'utilisateur a configuré prefers-reduced-motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes pageFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  [data-ui="v2"] main {
+    animation: pageFadeIn 220ms var(--ease-out) both;
+  }
+}
+
 [data-ui="v2"] main.container-fluid {
-  max-width: 1536px;
+  max-width: 1760px;
   margin: 0 auto;
   padding-left: var(--s-6);
   padding-right: var(--s-6);
@@ -764,6 +776,9 @@
   line-height: 1.05;
   margin: 0;
   order: 2;
+  /* Les montants ne doivent JAMAIS casser sur 2 lignes — même pour 1M+ */
+  white-space: nowrap;
+  overflow: visible;
 }
 [data-ui="v2"] .stat-card .stat-percentage {
   font-size: var(--t-xs);
@@ -774,11 +789,32 @@
   order: 3;
 }
 
-/* Receivables-stats grid : un layout cohérent (6 colonnes responsive) */
+/* Receivables-stats grid : un layout cohérent (6 colonnes responsive)
+   minmax(220px) garantit que les montants à 7+ chiffres ne wrappent pas
+   à 30px font-size (Host Grotesk 800). En-dessous de ~1380px de viewport,
+   le grid passe naturellement à 5 puis 4 colonnes via auto-fit. */
 [data-ui="v2"] .receivables-stats .stats-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--s-3);
+}
+
+/* Si un montant déborde malgré tout (écran très étroit + montant énorme),
+   on permet à la card de s'étirer plutôt que de wrapper le chiffre. */
+[data-ui="v2"] .stat-card { min-width: 0; }
+[data-ui="v2"] .stat-card .stat-value { min-width: 0; }
+
+/* Garde-fou global : tout montant formaté ne doit jamais wrapper, peu importe
+   le contexte (tableaux Comptes à recevoir, dashboard, factures, etc.) */
+[data-ui="v2"] .amount-current,
+[data-ui="v2"] .amount-aging-0-30,
+[data-ui="v2"] .amount-aging-31-60,
+[data-ui="v2"] .amount-aging-61-90,
+[data-ui="v2"] .amount-aging-90-plus,
+[data-ui="v2"] .receivables-table td.text-end,
+[data-ui="v2"] .table td.text-end strong,
+[data-ui="v2"] .table td.text-end .fw-bold {
+  white-space: nowrap;
 }
 
 /* Dashboard summary cards icon (top icon) */
