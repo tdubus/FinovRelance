@@ -455,8 +455,8 @@ def bootstrap_app(app):
         from models import User
         return User.query.get(int(user_id))
 
-    # Feature flag UI v2 (premium 2026 redesign)
-    # Activation : ?theme=v2 (persiste via cookie 30j) — ?theme=v1 désactive
+    # UI theme resolution. v2 is now the default (rolled out 2026-05-06).
+    # Users can opt-back to v1 via ?theme=v1 (cookie persists 30 days).
     @app.before_request
     def _resolve_ui_theme():
         from flask import request, g
@@ -467,7 +467,7 @@ def bootstrap_app(app):
             g.ui_theme = query_theme
             g._ui_theme_set_cookie = query_theme
         else:
-            g.ui_theme = request.cookies.get('ui_theme') or 'v1'
+            g.ui_theme = request.cookies.get('ui_theme') or 'v2'
 
     @app.after_request
     def _persist_ui_theme(response):
