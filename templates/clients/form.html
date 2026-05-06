@@ -9,11 +9,11 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i data-feather="user" class="me-2"></i>
+                        <i class="ph ph-user me-2"></i>
                         {{ title }}
                     </h5>
                     <a href="{{ url_for('client.list_clients') }}" class="btn btn-outline-secondary">
-                        <i data-feather="arrow-left" class="me-1"></i>
+                        <i class="ph ph-arrow-left me-1"></i>
                         Retour à la liste
                     </a>
                 </div>
@@ -56,7 +56,7 @@
                     
                     <!-- Contact Information -->
                     <h6 class="border-bottom pb-2 mb-3">
-                        <i data-feather="phone" class="me-2"></i>
+                        <i class="ph ph-phone me-2"></i>
                         Informations de contact
                     </h6>
                     
@@ -66,7 +66,7 @@
                                 {{ form.email.label(class="form-label") }}
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i data-feather="mail"></i>
+                                        <i class="ph ph-envelope"></i>
                                     </span>
                                     {{ form.email(class="form-control", placeholder="client@exemple.com") }}
                                 </div>
@@ -84,7 +84,7 @@
                                 {{ form.phone.label(class="form-label") }}
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i data-feather="phone"></i>
+                                        <i class="ph ph-phone"></i>
                                     </span>
                                     {{ form.phone(class="form-control", type="tel", placeholder="(514) 555-0123") }}
                                 </div>
@@ -113,7 +113,7 @@
                     
                     <!-- Business Information -->
                     <h6 class="border-bottom pb-2 mb-3">
-                        <i data-feather="briefcase" class="me-2"></i>
+                        <i class="ph ph-briefcase me-2"></i>
                         Informations commerciales
                     </h6>
                     
@@ -123,7 +123,7 @@
                                 {{ form.collector_id.label(class="form-label") }}
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i data-feather="user-check"></i>
+                                        <i class="ph ph-user-check"></i>
                                     </span>
                                     {{ form.collector_id(class="form-select") }}
                                 </div>
@@ -142,7 +142,7 @@
                                 {{ form.parent_client_id.label(class="form-label") }}
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i data-feather="git-branch"></i>
+                                        <i class="ph ph-git-branch"></i>
                                     </span>
                                     {{ form.parent_client_id(class="form-select") }}
                                 </div>
@@ -161,7 +161,7 @@
                                 {{ form.representative_name.label(class="form-label") }}
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i data-feather="users"></i>
+                                        <i class="ph ph-users"></i>
                                     </span>
                                     {{ form.representative_name(class="form-control", placeholder="Nom du représentant commercial") }}
                                 </div>
@@ -183,7 +183,7 @@
                                 {{ form.payment_terms.label(class="form-label") }}
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i data-feather="calendar"></i>
+                                        <i class="ph ph-calendar"></i>
                                     </span>
                                     {{ form.payment_terms(class="form-control", placeholder="Net 30, COD, Comptant, etc.") }}
                                 </div>
@@ -202,7 +202,7 @@
                                 {{ form.language.label(class="form-label") }}
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i data-feather="globe"></i>
+                                        <i class="ph ph-globe"></i>
                                     </span>
                                     {{ form.language(class="form-select") }}
                                 </div>
@@ -221,13 +221,13 @@
                 
                 <div class="card-footer d-flex justify-content-between">
                     <a href="{{ url_for('client.list_clients') }}" class="btn btn-outline-secondary">
-                        <i data-feather="x" class="me-1"></i>
+                        <i class="ph ph-x me-1"></i>
                         Annuler
                     </a>
                     <div>
                         {% if client %}
                         <a href="{{ url_for('client.detail_client', id=client.id) }}" class="btn btn-outline-info me-2">
-                            <i data-feather="eye" class="me-1"></i>
+                            <i class="ph ph-eye me-1"></i>
                             Voir détails
                         </a>
                         {% endif %}
@@ -241,7 +241,7 @@
         <div class="card mt-4">
             <div class="card-header">
                 <h6 class="mb-0">
-                    <i data-feather="info" class="me-2"></i>
+                    <i class="ph ph-info me-2"></i>
                     Aide pour le formulaire
                 </h6>
             </div>

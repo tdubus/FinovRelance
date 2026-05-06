@@ -9,13 +9,13 @@
             <div class="card shadow">
                 <div class="card-header bg-primary text-white text-center">
                     <h4 class="mb-0">
-                        <i class="fas fa-key me-2"></i>
+                        <i class="ph ph-key me-2"></i>
                         Vos codes de secours
                     </h4>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-warning">
-                        <h5><i class="fas fa-exclamation-triangle me-2"></i>Important</h5>
+                        <h5><i class="ph ph-warning me-2"></i>Important</h5>
                         <p class="mb-0">
                             <strong>Conservez ces codes en lieu sur.</strong>
                             Ils ne seront plus affiches apres cette page.
@@ -34,13 +34,13 @@
 
                     <div class="mb-3">
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyRecoveryCodes()">
-                            <i class="fas fa-copy me-1"></i>Copier les codes
+                            <i class="ph ph-copy me-1"></i>Copier les codes
                         </button>
                     </div>
 
                     <div class="d-grid gap-2">
                         <a href="{{ url_for('profile.settings') }}" class="btn btn-primary btn-lg">
-                            <i class="fas fa-arrow-left me-2"></i>Retour au profil
+                            <i class="ph ph-arrow-left me-2"></i>Retour au profil
                         </a>
                     </div>
                 </div>
@@ -76,9 +76,9 @@ function copyRecoveryCodes() {
     var text = codes.join('\n');
     navigator.clipboard.writeText(text).then(function() {
         var btn = event.target.closest('button');
-        btn.innerHTML = '<i class="fas fa-check me-1"></i>Copie!';
+        btn.innerHTML = '<i class="ph ph-check me-1"></i>Copie!';
         setTimeout(function() {
-            btn.innerHTML = '<i class="fas fa-copy me-1"></i>Copier les codes';
+            btn.innerHTML = '<i class="ph ph-copy me-1"></i>Copier les codes';
         }, 2000);
     });
 }

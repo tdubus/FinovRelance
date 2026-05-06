@@ -14,12 +14,12 @@
     <div class="child-note-actions">
         <button type="button" data-action="edit" data-note-id="{{ child.id }}"
                 class="btn btn-sm btn-outline-primary" title="{{ 'Modifier' if can_edit_child else 'Voir le détail' }}">
-            <i class="fas {{ 'fa-edit' if can_edit_child else 'fa-eye' }}" style="width: 12px; height: 12px;"></i>
+            <i class="ph {{ 'ph-pencil-simple' if can_edit_child else 'ph-eye' }}" style="font-size: 12px;"></i>
         </button>
         {% if can_edit_child %}
         <button type="button" data-action="delete" data-note-id="{{ child.id }}"
                 class="btn btn-sm btn-outline-danger" title="Supprimer">
-            <i class="fas fa-trash" style="width: 12px; height: 12px;"></i>
+            <i class="ph ph-trash" style="font-size: 12px;"></i>
         </button>
         {% endif %}
     </div>
@@ -28,19 +28,19 @@
     <div class="child-note-header">
         {% if is_original %}
         <span class="badge bg-warning text-dark me-2" style="font-size: 0.65em;" title="Courriel original">
-            <span class="badge-icon"><i class="fas fa-flag"></i></span>Original
+            <span class="badge-icon"><i class="ph ph-flag"></i></span>Original
         </span>
         {% endif %}
         {% if child.email_direction %}
         <span class="badge {{ child.get_email_direction_badge_class() }} me-2" style="font-size: 0.7em;">
             {% if child.email_direction == 'sent' %}
-                <span class="badge-icon"><i class="fas fa-paper-plane"></i></span>Envoyé
+                <span class="badge-icon"><i class="ph ph-paper-plane-tilt"></i></span>Envoyé
             {% elif child.email_direction == 'received' %}
-                <span class="badge-icon"><i class="fas fa-inbox"></i></span>Reçu
+                <span class="badge-icon"><i class="ph ph-tray"></i></span>Reçu
             {% elif child.email_direction == 'reply' %}
-                <span class="badge-icon"><i class="fas fa-reply"></i></span>Réponse
+                <span class="badge-icon"><i class="ph ph-arrow-bend-up-left"></i></span>Réponse
             {% elif child.email_direction == 'forward' %}
-                <span class="badge-icon"><i class="fas fa-share"></i></span>Transféré
+                <span class="badge-icon"><i class="ph ph-share"></i></span>Transféré
             {% endif %}
         </span>
         {% endif %}
@@ -48,15 +48,15 @@
         <span class="child-note-date text-muted">{{ format_local_datetime(child.created_at, '%d/%m/%Y à %H:%M', company.timezone) }}</span>
         {% if child.is_from_sync %}
         <span class="badge bg-secondary ms-1" title="Synchronisé" style="font-size: 0.65em;">
-            <i class="fas fa-sync-alt" style="width: 8px; height: 8px;"></i>
+            <i class="ph ph-arrows-clockwise" style="font-size: 8px;"></i>
         </span>
         {% endif %}
         {% if child.reminder_date %}
         <span class="reminder-badge-inline ms-2 {% if child.is_reminder_completed %}reminder-completed{% elif child.is_reminder_overdue() %}reminder-overdue{% elif child.is_reminder_today() %}reminder-today{% else %}reminder-upcoming{% endif %}" style="font-size: 0.7em;">
             {% if child.is_reminder_completed %}
-            <i class="fas fa-check-circle" style="width: 10px; height: 10px;"></i> Terminé
+            <i class="ph ph-check-circle" style="font-size: 10px;"></i> Terminé
             {% else %}
-            <i class="fas fa-bell" style="width: 10px; height: 10px;"></i> {{ child.reminder_date.strftime('%d/%m/%Y') }}
+            <i class="ph ph-bell" style="font-size: 10px;"></i> {{ child.reminder_date.strftime('%d/%m/%Y') }}
             {% endif %}
         </span>
         {% endif %}
@@ -83,7 +83,7 @@
         {% if child.attachments and child.attachments|length > 0 %}
         <div class="child-email-attachments mt-1">
             <small class="text-muted">
-                <i class="fas fa-paperclip" style="width: 12px; height: 12px;"></i>
+                <i class="ph ph-paperclip" style="font-size: 12px;"></i>
                 {{ child.attachments|length }} pièce{% if child.attachments|length > 1 %}s{% endif %} jointe{% if child.attachments|length > 1 %}s{% endif %}
             </small>
         </div>

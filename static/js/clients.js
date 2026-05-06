@@ -82,14 +82,14 @@ function updateClientsTable(clients) {
             <tr>
                 <td colspan="${colCount}" class="text-center py-5">
                     <div class="mb-3">
-                        <i class="fas fa-search" style="font-size: 48px; color: #6c757d;"></i>
+                        <i class="ph ph-magnifying-glass text-muted" style="font-size: 48px;"></i>
                     </div>
                     <h5 class="text-muted">Aucun client trouvé</h5>
                     <p class="text-muted mb-3">
                         Aucun résultat ne correspond à votre recherche.
                     </p>
                     <button type="button" class="btn btn-outline-primary btn-sm" onclick="clearAllFilters()">
-                        <i class="fas fa-times me-1"></i>
+                        <i class="ph ph-x me-1"></i>
                         Effacer les filtres
                     </button>
                 </td>
@@ -134,10 +134,10 @@ function updateClientsTable(clients) {
         // Contact
         html += '<td>';
         if (client.email) {
-            html += `<div><i class="fas fa-envelope me-1"></i>${window.escapeHtml(client.email)}</div>`;
+            html += `<div><i class="ph ph-envelope me-1"></i>${window.escapeHtml(client.email)}</div>`;
         }
         if (client.phone) {
-            html += `<div><i class="fas fa-phone me-1"></i>${window.escapeHtml(client.phone)}</div>`;
+            html += `<div><i class="ph ph-phone me-1"></i>${window.escapeHtml(client.phone)}</div>`;
         }
         if (!client.email && !client.phone) {
             html += '<span class="text-muted">Aucun contact</span>';
@@ -174,15 +174,15 @@ function updateClientsTable(clients) {
         // Actions - Menu déroulant (dropstart pour ouvrir à gauche)
         html += '<td class="text-end">';
         html += '<div class="dropstart">';
-        html += '<button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">';
-        html += '<i class="fas fa-ellipsis-v"></i>';
+        html += '<button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false" title="Actions">';
+        html += '<i class="ph ph-dots-three-vertical"></i>';
         html += '</button>';
         html += '<ul class="dropdown-menu">';
-        html += `<li><a class="dropdown-item" href="/clients/${client.id}"><i class="fas fa-eye me-2"></i>Voir détails</a></li>`;
+        html += `<li><a class="dropdown-item" href="/clients/${client.id}"><i class="ph ph-eye me-2"></i>Voir détails</a></li>`;
         if (!isReadOnly) {
-            html += `<li><a class="dropdown-item" href="/clients/${client.id}/edit"><i class="fas fa-edit me-2"></i>Modifier</a></li>`;
+            html += `<li><a class="dropdown-item" href="/clients/${client.id}/edit"><i class="ph ph-pencil-simple me-2"></i>Modifier</a></li>`;
             html += '<li><hr class="dropdown-divider"></li>';
-            html += `<li><a class="dropdown-item text-danger delete-client-btn" href="#" data-client-id="${client.id}" data-client-name="${window.escapeHtmlAttribute(client.name)}"><i class="fas fa-trash me-2"></i>Supprimer</a></li>`;
+            html += `<li><a class="dropdown-item text-danger delete-client-btn" href="#" data-client-id="${client.id}" data-client-name="${window.escapeHtmlAttribute(client.name)}"><i class="ph ph-trash me-2"></i>Supprimer</a></li>`;
         }
         html += '</ul>';
         html += '</div>';

@@ -72,7 +72,7 @@
                         <div class="card mb-3">
                             <div class="card-header">
                                 <h6 class="mb-0">
-                                    <i class="fas fa-code me-2"></i>
+                                    <i class="ph ph-code me-2"></i>
                                     Variables disponibles - Cliquez pour insérer
                                 </h6>
                             </div>
@@ -81,35 +81,35 @@
                                     <div class="col-md-6">
                                         <div class="d-grid gap-1">
                                             <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_name}">
-                                                <i class="fas fa-user"></i> <strong>{client_name}</strong> - Nom du client
+                                                <i class="ph ph-user"></i> <strong>{client_name}</strong> - Nom du client
                                             </button>
                                             <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_code}">
-                                                <i class="fas fa-hashtag"></i> <strong>{client_code}</strong> - Code client
+                                                <i class="ph ph-hash"></i> <strong>{client_code}</strong> - Code client
                                             </button>
                                             <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_email}">
-                                                <i class="fas fa-envelope"></i> <strong>{client_email}</strong> - Email client
+                                                <i class="ph ph-envelope"></i> <strong>{client_email}</strong> - Email client
                                             </button>
                                             <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_phone}">
-                                                <i class="fas fa-phone"></i> <strong>{client_phone}</strong> - Téléphone client
+                                                <i class="ph ph-phone"></i> <strong>{client_phone}</strong> - Téléphone client
                                             </button>
                                             <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_payment_terms}">
-                                                <i class="fas fa-credit-card"></i> <strong>{client_payment_terms}</strong> - Termes de paiement
+                                                <i class="ph ph-credit-card"></i> <strong>{client_payment_terms}</strong> - Termes de paiement
                                             </button>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="d-grid gap-1">
                                             <button type="button" class="btn btn-outline-warning btn-sm variable-btn" data-variable="{client_total_outstanding}">
-                                                <i class="fas fa-dollar-sign"></i> <strong>{client_total_outstanding}</strong> - Solde total
+                                                <i class="ph ph-currency-circle-dollar"></i> <strong>{client_total_outstanding}</strong> - Solde total
                                             </button>
                                             <button type="button" class="btn btn-outline-success btn-sm variable-btn" data-variable="{company_name}">
-                                                <i class="fas fa-building"></i> <strong>{company_name}</strong> - {{ company.name }}
+                                                <i class="ph ph-buildings"></i> <strong>{company_name}</strong> - {{ company.name }}
                                             </button>
                                             <button type="button" class="btn btn-outline-info btn-sm variable-btn" data-variable="{today_date}">
-                                                <i class="fas fa-calendar"></i> <strong>{today_date}</strong> - Date du jour
+                                                <i class="ph ph-calendar"></i> <strong>{today_date}</strong> - Date du jour
                                             </button>
                                             <button type="button" class="btn btn-outline-info btn-sm variable-btn" data-variable="{user_name}">
-                                                <i class="fas fa-user-check"></i> <strong>{user_name}</strong> - {{ current_user.first_name }} {{ current_user.last_name }}
+                                                <i class="ph ph-user-check"></i> <strong>{user_name}</strong> - {{ current_user.first_name }} {{ current_user.last_name }}
                                             </button>
                                         </div>
                                     </div>
@@ -126,12 +126,12 @@
                         </div>
 
                         <div class="alert alert-secondary">
-                            <i class="fas fa-signature me-2"></i>
+                            <i class="ph ph-signature me-2"></i>
                             <strong>Signature :</strong> Votre signature de courriel sera automatiquement ajoutée à la fin du message lors de l'envoi.
                         </div>
 
                         <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <i class="ph ph-warning me-2"></i>
                             <strong>Résumé de la campagne :</strong>
                             <ul class="mb-0 mt-2">
                                 <li><strong>{{ selected_count }}</strong> courriel(s) à générer</li>
@@ -148,10 +148,10 @@
 
                         <div class="d-flex justify-content-between">
                             <a href="{{ url_for('campaign.preview_clients', campaign_id=campaign.id) }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Modifier les clients
+                                <i class="ph ph-arrow-left me-2"></i>Modifier les clients
                             </a>
                             <button type="submit" class="btn btn-success btn-lg" id="launchBtn">
-                                <i class="fas fa-rocket me-2"></i>Lancer la génération
+                                <i class="ph ph-rocket me-2"></i>Lancer la génération
                             </button>
                         </div>
                     </form>

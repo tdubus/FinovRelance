@@ -455,6 +455,33 @@ def bootstrap_app(app):
         from models import User
         return User.query.get(int(user_id))
 
+    # Feature flag UI v2 (premium 2026 redesign)
+    # Activation : ?theme=v2 (persiste via cookie 30j) — ?theme=v1 désactive
+    @app.before_request
+    def _resolve_ui_theme():
+        from flask import request, g
+        if request.path.startswith(('/static/', '/marketing-assets/', '/jobs/')):
+            return None
+        query_theme = request.args.get('theme')
+        if query_theme in ('v1', 'v2'):
+            g.ui_theme = query_theme
+            g._ui_theme_set_cookie = query_theme
+        else:
+            g.ui_theme = request.cookies.get('ui_theme') or 'v1'
+
+    @app.after_request
+    def _persist_ui_theme(response):
+        from flask import g
+        theme = getattr(g, '_ui_theme_set_cookie', None)
+        if theme:
+            response.set_cookie(
+                'ui_theme', theme,
+                max_age=60 * 60 * 24 * 30,
+                httponly=False, samesite='Lax',
+                secure=is_production,
+            )
+        return response
+
     @app.before_request
     def check_password_change_required():
         """Forcer le changement de mot de passe si nécessaire"""

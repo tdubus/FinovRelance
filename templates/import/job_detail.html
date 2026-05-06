@@ -17,7 +17,7 @@
         </div>
         <div>
             <a href="{{ url_for('import.list_jobs') }}" class="btn btn-outline-secondary">
-                <i data-feather="arrow-left" class="me-2"></i>
+                <i class="ph ph-arrow-left me-2"></i>
                 Retour
             </a>
         </div>
@@ -72,17 +72,17 @@
 
                     {% if job.status == 'completed' %}
                     <div class="alert alert-success" role="alert">
-                        <i data-feather="check-circle" class="me-2"></i>
+                        <i class="ph ph-check-circle me-2"></i>
                         <strong id="result-message">{{ job.result_message or 'Import terminé avec succès' }}</strong>
                     </div>
                     {% elif job.status == 'failed' %}
                     <div class="alert alert-danger" role="alert">
-                        <i data-feather="x-circle" class="me-2"></i>
+                        <i class="ph ph-x-circle me-2"></i>
                         <strong id="result-message">{{ job.result_message or 'Import échoué' }}</strong>
                     </div>
                     {% elif job.status == 'processing' %}
                     <div class="alert alert-info" role="alert">
-                        <i data-feather="loader" class="me-2 spinning"></i>
+                        <i class="ph ph-circle-notch me-2 spinning"></i>
                         Import en cours... Cette page se met à jour automatiquement.
                     </div>
                     {% endif %}
@@ -101,21 +101,21 @@
                     <div class="row text-center mb-3">
                         <div class="col-md-4">
                             <div class="p-3 border rounded bg-light">
-                                <i data-feather="plus-circle" class="text-success" style="width: 40px; height: 40px;"></i>
+                                <i class="ph ph-plus-circle text-success" style="font-size: 40px;"></i>
                                 <h4 class="mt-2 mb-0 text-success">{{ job.created_count }}</h4>
                                 <p class="text-muted mb-0 small">Créées</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="p-3 border rounded bg-light">
-                                <i data-feather="edit" class="text-primary" style="width: 40px; height: 40px;"></i>
+                                <i class="ph ph-pencil-simple text-primary" style="font-size: 40px;"></i>
                                 <h4 class="mt-2 mb-0 text-primary">{{ job.updated_count }}</h4>
                                 <p class="text-muted mb-0 small">Mises à jour</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="p-3 border rounded bg-light">
-                                <i data-feather="trash-2" class="text-warning" style="width: 40px; height: 40px;"></i>
+                                <i class="ph ph-trash text-warning" style="font-size: 40px;"></i>
                                 <h4 class="mt-2 mb-0 text-warning">{{ job.deleted_count }}</h4>
                                 <p class="text-muted mb-0 small">Supprimées</p>
                             </div>
@@ -126,14 +126,14 @@
                     <div class="row text-center">
                         <div class="col-md-6">
                             <div class="p-3 border rounded">
-                                <i data-feather="check-circle" class="text-success" style="width: 48px; height: 48px;"></i>
+                                <i class="ph ph-check-circle text-success" style="font-size: 48px;"></i>
                                 <h3 class="mt-2 mb-0 text-success" id="success-count">{{ job.success_count }}</h3>
                                 <p class="text-muted mb-0">Total traitées</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="p-3 border rounded">
-                                <i data-feather="x-circle" class="text-danger" style="width: 48px; height: 48px;"></i>
+                                <i class="ph ph-x-circle text-danger" style="font-size: 48px;"></i>
                                 <h3 class="mt-2 mb-0 text-danger" id="error-count">{{ job.error_count }}</h3>
                                 <p class="text-muted mb-0">Erreurs</p>
                             </div>

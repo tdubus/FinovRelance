@@ -77,7 +77,7 @@
                             
                             {% if current_user.is_superuser %}
                             <div class="mt-4 pt-3 border-top">
-                                <h6 class="fw-bold mb-3 text-warning"><i class="fas fa-shield-alt me-2"></i>Options Super Admin</h6>
+                                <h6 class="fw-bold mb-3 text-warning"><i class="ph ph-shield-check me-2"></i>Options Super Admin</h6>
                                 
                                 <div class="mb-3">
                                     <div class="form-check">
@@ -108,7 +108,7 @@
                     
                     {% if request.args.get('user_id') or request.args.get('company_id') %}
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
+                        <i class="ph ph-info me-2"></i>
                         {% if request.args.get('user_id') %}
                             <strong>Utilisateur pré-sélectionné</strong> - Choisissez l'entreprise à associer
                         {% elif request.args.get('company_id') %}
@@ -121,20 +121,20 @@
                         <div>
                             {% if request.args.get('user_id') %}
                                 <a href="{{ url_for('admin.user_companies', user_id=request.args.get('user_id')) }}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-arrow-left me-2"></i>Retour à l'utilisateur
+                                    <i class="ph ph-arrow-left me-2"></i>Retour à l'utilisateur
                                 </a>
                             {% elif request.args.get('company_id') %}
                                 <a href="{{ url_for('admin.company_users', company_id=request.args.get('company_id')) }}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-arrow-left me-2"></i>Retour à l'entreprise
+                                    <i class="ph ph-arrow-left me-2"></i>Retour à l'entreprise
                                 </a>
                             {% else %}
                                 <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-arrow-left me-2"></i>Retour aux utilisateurs
+                                    <i class="ph ph-arrow-left me-2"></i>Retour aux utilisateurs
                                 </a>
                             {% endif %}
                         </div>
                         <button type="submit" class="btn btn-admin-primary">
-                            <i class="fas fa-link me-2"></i>{{ action }}
+                            <i class="ph ph-link me-2"></i>{{ action }}
                         </button>
                     </div>
                 </form>

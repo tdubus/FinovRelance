@@ -87,6 +87,48 @@ def login():
                     ip_address=ip_address)
                 current_app.logger.info(secure_message)
 
+                # DEV ONLY: bypass 2FA for a specific test account when running
+                # in debug mode. The env var is never set in production, and the
+                # debug check ensures it cannot fire on a Gunicorn/prod build.
+                bypass_email = os.environ.get('DEV_BYPASS_2FA_EMAIL')
+                if (
+                    current_app.debug
+                    and bypass_email
+                    and user.email.lower() == bypass_email.lower()
+                ):
+                    # Audit trail: explicitly mark this session as a 2FA bypass
+                    # so security investigations can distinguish it from normal
+                    # post-2FA logins. Both a high-visibility logger.warning and
+                    # a structured log_action entry are emitted.
+                    current_app.logger.warning(
+                        f"DEV 2FA BYPASS used for {user.email} "
+                        f"from {ip_address} (UA: {user_agent[:80]})"
+                    )
+                    log_action(
+                        AuditActions.TWO_FA_SUCCESS,
+                        entity_type=EntityTypes.USER,
+                        entity_id=user.id,
+                        user=user,
+                        details={'method': 'dev_bypass_2fa', 'email': user.email}
+                    )
+
+                    login_user(user, remember=form.remember_me.data)
+                    user.last_login = datetime.utcnow()
+                    db.session.commit()
+                    companies = user.get_companies()
+                    if companies:
+                        selected = companies[0]
+                        if user.last_company_id:
+                            last = next((c for c in companies if c.id == user.last_company_id), None)
+                            if last:
+                                selected = last
+                        session['selected_company_id'] = selected.id
+                    flash('Connecté (bypass 2FA dev local).', 'success')
+                    next_page = request.args.get('next')
+                    if next_page and is_safe_url(next_page):
+                        return redirect(next_page)
+                    return redirect(url_for('main.dashboard'))
+
                 # Check if user has TOTP active — skip email 2FA entirely
                 from models import UserTOTP
                 user_totp = UserTOTP.query.filter_by(user_id=user.id, is_active=True).first()

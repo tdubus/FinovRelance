@@ -1,0 +1,1637 @@
+/* ==========================================================================
+   FinovRelance — UI v2 (premium 2026)
+   Branding préservé : Onest, Host Grotesk, violet #8475EC
+   Activation : <html data-ui="v2"> (via feature flag g.ui_theme)
+   Charge APRÈS style.css → override par cascade + spécificité [data-ui="v2"]
+   ========================================================================== */
+
+/* ==========================================================================
+   1. Tokens v2
+   ========================================================================== */
+
+:root[data-ui="v2"] {
+  /* --- Branding (intouchés) --- */
+  --primary:        250 75% 69%;   /* #8475EC */
+  --primary-light:  260 95% 97%;   /* #EDE9FE */
+  --primary-dark:   250 45% 55%;   /* #6B5DC0 */
+
+  /* --- Stops violet pour finesse (5 paliers) --- */
+  --primary-50:  260 95% 97%;
+  --primary-100: 258 90% 93%;
+  --primary-200: 256 85% 87%;
+  --primary-400: 252 78% 76%;
+  --primary-500: 250 75% 69%;
+  --primary-600: 250 60% 58%;
+  --primary-700: 250 45% 48%;
+  --primary-900: 250 40% 28%;
+
+  /* --- Neutres recalibrés (contrastes vérifiés AA) --- */
+  --gray-50:  220 14% 98%;   /* #F9FAFB */
+  --gray-100: 220 13% 95%;   /* #F1F2F4 */
+  --gray-200: 220 13% 91%;   /* #E5E7EB */
+  --gray-300: 220 12% 84%;   /* #D1D5DB */
+  --gray-400: 220 9%  64%;   /* #9CA3AF */
+  --gray-500: 220 9%  46%;   /* #6B7280  4.7:1 sur blanc ✓ */
+  --gray-600: 220 11% 35%;   /* #4B5563 */
+  --gray-700: 220 13% 25%;   /* #374151 */
+  --gray-800: 220 15% 18%;   /* #1F2937 */
+  --gray-900: 220 18% 11%;   /* #161819 (≈ ton text-primary actuel) */
+
+  /* --- Sémantique status (palette 2026, tons custom premium) --- */
+  /* Solid hues for buttons / icons / aging-dots — vibrant but not garish */
+  --green-300: 150 60% 78%;
+  --green-400: 150 55% 62%;
+  --green-500: 150 49% 49%;   /* #3FB87A */
+  --green-600: 150 55% 39%;
+  --green-700: 152 60% 28%;
+
+  --amber-300: 40 92% 82%;
+  --amber-400: 40 90% 73%;
+  --amber-500: 40 88% 67%;    /* #F5C45E */
+  --amber-600: 36 80% 52%;
+  --amber-700: 30 80% 35%;
+
+  --coral-300: 9 78% 82%;
+  --coral-400: 9 76% 72%;
+  --coral-500: 9 73% 59%;     /* #E5634A */
+  --coral-600: 8 68% 50%;
+  --coral-700: 6 65% 38%;
+
+  /* Foreground (text on white) / background (panel tint) / border tokens —
+     foreground keeps WCAG AA contrast on white; backgrounds + borders pull
+     from the same hue family but lighter for tonal pills. */
+  --success-fg: var(--green-700);
+  --success-bg: 150 60% 96%;
+  --success-bd: 150 55% 84%;
+
+  --warning-fg: var(--amber-700);
+  --warning-bg: 40 92% 95%;
+  --warning-bd: 40 80% 80%;
+
+  --danger-fg:  var(--coral-700);
+  --danger-bg:  9 80% 96%;
+  --danger-bd:  9 70% 86%;
+
+  --info-fg:    250 45% 48%;
+  --info-bg:    258 90% 97%;
+  --info-bd:    258 80% 88%;
+
+  /* --- Spacing (grille 4px stricte) --- */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 20px; --s-6: 24px; --s-7: 28px; --s-8: 32px;
+  --s-10: 40px; --s-12: 48px; --s-16: 64px; --s-20: 80px;
+
+  /* --- Radius --- */
+  --r-sm: 6px;  --r-md: 8px;  --r-lg: 12px;
+  --r-xl: 16px; --r-2xl: 20px; --r-full: 9999px;
+
+  /* --- Ombres (légères, 2026 vibe) --- */
+  --shadow-xs: 0 1px 0 rgb(20 14 60 / 0.04);
+  --shadow-sm: 0 1px 2px rgb(20 14 60 / 0.06), 0 1px 1px rgb(20 14 60 / 0.04);
+  --shadow-md: 0 4px 8px -2px rgb(20 14 60 / 0.08), 0 2px 4px -2px rgb(20 14 60 / 0.04);
+  --shadow-lg: 0 12px 24px -8px rgb(20 14 60 / 0.12), 0 4px 8px -4px rgb(20 14 60 / 0.06);
+  --shadow-ring-primary: 0 0 0 3px hsl(var(--primary) / 0.18);
+  --shadow-ring-danger:  0 0 0 3px hsl(var(--danger-fg) / 0.18);
+
+  /* --- Motion --- */
+  --ease-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-out:   cubic-bezier(0.22, 0.61, 0.36, 1);
+  --d-fast: 120ms;
+  --d-base: 180ms;
+  --d-slow: 240ms;
+
+  /* --- Échelle typographique (Onest body, Host Grotesk display) ---
+     Modular scale 12-14-16-18-24-32-48 conforme aux guidelines UI/UX
+     (minimum 16px body text, severity High). Aligné avec Bootstrap default,
+     Notion, GitHub, Tailwind. */
+  --t-xs:   12px;  --lh-xs: 18px;
+  --t-sm:   14px;  --lh-sm: 20px;
+  --t-base: 16px;  --lh-base: 24px;
+  --t-md:   17px;  --lh-md: 26px;
+  --t-lg:   18px;  --lh-lg: 28px;
+  --t-xl:   20px;  --lh-xl: 30px;
+  --t-2xl:  24px;  --lh-2xl: 32px;
+  --t-3xl:  30px;  --lh-3xl: 38px;
+  --t-4xl:  36px;  --lh-4xl: 44px;
+  --t-display: 48px; --lh-display: 56px;
+}
+
+/* ==========================================================================
+   2. Base body — typographie modernisée
+   ========================================================================== */
+
+[data-ui="v2"] body {
+  font-family: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: var(--t-base);
+  line-height: var(--lh-base);
+  color: hsl(var(--gray-900));
+  background-color: hsl(var(--gray-50));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01", "cv11";
+  /* Sticky footer pattern — body becomes a vertical flex column. main grows
+     to fill remaining height, footer always pinned to viewport bottom on
+     short pages (Rappels, empty states, error pages, etc.) */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+[data-ui="v2"] main { flex: 1 0 auto; }
+[data-ui="v2"] footer { flex-shrink: 0; }
+
+[data-ui="v2"] h1, [data-ui="v2"] .h1,
+[data-ui="v2"] h2, [data-ui="v2"] .h2 {
+  font-family: 'Host Grotesk', 'Onest', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: hsl(var(--gray-900));
+}
+
+[data-ui="v2"] h1, [data-ui="v2"] .h1 { font-size: var(--t-3xl); line-height: var(--lh-3xl); }
+[data-ui="v2"] h2, [data-ui="v2"] .h2 { font-size: var(--t-2xl); line-height: var(--lh-2xl); }
+[data-ui="v2"] h3, [data-ui="v2"] .h3 {
+  font-family: 'Onest', sans-serif;
+  font-weight: 700;
+  font-size: var(--t-xl);
+  line-height: var(--lh-xl);
+  letter-spacing: -0.015em;
+}
+[data-ui="v2"] h4, [data-ui="v2"] .h4,
+[data-ui="v2"] h5, [data-ui="v2"] .h5 {
+  font-family: 'Onest', sans-serif;
+  font-weight: 600;
+  font-size: var(--t-lg);
+  line-height: var(--lh-lg);
+}
+
+[data-ui="v2"] .text-muted { color: hsl(var(--gray-500)) !important; }
+
+/* ==========================================================================
+   3. Skip link (a11y)
+   ========================================================================== */
+
+[data-ui="v2"] .skip-link {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateY(-200%);
+  background: hsl(var(--gray-900));
+  color: white;
+  padding: var(--s-3) var(--s-5);
+  border-radius: 0 0 var(--r-md) 0;
+  font-weight: 600;
+  font-size: var(--t-sm);
+  z-index: 1000;
+  text-decoration: none;
+  transition: transform var(--d-base) var(--ease-out);
+}
+[data-ui="v2"] .skip-link:focus { transform: translateY(0); }
+
+/* ==========================================================================
+   4. Navbar — densifiée, sans gradient text, hauteur 56px
+   ========================================================================== */
+
+[data-ui="v2"] .navbar {
+  /* Height tuned to accommodate the 38px logo with breathing room */
+  height: 64px;
+  min-height: 64px;
+  padding: 0 var(--s-6);
+  background: white;
+  border-bottom: 1px solid hsl(var(--gray-200));
+  box-shadow: none;
+}
+
+[data-ui="v2"] .navbar .container-fluid { padding: 0; }
+
+[data-ui="v2"] .navbar-brand {
+  background: none !important;
+  -webkit-text-fill-color: initial !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  color: hsl(var(--gray-900));
+  font-family: 'Host Grotesk', 'Onest', sans-serif;
+  font-weight: 800;
+  font-size: var(--t-lg);
+  letter-spacing: -0.02em;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+[data-ui="v2"] .navbar-brand .navbar-logo {
+  height: 38px;
+  width: auto;
+  display: block;
+}
+@media (max-width: 768px) {
+  [data-ui="v2"] .navbar { height: 56px; min-height: 56px; }
+  [data-ui="v2"] .navbar-brand .navbar-logo { height: 30px; }
+}
+
+[data-ui="v2"] .navbar-nav { gap: var(--s-1); }
+
+[data-ui="v2"] .nav-link {
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: hsl(var(--gray-600));
+  padding: 6px var(--s-3);
+  border-radius: var(--r-md);
+  transition: background var(--d-fast) var(--ease-quart),
+              color var(--d-fast) var(--ease-quart);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+[data-ui="v2"] .nav-link:hover {
+  color: hsl(var(--gray-900));
+  background: hsl(var(--gray-100));
+}
+[data-ui="v2"] .nav-link.active {
+  color: hsl(var(--primary-700));
+  background: hsl(var(--primary-50));
+}
+
+/* ---- Nav-tabs (Linear/Stripe style: bottom border underline) ----
+   Bootstrap default uses border tricks that clip in v2 cards. Override fully
+   so the active state never gets cut by the container's border-bottom. */
+[data-ui="v2"] .nav-tabs {
+  border-bottom: 1px solid hsl(var(--gray-200));
+  gap: 4px;
+  padding: 0;
+  margin-bottom: var(--s-5);
+}
+[data-ui="v2"] .nav-tabs .nav-item { margin-bottom: 0; }
+[data-ui="v2"] .nav-tabs .nav-link {
+  border: none !important;
+  border-radius: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  background: transparent !important;
+  padding: 10px 14px;
+  color: hsl(var(--gray-600));
+  font-weight: 500;
+  margin-bottom: -1px; /* cover container's 1px bottom border with our 2px underline */
+  transition: color var(--d-fast) var(--ease-quart),
+              border-color var(--d-fast) var(--ease-quart);
+}
+[data-ui="v2"] .nav-tabs .nav-link:hover {
+  color: hsl(var(--gray-900));
+  background: transparent !important;
+  border-bottom-color: hsl(var(--gray-300)) !important;
+}
+[data-ui="v2"] .nav-tabs .nav-link.active {
+  color: hsl(var(--primary-700)) !important;
+  background: transparent !important;
+  border-bottom-color: hsl(var(--primary)) !important;
+  font-weight: 600;
+}
+[data-ui="v2"] .nav-tabs .nav-link.disabled,
+[data-ui="v2"] .nav-tabs .nav-link[disabled] {
+  color: hsl(var(--gray-400)) !important;
+  border-bottom-color: transparent !important;
+  cursor: not-allowed;
+}
+
+/* ---- Nav-pills (alternative style — solid pill on active) ---- */
+[data-ui="v2"] .nav-pills {
+  gap: 4px;
+}
+[data-ui="v2"] .nav-pills .nav-link {
+  border-radius: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  color: hsl(var(--gray-700));
+  font-weight: 500;
+}
+[data-ui="v2"] .nav-pills .nav-link:hover {
+  background: hsl(var(--gray-100));
+  color: hsl(var(--gray-900));
+}
+[data-ui="v2"] .nav-pills .nav-link.active,
+[data-ui="v2"] .nav-pills .show > .nav-link {
+  background: hsl(var(--primary)) !important;
+  color: white !important;
+}
+
+/* ---- Tab content padding ---- */
+[data-ui="v2"] .tab-content {
+  padding-top: var(--s-2);
+}
+[data-ui="v2"] .nav-link i,
+[data-ui="v2"] .nav-link [data-feather],
+[data-ui="v2"] .nav-link [data-lucide] {
+  width: 16px;
+  height: 16px;
+  opacity: 0.85;
+}
+
+[data-ui="v2"] .navbar-toggler {
+  border: 1px solid hsl(var(--gray-200));
+  padding: 4px 8px;
+  border-radius: var(--r-md);
+}
+[data-ui="v2"] .navbar-toggler:focus { box-shadow: var(--shadow-ring-primary); }
+
+[data-ui="v2"] .dropdown-menu {
+  border: 1px solid hsl(var(--gray-200));
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  font-size: var(--t-sm);
+  min-width: 220px;
+}
+[data-ui="v2"] .dropdown-item {
+  border-radius: var(--r-sm);
+  padding: 6px var(--s-3);
+  color: hsl(var(--gray-700));
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+[data-ui="v2"] .dropdown-item:hover,
+[data-ui="v2"] .dropdown-item:focus {
+  background: hsl(var(--gray-100));
+  color: hsl(var(--gray-900));
+}
+[data-ui="v2"] .dropdown-item [data-feather],
+[data-ui="v2"] .dropdown-item .fas,
+[data-ui="v2"] .dropdown-item .far,
+[data-ui="v2"] .dropdown-item .fab,
+[data-ui="v2"] .dropdown-item svg.feather {
+  width: 14px !important;
+  height: 14px !important;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+[data-ui="v2"] .dropdown-item.active,
+[data-ui="v2"] .dropdown-item:active {
+  background: hsl(var(--primary-50));
+  color: hsl(var(--primary-700));
+}
+[data-ui="v2"] .dropdown-divider {
+  margin: 4px 0;
+  border-color: hsl(var(--gray-200));
+}
+[data-ui="v2"] .dropdown-header {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: hsl(var(--gray-500));
+  padding: 6px var(--s-3);
+}
+
+/* ==========================================================================
+   5. Main content & container
+   ========================================================================== */
+
+[data-ui="v2"] main {
+  padding-top: var(--s-6);
+  padding-bottom: var(--s-12);
+}
+
+[data-ui="v2"] main.container-fluid {
+  max-width: 1536px;
+  margin: 0 auto;
+  padding-left: var(--s-6);
+  padding-right: var(--s-6);
+}
+
+@media (max-width: 768px) {
+  [data-ui="v2"] main.container-fluid {
+    padding-left: var(--s-4);
+    padding-right: var(--s-4);
+  }
+}
+
+/* ==========================================================================
+   6. Buttons — solid + inset highlight (signature 2026)
+   ========================================================================== */
+
+/* ==========================================================================
+   Buttons — Modern flat 2026 (Linear / Vercel / Stripe aesthetic)
+   - NO gradients (gradients = Web 2.0 / Material 2014)
+   - NO translateY lift on hover (Material Design legacy)
+   - NO text-shadow (skeuomorphism)
+   - Solid colors. Hover = brightness shift only. Active = subtle inset.
+   - Tight border-radius (6px), tight letter-spacing, 500-weight
+   ========================================================================== */
+[data-ui="v2"] .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: 'Onest', sans-serif;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  line-height: 1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  transition: background-color 90ms linear,
+              border-color 90ms linear,
+              color 90ms linear,
+              box-shadow 90ms linear;
+  white-space: nowrap;
+  user-select: none;
+}
+
+[data-ui="v2"] .btn-sm {
+  padding: 5px 9px;
+  font-size: var(--t-xs);
+  border-radius: 5px;
+  gap: 4px;
+}
+[data-ui="v2"] .btn-lg {
+  padding: 11px 18px;
+  font-size: var(--t-base);
+  border-radius: 8px;
+}
+
+[data-ui="v2"] .btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.25);
+}
+
+[data-ui="v2"] .btn:disabled,
+[data-ui="v2"] .btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ---- Primary (violet brand — solid, no gradient) ---- */
+[data-ui="v2"] .btn-primary {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: white;
+}
+[data-ui="v2"] .btn-primary:hover {
+  background-color: hsl(var(--primary-600));
+  border-color: hsl(var(--primary-600));
+  color: white;
+}
+[data-ui="v2"] .btn-primary:active {
+  background-color: hsl(var(--primary-700));
+  border-color: hsl(var(--primary-700));
+}
+
+/* ---- Secondary (white, crisp single border, paired with primary) ---- */
+[data-ui="v2"] .btn-secondary,
+[data-ui="v2"] .btn-default {
+  background-color: white;
+  border-color: hsl(var(--gray-200));
+  color: hsl(var(--gray-900));
+}
+[data-ui="v2"] .btn-secondary:hover,
+[data-ui="v2"] .btn-default:hover {
+  background-color: hsl(var(--gray-50));
+  border-color: hsl(var(--gray-300));
+  color: hsl(var(--gray-900));
+}
+[data-ui="v2"] .btn-secondary:active,
+[data-ui="v2"] .btn-default:active {
+  background-color: hsl(var(--gray-100));
+  border-color: hsl(var(--gray-300));
+}
+
+/* ---- Outline-primary (violet ghost) ---- */
+[data-ui="v2"] .btn-outline-primary {
+  background: transparent;
+  color: hsl(var(--primary));
+  border-color: hsl(var(--gray-200));
+}
+[data-ui="v2"] .btn-outline-primary:hover {
+  background-color: hsl(var(--primary-50));
+  color: hsl(var(--primary-700));
+  border-color: hsl(var(--primary-200));
+}
+[data-ui="v2"] .btn-outline-primary:active {
+  background-color: hsl(var(--primary-100));
+}
+
+/* ---- Outline-secondary (ghost) ---- */
+[data-ui="v2"] .btn-outline-secondary {
+  background: transparent;
+  border-color: hsl(var(--gray-200));
+  color: hsl(var(--gray-700));
+}
+[data-ui="v2"] .btn-outline-secondary:hover {
+  background-color: hsl(var(--gray-100));
+  border-color: hsl(var(--gray-300));
+  color: hsl(var(--gray-900));
+}
+[data-ui="v2"] .btn-outline-secondary:active {
+  background-color: hsl(var(--gray-200));
+}
+
+/* ---- Success / Danger / Warning — solid, brightness shift on hover ---- */
+[data-ui="v2"] .btn-success {
+  background-color: hsl(var(--green-500));
+  border-color: hsl(var(--green-500));
+  color: white;
+}
+[data-ui="v2"] .btn-success:hover {
+  background-color: hsl(var(--green-600));
+  border-color: hsl(var(--green-600));
+  color: white;
+}
+[data-ui="v2"] .btn-success:active {
+  background-color: hsl(var(--green-700));
+  border-color: hsl(var(--green-700));
+}
+[data-ui="v2"] .btn-outline-success {
+  background: transparent;
+  color: hsl(var(--green-600));
+  border-color: hsl(var(--gray-200));
+}
+[data-ui="v2"] .btn-outline-success:hover {
+  background-color: hsl(var(--success-bg));
+  color: hsl(var(--green-700));
+  border-color: hsl(var(--success-bd));
+}
+
+[data-ui="v2"] .btn-danger {
+  background-color: hsl(var(--coral-500));
+  border-color: hsl(var(--coral-500));
+  color: white;
+}
+[data-ui="v2"] .btn-danger:hover {
+  background-color: hsl(var(--coral-600));
+  border-color: hsl(var(--coral-600));
+  color: white;
+}
+[data-ui="v2"] .btn-danger:active {
+  background-color: hsl(var(--coral-700));
+  border-color: hsl(var(--coral-700));
+}
+[data-ui="v2"] .btn-outline-danger {
+  background: transparent;
+  color: hsl(var(--coral-600));
+  border-color: hsl(var(--gray-200));
+}
+[data-ui="v2"] .btn-outline-danger:hover {
+  background-color: hsl(var(--danger-bg));
+  color: hsl(var(--coral-700));
+  border-color: hsl(var(--danger-bd));
+}
+
+[data-ui="v2"] .btn-warning {
+  background-color: hsl(var(--amber-500));
+  border-color: hsl(var(--amber-500));
+  color: hsl(var(--amber-700));
+}
+[data-ui="v2"] .btn-warning:hover {
+  background-color: hsl(var(--amber-600));
+  border-color: hsl(var(--amber-600));
+  color: white;
+}
+[data-ui="v2"] .btn-warning:active {
+  background-color: hsl(var(--amber-700));
+  border-color: hsl(var(--amber-700));
+  color: white;
+}
+[data-ui="v2"] .btn-outline-warning {
+  background: transparent;
+  color: hsl(var(--amber-700));
+  border-color: hsl(var(--gray-200));
+}
+[data-ui="v2"] .btn-outline-warning:hover {
+  background-color: hsl(var(--warning-bg));
+  color: hsl(var(--amber-700));
+  border-color: hsl(var(--warning-bd));
+}
+
+/* ---- Info ---- */
+[data-ui="v2"] .btn-info {
+  background-color: hsl(var(--info-fg));
+  border-color: hsl(var(--info-fg));
+  color: white;
+}
+[data-ui="v2"] .btn-info:hover {
+  background-color: hsl(var(--primary-700));
+  border-color: hsl(var(--primary-700));
+  color: white;
+}
+
+/* ---- Link button (no chrome) ---- */
+[data-ui="v2"] .btn-link {
+  background: transparent;
+  border: none;
+  color: hsl(var(--primary-700));
+  text-decoration: none;
+  font-weight: 500;
+  padding: 4px 6px;
+  box-shadow: none;
+}
+[data-ui="v2"] .btn-link:hover {
+  background-color: transparent;
+  color: hsl(var(--primary-900));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+/* Icons inside buttons */
+[data-ui="v2"] .btn i,
+[data-ui="v2"] .btn [data-feather],
+[data-ui="v2"] .btn [data-lucide] {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+[data-ui="v2"] .btn-lg i,
+[data-ui="v2"] .btn-lg [data-feather],
+[data-ui="v2"] .btn-lg [data-lucide] {
+  width: 16px;
+  height: 16px;
+}
+
+/* Phosphor icons — sized contextually via the parent component.
+   Phosphor uses font-size for sizing (web font), not width/height. */
+[data-ui="v2"] .btn .ph,
+[data-ui="v2"] .btn-sm .ph { font-size: 16px; line-height: 1; flex-shrink: 0; }
+[data-ui="v2"] .btn-lg .ph { font-size: 18px; line-height: 1; }
+[data-ui="v2"] .nav-link .ph { font-size: 16px; line-height: 1; opacity: 0.9; }
+[data-ui="v2"] .dropdown-item .ph { font-size: 14px; line-height: 1; opacity: 0.7; }
+[data-ui="v2"] .list-group-item .ph { font-size: 16px; line-height: 1; flex-shrink: 0; }
+[data-ui="v2"] .stat-card .ph,
+[data-ui="v2"] .card.text-center .card-body > .ph { font-size: 28px; opacity: 0.85; }
+[data-ui="v2"] .card-header .ph { font-size: 16px; line-height: 1; opacity: 0.85; }
+[data-ui="v2"] .alert .ph { font-size: 18px; line-height: 1; flex-shrink: 0; }
+[data-ui="v2"] .modal-header .ph { font-size: 20px; line-height: 1; }
+
+/* Btn-group action cells */
+[data-ui="v2"] .table .btn-group .btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: var(--r-sm);
+}
+
+/* ==========================================================================
+   7. Cards — Surface plate, no shadow par défaut
+   ========================================================================== */
+
+[data-ui="v2"] .card {
+  background: white;
+  border: 1px solid hsl(var(--gray-200));
+  border-radius: var(--r-lg);
+  box-shadow: none;
+  overflow: visible;
+  transition: border-color var(--d-fast) var(--ease-quart),
+              box-shadow var(--d-fast) var(--ease-quart);
+}
+[data-ui="v2"] .card:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+[data-ui="v2"] .card-header {
+  background: white;
+  border-bottom: 1px solid hsl(var(--gray-100));
+  padding: var(--s-3) var(--s-5);
+  font-weight: 600;
+  font-size: var(--t-sm);
+  color: hsl(var(--gray-900));
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+[data-ui="v2"] .card-header h5,
+[data-ui="v2"] .card-header .h5 {
+  font-size: var(--t-md);
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+[data-ui="v2"] .card-body { padding: var(--s-5); }
+
+[data-ui="v2"] .card-footer {
+  background: hsl(var(--gray-50));
+  border-top: 1px solid hsl(var(--gray-100));
+  padding: var(--s-3) var(--s-5);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+}
+
+/* ==========================================================================
+   8. Stat cards — Host Grotesk sur les chiffres clés
+   ========================================================================== */
+
+[data-ui="v2"] .stat-card,
+[data-ui="v2"] .receivables-stats .stat-card {
+  background: white !important;
+  border: 1px solid hsl(var(--gray-200));
+  border-left: 1px solid hsl(var(--gray-200)) !important;
+  border-radius: var(--r-lg);
+  padding: var(--s-5);
+  box-shadow: none;
+  transition: border-color var(--d-fast) var(--ease-quart);
+  /* Use flex column with explicit gap so value/label/percentage breathe */
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-height: 108px;
+}
+[data-ui="v2"] .stat-card:hover {
+  border-color: hsl(var(--gray-300));
+  box-shadow: none;
+  transform: none;
+}
+[data-ui="v2"] .stat-card::before { display: none !important; }
+
+[data-ui="v2"] .stat-card .stat-label,
+[data-ui="v2"] .stat-card .card-text {
+  font-size: var(--t-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: hsl(var(--gray-500));
+  font-weight: 600;
+  margin: 0;
+  order: 1;
+}
+[data-ui="v2"] .stat-card .stat-value,
+[data-ui="v2"] .stat-card .card-title {
+  font-family: 'Host Grotesk', 'Onest', sans-serif;
+  font-weight: 800;
+  font-size: var(--t-3xl);
+  letter-spacing: -0.025em;
+  color: hsl(var(--gray-900));
+  line-height: 1.05;
+  margin: 0;
+  order: 2;
+}
+[data-ui="v2"] .stat-card .stat-percentage {
+  font-size: var(--t-xs);
+  color: hsl(var(--gray-500));
+  font-weight: 500;
+  margin-top: auto;
+  padding-top: var(--s-1);
+  order: 3;
+}
+
+/* Receivables-stats grid : un layout cohérent (6 colonnes responsive) */
+[data-ui="v2"] .receivables-stats .stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--s-3);
+}
+
+/* Dashboard summary cards icon (top icon) */
+[data-ui="v2"] .stat-card [data-feather],
+[data-ui="v2"] .stat-card [data-lucide],
+[data-ui="v2"] .card.text-center [data-feather],
+[data-ui="v2"] .card.text-center [data-lucide] {
+  width: 18px !important;
+  height: 18px !important;
+  opacity: 0.7;
+}
+
+/* Dashboard top stat cards (col-6 col-md) */
+[data-ui="v2"] .card.text-center .card-body {
+  padding: var(--s-5);
+  text-align: left !important;
+}
+[data-ui="v2"] .card.text-center .card-title {
+  font-family: 'Host Grotesk', 'Onest', sans-serif;
+  font-weight: 800;
+  font-size: var(--t-2xl);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: var(--s-2) 0 var(--s-1);
+  color: hsl(var(--gray-900));
+}
+[data-ui="v2"] .card.text-center .card-text {
+  font-size: var(--t-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: hsl(var(--gray-500));
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Border-left status variants → on neutralise (couleur dans le chiffre, pas le bord) */
+[data-ui="v2"] .stat-card.success,
+[data-ui="v2"] .stat-card.warning,
+[data-ui="v2"] .stat-card.danger,
+[data-ui="v2"] .receivables-stats .stat-card.total,
+[data-ui="v2"] .receivables-stats .stat-card.current,
+[data-ui="v2"] .receivables-stats .stat-card.aging-0-30,
+[data-ui="v2"] .receivables-stats .stat-card.aging-31-60,
+[data-ui="v2"] .receivables-stats .stat-card.aging-61-90,
+[data-ui="v2"] .receivables-stats .stat-card.aging-90-plus {
+  border-left: 1px solid hsl(var(--gray-200)) !important;
+}
+
+/* Aging dot indicator (pour le résumé compact) */
+[data-ui="v2"] .aging-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--r-full);
+  vertical-align: middle;
+  margin-right: var(--s-2);
+}
+
+/* ==========================================================================
+   9. Tables — densité 36px, pas de scale au hover
+   ========================================================================== */
+
+[data-ui="v2"] .table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0;
+  background: white;
+  font-size: var(--t-sm);
+}
+
+[data-ui="v2"] .table thead th {
+  background: hsl(var(--gray-50));
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+  color: hsl(var(--gray-500));
+  font-size: var(--t-xs);
+  padding: 10px var(--s-3);
+  border: none;
+  border-bottom: 1px solid hsl(var(--gray-200));
+  white-space: nowrap;
+  position: relative;
+}
+[data-ui="v2"] .table thead th:first-child { border-top-left-radius: var(--r-lg); }
+[data-ui="v2"] .table thead th:last-child  { border-top-right-radius: var(--r-lg); }
+
+[data-ui="v2"] .table tbody td {
+  padding: 10px var(--s-3);
+  border: none;
+  border-bottom: 1px solid hsl(var(--gray-100));
+  vertical-align: middle;
+  color: hsl(var(--gray-800));
+}
+
+[data-ui="v2"] .table tbody tr {
+  transition: background-color var(--d-fast) var(--ease-quart);
+}
+[data-ui="v2"] .table tbody tr:hover {
+  background: hsl(var(--gray-50));
+  transform: none !important;
+  background-image: none !important;
+}
+[data-ui="v2"] .table tbody tr:last-child td { border-bottom: none; }
+
+[data-ui="v2"] .table-striped tbody tr:nth-of-type(odd) > * {
+  background: transparent;
+}
+
+/* Sortable headers */
+[data-ui="v2"] .table .sortable-column {
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--d-fast) var(--ease-quart);
+}
+[data-ui="v2"] .table .sortable-column:hover {
+  color: hsl(var(--gray-800));
+}
+
+/* Card-wrapped tables: remove inner border from card */
+[data-ui="v2"] .card .table-responsive { border-radius: 0; }
+
+/* Row-action dropdowns inside tables must escape the .table-responsive
+   clipping. Strategy: keep table-responsive scrollable on mobile, but the
+   dropdown MENU itself uses position: fixed so it floats above any overflow
+   context, with a high z-index. Bootstrap's Popper still computes the
+   coordinates — they're just relative to viewport now. SCOPED to tables only
+   so navbar/modal/form dropdowns keep Bootstrap's default positioning. */
+[data-ui="v2"] .table-responsive .dropdown-menu.show,
+[data-ui="v2"] .table .dropdown-menu.show {
+  position: fixed !important;
+  z-index: 1080;
+}
+[data-ui="v2"] .card > .table:first-child thead th:first-child { border-top-left-radius: 0; }
+
+/* ==========================================================================
+   10. Forms — inputs propres, focus violet subtil
+   ========================================================================== */
+
+[data-ui="v2"] .form-control,
+[data-ui="v2"] .form-select {
+  display: block;
+  width: 100%;
+  padding: 8px var(--s-3);
+  font-size: var(--t-sm);
+  line-height: var(--lh-sm);
+  font-family: 'Onest', sans-serif;
+  color: hsl(var(--gray-900));
+  background: white;
+  border: 1px solid hsl(var(--gray-300));
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--d-fast) var(--ease-quart),
+              box-shadow var(--d-fast) var(--ease-quart);
+}
+[data-ui="v2"] .form-control::placeholder { color: hsl(var(--gray-400)); }
+[data-ui="v2"] .form-control:hover,
+[data-ui="v2"] .form-select:hover {
+  border-color: hsl(var(--gray-400));
+}
+[data-ui="v2"] .form-control:focus,
+[data-ui="v2"] .form-select:focus {
+  outline: none;
+  border-color: hsl(var(--primary));
+  box-shadow: var(--shadow-ring-primary);
+  background: white;
+}
+[data-ui="v2"] .form-control:disabled,
+[data-ui="v2"] .form-select:disabled {
+  background: hsl(var(--gray-100));
+  color: hsl(var(--gray-400));
+  cursor: not-allowed;
+}
+
+[data-ui="v2"] .form-control-lg,
+[data-ui="v2"] .form-select-lg {
+  padding: 11px var(--s-3);
+  font-size: var(--t-base);
+  border-radius: var(--r-md);
+}
+[data-ui="v2"] .form-control-sm,
+[data-ui="v2"] .form-select-sm {
+  padding: 5px var(--s-2);
+  font-size: var(--t-xs);
+}
+
+[data-ui="v2"] .form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: hsl(var(--gray-700));
+  letter-spacing: -0.005em;
+}
+[data-ui="v2"] .form-text {
+  font-size: var(--t-xs);
+  color: hsl(var(--gray-500));
+  margin-top: 4px;
+}
+
+[data-ui="v2"] .form-check-input {
+  width: 16px;
+  height: 16px;
+  border: 1px solid hsl(var(--gray-400));
+  border-radius: 4px;
+  cursor: pointer;
+}
+[data-ui="v2"] .form-check-input:checked {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+[data-ui="v2"] .form-check-input:focus { box-shadow: var(--shadow-ring-primary); }
+
+[data-ui="v2"] .form-select {
+  /* Kill native chevron so only the custom SVG renders (no double arrow) */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3e%3cpath d='m4 6 4 4 4-4' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+  padding-right: var(--s-8);
+}
+/* IE/legacy fallback */
+[data-ui="v2"] .form-select::-ms-expand { display: none; }
+/* Native <select> without .form-select also benefits from token chevron */
+[data-ui="v2"] select:not(.form-select):not([multiple]) {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Input groups */
+[data-ui="v2"] .input-group {
+  /* Bootstrap default is flex-wrap:wrap, which causes the trailing button
+     to drop on a new line as soon as the column gets narrow. Force inline. */
+  flex-wrap: nowrap;
+}
+[data-ui="v2"] .input-group .form-control,
+[data-ui="v2"] .input-group .form-select { box-shadow: none; min-width: 0; }
+
+/* Buttons inside an input-group must match the input's height + sizing */
+[data-ui="v2"] .input-group .btn {
+  padding: 8px var(--s-3);
+  font-size: var(--t-sm);
+  border-radius: var(--r-md);
+}
+[data-ui="v2"] .input-group-sm .form-control,
+[data-ui="v2"] .input-group-sm .form-select,
+[data-ui="v2"] .input-group-sm .btn,
+[data-ui="v2"] .input-group-sm .input-group-text {
+  padding: 5px var(--s-2);
+  font-size: var(--t-xs);
+  border-radius: var(--r-sm);
+}
+[data-ui="v2"] .input-group-lg .form-control,
+[data-ui="v2"] .input-group-lg .form-select,
+[data-ui="v2"] .input-group-lg .btn,
+[data-ui="v2"] .input-group-lg .input-group-text {
+  padding: 11px var(--s-3);
+  font-size: var(--t-base);
+}
+
+[data-ui="v2"] .input-group-text {
+  background: hsl(var(--gray-50));
+  border: 1px solid hsl(var(--gray-300));
+  color: hsl(var(--gray-600));
+  font-size: var(--t-sm);
+  padding: 8px var(--s-3);
+}
+
+/* ==========================================================================
+   11. Alerts — pills + border-left subtil
+   ========================================================================== */
+
+[data-ui="v2"] .alert {
+  position: relative;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid;
+  border-left-width: 3px;
+  border-radius: var(--r-md);
+  font-size: var(--t-sm);
+  line-height: var(--lh-sm);
+  background-image: none;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+}
+[data-ui="v2"] .alert-success {
+  background: hsl(var(--success-bg));
+  color: hsl(var(--success-fg));
+  border-color: hsl(var(--success-bd));
+  border-left-color: hsl(var(--success-fg));
+}
+[data-ui="v2"] .alert-danger {
+  background: hsl(var(--danger-bg));
+  color: hsl(var(--danger-fg));
+  border-color: hsl(var(--danger-bd));
+  border-left-color: hsl(var(--danger-fg));
+}
+[data-ui="v2"] .alert-warning {
+  background: hsl(var(--warning-bg));
+  color: hsl(var(--warning-fg));
+  border-color: hsl(var(--warning-bd));
+  border-left-color: hsl(var(--warning-fg));
+}
+[data-ui="v2"] .alert-info {
+  background: hsl(var(--info-bg));
+  color: hsl(var(--info-fg));
+  border-color: hsl(var(--info-bd));
+  border-left-color: hsl(var(--info-fg));
+}
+[data-ui="v2"] .alert-dismissible .btn-close {
+  padding: var(--s-3) var(--s-4);
+}
+
+/* ==========================================================================
+   12. Badges — pills tonal (bg pâle + texte coloré)
+   ========================================================================== */
+
+[data-ui="v2"] .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-family: 'Onest', sans-serif;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  line-height: 16px;
+  text-transform: none;
+  letter-spacing: 0;
+  border-radius: var(--r-full);
+  background-image: none !important;
+}
+[data-ui="v2"] .badge.bg-success,
+[data-ui="v2"] .badge-success {
+  background: hsl(var(--success-bg)) !important;
+  color: hsl(var(--success-fg)) !important;
+  box-shadow: inset 0 0 0 1px hsl(var(--success-bd));
+}
+[data-ui="v2"] .badge.bg-danger,
+[data-ui="v2"] .badge-danger {
+  background: hsl(var(--danger-bg)) !important;
+  color: hsl(var(--danger-fg)) !important;
+  box-shadow: inset 0 0 0 1px hsl(var(--danger-bd));
+}
+[data-ui="v2"] .badge.bg-warning,
+[data-ui="v2"] .badge-warning {
+  background: hsl(var(--warning-bg)) !important;
+  color: hsl(var(--warning-fg)) !important;
+  box-shadow: inset 0 0 0 1px hsl(var(--warning-bd));
+}
+[data-ui="v2"] .badge.bg-info,
+[data-ui="v2"] .badge-info {
+  background: hsl(var(--info-bg)) !important;
+  color: hsl(var(--info-fg)) !important;
+  box-shadow: inset 0 0 0 1px hsl(var(--info-bd));
+}
+[data-ui="v2"] .badge.bg-primary {
+  background: hsl(var(--primary-50)) !important;
+  color: hsl(var(--primary-700)) !important;
+  box-shadow: inset 0 0 0 1px hsl(var(--primary-200));
+}
+[data-ui="v2"] .badge.bg-secondary,
+[data-ui="v2"] .badge-secondary {
+  background: hsl(var(--gray-100)) !important;
+  color: hsl(var(--gray-700)) !important;
+  box-shadow: inset 0 0 0 1px hsl(var(--gray-200));
+}
+[data-ui="v2"] .badge.bg-dark {
+  background: hsl(var(--gray-200)) !important;
+  color: hsl(var(--gray-800)) !important;
+}
+
+/* ==========================================================================
+   13. Modals
+   ========================================================================== */
+
+[data-ui="v2"] .modal-content {
+  border: 1px solid hsl(var(--gray-200));
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+[data-ui="v2"] .modal-header {
+  border-bottom: 1px solid hsl(var(--gray-100));
+  padding: var(--s-4) var(--s-5);
+}
+[data-ui="v2"] .modal-title {
+  font-family: 'Onest', sans-serif;
+  font-weight: 700;
+  font-size: var(--t-lg);
+  letter-spacing: -0.01em;
+}
+[data-ui="v2"] .modal-body { padding: var(--s-5); }
+[data-ui="v2"] .modal-footer {
+  border-top: 1px solid hsl(var(--gray-100));
+  padding: var(--s-3) var(--s-5);
+  background: hsl(var(--gray-50));
+}
+
+/* ==========================================================================
+   14. Pagination
+   ========================================================================== */
+
+[data-ui="v2"] .pagination { gap: 4px; }
+[data-ui="v2"] .page-link {
+  border: 1px solid hsl(var(--gray-200));
+  border-radius: var(--r-sm) !important;
+  color: hsl(var(--gray-700));
+  font-size: var(--t-sm);
+  font-weight: 500;
+  padding: 6px var(--s-3);
+}
+[data-ui="v2"] .page-link:hover {
+  background: hsl(var(--gray-100));
+  color: hsl(var(--gray-900));
+  border-color: hsl(var(--gray-300));
+}
+[data-ui="v2"] .page-item.active .page-link {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: white;
+}
+[data-ui="v2"] .page-item.disabled .page-link {
+  color: hsl(var(--gray-400));
+  background: white;
+}
+
+/* ==========================================================================
+   15. Spinners & loading
+   ========================================================================== */
+
+[data-ui="v2"] .spinner-border {
+  border-color: hsl(var(--primary) / 0.25);
+  border-top-color: hsl(var(--primary));
+  border-width: 2px;
+}
+
+[data-ui="v2"] .skeleton {
+  background: linear-gradient(90deg,
+    hsl(var(--gray-100)) 0%,
+    hsl(var(--gray-200)) 50%,
+    hsl(var(--gray-100)) 100%);
+  background-size: 200% 100%;
+  animation: v2-shimmer 1.4s infinite var(--ease-out);
+  border-radius: var(--r-sm);
+}
+@keyframes v2-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ==========================================================================
+   16. Footer
+   ========================================================================== */
+
+[data-ui="v2"] footer {
+  background: white !important;
+  border-top: 1px solid hsl(var(--gray-200)) !important;
+  padding: var(--s-6) 0 !important;
+  margin-top: var(--s-12) !important;
+  font-size: var(--t-xs);
+  color: hsl(var(--gray-500));
+}
+[data-ui="v2"] footer a {
+  color: hsl(var(--gray-600));
+  text-decoration: none;
+}
+[data-ui="v2"] footer a:hover {
+  color: hsl(var(--primary-700));
+}
+
+/* ==========================================================================
+   17. Login (page publique) — ambiance signature violet mesh
+   ========================================================================== */
+
+[data-ui="v2"] body.login-page {
+  background:
+    radial-gradient(at 18% 12%, hsl(var(--primary) / 0.18) 0px, transparent 50%),
+    radial-gradient(at 82% 0%,  hsl(var(--primary-400) / 0.14) 0px, transparent 55%),
+    radial-gradient(at 70% 90%, hsl(var(--primary-light)) 0px, transparent 55%),
+    hsl(var(--gray-50));
+  min-height: 100vh;
+}
+
+[data-ui="v2"] .login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-8) 0 var(--s-12);
+}
+
+[data-ui="v2"] body.login-page .card {
+  border: 1px solid hsl(var(--gray-200));
+  border-radius: var(--r-2xl);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.7) inset,
+    0 24px 48px -16px rgb(20 14 60 / 0.18),
+    0 8px 16px -8px rgb(20 14 60 / 0.10);
+  overflow: hidden;
+}
+
+[data-ui="v2"] body.login-page .card-body {
+  padding: var(--s-8);
+}
+
+@media (max-width: 576px) {
+  [data-ui="v2"] body.login-page .card-body {
+    padding: var(--s-6);
+  }
+}
+
+[data-ui="v2"] .logo-full {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: 64px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+[data-ui="v2"] .logo-insigne {
+  display: none;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+@media (max-width: 576px) {
+  [data-ui="v2"] .logo-full { display: none; }
+  [data-ui="v2"] .logo-insigne { display: block; margin: 0 auto; }
+}
+
+/* Login footer : on retire le position:fixed, on l'aligne sur le footer global */
+[data-ui="v2"] body.login-page .footer {
+  position: static;
+  background: transparent;
+  backdrop-filter: none;
+  border-top: none;
+  padding: var(--s-4) 0 var(--s-6);
+  text-align: center;
+  z-index: auto;
+}
+[data-ui="v2"] body.login-page .footer p {
+  font-size: var(--t-xs);
+  color: hsl(var(--gray-500));
+  margin: 0 0 4px;
+}
+[data-ui="v2"] body.login-page .footer a {
+  color: hsl(var(--gray-600));
+  text-decoration: none;
+  transition: color var(--d-fast) var(--ease-quart);
+}
+[data-ui="v2"] body.login-page .footer a:hover {
+  color: hsl(var(--primary-700));
+}
+
+/* ==========================================================================
+   18. Tooltips & focus visibility
+   ========================================================================== */
+
+/* Suppress the default focus outline ONLY when the focus came from a pointer
+   device (mouse/touch). Keyboard users keep a visible ring via :focus-visible
+   below. Older browsers without :focus-visible support keep the native ring,
+   preserving WCAG 2.4.7. */
+[data-ui="v2"] *:focus:not(:focus-visible) { outline: none; }
+[data-ui="v2"] a:focus-visible,
+[data-ui="v2"] button:focus-visible,
+[data-ui="v2"] input:focus-visible,
+[data-ui="v2"] select:focus-visible,
+[data-ui="v2"] textarea:focus-visible,
+[data-ui="v2"] [tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-ring-primary);
+  border-radius: var(--r-sm);
+}
+
+[data-ui="v2"] .tooltip { font-size: var(--t-xs); font-family: 'Onest', sans-serif; }
+[data-ui="v2"] .tooltip-inner {
+  background: hsl(var(--gray-900));
+  border-radius: var(--r-sm);
+  padding: 4px var(--s-2);
+  font-weight: 500;
+  max-width: 240px;
+}
+[data-ui="v2"] .tooltip .tooltip-arrow::before { border-color: hsl(var(--gray-900)); }
+
+/* ==========================================================================
+   19. Reduced motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-ui="v2"] *,
+  [data-ui="v2"] *::before,
+  [data-ui="v2"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   20. Page entrance (dashboard staggered) — opt-in via .v2-stagger
+   ========================================================================== */
+
+[data-ui="v2"] .v2-stagger > * {
+  animation: v2-rise var(--d-slow) var(--ease-out) backwards;
+}
+[data-ui="v2"] .v2-stagger > *:nth-child(1) { animation-delay: 0ms; }
+[data-ui="v2"] .v2-stagger > *:nth-child(2) { animation-delay: 60ms; }
+[data-ui="v2"] .v2-stagger > *:nth-child(3) { animation-delay: 120ms; }
+[data-ui="v2"] .v2-stagger > *:nth-child(4) { animation-delay: 180ms; }
+[data-ui="v2"] .v2-stagger > *:nth-child(5) { animation-delay: 240ms; }
+@keyframes v2-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ==========================================================================
+   21. Misc Bootstrap overrides spotted in audit
+   ========================================================================== */
+
+/* Aging dots in dashboard summary — use vibrant 500-tier hues */
+[data-ui="v2"] .aging-dot.bg-success { background: hsl(var(--green-500)) !important; }
+[data-ui="v2"] .aging-dot.bg-info    { background: hsl(var(--primary)) !important; }
+[data-ui="v2"] .aging-dot.bg-warning { background: hsl(var(--amber-500)) !important; }
+[data-ui="v2"] .aging-dot.bg-dark    { background: hsl(var(--gray-600)) !important; }
+[data-ui="v2"] .aging-dot.bg-danger  { background: hsl(var(--coral-500)) !important; }
+
+/* Bootstrap text utility overrides — match the v2 palette so colored
+   amounts on dashboard (aging buckets) stay coherent with badges/buttons.
+   Foreground variants stay dark enough for AA on white. */
+[data-ui="v2"] .text-success { color: hsl(var(--green-600)) !important; }
+[data-ui="v2"] .text-warning { color: hsl(var(--amber-600)) !important; }
+[data-ui="v2"] .text-danger  { color: hsl(var(--coral-600)) !important; }
+[data-ui="v2"] .text-info    { color: hsl(var(--info-fg)) !important; }
+[data-ui="v2"] .text-primary { color: hsl(var(--primary-700)) !important; }
+[data-ui="v2"] .text-secondary { color: hsl(var(--gray-600)) !important; }
+
+/* Bootstrap bg utility overrides — keep the semantic distinction between
+   solid (.bg-X = vibrant 500-tier) and subtle (.bg-X-subtle = pale tint). */
+[data-ui="v2"] .bg-success         { background-color: hsl(var(--green-500)) !important; }
+[data-ui="v2"] .bg-success-subtle  { background-color: hsl(var(--success-bg)) !important; }
+[data-ui="v2"] .bg-warning         { background-color: hsl(var(--amber-500)) !important; }
+[data-ui="v2"] .bg-warning-subtle  { background-color: hsl(var(--warning-bg)) !important; }
+[data-ui="v2"] .bg-danger          { background-color: hsl(var(--coral-500)) !important; }
+[data-ui="v2"] .bg-danger-subtle   { background-color: hsl(var(--danger-bg)) !important; }
+
+/* Page header pattern (titre + sous-titre + actions).
+   Two triggers:
+   1. Semantic class .page-header (preferred — apply to new templates)
+   2. Legacy fragile selector matching the existing utility-class composition
+      (kept for backwards compat with un-migrated templates) */
+[data-ui="v2"] .page-header,
+[data-ui="v2"] main > .d-flex.justify-content-between.align-items-center.mb-4:first-of-type {
+  margin-bottom: var(--s-6) !important;
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid hsl(var(--gray-100));
+}
+[data-ui="v2"] .page-header h1,
+[data-ui="v2"] main > .d-flex.justify-content-between.align-items-center.mb-4 h1 {
+  font-family: 'Host Grotesk', 'Onest', sans-serif;
+  font-weight: 800;
+  font-size: var(--t-2xl);
+  letter-spacing: -0.025em;
+  margin: 0;
+  color: hsl(var(--gray-900));
+}
+[data-ui="v2"] .page-header p,
+[data-ui="v2"] main > .d-flex.justify-content-between.align-items-center.mb-4 p {
+  font-size: var(--t-sm);
+  color: hsl(var(--gray-500));
+  margin: 4px 0 0;
+}
+
+/* Notification badge */
+[data-ui="v2"] #notification-badge {
+  background: hsl(var(--danger-fg)) !important;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+}
+
+/* User name in dropdown */
+[data-ui="v2"] .user-name {
+  font-weight: 500;
+  font-size: var(--t-sm);
+}
+
+/* Receivables-table tight typography (override audit H4) */
+[data-ui="v2"] .receivables-table small,
+[data-ui="v2"] .receivables-table td:first-child small {
+  font-size: var(--t-xs) !important;
+  color: hsl(var(--gray-500));
+  display: inline-block;
+  margin-top: 2px;
+}
+
+/* Two-line cells (name + code, amount + sub-label) — kill <br> tightness */
+[data-ui="v2"] .table td > a + br + small,
+[data-ui="v2"] .table td > .fw-medium + br + small,
+[data-ui="v2"] .table td > strong + br + small {
+  margin-top: 3px;
+}
+
+/* List-group filters (Rappels sidebar) — propre + alignement badge */
+[data-ui="v2"] .list-group-flush .list-group-item {
+  border: none;
+  border-bottom: 1px solid hsl(var(--gray-100));
+  padding: 10px var(--s-4);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: hsl(var(--gray-700));
+  background: white;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  transition: background var(--d-fast) var(--ease-quart),
+              color var(--d-fast) var(--ease-quart);
+}
+[data-ui="v2"] .list-group-flush .list-group-item:last-child { border-bottom: none; }
+[data-ui="v2"] .list-group-item-action:hover {
+  background: hsl(var(--gray-50));
+  color: hsl(var(--gray-900));
+}
+[data-ui="v2"] .list-group-item.active,
+[data-ui="v2"] .list-group-item-action.active {
+  background: hsl(var(--primary-50)) !important;
+  color: hsl(var(--primary-700)) !important;
+  border-color: transparent !important;
+}
+[data-ui="v2"] .list-group-item [data-feather],
+[data-ui="v2"] .list-group-item i.fas {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+/* Inner d-flex (title + count badge) takes full width inside list-group-item */
+[data-ui="v2"] .list-group-item > .d-flex {
+  width: 100%;
+}
+
+/* Card-header with title left + filter/search right — keep responsive */
+[data-ui="v2"] .card-header .row.align-items-center {
+  margin: 0;
+  gap: var(--s-3);
+}
+[data-ui="v2"] .card-header .input-group { min-width: 0; }
+
+/* Better default for table action cell (dropstart toggle) */
+[data-ui="v2"] .table td .dropstart .btn,
+[data-ui="v2"] .table td .dropdown .btn {
+  padding: 4px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+[data-ui="v2"] .table td .dropstart .btn [data-feather],
+[data-ui="v2"] .table td .dropdown .btn [data-feather] {
+  width: 14px;
+  height: 14px;
+}
+
+/* Empty-state and small icon helpers — kills inline width/height noise on
+   feather icons inside cards/empty-states without removing template inline rules.
+   These rules act as a safety net when templates omit explicit sizing. */
+[data-ui="v2"] .card-body [data-feather]:not([class*="me-"]):not([class*="ms-"]) {
+  vertical-align: middle;
+}
+
+/* Notification bell (Font Awesome icon in nav-link) */
+[data-ui="v2"] .nav-link .fa-bell { font-size: 16px; }
+
+/* Outline badges (used in clients/detail.html for language tag) */
+[data-ui="v2"] .badge-outline {
+  background: transparent !important;
+  background-image: none !important;
+  border: 1px solid currentColor;
+  font-weight: 500;
+}
+[data-ui="v2"] .badge-outline-success { color: hsl(var(--success-fg)) !important; }
+[data-ui="v2"] .badge-outline-info    { color: hsl(var(--info-fg)) !important; }
+[data-ui="v2"] .badge-outline-warning { color: hsl(var(--warning-fg)) !important; }
+[data-ui="v2"] .badge-outline-danger  { color: hsl(var(--danger-fg)) !important; }
+
+/* ==========================================================================
+   22. Per-page overrides for templates with hardcoded inline <style> blocks
+   ========================================================================== */
+
+/* templates/company/settings.html — subscription panel uses Bootstrap grays.
+   Override to v2 tokens so it follows the theme. */
+[data-ui="v2"] .subscription-status {
+  background: hsl(var(--gray-50)) !important;
+  border: 1px solid hsl(var(--gray-200)) !important;
+  border-radius: var(--r-lg);
+  padding: var(--s-5);
+}
+[data-ui="v2"] .subscription-section {
+  background: white !important;
+  border: 1px solid hsl(var(--gray-200)) !important;
+  border-radius: var(--r-md);
+  padding: var(--s-4);
+}
+[data-ui="v2"] .subscription-section h6,
+[data-ui="v2"] .status-header h6 {
+  color: hsl(var(--gray-800)) !important;
+  font-weight: 600;
+  font-size: var(--t-sm);
+  letter-spacing: -0.005em;
+}
+[data-ui="v2"] .plan-change-option:hover,
+[data-ui="v2"] .upgrade-options .d-flex:hover {
+  background-color: hsl(var(--gray-50)) !important;
+  border-color: hsl(var(--gray-300)) !important;
+}
+
+/* Logo preview in company/settings.html — neutralize inline border/bg */
+[data-ui="v2"] .logo-preview-img {
+  border: 1px solid hsl(var(--gray-300)) !important;
+  border-radius: var(--r-sm);
+  padding: 4px;
+  background: white;
+  box-shadow: var(--shadow-xs);
+}
+
+/* Override base.html inline <style> .btn-group rules — v2 already handles
+   button group sizing via section 6 + 9 (table action cells). The base
+   inline rules use `gap: 0.25rem` which is tighter than v2 tokens. Bump it. */
+[data-ui="v2"] .btn-group { gap: 4px; }
+[data-ui="v2"] .table td:last-child { min-width: 0; } /* kill 120px floor from base.html */
+
+/* Project row (expanded hierarchy) */
+[data-ui="v2"] .project-row {
+  background: hsl(var(--gray-50)) !important;
+  border-left: 2px solid hsl(var(--primary)) !important;
+}
+[data-ui="v2"] .project-row td { font-size: var(--t-xs); }
+
+/* Keep custom.css client-name-link hover but in brand color */
+[data-ui="v2"] .client-name-link:hover {
+  color: hsl(var(--primary-700)) !important;
+}
+[data-ui="v2"] .client-name-link:hover .fw-bold {
+  color: hsl(var(--primary-700)) !important;
+}

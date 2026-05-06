@@ -10,7 +10,13 @@
       "Bash(find:*)",
       "Bash(cat:*)",
       "Bash(ls:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(npx terser *)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('app.py'\\).read\\(\\)\\); print\\('app.py: OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('views/stripe_onboarding.py'\\).read\\(\\)\\); print\\('stripe_onboarding.py: OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('stripe_checkout_v2.py'\\).read\\(\\)\\); print\\('stripe_checkout_v2.py: OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('security/csp_middleware.py'\\).read\\(\\)\\); print\\('csp_middleware.py: OK'\\)\")",
+      "Bash(rtk git *)"
     ],
     "deny": [
       "Bash(rm -rf /)*",

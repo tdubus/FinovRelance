@@ -524,6 +524,7 @@ def detail_client(id):
     # Initialize forms for the modals
     from forms import InvoiceForm, CommunicationNoteForm
     invoice_form = InvoiceForm(company_id=company.id)
+    invoice_form.client_id.data = client.id
     note_form = CommunicationNoteForm(company_id=company.id)
 
     return render_template('clients/detail.html',

@@ -26,22 +26,22 @@
 
                     <ul class="list-unstyled my-3 flex-grow-1">
                         {% if plan.max_clients %}
-                        <li class="mb-2"><i data-feather="check" class="text-success me-2" style="width:16px; height:16px;"></i>Jusqu'à {{ plan.max_clients }} clients</li>
+                        <li class="mb-2"><i class="ph ph-check text-success me-2" style="font-size: 16px;"></i>Jusqu'à {{ plan.max_clients }} clients</li>
                         {% endif %}
                         {% if plan.allows_email_sending %}
-                        <li class="mb-2"><i data-feather="check" class="text-success me-2" style="width:16px; height:16px;"></i>Envoi d'emails</li>
+                        <li class="mb-2"><i class="ph ph-check text-success me-2" style="font-size: 16px;"></i>Envoi d'emails</li>
                         {% endif %}
                         {% if plan.allows_email_connection %}
-                        <li class="mb-2"><i data-feather="check" class="text-success me-2" style="width:16px; height:16px;"></i>Connexion email</li>
+                        <li class="mb-2"><i class="ph ph-check text-success me-2" style="font-size: 16px;"></i>Connexion email</li>
                         {% endif %}
                         {% if plan.allows_accounting_connection %}
-                        <li class="mb-2"><i data-feather="check" class="text-success me-2" style="width:16px; height:16px;"></i>Connexion comptable</li>
+                        <li class="mb-2"><i class="ph ph-check text-success me-2" style="font-size: 16px;"></i>Connexion comptable</li>
                         {% endif %}
                         {% if plan.allows_team_management %}
-                        <li class="mb-2"><i data-feather="check" class="text-success me-2" style="width:16px; height:16px;"></i>Gestion d'équipe</li>
+                        <li class="mb-2"><i class="ph ph-check text-success me-2" style="font-size: 16px;"></i>Gestion d'équipe</li>
                         {% endif %}
                         {% if plan.allows_email_templates %}
-                        <li class="mb-2"><i data-feather="check" class="text-success me-2" style="width:16px; height:16px;"></i>Modèles d'emails</li>
+                        <li class="mb-2"><i class="ph ph-check text-success me-2" style="font-size: 16px;"></i>Modèles d'emails</li>
                         {% endif %}
                     </ul>
 
@@ -56,7 +56,7 @@
 
     <div class="text-center mt-4">
         <a href="{{ url_for('main.dashboard') }}" class="text-muted text-decoration-none">
-            <i data-feather="arrow-left" style="width:16px; height:16px;" class="me-1"></i>
+            <i class="ph ph-arrow-left me-1" style="font-size: 16px;"></i>
             Retour au tableau de bord
         </a>
     </div>

@@ -11,7 +11,7 @@
         </div>
         {% if can_create %}
         <a href="{{ url_for('campaign.create_campaign') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Créer une campagne
+            <i class="ph ph-plus me-2"></i>Créer une campagne
         </a>
         {% endif %}
     </div>
@@ -93,12 +93,12 @@
                                 <div class="btn-group btn-group-sm">
                                     <a href="{{ url_for('campaign.view_campaign', campaign_id=campaign.id) }}" 
                                        class="btn btn-outline-primary" title="Voir">
-                                        <i class="fas fa-eye"></i>
+                                        <i class="ph ph-eye"></i>
                                     </a>
                                     {% if campaign.status.value == 'draft' %}
                                     <a href="{{ url_for('campaign.configure_email', campaign_id=campaign.id) }}" 
                                        class="btn btn-outline-secondary" title="Modifier">
-                                        <i class="fas fa-edit"></i>
+                                        <i class="ph ph-pencil-simple"></i>
                                     </a>
                                     {% endif %}
                                     {% if campaign.status.value not in ['in_progress', 'completed'] %}
@@ -106,7 +106,7 @@
                                             data-campaign-id="{{ campaign.id }}"
                                             data-campaign-name="{{ campaign.name }}"
                                             title="Supprimer">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="ph ph-trash"></i>
                                     </button>
                                     {% endif %}
                                 </div>
@@ -118,7 +118,7 @@
             </div>
             {% else %}
             <div class="text-center py-5">
-                <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
+                <i class="ph ph-megaphone fa-3x text-muted mb-3"></i>
                 <h5 class="text-muted">Aucune campagne</h5>
                 <p class="text-muted mb-0">
                     {% if can_create %}

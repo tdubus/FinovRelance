@@ -9,7 +9,7 @@
             <div class="card shadow">
                 <div class="card-header bg-primary text-white text-center">
                     <h4 class="mb-0">
-                        <i class="fas fa-shield-alt me-2"></i>
+                        <i class="ph ph-shield-check me-2"></i>
                         Verification
                     </h4>
                 </div>
@@ -20,7 +20,7 @@
                         {% if session.get('2fa_totp_only') %}
                         <div class="text-center mb-4">
                             <div class="mb-3">
-                                <i class="fas fa-mobile-alt text-primary" style="font-size: 3rem;"></i>
+                                <i class="ph ph-device-mobile text-primary" style="font-size: 3rem;"></i>
                             </div>
                             <h5 class="text-muted">Authentification TOTP</h5>
                             <p class="text-muted">
@@ -29,7 +29,7 @@
                         </div>
                         {% elif session.get('2fa_email_failed') %}
                         <div class="text-center mb-4">
-                            <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                            <i class="ph ph-warning text-warning" style="font-size: 3rem;"></i>
                             <h5 class="text-warning mt-2">Courriel indisponible</h5>
                             <p class="text-muted">
                                 Le systeme de courriel est temporairement indisponible.<br>
@@ -39,7 +39,7 @@
                         {% else %}
                         <div class="text-center mb-4">
                             <div class="mb-3">
-                                <i class="fas fa-envelope-open-text text-primary" style="font-size: 3rem;"></i>
+                                <i class="ph ph-envelope-open text-primary" style="font-size: 3rem;"></i>
                             </div>
                             <h5 class="text-muted">Code de verification envoye</h5>
                             <p class="text-muted">
@@ -80,7 +80,7 @@
                             <form method="POST" action="{{ url_for('auth.resend_2fa') }}" class="d-inline">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <button type="submit" class="btn btn-link text-muted btn-sm" id="btn-resend">
-                                    <i class="fas fa-redo me-1"></i>Renvoyer le code
+                                    <i class="ph ph-arrow-clockwise me-1"></i>Renvoyer le code
                                 </button>
                             </form>
                         </div>
@@ -90,7 +90,7 @@
                         <hr class="my-3">
                         <div class="text-center">
                             <a href="#" id="btn-show-alternatives" class="btn btn-link text-muted btn-sm">
-                                <i class="fas fa-ellipsis-h me-1"></i>
+                                <i class="ph ph-dots-three me-1"></i>
                                 Autre moyen d'authentification
                             </a>
                         </div>
@@ -105,17 +105,17 @@
                         <div class="d-grid gap-2">
                             {% if session.get('2fa_totp_only') %}
                             <button class="btn btn-outline-primary" id="btn-switch-email">
-                                <i class="fas fa-envelope me-2"></i>Recevoir un code par courriel
+                                <i class="ph ph-envelope me-2"></i>Recevoir un code par courriel
                             </button>
                             {% endif %}
                             <button class="btn btn-outline-warning" id="btn-switch-recovery">
-                                <i class="fas fa-key me-2"></i>Utiliser un code de recuperation
+                                <i class="ph ph-key me-2"></i>Utiliser un code de recuperation
                             </button>
                         </div>
 
                         <div class="text-center mt-3">
                             <a href="#" id="btn-back-main" class="btn btn-link text-muted btn-sm">
-                                <i class="fas fa-arrow-left me-1"></i>Retour
+                                <i class="ph ph-arrow-left me-1"></i>Retour
                             </a>
                         </div>
                     </div>
@@ -124,7 +124,7 @@
                     <div id="mode-email" style="display: none;">
                         <div class="text-center mb-4">
                             <div class="mb-3">
-                                <i class="fas fa-envelope-open-text text-primary" style="font-size: 3rem;"></i>
+                                <i class="ph ph-envelope-open text-primary" style="font-size: 3rem;"></i>
                             </div>
                             <h5 class="text-muted">Code par courriel</h5>
                             <p class="text-muted small">
@@ -136,7 +136,7 @@
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary" id="btn-send-email">
-                                    <i class="fas fa-paper-plane me-2"></i>Envoyer le code
+                                    <i class="ph ph-paper-plane-tilt me-2"></i>Envoyer le code
                                 </button>
                             </div>
                         </form>
@@ -161,7 +161,7 @@
 
                         <div class="text-center mt-3">
                             <a href="#" id="btn-back-from-email" class="btn btn-link text-muted btn-sm">
-                                <i class="fas fa-arrow-left me-1"></i>Retour
+                                <i class="ph ph-arrow-left me-1"></i>Retour
                             </a>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
                     <div id="mode-recovery" style="display: none;">
                         <div class="text-center mb-4">
                             <div class="mb-3">
-                                <i class="fas fa-key text-warning" style="font-size: 3rem;"></i>
+                                <i class="ph ph-key text-warning" style="font-size: 3rem;"></i>
                             </div>
                             <h5 class="text-muted">Code de recuperation</h5>
                             <p class="text-muted small">
@@ -192,14 +192,14 @@
                             </div>
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-warning btn-lg">
-                                    <i class="fas fa-unlock me-2"></i>Verifier
+                                    <i class="ph ph-lock-open me-2"></i>Verifier
                                 </button>
                             </div>
                         </form>
 
                         <div class="text-center mt-3">
                             <a href="#" id="btn-back-from-recovery" class="btn btn-link text-muted btn-sm">
-                                <i class="fas fa-arrow-left me-1"></i>Retour
+                                <i class="ph ph-arrow-left me-1"></i>Retour
                             </a>
                         </div>
                     </div>
@@ -207,7 +207,7 @@
                     <!-- ========== RETOUR CONNEXION (toujours visible) ========== -->
                     <div class="text-center mt-3">
                         <a href="{{ url_for('auth.login') }}" class="btn btn-link text-muted">
-                            <i class="fas fa-arrow-left me-1"></i>
+                            <i class="ph ph-arrow-left me-1"></i>
                             Retour a la connexion
                         </a>
                     </div>
@@ -215,7 +215,7 @@
                 </div>
                 <div class="card-footer text-center text-muted">
                     <small>
-                        <i class="fas fa-clock me-1"></i>
+                        <i class="ph ph-clock me-1"></i>
                         Le code expire dans 10 minutes
                     </small>
                 </div>
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
         formSendEmail.addEventListener('submit', function() {
             var btn = document.getElementById('btn-send-email');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Envoi en cours...';
+            btn.innerHTML = '<i class="ph ph-circle-notch rotating me-1"></i>Envoi en cours...';
             // The form will POST and redirect; on return the email code field appears via flash
         });
     }
@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnResend) {
         btnResend.closest('form').addEventListener('submit', function() {
             btnResend.disabled = true;
-            btnResend.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Envoi en cours...';
+            btnResend.innerHTML = '<i class="ph ph-circle-notch rotating me-1"></i>Envoi en cours...';
         });
     }
 

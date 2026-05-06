@@ -38,7 +38,7 @@
                         {% if email_exists %}
                             <div class="alert alert-warning">
                                 <div class="d-flex align-items-start">
-                                    <i data-feather="alert-triangle" class="me-2 mt-1"></i>
+                                    <i class="ph ph-warning me-2 mt-1"></i>
                                     <div>
                                         <strong>Courriel déjà utilisé :</strong> Le courriel <code>{{ existing_email }}</code> existe déjà dans notre système.
                                         <br><small>Sélectionnez "Nouvelle entreprise pour mon compte existant" ci-dessous.</small>
@@ -50,7 +50,7 @@
                         {% if email_not_exists %}
                             <div class="alert alert-warning">
                                 <div class="d-flex align-items-start">
-                                    <i data-feather="alert-triangle" class="me-2 mt-1"></i>
+                                    <i class="ph ph-warning me-2 mt-1"></i>
                                     <div>
                                         <strong>Courriel non trouvé :</strong> Le courriel <code>{{ entered_email }}</code> n'existe pas dans notre système.
                                         <br><small>Sélectionnez "Nouveau compte utilisateur" ci-dessous.</small>

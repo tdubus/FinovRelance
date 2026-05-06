@@ -8,10 +8,10 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="h3 mb-0">
-                    <i class="fas fa-clock me-2"></i>Logs Cron Jobs
+                    <i class="ph ph-clock me-2"></i>Logs Cron Jobs
                 </h1>
                 <a href="{{ url_for('admin.user_audit_logs') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-user-clock me-1"></i>Logs Utilisateurs
+                    <i class="ph ph-user me-1"></i>Logs Utilisateurs
                 </a>
             </div>
         </div>
@@ -71,7 +71,7 @@
     {% if job_stats %}
     <div class="card mb-4">
         <div class="card-header">
-            <i class="fas fa-chart-bar me-1"></i>Statistiques par job (7 derniers jours)
+            <i class="ph ph-chart-bar me-1"></i>Statistiques par job (7 derniers jours)
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -116,7 +116,7 @@
 
     <div class="card mb-4">
         <div class="card-header">
-            <i class="fas fa-filter me-1"></i>Filtres
+            <i class="ph ph-funnel me-1"></i>Filtres
         </div>
         <div class="card-body">
             <form method="get" class="row g-3">
@@ -149,10 +149,10 @@
                 </div>
                 <div class="col-md-3 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary btn-sm me-2">
-                        <i class="fas fa-search me-1"></i>Filtrer
+                        <i class="ph ph-magnifying-glass me-1"></i>Filtrer
                     </button>
                     <a href="{{ url_for('admin.cron_job_logs') }}" class="btn btn-outline-secondary btn-sm">
-                        <i class="fas fa-times me-1"></i>Réinitialiser
+                        <i class="ph ph-x me-1"></i>Réinitialiser
                     </a>
                 </div>
             </form>
@@ -161,7 +161,7 @@
 
     <div class="card">
         <div class="card-header">
-            <i class="fas fa-list me-1"></i>Historique des exécutions ({{ logs.total }} résultats)
+            <i class="ph ph-list me-1"></i>Historique des exécutions ({{ logs.total }} résultats)
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -189,13 +189,13 @@
                             </td>
                             <td class="text-center">
                                 {% if log.status == 'success' %}
-                                <span class="badge bg-success"><i class="fas fa-check"></i> Succès</span>
+                                <span class="badge bg-success"><i class="ph ph-check"></i> Succès</span>
                                 {% elif log.status == 'warning' %}
-                                <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle"></i> Avertissement</span>
+                                <span class="badge bg-warning text-dark"><i class="ph ph-warning"></i> Avertissement</span>
                                 {% elif log.status == 'failed' %}
-                                <span class="badge bg-danger"><i class="fas fa-times"></i> Échec</span>
+                                <span class="badge bg-danger"><i class="ph ph-x"></i> Échec</span>
                                 {% elif log.status == 'running' %}
-                                <span class="badge bg-info"><i class="fas fa-spinner fa-spin"></i> En cours</span>
+                                <span class="badge bg-info"><i class="ph ph-circle-notch rotating"></i> En cours</span>
                                 {% else %}
                                 <span class="badge bg-secondary">{{ log.status }}</span>
                                 {% endif %}
@@ -234,7 +234,7 @@
                             </td>
                             <td>
                                 <a href="{{ url_for('admin.cron_job_log_detail', log_id=log.id) }}" class="btn btn-sm btn-outline-primary" title="Détails">
-                                    <i class="fas fa-eye"></i>
+                                    <i class="ph ph-eye"></i>
                                 </a>
                             </td>
                         </tr>

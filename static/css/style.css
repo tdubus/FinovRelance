@@ -1035,19 +1035,21 @@ footer {
   }
 }
 
-/* Bootstrap Color Overrides - Violet Branding */
-.bg-primary { background-color: #8475EC !important; }
-.text-primary { color: #8475EC !important; }
-.btn-primary { background-color: #8475EC !important; border-color: #8475EC !important; }
-.btn-primary:hover { background-color: #6B5DC0 !important; border-color: #6B5DC0 !important; }
-.btn-outline-primary { color: #8475EC !important; border-color: #8475EC !important; }
-.btn-outline-primary:hover { background-color: #8475EC !important; color: white !important; }
-.border-primary { border-color: #8475EC !important; }
-.alert-info { background-color: #EDE9FE !important; border-color: #8475EC !important; color: #6B5DC0 !important; }
-.bg-info { background-color: #8475EC !important; }
-.text-info { color: #8475EC !important; }
-a:not(.btn):not(.nav-link):not(.dropdown-item) { color: #8475EC; }
-a:not(.btn):not(.nav-link):not(.dropdown-item):hover { color: #6B5DC0; }
+/* Bootstrap Color Overrides - Violet Branding (legacy v1 only).
+   Scoped to :not([data-ui="v2"]) so the v2 theme can rebrand freely without
+   fighting these !important declarations. */
+html:not([data-ui="v2"]) .bg-primary { background-color: #8475EC !important; }
+html:not([data-ui="v2"]) .text-primary { color: #8475EC !important; }
+html:not([data-ui="v2"]) .btn-primary { background-color: #8475EC !important; border-color: #8475EC !important; }
+html:not([data-ui="v2"]) .btn-primary:hover { background-color: #6B5DC0 !important; border-color: #6B5DC0 !important; }
+html:not([data-ui="v2"]) .btn-outline-primary { color: #8475EC !important; border-color: #8475EC !important; }
+html:not([data-ui="v2"]) .btn-outline-primary:hover { background-color: #8475EC !important; color: white !important; }
+html:not([data-ui="v2"]) .border-primary { border-color: #8475EC !important; }
+html:not([data-ui="v2"]) .alert-info { background-color: #EDE9FE !important; border-color: #8475EC !important; color: #6B5DC0 !important; }
+html:not([data-ui="v2"]) .bg-info { background-color: #8475EC !important; }
+html:not([data-ui="v2"]) .text-info { color: #8475EC !important; }
+html:not([data-ui="v2"]) a:not(.btn):not(.nav-link):not(.dropdown-item) { color: #8475EC; }
+html:not([data-ui="v2"]) a:not(.btn):not(.nav-link):not(.dropdown-item):hover { color: #6B5DC0; }
 
 /* Utility Classes */
 .text-center { text-align: center; }

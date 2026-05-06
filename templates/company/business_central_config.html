@@ -9,14 +9,14 @@
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
-                        <i class="fas fa-cog me-2"></i>Configuration du Connecteur Business Central
+                        <i class="ph ph-gear me-2"></i>Configuration du Connecteur Business Central
                     </h4>
                 </div>
                 <div class="card-body">
                     {% if connection and connection.is_active %}
                         <!-- Connexion existante -->
                         <div class="alert alert-success">
-                            <i class="fas fa-check-circle me-2"></i>
+                            <i class="ph ph-check-circle me-2"></i>
                             <strong>Connecté à Business Central</strong>
                             <p class="mb-0 mt-2">Dernière synchronisation: 
                                 {% if connection.last_sync_at %}
@@ -54,24 +54,24 @@
                         
                         <div class="d-flex gap-2">
                             <a href="{{ url_for('company.business_central_field_mapping') }}" class="btn btn-primary">
-                                <i class="fas fa-exchange-alt me-2"></i>Configurer le Mapping
+                                <i class="ph ph-arrows-left-right me-2"></i>Configurer le Mapping
                             </a>
                             <form method="POST" action="{{ url_for('company.business_central_sync') }}" class="d-inline">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-sync me-2"></i>Synchroniser
+                                    <i class="ph ph-arrows-clockwise me-2"></i>Synchroniser
                                 </button>
                             </form>
                             <a href="{{ url_for('company.business_central_reconnect', connection_id=connection.id) }}" 
                                class="btn btn-warning">
-                                <i class="fas fa-sync me-2"></i>Reconnecter
+                                <i class="ph ph-arrows-clockwise me-2"></i>Reconnecter
                             </a>
                             
                             <form method="POST" action="{{ url_for('company.business_central_disconnect', connection_id=connection.id) }}" class="d-inline">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn btn-danger" 
                                         onclick="return confirm('Êtes-vous sûr de vouloir déconnecter Business Central ? Le mapping devra être refait.')">
-                                    <i class="fas fa-unlink me-2"></i>Déconnecter
+                                    <i class="ph ph-link-break me-2"></i>Déconnecter
                                 </button>
                             </form>
                         </div>
@@ -92,7 +92,7 @@
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             <div class="mb-3">
                                 <label for="customers_odata_url" class="form-label">
-                                    <i class="fas fa-users me-1"></i>URL OData pour les Clients
+                                    <i class="ph ph-users me-1"></i>URL OData pour les Clients
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="url" 
@@ -108,7 +108,7 @@
                             
                             <div class="mb-3">
                                 <label for="invoices_odata_url" class="form-label">
-                                    <i class="fas fa-file-invoice me-1"></i>URL OData pour les Factures
+                                    <i class="ph ph-receipt me-1"></i>URL OData pour les Factures
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="url" 
@@ -123,16 +123,16 @@
                             </div>
 
                             <div class="alert alert-warning">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <i class="ph ph-warning me-2"></i>
                                 <strong>Important:</strong> Après avoir fourni les URLs, vous serez redirigé vers Microsoft pour autoriser l'accès à Business Central.
                             </div>
                             
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-arrow-right me-2"></i>Continuer vers l'authentification
+                                    <i class="ph ph-arrow-right me-2"></i>Continuer vers l'authentification
                                 </button>
                                 <a href="{{ url_for('company.settings') }}" class="btn btn-secondary">
-                                    <i class="fas fa-times me-2"></i>Annuler
+                                    <i class="ph ph-x me-2"></i>Annuler
                                 </a>
                             </div>
                         </form>
@@ -143,7 +143,7 @@
             <!-- Section d'aide -->
             <div class="card mt-3">
                 <div class="card-header">
-                    <h6 class="mb-0"><i class="fas fa-question-circle me-2"></i>Aide</h6>
+                    <h6 class="mb-0"><i class="ph ph-question me-2"></i>Aide</h6>
                 </div>
                 <div class="card-body">
                     <h6>Comment obtenir les URLs OData ?</h6>

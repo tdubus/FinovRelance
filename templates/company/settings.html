@@ -68,9 +68,9 @@
                         id="general-tab" data-bs-toggle="tab" 
                         data-bs-target="#general" type="button" role="tab"
                         {% if user_role == 'admin' %}disabled title="Seuls les super administrateurs peuvent modifier les informations générales"{% endif %}>
-                    <i data-feather="briefcase" class="me-2"></i>
+                    <i class="ph ph-briefcase me-2"></i>
                     Informations générales
-                    {% if user_role == 'admin' %}<i data-feather="lock" class="ms-2 text-muted" style="width: 14px; height: 14px;"></i>{% endif %}
+                    {% if user_role == 'admin' %}<i class="ph ph-lock ms-2 text-muted" style="font-size: 14px;"></i>{% endif %}
                 </button>
             </li>
             {% if user_role != 'admin' %}
@@ -78,7 +78,7 @@
                 <button class="nav-link" 
                         id="subscription-tab" data-bs-toggle="tab" 
                         data-bs-target="#subscription" type="button" role="tab">
-                    <i data-feather="credit-card" class="me-2"></i>
+                    <i class="ph ph-credit-card me-2"></i>
                     Abonnement
                 </button>
             </li>
@@ -86,7 +86,7 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link {% if user_role == 'admin' %}active{% endif %}" id="accounting-tab" data-bs-toggle="tab" 
                         data-bs-target="#accounting" type="button" role="tab">
-                    <i data-feather="link" class="me-2"></i>
+                    <i class="ph ph-link me-2"></i>
                     Connexions comptables
                 </button>
             </li>
@@ -99,7 +99,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i data-feather="settings" class="me-2"></i>
+                            <i class="ph ph-gear me-2"></i>
                             Paramètres généraux
                         </h5>
                     </div>
@@ -109,7 +109,7 @@
                 <div class="card-body">
                     <!-- Company Basic Information -->
                     <h6 class="border-bottom pb-2 mb-3">
-                        <i data-feather="briefcase" class="me-2"></i>
+                        <i class="ph ph-briefcase me-2"></i>
                         Informations générales
                     </h6>
 
@@ -152,7 +152,7 @@
                                             <div class="d-flex flex-column gap-2">
                                                 <button type="button" class="btn btn-sm btn-outline-danger" 
                                                         onclick="if(confirm('Êtes-vous sûr de vouloir supprimer le logo ?')) { fetch('{{ url_for('company.delete_logo') }}', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': '{{ csrf_token() }}' }, body: new URLSearchParams({ 'csrf_token': '{{ csrf_token() }}' }) }).then(response => { if (response.ok) { window.location.reload(); } else { alert('Erreur lors de la suppression du logo'); } }).catch(error => { alert('Erreur lors de la suppression du logo'); }); }">
-                                                    <i data-feather="trash-2" width="16" height="16" class="me-1"></i>
+                                                    <i class="ph ph-trash me-1"></i>
                                                     Supprimer
                                                 </button>
                                                 <small class="text-muted">Téléchargez un nouveau fichier pour remplacer</small>
@@ -176,7 +176,7 @@
 
                     <!-- Contact Information -->
                     <h6 class="border-bottom pb-2 mb-3 mt-4">
-                        <i data-feather="phone" class="me-2"></i>
+                        <i class="ph ph-phone me-2"></i>
                         Informations de contact
                     </h6>
 
@@ -186,7 +186,7 @@
                                 {{ form.email.label(class="form-label") }}
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i data-feather="mail"></i>
+                                        <i class="ph ph-envelope"></i>
                                     </span>
                                     {{ form.email(class="form-control", placeholder="contact@votre-entreprise.com") }}
                                 </div>
@@ -205,7 +205,7 @@
                                 {{ form.phone.label(class="form-label") }}
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i data-feather="phone"></i>
+                                        <i class="ph ph-phone"></i>
                                     </span>
                                     {{ form.phone(class="form-control", type="tel", placeholder="(514) 555-0123") }}
                                 </div>
@@ -236,7 +236,7 @@
 
                     <!-- Brand Customization -->
                     <h6 class="border-bottom pb-2 mb-3 mt-4">
-                        <i data-feather="palette" class="me-2"></i>
+                        <i class="ph ph-palette me-2"></i>
                         Personnalisation de la marque
                     </h6>
 
@@ -299,7 +299,7 @@
 
                     <!-- Regional and Business Configuration -->
                     <h6 class="border-bottom pb-2 mb-3 mt-4">
-                        <i data-feather="globe" class="me-2"></i>
+                        <i class="ph ph-globe me-2"></i>
                         Configuration régionale et métier
                     </h6>
 
@@ -350,7 +350,7 @@
 
                     <div class="alert alert-info">
                         <div class="d-flex">
-                            <i data-feather="info" class="me-2 mt-1"></i>
+                            <i class="ph ph-info me-2 mt-1"></i>
                             <div>
                                 <strong>Configuration des calculs :</strong>
                                 <ul class="mb-0 mt-1">
@@ -364,7 +364,7 @@
 
                     <!-- Project Field Configuration (Optional Hierarchy) -->
                     <h6 class="border-bottom pb-2 mb-3 mt-4">
-                        <i data-feather="folder" class="me-2"></i>
+                        <i class="ph ph-folder me-2"></i>
                         Champ projet (hiérarchie optionnelle)
                     </h6>
 
@@ -391,7 +391,7 @@
 
                     <div class="alert alert-warning">
                         <div class="d-flex">
-                            <i data-feather="alert-triangle" class="me-2 mt-1"></i>
+                            <i class="ph ph-warning me-2 mt-1"></i>
                             <div>
                                 <strong>Important :</strong> Ce champ est disponible <strong>uniquement pour les imports Excel/CSV</strong>.
                                 Les connecteurs comptables (QuickBooks, Business Central, etc.) ignorent ce champ.
@@ -408,11 +408,11 @@
 
                     <div class="card-footer d-flex justify-content-between">
                         <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
-                            <i data-feather="arrow-left" class="me-1"></i>
+                            <i class="ph ph-arrow-left me-1"></i>
                             Retour au tableau de bord
                         </a>
                         <button type="submit" class="btn btn-primary" onclick="console.log('Button clicked!');">
-                            <i data-feather="save" class="me-1"></i>
+                            <i class="ph ph-floppy-disk me-1"></i>
                             Sauvegarder
                         </button>
                     </div>
@@ -425,7 +425,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i data-feather="link" class="me-2"></i>
+                            <i class="ph ph-link me-2"></i>
                             Connexions comptables
                         </h5>
                     </div>
@@ -434,7 +434,7 @@
                         <!-- SECTION 1: Connecteur sélectionné -->
                         <div class="mb-5">
                             <h6 class="text-muted mb-3">
-                                <i data-feather="check-circle" class="me-2"></i>Connecteur sélectionné
+                                <i class="ph ph-check-circle me-2"></i>Connecteur sélectionné
                             </h6>
                             
                             {% if connector_context.selected_connector %}
@@ -449,7 +449,7 @@
                                                          alt="{{ conn.name }}" style="max-height: 48px; max-width: 80px; width: auto; height: auto; object-fit: contain;">
                                                 {% else %}
                                                     <div class="rounded p-2" style="background: #1e7e34;">
-                                                        <i class="fas fa-file-excel text-white" style="font-size: 32px;"></i>
+                                                        <i class="ph ph-file-csv text-white" style="font-size: 32px;"></i>
                                                     </div>
                                                 {% endif %}
                                             </div>
@@ -469,9 +469,9 @@
                                                     <small class="text-muted">Mapping Clients</small>
                                                     <div class="fw-bold">
                                                         {% if conn.mapping_object and conn.mapping_object.client_column_mappings %}
-                                                            <i class="fas fa-check text-success"></i> Configuré
+                                                            <i class="ph ph-check text-success"></i> Configuré
                                                         {% else %}
-                                                            <i class="fas fa-times text-danger"></i> Non configuré
+                                                            <i class="ph ph-x text-danger"></i> Non configuré
                                                         {% endif %}
                                                     </div>
                                                 </div>
@@ -479,9 +479,9 @@
                                                     <small class="text-muted">Mapping Factures</small>
                                                     <div class="fw-bold">
                                                         {% if conn.mapping_object and conn.mapping_object.invoice_column_mappings %}
-                                                            <i class="fas fa-check text-success"></i> Configuré
+                                                            <i class="ph ph-check text-success"></i> Configuré
                                                         {% else %}
-                                                            <i class="fas fa-times text-danger"></i> Non configuré
+                                                            <i class="ph ph-x text-danger"></i> Non configuré
                                                         {% endif %}
                                                     </div>
                                                 </div>
@@ -490,23 +490,23 @@
                                             <div class="mt-3">
                                                 <div class="d-flex gap-2 flex-wrap">
                                                     <a href="{{ url_for('company.file_import_config') }}" class="btn btn-sm btn-outline-primary">
-                                                        <i class="fas fa-cog me-1"></i>Reconfigurer
+                                                        <i class="ph ph-gear me-1"></i>Reconfigurer
                                                     </a>
                                                     
                                                     {% if conn.mapping_object and conn.mapping_object.client_column_mappings %}
                                                     <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#importClientsModal">
-                                                        <i class="fas fa-users me-1"></i>Importer clients
+                                                        <i class="ph ph-users me-1"></i>Importer clients
                                                     </button>
                                                     {% endif %}
                                                     
                                                     {% if conn.mapping_object and conn.mapping_object.invoice_column_mappings %}
                                                     <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#importInvoicesModal">
-                                                        <i class="fas fa-file-invoice me-1"></i>Importer factures
+                                                        <i class="ph ph-receipt me-1"></i>Importer factures
                                                     </button>
                                                     {% endif %}
                                                     
                                                     <a href="{{ url_for('import.list_jobs') }}" class="btn btn-sm btn-outline-secondary">
-                                                        <i class="fas fa-history me-1"></i>Historique des imports
+                                                        <i class="ph ph-clock-counter-clockwise me-1"></i>Historique des imports
                                                     </a>
                                                 </div>
                                             </div>
@@ -540,7 +540,7 @@
                                                 <div class="mt-3">
                                                     {% if conn.sync_stats.status == 'success' %}
                                                         <div class="alert alert-success p-2 small mb-0">
-                                                            <i data-feather="check-circle" class="me-2" style="width: 16px; height: 16px;"></i>
+                                                            <i class="ph ph-check-circle me-2" style="font-size: 16px;"></i>
                                                             <strong>Dernière sync :</strong>
                                                             {{ conn.sync_stats.customers_created or 0 }} clients créés,
                                                             {{ conn.sync_stats.customers_updated or 0 }} mis à jour,
@@ -549,7 +549,7 @@
                                                         </div>
                                                     {% elif conn.sync_stats.status == 'error' %}
                                                         <div class="alert alert-danger p-2 small mb-0">
-                                                            <i data-feather="alert-circle" class="me-2" style="width: 16px; height: 16px;"></i>
+                                                            <i class="ph ph-warning-circle me-2" style="font-size: 16px;"></i>
                                                             <strong>Échec :</strong> {{ conn.sync_stats.error }}
                                                         </div>
                                                     {% endif %}
@@ -582,16 +582,16 @@
                                                         </form>
                                                     {% elif conn.type == 'business_central' %}
                                                         <button type="button" class="btn btn-sm btn-primary" onclick="syncBCCustomers()">
-                                                            <i data-feather="users" class="me-1"></i>Sync Clients
+                                                            <i class="ph ph-users me-1"></i>Sync Clients
                                                         </button>
                                                         <button type="button" class="btn btn-sm btn-primary" onclick="syncBCInvoices()">
-                                                            <i data-feather="file-text" class="me-1"></i>Sync Factures
+                                                            <i class="ph ph-file-text me-1"></i>Sync Factures
                                                         </button>
                                                         <button type="button" class="btn btn-sm btn-success" onclick="syncBCPayments()">
-                                                            <i data-feather="dollar-sign" class="me-1"></i>Sync Paiements
+                                                            <i class="ph ph-currency-circle-dollar me-1"></i>Sync Paiements
                                                         </button>
                                                         <a href="{{ url_for('company.business_central_field_mapping_v2') }}" class="btn btn-sm btn-outline-primary">
-                                                            <i data-feather="settings" class="me-1"></i>Configurer mapping
+                                                            <i class="ph ph-gear me-1"></i>Configurer mapping
                                                         </a>
                                                         <form method="POST" action="{{ url_for('company.business_central_disconnect', connection_id=conn.connection_id) }}" class="d-inline">
                                                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -613,7 +613,7 @@
                                                         </form>
                                                     {% elif conn.type == 'odoo' %}
                                                         <button id="sync-btn-odoo" type="button" class="btn btn-sm btn-primary" onclick="syncOdoo('clients')">
-                                                            <i data-feather="refresh-cw" class="me-1"></i>Synchroniser
+                                                            <i class="ph ph-arrow-clockwise me-1"></i>Synchroniser
                                                         </button>
                                                         <form method="POST" action="{{ url_for('company.odoo_disconnect', connection_id=conn.connection_id) }}" class="d-inline">
                                                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -631,7 +631,7 @@
                             {% else %}
                                 <!-- Aucun connecteur sélectionné -->
                                 <div class="alert alert-info">
-                                    <i data-feather="info" class="me-2"></i>
+                                    <i class="ph ph-info me-2"></i>
                                     <strong>Pas de connecteur sélectionné</strong>
                                     <p class="mb-0 mt-2">Choisissez un connecteur ci-dessous pour synchroniser vos données comptables.</p>
                                 </div>
@@ -641,7 +641,7 @@
                         <!-- SECTION 2: Connecteurs disponibles -->
                         <div>
                             <h6 class="text-muted mb-3">
-                                <i data-feather="grid" class="me-2"></i>Connecteurs disponibles
+                                <i class="ph ph-grid-four me-2"></i>Connecteurs disponibles
                             </h6>
                             
                             <div class="row g-3">
@@ -656,7 +656,7 @@
                                                                  alt="{{ connector.name }}" style="max-height: 32px; max-width: 60px; width: auto; height: auto; object-fit: contain;">
                                                         {% else %}
                                                             <div class="rounded p-1" style="background: #1e7e34;">
-                                                                <i class="fas fa-file-excel text-white" style="font-size: 24px; padding: 4px;"></i>
+                                                                <i class="ph ph-file-csv text-white" style="font-size: 24px; padding: 4px;"></i>
                                                             </div>
                                                         {% endif %}
                                                     </div>
@@ -669,17 +669,17 @@
                                                 <div class="mt-auto">
                                                     {% if connector.is_configured and connector.type == 'file_import' %}
                                                         <a href="{{ url_for('company.file_import_config') }}" class="btn btn-sm btn-outline-success">
-                                                            <i class="fas fa-cog me-1"></i>Reconfigurer
+                                                            <i class="ph ph-gear me-1"></i>Reconfigurer
                                                         </a>
                                                     {% elif connector.type == 'file_import' %}
                                                         {% if accounting_permission.allowed %}
                                                         <a href="{{ url_for('company.file_import_config') }}" class="btn btn-sm btn-success">
-                                                            <i class="fas fa-cog me-1"></i>Configurer
+                                                            <i class="ph ph-gear me-1"></i>Configurer
                                                         </a>
                                                         {% else %}
                                                         <button class="btn btn-sm btn-outline-secondary" disabled 
                                                                 title="{{ accounting_permission.restriction_reason }}">
-                                                            <i class="fas fa-lock me-1"></i>Configurer
+                                                            <i class="ph ph-lock me-1"></i>Configurer
                                                         </button>
                                                         {% endif %}
                                                     {% elif connector.type == 'quickbooks' %}
@@ -690,7 +690,7 @@
                                                         {% else %}
                                                         <button class="btn btn-sm btn-outline-secondary" disabled 
                                                                 title="{{ accounting_permission.restriction_reason }}">
-                                                            <i class="fas fa-lock me-1"></i>Connecter
+                                                            <i class="ph ph-lock me-1"></i>Connecter
                                                         </button>
                                                         {% endif %}
                                                     {% elif connector.type == 'xero' %}
@@ -701,7 +701,7 @@
                                                         {% else %}
                                                         <button class="btn btn-sm btn-outline-secondary" disabled 
                                                                 title="{{ accounting_permission.restriction_reason }}">
-                                                            <i class="fas fa-lock me-1"></i>Connecter
+                                                            <i class="ph ph-lock me-1"></i>Connecter
                                                         </button>
                                                         {% endif %}
                                                     {% elif connector.type == 'business_central' %}
@@ -712,7 +712,7 @@
                                                         {% else %}
                                                         <button class="btn btn-sm btn-outline-secondary" disabled 
                                                                 title="{{ accounting_permission.restriction_reason }}">
-                                                            <i class="fas fa-lock me-1"></i>Configurer
+                                                            <i class="ph ph-lock me-1"></i>Configurer
                                                         </button>
                                                         {% endif %}
                                                     {% elif connector.type == 'odoo' %}
@@ -723,7 +723,7 @@
                                                         {% else %}
                                                         <button class="btn btn-sm btn-outline-secondary" disabled
                                                                 title="{{ accounting_permission.restriction_reason }}">
-                                                            <i class="fas fa-lock me-1"></i>Configurer
+                                                            <i class="ph ph-lock me-1"></i>Configurer
                                                         </button>
                                                         {% endif %}
                                                     {% elif connector.type == 'pennylane' %}
@@ -734,7 +734,7 @@
                                                         {% else %}
                                                         <button class="btn btn-sm btn-outline-secondary" disabled
                                                                 title="{{ accounting_permission.restriction_reason }}">
-                                                            <i class="fas fa-lock me-1"></i>Connecter
+                                                            <i class="ph ph-lock me-1"></i>Connecter
                                                         </button>
                                                         {% endif %}
                                                     {% endif %}
@@ -756,7 +756,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="importClientsLabel">
-                                <i class="fas fa-users me-2"></i>Importer des clients
+                                <i class="ph ph-users me-2"></i>Importer des clients
                             </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
@@ -764,7 +764,7 @@
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <div class="modal-body">
                                 <div class="alert alert-info">
-                                    <i class="fas fa-info-circle me-2"></i>
+                                    <i class="ph ph-info me-2"></i>
                                     Uploadez votre fichier Excel (.xlsx) ou CSV (.csv) contenant les clients.
                                     Le mapping configuré sera appliqué automatiquement.
                                 </div>
@@ -782,7 +782,7 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                                 <button type="submit" class="btn btn-success" id="startClientsImport">
-                                    <i class="fas fa-upload me-1"></i>Importer
+                                    <i class="ph ph-upload-simple me-1"></i>Importer
                                 </button>
                             </div>
                         </form>
@@ -796,7 +796,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="importProgressLabel">
-                                <i class="fas fa-spinner fa-spin me-2"></i>Import en cours...
+                                <i class="ph ph-circle-notch rotating me-2"></i>Import en cours...
                             </h5>
                         </div>
                         <div class="modal-body">
@@ -829,7 +829,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="importInvoicesLabel">
-                                <i class="fas fa-file-invoice me-2"></i>Importer des factures
+                                <i class="ph ph-receipt me-2"></i>Importer des factures
                             </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
@@ -837,7 +837,7 @@
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <div class="modal-body">
                                 <div class="alert alert-info">
-                                    <i class="fas fa-info-circle me-2"></i>
+                                    <i class="ph ph-info me-2"></i>
                                     Uploadez votre fichier Excel (.xlsx) ou CSV (.csv) contenant les factures.
                                     Le mapping configuré sera appliqué automatiquement.
                                 </div>
@@ -855,7 +855,7 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                                 <button type="submit" class="btn btn-warning">
-                                    <i class="fas fa-upload me-1"></i>Importer
+                                    <i class="ph ph-upload-simple me-1"></i>Importer
                                 </button>
                             </div>
                         </form>
@@ -869,7 +869,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i data-feather="credit-card" class="me-2"></i>
+                            <i class="ph ph-credit-card me-2"></i>
                             Gestion de l'abonnement
                         </h5>
                     </div>
@@ -923,7 +923,7 @@
                         {% if subscription_data.trial.is_trialing %}
                         <div class="alert alert-info border-info mb-4">
                             <div class="d-flex">
-                                <i data-feather="clock" class="me-3 mt-1 text-info" style="min-width: 24px;"></i>
+                                <i class="ph ph-clock me-3 mt-1 text-info" style="font-size: 24px; min-"></i>
                                 <div>
                                     <h6 class="alert-heading mb-1">Période d'essai gratuite en cours</h6>
                                     <p class="mb-0">
@@ -945,7 +945,7 @@
                                     <!-- Abonnement Stripe actif - Redirection vers portail -->
                                     <div class="alert alert-info">
                                         <h6 class="alert-heading">
-                                            <i data-feather="info" class="me-2"></i>
+                                            <i class="ph ph-info me-2"></i>
                                             Gestion via Stripe
                                         </h6>
                                         <p class="mb-3">
@@ -961,7 +961,7 @@
                                     <!-- Plan gratuit - Proposition d'upgrade -->
                                     <div class="alert alert-secondary">
                                         <h6 class="alert-heading">
-                                            <i data-feather="gift" class="me-2"></i>
+                                            <i class="ph ph-gift me-2"></i>
                                             Plan Gratuit
                                         </h6>
                                         <p class="mb-3">
@@ -969,7 +969,7 @@
                                             toutes les fonctionnalités et ajouter plus d'utilisateurs.
                                         </p>
                                         <a href="{{ url_for('stripe_checkout_v2.plan_selection') }}" class="btn btn-primary">
-                                            <i data-feather="arrow-up-circle" class="me-2"></i>
+                                            <i class="ph ph-arrow-circle-up me-2"></i>
                                             Choisir un plan payant
                                         </a>
                                     </div>
@@ -977,7 +977,7 @@
                                     <!-- Aucun abonnement - Proposition de choix de plan -->
                                     <div class="alert alert-info">
                                         <h6 class="alert-heading">
-                                            <i data-feather="star" class="me-2"></i>
+                                            <i class="ph ph-star me-2"></i>
                                             Choisir votre forfait
                                         </h6>
                                         <p class="mb-3">
@@ -985,7 +985,7 @@
                                             Commencez gratuitement ou choisissez un plan payant pour plus de fonctionnalités.
                                         </p>
                                         <a href="{{ url_for('stripe_checkout_v2.plan_selection') }}" class="btn btn-primary">
-                                            <i data-feather="package" class="me-2"></i>
+                                            <i class="ph ph-package me-2"></i>
                                             Voir tous les forfaits
                                         </a>
                                     </div>
@@ -1003,7 +1003,7 @@
         <div class="card mt-4 border-danger">
             <div class="card-header bg-danger text-white">
                 <h6 class="mb-0">
-                    <i data-feather="alert-triangle" class="me-2"></i>
+                    <i class="ph ph-warning me-2"></i>
                     Zone dangereuse
                 </h6>
             </div>
@@ -1020,7 +1020,7 @@
                         {% if company.stripe_subscription_id and company.subscription_status in ['active', 'trialing', 'past_due', 'pending_cancellation'] %}
                         <div class="alert alert-warning mb-3">
                             <div class="d-flex">
-                                <i data-feather="credit-card" class="me-2 mt-1 text-warning"></i>
+                                <i class="ph ph-credit-card me-2 mt-1 text-warning"></i>
                                 <div>
                                     <strong>⚠️ Abonnement Stripe en cours :</strong>
                                     <p class="mb-1 mt-1">Si un abonnement est actif, la suppression de l'entreprise entraînera l'annulation de cet abonnement <strong>uniquement à la fin de la période de facturation en cours</strong>.</p>
@@ -1035,7 +1035,7 @@
 
                         <div class="alert alert-warning">
                             <h6 class="alert-heading">
-                                <i data-feather="shield" class="me-2"></i>
+                                <i class="ph ph-shield-check me-2"></i>
                                 Conformité aux lois canadiennes
                             </h6>
                             <p class="mb-2">
@@ -1055,7 +1055,7 @@
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <input type="hidden" name="confirmation" id="confirmationField" value="">
                                 <button type="submit" class="btn btn-danger btn-lg">
-                                    <i data-feather="trash-2" class="me-2"></i>
+                                    <i class="ph ph-trash me-2"></i>
                                     Supprimer l'entreprise
                                 </button>
                             </form>
@@ -1079,7 +1079,7 @@
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="deleteCompanyModalLabel">
-                    <i data-feather="alert-triangle" class="me-2"></i>
+                    <i class="ph ph-warning me-2"></i>
                     Suppression définitive de l'entreprise
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1087,7 +1087,7 @@
             <div class="modal-body">
                 <div class="alert alert-danger">
                     <h6 class="alert-heading">
-                        <i data-feather="alert-circle" class="me-2"></i>
+                        <i class="ph ph-warning-circle me-2"></i>
                         ATTENTION : Action irréversible
                     </h6>
                     <p class="mb-0">
@@ -1100,23 +1100,23 @@
                 <div class="row">
                     <div class="col-md-6">
                         <ul class="list-unstyled">
-                            <li><i data-feather="users" class="me-2 text-danger" style="width: 16px; height: 16px;"></i>{{ company.users|length }} utilisateur(s)</li>
-                            <li><i data-feather="users" class="me-2 text-danger" style="width: 16px; height: 16px;"></i>{{ company.clients|length }} client(s)</li>
-                            <li><i data-feather="file-text" class="me-2 text-danger" style="width: 16px; height: 16px;"></i>{{ company.invoices|length }} facture(s)</li>
+                            <li><i class="ph ph-users me-2 text-danger" style="font-size: 16px;"></i>{{ company.users|length }} utilisateur(s)</li>
+                            <li><i class="ph ph-users me-2 text-danger" style="font-size: 16px;"></i>{{ company.clients|length }} client(s)</li>
+                            <li><i class="ph ph-file-text me-2 text-danger" style="font-size: 16px;"></i>{{ company.invoices|length }} facture(s)</li>
                         </ul>
                     </div>
                     <div class="col-md-6">
                         <ul class="list-unstyled">
-                            <li><i data-feather="message-circle" class="me-2 text-danger" style="width: 16px; height: 16px;"></i>Toutes les notes de communication</li>
-                            <li><i data-feather="mail" class="me-2 text-danger" style="width: 16px; height: 16px;"></i>Tous les modèles de courriels</li>
-                            <li><i data-feather="link" class="me-2 text-danger" style="width: 16px; height: 16px;"></i>Toutes les connexions comptables</li>
+                            <li><i class="ph ph-chat-circle me-2 text-danger" style="font-size: 16px;"></i>Toutes les notes de communication</li>
+                            <li><i class="ph ph-envelope me-2 text-danger" style="font-size: 16px;"></i>Tous les modèles de courriels</li>
+                            <li><i class="ph ph-link me-2 text-danger" style="font-size: 16px;"></i>Toutes les connexions comptables</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="alert alert-info">
                     <h6 class="alert-heading">
-                        <i data-feather="info" class="me-2"></i>
+                        <i class="ph ph-info me-2"></i>
                         Conformité légale - Canada
                     </h6>
                     <ul class="mb-0 small">
@@ -1148,14 +1148,14 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i data-feather="x" class="me-2"></i>Annuler
+                    <i class="ph ph-x me-2"></i>Annuler
                 </button>
                 <button type="button" 
                         class="btn btn-danger" 
                         id="confirmDeleteBtn" 
                         onclick="confirmCompanyDeletion()" 
                         disabled>
-                    <i data-feather="trash-2" class="me-2"></i>
+                    <i class="ph ph-trash me-2"></i>
                     Supprimer définitivement l'entreprise
                 </button>
             </div>
@@ -1270,7 +1270,7 @@ document.addEventListener('DOMContentLoaded', function() {
         connectBtn.addEventListener('click', function() {
             // Show loading state
             this.disabled = true;
-            this.innerHTML = '<i data-feather="loader" class="me-2"></i>Connexion...';
+            this.innerHTML = '<i class="ph ph-circle-notch me-2"></i>Connexion...';
 
             // Generate a random state for security
             const state = Math.random().toString(36).substring(2, 15);
@@ -1292,7 +1292,7 @@ function createCheckout(planId, planName) {
     const button = event.target;
     const originalText = button.innerHTML;
     button.disabled = true;
-    button.innerHTML = '<i data-feather="loader" class="me-2"></i>Création...';
+    button.innerHTML = '<i class="ph ph-circle-notch me-2"></i>Création...';
 
     fetch('/stripe/v2/create-checkout', {
         method: 'POST',
@@ -1395,7 +1395,7 @@ function triggerQuickBooksSync() {
 
     // Show loading state
     button.disabled = true;
-    button.innerHTML = '<i data-feather="loader" class="me-2"></i>Synchronisation...';
+    button.innerHTML = '<i class="ph ph-circle-notch me-2"></i>Synchronisation...';
 
     fetch('{{ url_for("company.quickbooks_sync") }}', {
         method: 'POST',
@@ -1416,14 +1416,14 @@ function triggerQuickBooksSync() {
     })
     .then(data => {
         if (data.success) {
-            button.innerHTML = '<i data-feather="check" class="me-2"></i>Synchronisation lancée';
+            button.innerHTML = '<i class="ph ph-check me-2"></i>Synchronisation lancée';
             // Actualiser après un court délai pour voir le résultat
             setTimeout(() => {
                 window.location.reload();
             }, 2000);
         } else {
             console.error('Sync failed:', data.message);
-            button.innerHTML = '<i data-feather="x" class="me-2"></i>Erreur';
+            button.innerHTML = '<i class="ph ph-x me-2"></i>Erreur';
             setTimeout(() => {
                 button.disabled = false;
                 button.innerHTML = originalText;
@@ -1432,7 +1432,7 @@ function triggerQuickBooksSync() {
     })
     .catch(error => {
         console.error('Sync error:', error);
-        button.innerHTML = '<i data-feather="x" class="me-2"></i>Erreur';
+        button.innerHTML = '<i class="ph ph-x me-2"></i>Erreur';
         setTimeout(() => {
             button.disabled = false;
             button.innerHTML = originalText;
@@ -1448,7 +1448,7 @@ function triggerXeroSync() {
     const originalText = button.innerHTML;
 
     button.disabled = true;
-    button.innerHTML = '<i data-feather="loader" class="me-2"></i>Synchronisation...';
+    button.innerHTML = '<i class="ph ph-circle-notch me-2"></i>Synchronisation...';
 
     fetch('{{ url_for("company.xero_sync") }}', {
         method: 'POST',
@@ -1469,13 +1469,13 @@ function triggerXeroSync() {
     })
     .then(data => {
         if (data.success) {
-            button.innerHTML = '<i data-feather="check" class="me-2"></i>Synchronisation lancée';
+            button.innerHTML = '<i class="ph ph-check me-2"></i>Synchronisation lancée';
             setTimeout(() => {
                 window.location.reload();
             }, 2000);
         } else {
             console.error('Sync failed:', data.message);
-            button.innerHTML = '<i data-feather="x" class="me-2"></i>Erreur';
+            button.innerHTML = '<i class="ph ph-x me-2"></i>Erreur';
             setTimeout(() => {
                 button.disabled = false;
                 button.innerHTML = originalText;
@@ -1484,7 +1484,7 @@ function triggerXeroSync() {
     })
     .catch(error => {
         console.error('Sync error:', error);
-        button.innerHTML = '<i data-feather="x" class="me-2"></i>Erreur';
+        button.innerHTML = '<i class="ph ph-x me-2"></i>Erreur';
         setTimeout(() => {
             button.disabled = false;
             button.innerHTML = originalText;
@@ -1782,7 +1782,7 @@ document.addEventListener('DOMContentLoaded', function() {
         syncText.textContent = 'Synchroniser maintenant';
         
         // Arrêter l'animation
-        const icon = syncBtn.querySelector('i[data-feather="refresh-cw"]');
+        const icon = syncBtn.querySelector('i.ph-arrows-clockwise');
         if (icon) {
             icon.style.animation = '';
         }
@@ -1976,19 +1976,19 @@ function updateBCSyncButtons(syncInProgress) {
         // Désactiver et changer le texte des boutons
         if (clientsBtn) {
             clientsBtn.disabled = true;
-            clientsBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Synchronisation en cours...';
+            clientsBtn.innerHTML = '<i class="ph ph-circle-notch rotating me-1"></i>Synchronisation en cours...';
             clientsBtn.classList.add('btn-secondary');
             clientsBtn.classList.remove('btn-success');
         }
         if (invoicesBtn) {
             invoicesBtn.disabled = true;
-            invoicesBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Synchronisation en cours...';
+            invoicesBtn.innerHTML = '<i class="ph ph-circle-notch rotating me-1"></i>Synchronisation en cours...';
             invoicesBtn.classList.add('btn-secondary');
             invoicesBtn.classList.remove('btn-warning');
         }
         if (paymentsBtn) {
             paymentsBtn.disabled = true;
-            paymentsBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Synchronisation en cours...';
+            paymentsBtn.innerHTML = '<i class="ph ph-circle-notch rotating me-1"></i>Synchronisation en cours...';
             paymentsBtn.classList.add('btn-secondary');
             paymentsBtn.classList.remove('btn-success');
         }
@@ -1996,19 +1996,19 @@ function updateBCSyncButtons(syncInProgress) {
         // Réactiver et restaurer le texte original des boutons
         if (clientsBtn) {
             clientsBtn.disabled = false;
-            clientsBtn.innerHTML = '<i class="fas fa-users me-1"></i>Sync Clients';
+            clientsBtn.innerHTML = '<i class="ph ph-users me-1"></i>Sync Clients';
             clientsBtn.classList.add('btn-success');
             clientsBtn.classList.remove('btn-secondary');
         }
         if (invoicesBtn) {
             invoicesBtn.disabled = false;
-            invoicesBtn.innerHTML = '<i class="fas fa-file-invoice me-1"></i>Sync Factures';
+            invoicesBtn.innerHTML = '<i class="ph ph-receipt me-1"></i>Sync Factures';
             invoicesBtn.classList.add('btn-warning');
             invoicesBtn.classList.remove('btn-secondary');
         }
         if (paymentsBtn) {
             paymentsBtn.disabled = false;
-            paymentsBtn.innerHTML = '<i class="fas fa-dollar-sign me-1"></i>Sync Paiements';
+            paymentsBtn.innerHTML = '<i class="ph ph-currency-circle-dollar me-1"></i>Sync Paiements';
             paymentsBtn.classList.add('btn-success');
             paymentsBtn.classList.remove('btn-secondary');
         }

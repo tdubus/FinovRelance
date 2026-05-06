@@ -165,13 +165,13 @@
                             
                             {% if company.stripe_subscription_id %}
                             <button type="button" class="btn btn-warning me-3" id="syncStripeBtn">
-                                <i class="fas fa-sync-alt me-2"></i>Synchroniser avec Stripe
+                                <i class="ph ph-arrows-clockwise me-2"></i>Synchroniser avec Stripe
                             </button>
                             <div class="form-text mb-3">Récupère les informations actuelles depuis Stripe (plan, licences, downgrades programmés)</div>
                             {% endif %}
                             
                             <button type="button" class="btn btn-danger" id="stopSyncBtn">
-                                <i class="fas fa-stop-circle me-2"></i>Arrêter les synchronisations en cours
+                                <i class="ph ph-stop-circle me-2"></i>Arrêter les synchronisations en cours
                             </button>
                             <div class="form-text">Arrête immédiatement toutes les synchronisations en cours (QuickBooks, Business Central)</div>
                         </div>
@@ -180,10 +180,10 @@
                     
                     <div class="d-flex justify-content-between pt-4 border-top">
                         <a href="{{ url_for('admin.companies') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Retour
+                            <i class="ph ph-arrow-left me-2"></i>Retour
                         </a>
                         <button type="submit" class="btn btn-admin-primary">
-                            <i class="fas fa-save me-2"></i>{{ action }}
+                            <i class="ph ph-floppy-disk me-2"></i>{{ action }}
                         </button>
                     </div>
                 </form>
@@ -224,7 +224,7 @@ document.getElementById('syncStripeBtn').addEventListener('click', function() {
     const btn = this;
     const originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Synchronisation...';
+    btn.innerHTML = '<i class="ph ph-circle-notch rotating me-2"></i>Synchronisation...';
     
     fetch('{{ url_for("admin.sync_stripe_subscription", company_id=company.id) }}', {
         method: 'POST',
@@ -271,7 +271,7 @@ document.getElementById('stopSyncBtn').addEventListener('click', function() {
     const btn = this;
     const originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Arrêt en cours...';
+    btn.innerHTML = '<i class="ph ph-circle-notch rotating me-2"></i>Arrêt en cours...';
     
     fetch('{{ url_for("admin.stop_company_sync", company_id=company.id) }}', {
         method: 'POST',

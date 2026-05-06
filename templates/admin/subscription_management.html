@@ -38,7 +38,7 @@
     </div>
     <div class="col-md-2 mb-3">
         <a href="{{ url_for('admin.audit_logs') }}" class="stat-card stat-info text-decoration-none">
-            <div class="stat-value"><i class="fas fa-history"></i></div>
+            <div class="stat-value"><i class="ph ph-clock-counter-clockwise"></i></div>
             <div class="stat-label">Logs d'audit</div>
         </a>
     </div>
@@ -154,7 +154,7 @@
                                             <form method="POST" action="{{ url_for('admin.force_reactivate_subscription', company_id=company.id) }}" style="display: inline;">
                                                 <button type="submit" class="btn btn-sm btn-success" 
                                                         onclick="return confirm('Êtes-vous sûr de vouloir réactiver cet abonnement ?')">
-                                                    <i class="fas fa-play me-1"></i>Réactiver
+                                                    <i class="ph ph-play me-1"></i>Réactiver
                                                 </button>
                                             </form>
                                         {% endif %}
@@ -163,16 +163,16 @@
                                             <button type="button" class="btn btn-sm btn-warning" 
                                                     data-bs-toggle="modal" data-bs-target="#extendCancellationModal" 
                                                     data-company-id="{{ company.id }}" data-company-name="{{ company.name }}">
-                                                <i class="fas fa-clock me-1"></i>Reporter annulation
+                                                <i class="ph ph-clock me-1"></i>Reporter annulation
                                             </button>
                                         {% endif %}
                                         
                                         <a href="{{ url_for('admin.edit_company', company_id=company.id) }}" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-edit me-1"></i>Éditer
+                                            <i class="ph ph-pencil-simple me-1"></i>Éditer
                                         </a>
                                         
                                         <a href="{{ url_for('admin.audit_logs', company_id=company.id) }}" class="btn btn-sm btn-outline-info">
-                                            <i class="fas fa-history me-1"></i>Logs
+                                            <i class="ph ph-clock-counter-clockwise me-1"></i>Logs
                                         </a>
                                     </div>
                                 </td>
@@ -229,7 +229,7 @@
                 {% else %}
                 <div class="text-center p-5">
                     <div class="text-muted">
-                        <i class="fas fa-search fa-3x mb-3"></i>
+                        <i class="ph ph-magnifying-glass fa-3x mb-3"></i>
                         <h5>Aucun résultat trouvé</h5>
                         <p>Essayez de modifier vos critères de recherche.</p>
                     </div>

@@ -6,7 +6,7 @@
     <div class="accordion-item">
         <h2 class="accordion-header" id="heading{{ loop.index }}">
             <button class="accordion-button{% if not loop.first %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}">
-                <i data-feather="folder" class="me-2"></i>
+                <i class="ph ph-folder me-2"></i>
                 <strong>{{ project_name }}</strong>
                 <span class="badge bg-primary ms-2">{{ project_invoices|length }} facture{{ 's' if project_invoices|length > 1 else '' }}</span>
             </button>
@@ -74,7 +74,7 @@
                                     <a href="{{ url_for('invoice.download_invoice_pdf', invoice_id=invoice.id) }}"
                                        class="btn btn-sm btn-outline-primary"
                                        title="Télécharger le PDF depuis {{ accounting_system_type|capitalize }}">
-                                        <i data-feather="download" style="width: 16px; height: 16px;"></i>
+                                        <i class="ph ph-download-simple" style="font-size: 16px;"></i>
                                     </a>
                                     {% endif %}
                                 </td>
@@ -86,7 +86,7 @@
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                         <button type="submit" class="btn btn-sm btn-outline-danger"
                                                 title="Supprimer la facture {{ invoice.invoice_number }}">
-                                            <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
+                                            <i class="ph ph-trash" style="font-size: 16px;"></i>
                                         </button>
                                     </form>
                                 </td>
@@ -170,7 +170,7 @@
                     <a href="{{ url_for('invoice.download_invoice_pdf', invoice_id=invoice.id) }}"
                        class="btn btn-sm btn-outline-primary"
                        title="Télécharger le PDF depuis {{ accounting_system_type|capitalize }}">
-                        <i data-feather="download" style="width: 16px; height: 16px;"></i>
+                        <i class="ph ph-download-simple" style="font-size: 16px;"></i>
                     </a>
                     {% endif %}
                 </td>
@@ -182,7 +182,7 @@
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <button type="submit" class="btn btn-sm btn-outline-danger"
                                 title="Supprimer la facture {{ invoice.invoice_number }}">
-                            <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
+                            <i class="ph ph-trash" style="font-size: 16px;"></i>
                         </button>
                     </form>
                 </td>
@@ -205,11 +205,11 @@
                 <li class="page-item {% if page <= 1 %}disabled{% endif %}">
                     {% if page > 1 %}
                     <a class="page-link pagination-link" data-page="{{ page-1 }}" href="{{ url_for('client.detail_client', id=client.id, page=page-1, per_page=per_page, view_filter=view_filter, date_from=date_from, date_to=date_to, search_invoice=search_invoice) }}">
-                        <i data-feather="chevron-left" style="width: 14px; height: 14px;"></i>
+                        <i class="ph ph-caret-left" style="font-size: 14px;"></i>
                     </a>
                     {% else %}
                     <span class="page-link">
-                        <i data-feather="chevron-left" style="width: 14px; height: 14px;"></i>
+                        <i class="ph ph-caret-left" style="font-size: 14px;"></i>
                     </span>
                     {% endif %}
                 </li>
@@ -241,11 +241,11 @@
                 <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
                     {% if page < total_pages %}
                     <a class="page-link pagination-link" data-page="{{ page+1 }}" href="{{ url_for('client.detail_client', id=client.id, page=page+1, per_page=per_page, view_filter=view_filter, date_from=date_from, date_to=date_to, search_invoice=search_invoice) }}">
-                        <i data-feather="chevron-right" style="width: 14px; height: 14px;"></i>
+                        <i class="ph ph-caret-right" style="font-size: 14px;"></i>
                     </a>
                     {% else %}
                     <span class="page-link">
-                        <i data-feather="chevron-right" style="width: 14px; height: 14px;"></i>
+                        <i class="ph ph-caret-right" style="font-size: 14px;"></i>
                     </span>
                     {% endif %}
                 </li>
@@ -258,12 +258,12 @@
 
 {% else %}
 <div class="card-body text-center py-4">
-    <i data-feather="file-text" style="width: 48px; height: 48px; stroke: hsl(var(--text-muted));" class="mb-3"></i>
+    <i class="ph ph-file-text mb-3" style="font-size: 48px; stroke: hsl(var(--text-muted))"></i>
     <h6 class="text-muted">Aucune facture trouvée</h6>
     <p class="text-muted small mb-3">{% if search_invoice %}Aucun résultat pour votre recherche.{% else %}Ce client n'a pas encore de factures.{% endif %}</p>
     {% if not current_user.is_read_only() and not search_invoice %}
     <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addInvoiceModal">
-        <i data-feather="plus" class="me-1"></i>
+        <i class="ph ph-plus me-1"></i>
         Ajouter une facture
     </button>
     {% endif %}

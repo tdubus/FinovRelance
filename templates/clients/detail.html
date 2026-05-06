@@ -22,34 +22,34 @@
         <!-- Menu Actions -->
         <div class="dropdown">
             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                <i data-feather="more-horizontal" class="me-1"></i>
+                <i class="ph ph-dots-three me-1"></i>
                 Actions
             </button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{{ url_for('receivable.overview') }}">
-                    <i data-feather="arrow-left" class="me-2"></i>
+                    <i class="ph ph-arrow-left me-2"></i>
                     Comptes à recevoir
                 </a></li>
                 {% if not current_user.is_read_only() %}
                 <li><a class="dropdown-item" href="{{ url_for('main.edit_client', id=client.id) }}">
-                    <i data-feather="edit" class="me-2"></i>
+                    <i class="ph ph-pencil-simple me-2"></i>
                     Modifier
                 </a></li>
                 {% endif %}
                 <li><a class="dropdown-item" href="{{ url_for('receivable.client_statement', client_id=client.id, view_filter=view_filter) }}" download>
-                    <i data-feather="download" class="me-2"></i>
+                    <i class="ph ph-download-simple me-2"></i>
                     Export PDF{% if view_filter == 'parent_children' %} (Parent + Enfants){% endif %}
                 </a></li>
                 {% if has_project_invoices %}
                 <li><hr class="dropdown-divider"></li>
                 {% if group_by_project %}
                 <li><a class="dropdown-item" href="{{ url_for('client.detail_client', id=client.id, view_filter=view_filter) }}">
-                    <i data-feather="list" class="me-2"></i>
+                    <i class="ph ph-list me-2"></i>
                     Afficher en liste
                 </a></li>
                 {% else %}
                 <li><a class="dropdown-item" href="{{ url_for('client.detail_client', id=client.id, view_filter=view_filter, group_by_project='true') }}">
-                    <i data-feather="folder" class="me-2"></i>
+                    <i class="ph ph-folder me-2"></i>
                     Grouper par {{ project_label or 'projet' }}
                 </a></li>
                 {% endif %}
@@ -59,7 +59,7 @@
 
         {% if not current_user.is_read_only() %}
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#sendEmailModal">
-            <i data-feather="mail" class="me-1"></i>
+            <i class="ph ph-envelope me-1"></i>
             Envoyer courriel
         </button>
         {% endif %}
@@ -88,7 +88,7 @@
         <div class="card h-100">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="user" class="me-2"></i>
+                    <i class="ph ph-user me-2"></i>
                     Informations du client
                 </h5>
             </div>
@@ -144,7 +144,7 @@
                         <div class="mb-3">
                             <label class="text-muted small">Langue</label>
                             <div>
-                                <span class="badge text-{{ 'success' if client.language == 'fr' else 'info' }} border border-{{ 'success' if client.language == 'fr' else 'info' }}" style="background-color: transparent;">
+                                <span class="badge badge-outline badge-outline-{{ 'success' if client.language == 'fr' else 'info' }}">
                                     {{ 'Français' if client.language == 'fr' else 'English' }}
                                 </span>
                             </div>
@@ -202,7 +202,7 @@
         <div class="card h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
-                    <i data-feather="pie-chart" class="me-2"></i>
+                    <i class="ph ph-chart-pie-slice me-2"></i>
                     Résumé
                 </h5>
 
@@ -259,7 +259,7 @@
                         <!-- DMP client -->
                         <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center text-muted">
-                                <i data-feather="file-text" class="me-2" style="width:16px;height:16px;"></i>
+                                <i class="ph ph-file-text me-2" style="font-size: 16px;"></i>
                                 <span>DMP / Date facture</span>
                             </div>
                             {% if client_dmp_invoice is not none %}
@@ -274,7 +274,7 @@
                         </div>
                         <div class="mt-2 d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center text-muted">
-                                <i data-feather="clock" class="me-2" style="width:16px;height:16px;"></i>
+                                <i class="ph ph-clock me-2" style="font-size: 16px;"></i>
                                 <span>DMP / Date échéance</span>
                             </div>
                             {% if client_dmp_due is not none %}
@@ -428,7 +428,7 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="git-branch" class="me-2"></i>
+                    <i class="ph ph-git-branch me-2"></i>
                     Hiérarchie des comptes
                 </h5>
             </div>
@@ -477,7 +477,7 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="folder" class="me-2"></i>
+                    <i class="ph ph-folder me-2"></i>
                     Ventilation par {{ project_label or 'projet' }}
                     {% if include_children %}
                         <span class="badge bg-info ms-2">Parent + Enfants</span>
@@ -505,7 +505,7 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
-                    <i data-feather="users" class="me-2"></i>
+                    <i class="ph ph-users me-2"></i>
                     Contacts
                     {% if include_children %}
                         <span class="badge bg-info ms-2">Parent + Enfants</span>
@@ -513,7 +513,7 @@
                 </h5>
                 {% if not current_user.is_read_only() %}
                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addContactModal">
-                    <i data-feather="plus" class="me-1"></i>
+                    <i class="ph ph-plus me-1"></i>
                     Ajouter un contact
                 </button>
                 {% endif %}
@@ -592,7 +592,7 @@
                                 </td>
                                 <td>
                                     {% if contact.campaign_allowed %}
-                                        <span class="badge bg-success"><i class="fas fa-bullhorn me-1"></i>Autorisé</span>
+                                        <span class="badge bg-success"><i class="ph ph-megaphone me-1"></i>Autorisé</span>
                                     {% else %}
                                         <span class="text-muted">-</span>
                                     {% endif %}
@@ -603,13 +603,13 @@
                                         <a href="{{ url_for('client.edit_contact_form', client_id=client.id, contact_id=contact.id) }}" 
                                            class="btn btn-outline-primary btn-sm" 
                                            title="Modifier">
-                                            <i data-feather="edit-2" class="small"></i>
+                                            <i class="ph ph-pencil-simple small"></i>
                                         </a>
                                         <form method="POST" action="/clients/{{ client.id }}/contact/{{ contact.id }}/delete" style="display: inline;">
                                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                             <button type="submit" class="btn btn-outline-danger btn-sm" 
                                                     onclick="return confirm('Êtes-vous sûr de vouloir supprimer le contact {{ contact.full_name }} ?')">
-                                                <i data-feather="trash-2" class="small"></i>
+                                                <i class="ph ph-trash small"></i>
                                             </button>
                                         </form>
                                     </div>
@@ -624,11 +624,11 @@
                 </div>
                 {% else %}
                 <div class="text-center py-4">
-                    <i data-feather="users" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                    <i class="ph ph-users text-muted mb-3" style="font-size: 48px;"></i>
                     <p class="text-muted mb-3">Aucun contact enregistré</p>
                     {% if not current_user.is_read_only() %}
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addContactModal">
-                        <i data-feather="plus" class="me-1"></i>
+                        <i class="ph ph-plus me-1"></i>
                         Ajouter le premier contact
                     </button>
                     {% endif %}
@@ -645,7 +645,7 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
-                    <i data-feather="message-square" class="me-2"></i>
+                    <i class="ph ph-chat me-2"></i>
                     Notes de communication
                     {% if notes %}
                         <span class="badge bg-secondary ms-2">{{ notes|length }}</span>
@@ -657,14 +657,14 @@
                             onclick="syncClientEmails({{ client.id }})" 
                             id="syncEmailsBtn"
                             title="Récupérer les réponses et transferts depuis Outlook">
-                        <i data-feather="refresh-cw" class="me-1"></i>
+                        <i class="ph ph-arrow-clockwise me-1"></i>
                         <span class="sync-text">Actualiser échanges</span>
                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     </button>
                     
                     {% if notes %}
                     <a href="{{ url_for('main.export_notes_excel', id=client.id, view_filter=view_filter, date_from=date_from or '', date_to=date_to or '') }}" class="btn btn-sm btn-outline-success">
-                        <i data-feather="download" class="me-1"></i>
+                        <i class="ph ph-download-simple me-1"></i>
                         Export Excel
                     </a>
                     {% endif %}
@@ -674,11 +674,11 @@
                         <input type="date" class="form-control form-control-sm" name="date_from" value="{{ date_from or '' }}" placeholder="Date de">
                         <input type="date" class="form-control form-control-sm" name="date_to" value="{{ date_to or '' }}" placeholder="Date à">
                         <button type="submit" class="btn btn-sm btn-outline-primary">
-                            <i data-feather="filter"></i>
+                            <i class="ph ph-funnel"></i>
                         </button>
                         {% if date_from or date_to %}
                         <a href="{{ url_for('client.detail_client', id=client.id, view_filter=view_filter) }}" class="btn btn-sm btn-outline-secondary">
-                            <i data-feather="x"></i>
+                            <i class="ph ph-x"></i>
                         </a>
                         {% endif %}
                     </form>
@@ -710,18 +710,18 @@
         <div class="card" data-section="invoices">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
-                    <i data-feather="file-text" class="me-2"></i>
+                    <i class="ph ph-file-text me-2"></i>
                     Factures
                     <span id="invoice-count-badge" class="badge bg-secondary ms-2" style="display:none;"></span>
                 </h5>
                 <div class="d-flex gap-2" id="invoice-actions" style="display:none;">
                     <a href="{{ url_for('main.export_invoices_excel', id=client.id, view_filter=view_filter) }}" class="btn btn-sm btn-outline-success">
-                        <i data-feather="download" class="me-1"></i>
+                        <i class="ph ph-download-simple me-1"></i>
                         Export Excel{% if view_filter == 'parent_children' %} (Parent + Enfants){% endif %}
                     </a>
                     {% if not current_user.is_read_only() %}
                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addInvoiceModal">
-                        <i data-feather="plus" class="me-1"></i>
+                        <i class="ph ph-plus me-1"></i>
                         Ajouter facture
                     </button>
                     {% endif %}
@@ -878,7 +878,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i data-feather="message-square" class="me-2"></i>
+                    <i class="ph ph-chat me-2"></i>
                     Ajouter une note
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -910,7 +910,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             {{ note_form.reminder_date(class="form-control", type="date") }}
                         </div>
                         <div class="form-text">
-                            <i data-feather="bell" class="icon-sm"></i>
+                            <i class="ph ph-bell icon-sm"></i>
                             Optionnel - Laissez vide si aucun rappel n'est nécessaire
                         </div>
                     </div>
@@ -930,7 +930,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i data-feather="edit" class="me-2"></i>
+                    <i class="ph ph-pencil-simple me-2"></i>
                     Modifier la note
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -967,7 +967,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="date" id="editNoteReminder" name="reminder_date" class="form-control">
                         </div>
                         <div class="form-text">
-                            <i data-feather="bell" class="icon-sm"></i>
+                            <i class="ph ph-bell icon-sm"></i>
                             Optionnel - Laissez vide si aucun rappel n'est nécessaire
                         </div>
                     </div>
@@ -987,7 +987,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i data-feather="mail" class="me-2"></i>
+                    <i class="ph ph-envelope me-2"></i>
                     Courriel envoyé
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -996,7 +996,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <!-- Email Details (Read-only) -->
                 <div class="card mb-3">
                     <div class="card-header bg-light">
-                        <h6 class="mb-0"><i data-feather="info" class="me-2"></i>Détails du courriel</h6>
+                        <h6 class="mb-0"><i class="ph ph-info me-2"></i>Détails du courriel</h6>
                     </div>
                     <div class="card-body">
                         <div class="row mb-2">
@@ -1039,7 +1039,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <div class="card">
                         <div class="card-header bg-primary text-white">
-                            <h6 class="mb-0"><i data-feather="edit" class="me-2"></i>Notes et rappel (modifiable)</h6>
+                            <h6 class="mb-0"><i class="ph ph-pencil-simple me-2"></i>Notes et rappel (modifiable)</h6>
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
@@ -1059,7 +1059,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <button type="button" class="btn btn-primary" onclick="saveEmailNote()">
-                    <i data-feather="save" class="me-1"></i>
+                    <i class="ph ph-floppy-disk me-1"></i>
                     Enregistrer
                 </button>
             </div>
@@ -1073,14 +1073,14 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i data-feather="file-text" class="me-2"></i>
+                    <i class="ph ph-file-text me-2"></i>
                     Ajouter une facture
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('main.add_invoice', id=client.id) }}">
                 {{ invoice_form.hidden_tag() }}
-                {{ invoice_form.client_id() }}
+                {{ invoice_form.client_id(value=client.id) }}
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
@@ -1206,7 +1206,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="campaign_allowed" name="campaign_allowed">
                                 <label class="form-check-label" for="campaign_allowed">
-                                    <i class="fas fa-bullhorn text-muted me-1"></i>Campagne autorisée
+                                    <i class="ph ph-megaphone text-muted me-1"></i>Campagne autorisée
                                 </label>
                                 <div class="form-text small">Inclure dans les envois de campagnes</div>
                             </div>
@@ -1230,7 +1230,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="sendEmailModalLabel">
-                    <i data-feather="send" class="me-2"></i>
+                    <i class="ph ph-paper-plane-tilt me-2"></i>
                     Envoyer un courriel à {{ client.name }}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1255,7 +1255,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                        placeholder="exemple@courriel.com; autre@courriel.com" required>
                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
                                         data-bs-toggle="dropdown" aria-expanded="false" id="toContactsBtn">
-                                    <i data-feather="users" style="width: 16px; height: 16px;"></i>
+                                    <i class="ph ph-users" style="font-size: 16px;"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end" id="toContactsDropdown"></ul>
                             </div>
@@ -1267,7 +1267,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                        placeholder="copie1@courriel.com; copie2@courriel.com (optionnel)">
                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
                                         data-bs-toggle="dropdown" aria-expanded="false" id="ccContactsBtn">
-                                    <i data-feather="users" style="width: 16px; height: 16px;"></i>
+                                    <i class="ph ph-users" style="font-size: 16px;"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end" id="ccContactsDropdown"></ul>
                             </div>
@@ -1284,7 +1284,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="card mb-3">
                         <div class="card-header">
                             <h6 class="mb-0">
-                                <i data-feather="settings" class="me-2"></i>
+                                <i class="ph ph-gear me-2"></i>
                                 Options
                             </h6>
                         </div>
@@ -1316,7 +1316,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                             <small class="text-muted d-block mt-2">
-                                <i data-feather="info" style="width: 14px; height: 14px;"></i>
+                                <i class="ph ph-info" style="font-size: 14px;"></i>
                                 Les accusés de réception sont optionnels pour le destinataire
                             </small>
                         </div>
@@ -1330,11 +1330,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="alert alert-info mb-2">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h6 class="mb-0">
-                                    <i data-feather="code" style="width: 16px; height: 16px;"></i>
+                                    <i class="ph ph-code" style="font-size: 16px;"></i>
                                     Variables disponibles
                                 </h6>
                                 <button type="button" class="btn btn-sm btn-outline-primary" id="toggleVariables">
-                                    <i data-feather="chevron-up" style="width: 16px; height: 16px;"></i>
+                                    <i class="ph ph-caret-up" style="font-size: 16px;"></i>
                                 </button>
                             </div>
                             <div id="variablesPanel" class="mt-2" style="display: block;">
@@ -1343,32 +1343,32 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <div class="d-grid gap-1">
                                             <button type="button" class="btn btn-sm btn-outline-primary text-start variable-btn" 
                                                     data-variable="{client_name}" data-value="{{ client.name }}">
-                                                <i data-feather="user" style="width: 12px; height: 12px;"></i>
+                                                <i class="ph ph-user" style="font-size: 12px;"></i>
                                                 <strong>{client_name}</strong> : {{ client.name }}
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-primary text-start variable-btn" 
                                                     data-variable="{client_code}" data-value="{{ client.code_client }}">
-                                                <i data-feather="hash" style="width: 12px; height: 12px;"></i>
+                                                <i class="ph ph-hash" style="font-size: 12px;"></i>
                                                 <strong>{client_code}</strong> : {{ client.code_client }}
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-primary text-start variable-btn" 
                                                     data-variable="{client_email}" data-value="{{ client.email or 'Non renseigné' }}">
-                                                <i data-feather="mail" style="width: 12px; height: 12px;"></i>
+                                                <i class="ph ph-envelope" style="font-size: 12px;"></i>
                                                 <strong>{client_email}</strong> : {{ client.email or "Non renseigné" }}
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-primary text-start variable-btn" 
                                                     data-variable="{client_phone}" data-value="{{ client.phone or 'Non renseigné' }}">
-                                                <i data-feather="phone" style="width: 12px; height: 12px;"></i>
+                                                <i class="ph ph-phone" style="font-size: 12px;"></i>
                                                 <strong>{client_phone}</strong> : {{ client.phone or "Non renseigné" }}
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-primary text-start variable-btn" 
                                                     data-variable="{client_payment_terms}" data-value="{{ client.payment_terms or 'Non renseigné' }}">
-                                                <i data-feather="credit-card" style="width: 12px; height: 12px;"></i>
+                                                <i class="ph ph-credit-card" style="font-size: 12px;"></i>
                                                 <strong>{client_payment_terms}</strong> : {{ client.payment_terms or "Non renseigné" }}
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-warning text-start variable-btn" 
                                                     data-variable="{client_total_outstanding}" data-value="{{ total_outstanding_formatted }}">
-                                                <i data-feather="dollar-sign" style="width: 12px; height: 12px;"></i>
+                                                <i class="ph ph-currency-circle-dollar" style="font-size: 12px;"></i>
                                                 <strong>{client_total_outstanding}</strong> : {{ total_outstanding_formatted }}
                                             </button>
                                         </div>
@@ -1377,29 +1377,29 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <div class="d-grid gap-1">
                                             <button type="button" class="btn btn-sm btn-outline-success text-start variable-btn" 
                                                     data-variable="{company_name}" data-value="{{ company.name }}">
-                                                <i data-feather="briefcase" style="width: 12px; height: 12px;"></i>
+                                                <i class="ph ph-briefcase" style="font-size: 12px;"></i>
                                                 <strong>{company_name}</strong> : {{ company.name }}
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-success text-start variable-btn" 
                                                     data-variable="{company_email}" data-value="{{ company.email or 'Non renseigné' }}">
-                                                <i data-feather="mail" style="width: 12px; height: 12px;"></i>
+                                                <i class="ph ph-envelope" style="font-size: 12px;"></i>
                                                 <strong>{company_email}</strong> : {{ company.email or "Non renseigné" }}
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-info text-start variable-btn" 
                                                     data-variable="{today_date}" data-value="{{ today_date }}">
-                                                <i data-feather="calendar" style="width: 12px; height: 12px;"></i>
+                                                <i class="ph ph-calendar" style="font-size: 12px;"></i>
                                                 <strong>{today_date}</strong> : {{ today_date }}
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-info text-start variable-btn" 
                                                     data-variable="{user_name}" data-value="{{ user_full_name }}">
-                                                <i data-feather="user-check" style="width: 12px; height: 12px;"></i>
+                                                <i class="ph ph-user-check" style="font-size: 12px;"></i>
                                                 <strong>{user_name}</strong> : {{ user_full_name }}
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                                 <small class="text-muted d-block mt-2">
-                                    <i data-feather="info" style="width: 14px; height: 14px;"></i>
+                                    <i class="ph ph-info" style="font-size: 14px;"></i>
                                     Cliquez sur une variable pour l'insérer avec sa valeur réelle dans le contenu
                                 </small>
                             </div>
@@ -1415,7 +1415,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="card mb-3">
                         <div class="card-header">
                             <h6 class="mb-0">
-                                <i data-feather="paperclip" class="me-2"></i>
+                                <i class="ph ph-paperclip me-2"></i>
                                 Pièces jointes
                             </h6>
                         </div>
@@ -1452,11 +1452,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="email_include_children" name="include_children">
                                         <label class="form-check-label" for="email_include_children">
-                                            <i data-feather="users" class="me-1" style="width: 14px; height: 14px;"></i>
+                                            <i class="ph ph-users me-1" style="font-size: 14px;"></i>
                                             Inclure les enfants
-                                            <i data-feather="info" class="ms-1 text-info" style="width: 14px; height: 14px; cursor: help;" 
-                                               data-bs-toggle="tooltip" data-bs-placement="top" 
-                                               title="Les pièces jointes (PDF, Excel) incluront les factures et montants du client parent ET de tous ses clients enfants"></i>
+                                            <i class="ph ph-info ms-1 text-info" style="font-size: 14px; cursor: help"></i>
                                         </label>
                                     </div>
                                 </div>
@@ -1467,20 +1465,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="row mb-3" id="invoiceCopiesSection">
                                 <div class="col-md-12">
                                     <p class="small text-muted mb-2 fw-semibold">
-                                        <i data-feather="file-text" style="width:13px;height:13px;" class="me-1"></i>Copies de factures
+                                        <i class="ph ph-file-text me-1" style="font-size: 13px;"></i>Copies de factures
                                     </p>
                                     <div class="input-group input-group-sm mb-2">
                                         <input type="text" id="invoiceSearchInput" class="form-control form-control-sm"
                                                placeholder="Rechercher par numéro de facture…" autocomplete="off">
                                         <button type="button" class="btn btn-outline-secondary btn-sm" id="invoiceSearchBtn">
-                                            <i data-feather="search" style="width:13px;height:13px;"></i>
+                                            <i class="ph ph-magnifying-glass" style="font-size: 13px;"></i>
                                         </button>
                                     </div>
                                     <ul id="invoiceSuggestList" class="list-group list-group-flush small mb-2" style="display:none; max-height:160px; overflow-y:auto; border:1px solid #dee2e6; border-radius:4px;"></ul>
                                     <div id="selectedInvoicesList" class="d-flex flex-wrap gap-1 mb-2"></div>
                                     <button type="button" id="prefetchInvoicesBtn" class="btn btn-sm btn-outline-primary d-none">
                                         <span id="prefetchSpinner" class="spinner-border spinner-border-sm me-1 d-none"></span>
-                                        <i data-feather="download-cloud" style="width:13px;height:13px;" class="me-1" id="prefetchIcon"></i>Télécharger les copies sélectionnées
+                                        <i class="ph ph-download-simple me-1" style="font-size: 13px;"></i>Télécharger les copies sélectionnées
                                     </button>
                                     <div id="invoicePdfError" class="text-danger small mt-1" style="display:none;"></div>
                                 </div>
@@ -1494,25 +1492,25 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <!-- Drag and Drop Zone -->
                                     <div id="emailDropZone" class="drop-zone">
                                         <div class="drop-zone-content">
-                                            <i data-feather="upload-cloud" style="width: 48px; height: 48px;" class="mb-3 text-primary"></i>
+                                            <i class="ph ph-upload-simple mb-3 text-primary" style="font-size: 48px;"></i>
                                             <p class="mb-2"><strong>Glissez-déposez des fichiers ici</strong></p>
                                             <p class="text-muted small mb-2">ou</p>
                                             <label for="email_external_files" class="btn btn-outline-primary btn-sm">
-                                                <i data-feather="folder" style="width: 14px; height: 14px;" class="me-1"></i>
+                                                <i class="ph ph-folder me-1" style="font-size: 14px;"></i>
                                                 Sélectionner des fichiers
                                             </label>
                                             <input type="file" class="d-none" id="email_external_files" name="external_files" multiple 
                                                    accept=".pdf,.xlsx,.csv,.doc,.docx">
                                         </div>
                                         <div class="drop-zone-overlay">
-                                            <i data-feather="download" style="width: 48px; height: 48px;"></i>
+                                            <i class="ph ph-download-simple" style="font-size: 48px;"></i>
                                             <p class="mt-2"><strong>Déposez les fichiers ici</strong></p>
                                         </div>
                                     </div>
                                     
                                     <div class="form-text">
                                         <small class="text-muted">
-                                            <i data-feather="info" style="width: 14px; height: 14px;"></i>
+                                            <i class="ph ph-info" style="font-size: 14px;"></i>
                                             Formats acceptés : PDF, Excel, CSV, Word (20 Mo max au total)
                                         </small>
                                     </div>
@@ -1532,7 +1530,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Reminder Date -->
                     <div class="mb-3">
                         <label for="email_reminder_date" class="form-label">
-                            <i data-feather="bell" class="me-1" style="width: 16px; height: 16px;"></i>
+                            <i class="ph ph-bell me-1" style="font-size: 16px;"></i>
                             Date de rappel (optionnel)
                         </label>
                         <input type="date" class="form-control" id="email_reminder_date" name="reminder_date" 
@@ -1547,7 +1545,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                     <button type="submit" class="btn btn-primary" id="sendEmailBtn">
-                        <i data-feather="send" class="me-1"></i>
+                        <i class="ph ph-paper-plane-tilt me-1"></i>
                         Envoyer le courriel
                     </button>
                 </div>
@@ -1561,7 +1559,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div id="emailSuccessToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body">
-                <i data-feather="check-circle" class="me-2"></i>
+                <i class="ph ph-check-circle me-2"></i>
                 <span id="emailSuccessMessage">Courriel envoyé avec succès!</span>
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -1810,7 +1808,7 @@ function openEditEmailNoteModal(data) {
             const li = document.createElement('li');
             // Use filename or name (fallback for different storage formats)
             const attachmentName = att.filename || att.name || 'Pièce jointe';
-            li.innerHTML = `<i data-feather="paperclip" class="me-1"></i>${attachmentName} <small class="text-muted">(${formatFileSize(att.size)})</small>`;
+            li.innerHTML = `<i class="ph ph-paperclip me-1"></i>${attachmentName} <small class="text-muted">(${formatFileSize(att.size)})</small>`;
             attachmentsList.appendChild(li);
         });
         attachmentsContainer.style.display = 'block';
@@ -2290,15 +2288,12 @@ function confirmSingleDelete(invoiceNumber) {
             toggleBtn.addEventListener('click', function() {
                 const panel = document.getElementById('variablesPanel');
                 const icon = this.querySelector('i');
-                if (panel.style.display === 'none') {
-                    panel.style.display = 'block';
-                    icon.setAttribute('data-feather', 'chevron-up');
-                } else {
-                    panel.style.display = 'none';
-                    icon.setAttribute('data-feather', 'chevron-down');
-                }
-                if (typeof feather !== 'undefined') {
-                    feather.replace();
+                const isHidden = panel.style.display === 'none';
+                panel.style.display = isHidden ? 'block' : 'none';
+                if (icon) {
+                    icon.classList.remove('ph-caret-up', 'ph-caret-down');
+                    icon.classList.add(isHidden ? 'ph-caret-up' : 'ph-caret-down');
+                    if (!icon.classList.contains('ph')) icon.classList.add('ph');
                 }
             });
             toggleBtn.dataset.listenerAttached = 'true';
@@ -2428,7 +2423,7 @@ function addEmailToField(fieldId, email) {
                          : 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle');
             const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
             const clientSuffix = inv.client_code ? ` <span class="text-muted">(${esc(inv.client_code)})</span>` : '';
-            badge.innerHTML = (isOk ? '<i data-feather="check-circle" style="width:11px;height:11px;"></i>' : '<i data-feather="clock" style="width:11px;height:11px;"></i>')
+            badge.innerHTML = (isOk ? '<i class="ph ph-check-circle" style="font-size: 11px;"></i>' : '<i class="ph ph-clock" style="font-size: 11px;"></i>')
                 + ` ${esc(inv.invoice_number)}${clientSuffix} `
                 + `<span style="cursor:pointer;" data-id="${inv.id}">&times;</span>`;
             badge.querySelector('[data-id]').addEventListener('click', function() {
@@ -2703,7 +2698,7 @@ function sendEmailAjax() {
     })
     .finally(() => {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i data-feather="send" class="me-1"></i>Envoyer le courriel';
+        submitBtn.innerHTML = '<i class="ph ph-paper-plane-tilt me-1"></i>Envoyer le courriel';
         feather.replace();
     });
 }
@@ -2782,7 +2777,7 @@ function syncClientEmails(clientId) {
     const btn = document.getElementById('syncEmailsBtn');
     const syncText = btn.querySelector('.sync-text');
     const spinner = btn.querySelector('.spinner-border');
-    const icon = btn.querySelector('[data-feather="refresh-cw"]');
+    const icon = btn.querySelector('.ph-arrows-clockwise');
     
     // Show loading state
     btn.disabled = true;

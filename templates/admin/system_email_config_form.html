@@ -5,11 +5,11 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>
-        <i data-feather="mail" class="me-2"></i>
+        <i class="ph ph-envelope me-2"></i>
         {{ action }} Configuration Email Système
     </h2>
     <a href="{{ url_for('admin.system_email_configs') }}" class="btn btn-outline-secondary">
-        <i data-feather="arrow-left" class="me-1"></i>
+        <i class="ph ph-arrow-left me-1"></i>
         Retour
     </a>
 </div>
@@ -88,7 +88,7 @@
         <div class="card">
             <div class="card-header">
                 <h6 class="mb-0">
-                    <i data-feather="help-circle" class="me-2"></i>
+                    <i class="ph ph-question me-2"></i>
                     Guide de configuration
                 </h6>
             </div>
@@ -124,7 +124,7 @@
         <div class="card mt-3">
             <div class="card-header">
                 <h6 class="mb-0">
-                    <i data-feather="activity" class="me-2"></i>
+                    <i class="ph ph-activity me-2"></i>
                     Statut OAuth
                 </h6>
             </div>
@@ -132,7 +132,7 @@
                 {% set oauth_status = config.get_outlook_connection_status() %}
                 {% if oauth_status == 'connecte' %}
                     <div class="alert alert-success py-2 mb-2">
-                        <i data-feather="check-circle" class="me-2"></i>
+                        <i class="ph ph-check-circle me-2"></i>
                         <strong>Connecté</strong>
                     </div>
                     <small class="text-muted">
@@ -140,22 +140,22 @@
                     </small>
                 {% elif oauth_status == 'expire' %}
                     <div class="alert alert-warning py-2 mb-2">
-                        <i data-feather="alert-triangle" class="me-2"></i>
+                        <i class="ph ph-warning me-2"></i>
                         <strong>Token expiré</strong>
                     </div>
                     <a href="{{ url_for('admin.connect_system_email_oauth', config_id=config.id) }}" 
                        class="btn btn-sm btn-warning">
-                        <i data-feather="refresh-cw" class="me-1"></i>
+                        <i class="ph ph-arrow-clockwise me-1"></i>
                         Reconnecter
                     </a>
                 {% else %}
                     <div class="alert alert-secondary py-2 mb-2">
-                        <i data-feather="x-circle" class="me-2"></i>
+                        <i class="ph ph-x-circle me-2"></i>
                         <strong>Non connecté</strong>
                     </div>
                     <a href="{{ url_for('admin.connect_system_email_oauth', config_id=config.id) }}" 
                        class="btn btn-sm btn-success">
-                        <i data-feather="link" class="me-1"></i>
+                        <i class="ph ph-link me-1"></i>
                         Connecter OAuth
                     </a>
                 {% endif %}

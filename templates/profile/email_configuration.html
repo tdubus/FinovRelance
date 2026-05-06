@@ -8,7 +8,7 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="h3 mb-0">
-                    <i class="fas fa-envelope-square me-2"></i>
+                    <i class="ph ph-envelope me-2"></i>
                     Connexion Courriel - {{ company.name }}
                 </h1>
             </div>
@@ -17,7 +17,7 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-envelope me-2"></i>
+                        <i class="ph ph-envelope me-2"></i>
                         Configuration des adresses de courriel
                     </h5>
                 </div>
@@ -30,7 +30,7 @@
                                 <div class="card border-primary">
                                     <div class="card-header bg-primary text-white">
                                         <h6 class="mb-0">
-                                            <i class="fab fa-microsoft me-2"></i>
+                                            <i class="ph ph-microsoft-teams-logo me-2"></i>
                                             Outlook / Exchange
                                         </h6>
                                     </div>
@@ -52,7 +52,7 @@
                                             {% set status = email_config.get_outlook_connection_status() %}
                                             {% if status == 'connecte' %}
                                                 <div class="alert alert-success py-2 mb-3">
-                                                    <i class="fas fa-check-circle me-2"></i>
+                                                    <i class="ph ph-check-circle me-2"></i>
                                                     <strong>Connecté</strong> - {{ email_config.outlook_email }}
                                                     <small class="d-block text-muted">
                                                         Connecté le {{ (email_config.outlook_oauth_connected_at | to_local_timezone).strftime('%d/%m/%Y à %H:%M') if email_config.outlook_oauth_connected_at }}
@@ -61,7 +61,7 @@
                                                 <div class="d-grid gap-2 d-md-flex">
                                                     <a href="{{ url_for('profile.outlook_connect') }}" 
                                                        class="btn btn-outline-primary btn-sm">
-                                                        <i class="fas fa-sync-alt me-1"></i>
+                                                        <i class="ph ph-arrows-clockwise me-1"></i>
                                                         Reconnecter
                                                     </a>
                                                     <a href="javascript:void(0)" 
@@ -78,32 +78,32 @@
                                                            form.submit(); 
                                                        }"
                                                        class="btn btn-outline-danger btn-sm">
-                                                        <i class="fas fa-unlink me-1"></i>
+                                                        <i class="ph ph-link-break me-1"></i>
                                                         Déconnecter
                                                     </a>
                                                 </div>
                                             {% elif status == 'expire' %}
                                                 <div class="alert alert-warning py-2 mb-3">
-                                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                                    <i class="ph ph-warning me-2"></i>
                                                     <strong>Connexion expirée</strong> - Reconnexion requise
                                                 </div>
                                                 {% if form.outlook_email.data %}
                                                     <div class="d-grid">
                                                         <a href="{{ url_for('profile.outlook_connect') }}" 
                                                            class="btn btn-warning btn-sm">
-                                                            <i class="fas fa-sync-alt me-1"></i>
+                                                            <i class="ph ph-arrows-clockwise me-1"></i>
                                                             Reconnecter Microsoft
                                                         </a>
                                                     </div>
                                                 {% else %}
                                                     <div class="alert alert-secondary py-2">
-                                                        <i class="fas fa-envelope me-2"></i>
+                                                        <i class="ph ph-envelope me-2"></i>
                                                         <small>Saisissez votre adresse Outlook puis sauvegardez pour pouvoir vous reconnecter</small>
                                                     </div>
                                                 {% endif %}
                                             {% else %}
                                                 <div class="alert alert-info py-2 mb-3">
-                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <i class="ph ph-info me-2"></i>
                                                     <strong>Non connecté</strong>
                                                     <small class="d-block text-muted">
                                                         Connectez votre compte Microsoft pour envoyer des courriels
@@ -113,20 +113,20 @@
                                                     <div class="d-grid">
                                                         <a href="{{ url_for('profile.outlook_connect') }}" 
                                                            class="btn btn-primary btn-sm">
-                                                            <i class="fab fa-microsoft me-1"></i>
+                                                            <i class="ph ph-microsoft-teams-logo me-1"></i>
                                                             Connecter Outlook
                                                         </a>
                                                     </div>
                                                 {% else %}
                                                     <div class="alert alert-secondary py-2">
-                                                        <i class="fas fa-envelope me-2"></i>
+                                                        <i class="ph ph-envelope me-2"></i>
                                                         <small>Saisissez votre adresse Outlook puis sauvegardez pour activer la connexion</small>
                                                     </div>
                                                 {% endif %}
                                             {% endif %}
                                         {% else %}
                                             <div class="alert alert-secondary py-2">
-                                                <i class="fas fa-envelope me-2"></i>
+                                                <i class="ph ph-envelope me-2"></i>
                                                 <small>Saisissez votre adresse Outlook pour activer la connexion OAuth</small>
                                             </div>
                                         {% endif %}
@@ -138,7 +138,7 @@
                                 <div class="card border-danger">
                                     <div class="card-header bg-danger text-white">
                                         <h6 class="mb-0">
-                                            <i class="fab fa-google me-2"></i>
+                                            <i class="ph ph-google-logo me-2"></i>
                                             Gmail
                                         </h6>
                                     </div>
@@ -160,7 +160,7 @@
                                             {% set gmail_status = email_config.get_gmail_connection_status() %}
                                             {% if gmail_status == 'connecte' %}
                                                 <div class="alert alert-success py-2 mb-3">
-                                                    <i class="fas fa-check-circle me-2"></i>
+                                                    <i class="ph ph-check-circle me-2"></i>
                                                     <strong>Connecté via SMTP</strong> - {{ email_config.gmail_email }}
                                                 </div>
                                                 <div class="d-grid gap-2">
@@ -178,18 +178,18 @@
                                                            form.submit(); 
                                                        }"
                                                        class="btn btn-outline-danger btn-sm">
-                                                        <i class="fas fa-unlink me-1"></i>
+                                                        <i class="ph ph-link-break me-1"></i>
                                                         Déconnecter
                                                     </a>
                                                 </div>
                                             {% else %}
                                                 <div class="alert alert-info py-2 mb-3">
-                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <i class="ph ph-info me-2"></i>
                                                     <strong>Configuration SMTP Gmail</strong>
                                                     <small class="d-block text-muted mt-1">
                                                         Saisissez votre mot de passe d'application Gmail.
                                                         <a href="https://myaccount.google.com/apppasswords" target="_blank" class="text-decoration-none">
-                                                            <i class="fas fa-external-link-alt me-1"></i>Créer un mot de passe d'application
+                                                            <i class="ph ph-arrow-square-out me-1"></i>Créer un mot de passe d'application
                                                         </a>
                                                     </small>
                                                 </div>
@@ -201,7 +201,7 @@
                                                                placeholder="Mot de passe d'application (16 caractères)"
                                                                onkeypress="if(event.key === 'Enter') { event.preventDefault(); connectGmailSMTP(); }">
                                                         <small class="text-muted">
-                                                            <i class="fas fa-shield-alt me-1"></i>
+                                                            <i class="ph ph-shield-check me-1"></i>
                                                             Format: xxxx xxxx xxxx xxxx (espaces optionnels)
                                                         </small>
                                                     </div>
@@ -209,7 +209,7 @@
                                                         <button type="button" 
                                                                 onclick="connectGmailSMTP()"
                                                                 class="btn btn-danger btn-sm">
-                                                            <i class="fab fa-google me-1"></i>
+                                                            <i class="ph ph-google-logo me-1"></i>
                                                             Connecter Gmail SMTP
                                                         </button>
                                                     </div>
@@ -219,14 +219,14 @@
                                                     </div>
                                                 {% else %}
                                                     <div class="alert alert-secondary py-2">
-                                                        <i class="fas fa-envelope me-2"></i>
+                                                        <i class="ph ph-envelope me-2"></i>
                                                         <small>Saisissez votre adresse Gmail puis sauvegardez pour activer la connexion SMTP</small>
                                                     </div>
                                                 {% endif %}
                                             {% endif %}
                                         {% else %}
                                             <div class="alert alert-secondary py-2">
-                                                <i class="fas fa-envelope me-2"></i>
+                                                <i class="ph ph-envelope me-2"></i>
                                                 <small>Saisissez votre adresse Gmail pour activer la connexion SMTP</small>
                                             </div>
                                         {% endif %}
@@ -241,7 +241,7 @@
                                 <div class="card">
                                     <div class="card-header">
                                         <h5 class="mb-0">
-                                            <i class="fas fa-signature me-2"></i>
+                                            <i class="ph ph-signature me-2"></i>
                                             Signature Courriel
                                         </h5>
                                     </div>
@@ -251,12 +251,12 @@
                                             <ul class="nav nav-tabs mb-3" id="signature-tabs" role="tablist">
                                                 <li class="nav-item" role="presentation">
                                                     <button class="nav-link" id="templates-tab" data-bs-toggle="tab" data-bs-target="#templates-pane" type="button" role="tab">
-                                                        <i class="fas fa-th-large me-1"></i> Templates
+                                                        <i class="ph ph-squares-four me-1"></i> Templates
                                                     </button>
                                                 </li>
                                                 <li class="nav-item" role="presentation">
                                                     <button class="nav-link active" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor-pane" type="button" role="tab">
-                                                        <i class="fas fa-edit me-1"></i> Éditeur
+                                                        <i class="ph ph-pencil-simple me-1"></i> Éditeur
                                                     </button>
                                                 </li>
                                             </ul>
@@ -275,7 +275,7 @@
                                                                     <div class="d-flex align-items-start">
                                                                         <div class="me-3">
                                                                             <div style="width: 60px; height: 40px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
-                                                                                <i class="fas fa-image text-muted"></i>
+                                                                                <i class="ph ph-image text-muted"></i>
                                                                             </div>
                                                                         </div>
                                                                         <div class="flex-grow-1">
@@ -289,7 +289,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="text-success">
-                                                                            <i class="fas fa-check-circle fa-lg"></i>
+                                                                            <i class="ph ph-check-circle fa-lg"></i>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -311,7 +311,7 @@
                                                                         </div>
                                                                         <div>
                                                                             <div style="width: 50px; height: 35px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-                                                                                <i class="fas fa-image text-muted"></i>
+                                                                                <i class="ph ph-image text-muted"></i>
                                                                             </div>
                                                                             <div class="d-flex gap-1 justify-content-center">
                                                                                 <div style="width: 8px; height: 8px; background-color: #6c757d; border-radius: 50%;"></div>
@@ -334,7 +334,7 @@
                                                                     <div class="d-flex align-items-start">
                                                                         <div class="me-3">
                                                                             <div style="width: 50px; height: 35px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
-                                                                                <i class="fas fa-image text-muted"></i>
+                                                                                <i class="ph ph-image text-muted"></i>
                                                                             </div>
                                                                         </div>
                                                                         <div class="flex-grow-1">
@@ -372,7 +372,7 @@
                                                                         </div>
                                                                         <div>
                                                                             <div style="width: 45px; height: 32px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
-                                                                                <i class="fas fa-image text-muted"></i>
+                                                                                <i class="ph ph-image text-muted"></i>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -394,7 +394,7 @@
                                             <div class="mt-3">
                                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                                     <small class="text-muted">
-                                                        <i class="fas fa-info-circle me-1"></i>
+                                                        <i class="ph ph-info me-1"></i>
                                                         Taille: <span id="signature-size">0 KB</span> / 2.5 MB max
                                                     </small>
                                                     <div class="progress" style="width: 200px; height: 6px;">

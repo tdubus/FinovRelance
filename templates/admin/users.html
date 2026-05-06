@@ -18,7 +18,7 @@
                     </div>
                     <div class="col-md-4">
                         <button type="submit" class="btn btn-admin-primary w-100">
-                            <i class="fas fa-search me-2"></i>Rechercher
+                            <i class="ph ph-magnifying-glass me-2"></i>Rechercher
                         </button>
                     </div>
                 </form>
@@ -34,10 +34,10 @@
             <h5 class="mb-0">{{ users.total }} utilisateur(s) trouvé(s)</h5>
             <div class="d-flex gap-2">
                 <a href="{{ url_for('admin.create_user') }}" class="btn btn-admin-primary">
-                    <i class="fas fa-plus me-2"></i>Créer un utilisateur
+                    <i class="ph ph-plus me-2"></i>Créer un utilisateur
                 </a>
                 <a href="{{ url_for('admin.create_user_company') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-link me-2"></i>Associer à une entreprise
+                    <i class="ph ph-link me-2"></i>Associer à une entreprise
                 </a>
             </div>
         </div>
@@ -113,22 +113,22 @@
                             <td>
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-ellipsis-v"></i>
+                                        <i class="ph ph-dots-three-vertical"></i>
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li><a class="dropdown-item" href="{{ url_for('admin.edit_user', user_id=user.id) }}">
-                                            <i class="fas fa-edit me-2"></i>Modifier
+                                            <i class="ph ph-pencil-simple me-2"></i>Modifier
                                         </a></li>
                                         <li><a class="dropdown-item" href="{{ url_for('admin.user_companies', user_id=user.id) }}">
-                                            <i class="fas fa-building me-2"></i>Entreprises
+                                            <i class="ph ph-buildings me-2"></i>Entreprises
                                         </a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" href="#" onclick="resetPassword({{ user.id }}, '{{ user.email }}')">
-                                            <i class="fas fa-key me-2"></i>Réinitialiser mot de passe
+                                            <i class="ph ph-key me-2"></i>Réinitialiser mot de passe
                                         </a></li>
                                         {% if user.id != current_user.id %}
                                         <li><a class="dropdown-item text-danger" href="#" onclick="confirmDelete({{ user.id }}, '{{ user.email }}')">
-                                            <i class="fas fa-trash me-2"></i>Supprimer
+                                            <i class="ph ph-trash me-2"></i>Supprimer
                                         </a></li>
                                         {% endif %}
                                     </ul>

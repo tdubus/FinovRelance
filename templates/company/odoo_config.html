@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-md-12">
             <h2>
-                <i class="fas fa-cube"></i> Configuration Odoo
+                <i class="ph ph-cube"></i> Configuration Odoo
             </h2>
             <p class="text-muted">Connectez votre instance Odoo pour synchroniser vos clients et factures</p>
             <hr>
@@ -77,13 +77,13 @@
 
                         <div class="d-flex gap-2">
                             <button type="button" class="btn btn-secondary" id="testConnectionBtn">
-                                <i class="fas fa-plug"></i> Tester la connexion
+                                <i class="ph ph-plug"></i> Tester la connexion
                             </button>
                             <button type="submit" class="btn btn-primary" id="saveConfigBtn" disabled>
-                                <i class="fas fa-save"></i> Sauvegarder et configurer le mapping
+                                <i class="ph ph-floppy-disk"></i> Sauvegarder et configurer le mapping
                             </button>
                             <a href="{{ url_for('company.settings') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times"></i> Annuler
+                                <i class="ph ph-x"></i> Annuler
                             </a>
                         </div>
 
@@ -97,7 +97,7 @@
             <div class="card">
                 <div class="card-header">
                     <h6 class="mb-0">
-                        <i class="fas fa-info-circle"></i> Comment obtenir votre clé API Odoo ?
+                        <i class="ph ph-info"></i> Comment obtenir votre clé API Odoo ?
                     </h6>
                 </div>
                 <div class="card-body">
@@ -111,7 +111,7 @@
                         <li>Copiez la clé générée et collez-la ci-dessus</li>
                     </ol>
                     <div class="alert alert-info mt-3">
-                        <i class="fas fa-lightbulb"></i>
+                        <i class="ph ph-lightbulb"></i>
                         <strong>Note :</strong> Les clés API Odoo n'expirent pas automatiquement. 
                         Conservez-la en lieu sûr !
                     </div>
@@ -121,12 +121,12 @@
             <div class="card mt-3">
                 <div class="card-header">
                     <h6 class="mb-0">
-                        <i class="fas fa-shield-alt"></i> Sécurité
+                        <i class="ph ph-shield-check"></i> Sécurité
                     </h6>
                 </div>
                 <div class="card-body">
                     <p class="small mb-0">
-                        <i class="fas fa-lock"></i> Votre clé API est stockée de manière chiffrée (AES-256) 
+                        <i class="ph ph-lock"></i> Votre clé API est stockée de manière chiffrée (AES-256) 
                         dans notre base de données. Nous ne pouvons pas la voir en clair.
                     </p>
                 </div>
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         testBtn.disabled = true;
-        testBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Test en cours...';
+        testBtn.innerHTML = '<i class="ph ph-circle-notch rotating"></i> Test en cours...';
         statusDiv.style.display = 'none';
 
         const formData = new FormData();
@@ -173,25 +173,25 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             testBtn.disabled = false;
-            testBtn.innerHTML = '<i class="fas fa-plug"></i> Tester la connexion';
+            testBtn.innerHTML = '<i class="ph ph-plug"></i> Tester la connexion';
             
             if (data.success) {
                 statusDiv.className = 'alert alert-success mt-3';
-                statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + (data.message || 'Connexion réussie !');
+                statusDiv.innerHTML = '<i class="ph ph-check-circle"></i> ' + (data.message || 'Connexion réussie !');
                 statusDiv.style.display = 'block';
                 saveBtn.disabled = false;
             } else {
                 statusDiv.className = 'alert alert-danger mt-3';
-                statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + (data.error || data.message || 'Erreur de connexion');
+                statusDiv.innerHTML = '<i class="ph ph-warning"></i> ' + (data.error || data.message || 'Erreur de connexion');
                 statusDiv.style.display = 'block';
                 saveBtn.disabled = true;
             }
         })
         .catch(error => {
             testBtn.disabled = false;
-            testBtn.innerHTML = '<i class="fas fa-plug"></i> Tester la connexion';
+            testBtn.innerHTML = '<i class="ph ph-plug"></i> Tester la connexion';
             statusDiv.className = 'alert alert-danger mt-3';
-            statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erreur: ' + error.message;
+            statusDiv.innerHTML = '<i class="ph ph-warning"></i> Erreur: ' + error.message;
             statusDiv.style.display = 'block';
             saveBtn.disabled = true;
         });

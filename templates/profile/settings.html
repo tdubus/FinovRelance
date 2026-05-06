@@ -8,7 +8,7 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="h3 mb-0">
-                    <i class="fas fa-user-cog me-2"></i>
+                    <i class="ph ph-user-gear me-2"></i>
                     Mon Profil
                 </h1>
             </div>
@@ -17,7 +17,7 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-user me-2"></i>
+                        <i class="ph ph-user me-2"></i>
                         Informations personnelles
                     </h5>
                 </div>
@@ -53,17 +53,17 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-shield-alt me-2"></i>
+                        <i class="ph ph-shield-check me-2"></i>
                         Securite
                     </h5>
                 </div>
                 <div class="card-body">
                     <!-- TOTP -->
                     <div class="mb-4">
-                        <h6><i class="fas fa-mobile-alt me-2"></i>Authentification TOTP (Google Authenticator)</h6>
+                        <h6><i class="ph ph-device-mobile me-2"></i>Authentification TOTP (Google Authenticator)</h6>
                         {% if totp_active %}
                         <div class="d-flex align-items-center gap-3">
-                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Actif</span>
+                            <span class="badge bg-success"><i class="ph ph-check me-1"></i>Actif</span>
                             <form method="POST" action="{{ url_for('auth.disable_totp') }}" class="d-inline"
                                   onsubmit="return confirmDisableTotp()">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -71,7 +71,7 @@
                                     <input type="password" name="password" class="form-control"
                                            placeholder="Mot de passe pour confirmer" required>
                                     <button type="submit" class="btn btn-outline-danger btn-sm">
-                                        <i class="fas fa-times me-1"></i>Desactiver
+                                        <i class="ph ph-x me-1"></i>Desactiver
                                     </button>
                                 </div>
                             </form>
@@ -80,7 +80,7 @@
                         <div class="d-flex align-items-center gap-3">
                             <span class="badge bg-secondary">Inactif</span>
                             <a href="{{ url_for('auth.setup_totp') }}" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-plus me-1"></i>Activer TOTP
+                                <i class="ph ph-plus me-1"></i>Activer TOTP
                             </a>
                         </div>
                         {% endif %}
@@ -88,7 +88,7 @@
 
                     <!-- Recovery codes -->
                     <div>
-                        <h6><i class="fas fa-key me-2"></i>Codes de secours</h6>
+                        <h6><i class="ph ph-key me-2"></i>Codes de secours</h6>
                         <p class="text-muted small mb-2">
                             Les codes de secours vous permettent de vous connecter si le systeme de courriel ou
                             votre application TOTP est indisponible.
@@ -99,7 +99,7 @@
                             {% endif %}
                         </p>
                         <a href="{{ url_for('auth.generate_recovery_codes') }}" class="btn btn-outline-secondary btn-sm">
-                            <i class="fas fa-sync-alt me-1"></i>
+                            <i class="ph ph-arrows-clockwise me-1"></i>
                             {% if recovery_count is defined and recovery_count > 0 %}Regenerer les codes{% else %}Generer des codes de secours{% endif %}
                         </a>
                     </div>

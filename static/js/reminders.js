@@ -3,6 +3,21 @@
  * Handles lazy loading, search, pagination, and modal interactions
  */
 
+// Map legacy Feather icon names (still returned by some backend endpoints)
+// to Phosphor icon names. Returns the input unchanged if not in the map.
+const FEATHER_TO_PHOSPHOR = {
+    'home': 'house', 'calendar': 'calendar', 'clock': 'clock', 'bell': 'bell',
+    'mail': 'envelope', 'phone': 'phone', 'message-circle': 'chat-circle',
+    'message-square': 'chat', 'user': 'user', 'users': 'users', 'check': 'check',
+    'x': 'x', 'plus': 'plus', 'edit': 'pencil-simple', 'trash-2': 'trash',
+    'rotate-ccw': 'arrow-counter-clockwise', 'external-link': 'arrow-square-out',
+    'eye': 'eye', 'search': 'magnifying-glass', 'filter': 'funnel',
+    'alert-circle': 'warning-circle', 'info': 'info'
+};
+function toPhosphor(name) {
+    return FEATHER_TO_PHOSPHOR[name] || name;
+}
+
 let currentPage = 1;
 let currentFilter = 'all';
 let searchDebounceTimer = null;
@@ -106,14 +121,13 @@ function updateRemindersContainer(reminders) {
     if (reminders.length === 0) {
         container.innerHTML = `
             <div class="text-center py-5 text-muted">
-                <i data-feather="bell" style="width: 48px; height: 48px;" class="mb-3"></i>
+                <i class="ph ph-bell mb-3" style="font-size: 48px;"></i>
                 <p>Aucun rappel trouvé</p>
                 <a href="/clients" class="btn btn-outline-primary">
                     Gérer vos clients
                 </a>
             </div>
         `;
-        window.safeFeatherReplace ? window.safeFeatherReplace() : feather.replace();
         return;
     }
 
@@ -121,9 +135,6 @@ function updateRemindersContainer(reminders) {
         const card = createReminderCard(reminder);
         container.appendChild(card);
     });
-
-    // Re-initialize feather icons
-    window.safeFeatherReplace ? window.safeFeatherReplace() : feather.replace();
 
     // Attach event listeners
     attachReminderEventListeners();
@@ -171,8 +182,7 @@ function createReminderCard(reminder) {
         dateDiv.className += ' text-info';
     }
     const calendarIcon = document.createElement('i');
-    calendarIcon.setAttribute('data-feather', 'calendar');
-    calendarIcon.className = 'me-1';
+    calendarIcon.className = 'ph ph-calendar me-1';
     dateDiv.appendChild(calendarIcon);
     dateDiv.appendChild(document.createTextNode(reminder.reminder_date));
 
@@ -202,14 +212,12 @@ function createReminderCard(reminder) {
     metaSmall.className = 'text-muted';
 
     const userIcon = document.createElement('i');
-    userIcon.setAttribute('data-feather', 'user');
-    userIcon.className = 'me-1';
+    userIcon.className = 'ph ph-user me-1';
     metaSmall.appendChild(userIcon);
     metaSmall.appendChild(document.createTextNode(`${reminder.user_name} • `));
 
     const typeIcon = document.createElement('i');
-    typeIcon.setAttribute('data-feather', reminder.type_icon);
-    typeIcon.className = 'me-1';
+    typeIcon.className = 'ph ph-' + toPhosphor(reminder.type_icon) + ' me-1';
     metaSmall.appendChild(typeIcon);
     metaSmall.appendChild(document.createTextNode(reminder.created_at));
 
@@ -231,8 +239,7 @@ function createReminderCard(reminder) {
         completeBtn.className = 'btn btn-outline-success complete-reminder-btn';
         completeBtn.setAttribute('data-reminder-id', reminder.id);
         const checkIcon = document.createElement('i');
-        checkIcon.setAttribute('data-feather', 'check');
-        checkIcon.className = 'me-1';
+        checkIcon.className = 'ph ph-check me-1';
         completeBtn.appendChild(checkIcon);
         completeBtn.appendChild(document.createTextNode('Marquer terminé'));
         btnGroup.appendChild(completeBtn);
@@ -241,8 +248,7 @@ function createReminderCard(reminder) {
         reactivateBtn.className = 'btn btn-outline-primary reactivate-reminder-btn';
         reactivateBtn.setAttribute('data-reminder-id', reminder.id);
         const rotateIcon = document.createElement('i');
-        rotateIcon.setAttribute('data-feather', 'rotate-ccw');
-        rotateIcon.className = 'me-1';
+        rotateIcon.className = 'ph ph-arrow-counter-clockwise me-1';
         reactivateBtn.appendChild(rotateIcon);
         reactivateBtn.appendChild(document.createTextNode('Réactiver'));
         btnGroup.appendChild(reactivateBtn);
@@ -253,8 +259,7 @@ function createReminderCard(reminder) {
     deleteBtn.className = 'btn btn-outline-danger delete-reminder-btn';
     deleteBtn.setAttribute('data-reminder-id', reminder.id);
     const trashIcon = document.createElement('i');
-    trashIcon.setAttribute('data-feather', 'trash-2');
-    trashIcon.className = 'me-1';
+    trashIcon.className = 'ph ph-trash me-1';
     deleteBtn.appendChild(trashIcon);
     deleteBtn.appendChild(document.createTextNode('Supprimer'));
     btnGroup.appendChild(deleteBtn);
@@ -264,8 +269,7 @@ function createReminderCard(reminder) {
     viewClientBtn.href = `/clients/${reminder.client_id}`;
     viewClientBtn.className = 'btn btn-outline-primary';
     const externalIcon = document.createElement('i');
-    externalIcon.setAttribute('data-feather', 'external-link');
-    externalIcon.className = 'me-1';
+    externalIcon.className = 'ph ph-arrow-square-out me-1';
     viewClientBtn.appendChild(externalIcon);
     viewClientBtn.appendChild(document.createTextNode('Voir client'));
     btnGroup.appendChild(viewClientBtn);
@@ -275,8 +279,7 @@ function createReminderCard(reminder) {
     editBtn.className = 'btn btn-outline-warning edit-reminder-btn';
     editBtn.setAttribute('data-reminder-id', reminder.id);
     const editIcon = document.createElement('i');
-    editIcon.setAttribute('data-feather', 'edit');
-    editIcon.className = 'me-1';
+    editIcon.className = 'ph ph-pencil-simple me-1';
     editBtn.appendChild(editIcon);
     editBtn.appendChild(document.createTextNode('Modifier'));
     btnGroup.appendChild(editBtn);

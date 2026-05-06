@@ -13,12 +13,12 @@
 
     // File icons mapping
     const FILE_ICONS = {
-        'pdf': 'fas fa-file-pdf text-danger',
-        'xlsx': 'fas fa-file-excel text-success',
-        'xls': 'fas fa-file-excel text-success',
-        'csv': 'fas fa-file-csv text-info',
-        'doc': 'fas fa-file-word text-primary',
-        'docx': 'fas fa-file-word text-primary'
+        'pdf': 'ph ph-file-pdf text-danger',
+        'xlsx': 'ph ph-file-csv text-success',
+        'xls': 'ph ph-file-csv text-success',
+        'csv': 'ph ph-file-csv text-info',
+        'doc': 'ph ph-file-doc text-primary',
+        'docx': 'ph ph-file-doc text-primary'
     };
 
     // Track initialized drop zones to prevent duplicate initialization
@@ -211,7 +211,7 @@
                 totalSize += file.size;
 
                 const ext = file.name.split('.').pop().toLowerCase();
-                const icon = FILE_ICONS[ext] || 'fas fa-file text-secondary';
+                const icon = FILE_ICONS[ext] || 'ph ph-file text-secondary';
 
                 const li = document.createElement('li');
                 li.className = 'list-group-item';
@@ -224,7 +224,7 @@
                         </div>
                     </div>
                     <button type="button" class="btn btn-sm btn-outline-danger btn-remove" data-index="${i}">
-                        <i class="fas fa-times"></i>
+                        <i class="ph ph-x"></i>
                     </button>
                 `;
 

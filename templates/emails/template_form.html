@@ -8,7 +8,7 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="mail" class="me-2"></i>
+                    <i class="ph ph-envelope me-2"></i>
                     {{ title }}
                 </h5>
             </div>
@@ -51,51 +51,51 @@
                         <!-- Variables disponibles -->
                         <div class="alert alert-info mb-3">
                             <h6 class="mb-3">
-                                <i data-feather="code" class="me-2" style="width: 16px; height: 16px;"></i>
+                                <i class="ph ph-code me-2" style="font-size: 16px;"></i>
                                 Variables disponibles - Cliquez pour insérer
                             </h6>
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="d-grid gap-1">
                                         <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_name}">
-                                            <i data-feather="user" style="width: 12px; height: 12px;"></i> Nom du client
+                                            <i class="ph ph-user" style="font-size: 12px;"></i> Nom du client
                                         </button>
                                         <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_code}">
-                                            <i data-feather="hash" style="width: 12px; height: 12px;"></i> Code client
+                                            <i class="ph ph-hash" style="font-size: 12px;"></i> Code client
                                         </button>
                                         <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_email}">
-                                            <i data-feather="mail" style="width: 12px; height: 12px;"></i> Courriel client
+                                            <i class="ph ph-envelope" style="font-size: 12px;"></i> Courriel client
                                         </button>
                                         <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_phone}">
-                                            <i data-feather="phone" style="width: 12px; height: 12px;"></i> Téléphone client
+                                            <i class="ph ph-phone" style="font-size: 12px;"></i> Téléphone client
                                         </button>
                                         <button type="button" class="btn btn-outline-primary btn-sm variable-btn" data-variable="{client_payment_terms}">
-                                            <i data-feather="credit-card" style="width: 12px; height: 12px;"></i> Termes de paiement
+                                            <i class="ph ph-credit-card" style="font-size: 12px;"></i> Termes de paiement
                                         </button>
                                         <button type="button" class="btn btn-outline-warning btn-sm variable-btn" data-variable="{client_total_outstanding}">
-                                            <i data-feather="dollar-sign" style="width: 12px; height: 12px;"></i> Montant total dû
+                                            <i class="ph ph-currency-circle-dollar" style="font-size: 12px;"></i> Montant total dû
                                         </button>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="d-grid gap-1">
                                         <button type="button" class="btn btn-outline-success btn-sm variable-btn" data-variable="{company_name}">
-                                            <i data-feather="briefcase" style="width: 12px; height: 12px;"></i> Nom entreprise
+                                            <i class="ph ph-briefcase" style="font-size: 12px;"></i> Nom entreprise
                                         </button>
                                         <button type="button" class="btn btn-outline-success btn-sm variable-btn" data-variable="{company_email}">
-                                            <i data-feather="mail" style="width: 12px; height: 12px;"></i> Courriel entreprise
+                                            <i class="ph ph-envelope" style="font-size: 12px;"></i> Courriel entreprise
                                         </button>
                                         <button type="button" class="btn btn-outline-info btn-sm variable-btn" data-variable="{today_date}">
-                                            <i data-feather="calendar" style="width: 12px; height: 12px;"></i> Date aujourd'hui
+                                            <i class="ph ph-calendar" style="font-size: 12px;"></i> Date aujourd'hui
                                         </button>
                                         <button type="button" class="btn btn-outline-info btn-sm variable-btn" data-variable="{user_name}">
-                                            <i data-feather="user-check" style="width: 12px; height: 12px;"></i> Votre nom
+                                            <i class="ph ph-user-check" style="font-size: 12px;"></i> Votre nom
                                         </button>
                                     </div>
                                 </div>
                             </div>
                             <small class="text-muted d-block">
-                                <i data-feather="info" style="width: 14px; height: 14px;"></i>
+                                <i class="ph ph-info" style="font-size: 14px;"></i>
                                 Ces variables seront automatiquement remplacées lors de l'envoi
                             </small>
                         </div>
@@ -121,7 +121,7 @@
                     <div class="card border-light mb-3">
                         <div class="card-header bg-light">
                             <h6 class="mb-0">
-                                <i data-feather="users" class="me-2" style="width: 16px; height: 16px;"></i>
+                                <i class="ph ph-users me-2" style="font-size: 16px;"></i>
                                 Partage avec l'équipe
                             </h6>
                         </div>
@@ -150,7 +150,7 @@
 
                 <div class="card-footer d-flex justify-content-between">
                     <a href="{{ url_for('email.templates') }}" class="btn btn-outline-secondary">
-                        <i data-feather="arrow-left" class="me-1"></i>
+                        <i class="ph ph-arrow-left me-1"></i>
                         Retour aux modèles
                     </a>
                     {{ form.submit(class="btn btn-primary") }}

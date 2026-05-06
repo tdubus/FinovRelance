@@ -85,7 +85,7 @@
                                 <div class="d-flex align-items-center gap-3">
                                     <input type="file" id="image-upload" accept="image/*" style="display: none;">
                                     <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('image-upload').click()">
-                                        <i class="fas fa-upload me-2"></i>Télécharger une image
+                                        <i class="ph ph-upload-simple me-2"></i>Télécharger une image
                                     </button>
                                     <span id="upload-status" class="text-muted small"></span>
                                 </div>
@@ -93,7 +93,7 @@
                                 <div id="image-preview-container" class="mt-3" style="display: none;">
                                     <img id="image-preview" src="" alt="Aperçu" style="max-width: 100%; max-height: 200px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                     <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="removeImage()">
-                                        <i class="fas fa-times me-1"></i>Supprimer
+                                        <i class="ph ph-x me-1"></i>Supprimer
                                     </button>
                                 </div>
                                 
@@ -109,7 +109,7 @@
                                 <div class="d-flex align-items-center gap-3">
                                     <input type="file" id="video-upload" accept="video/*" style="display: none;">
                                     <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('video-upload').click()">
-                                        <i class="fas fa-upload me-2"></i>Télécharger une vidéo
+                                        <i class="ph ph-upload-simple me-2"></i>Télécharger une vidéo
                                     </button>
                                     <span id="video-upload-status" class="text-muted small"></span>
                                 </div>
@@ -120,7 +120,7 @@
                                         Votre navigateur ne supporte pas la balise vidéo.
                                     </video>
                                     <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="removeVideo()">
-                                        <i class="fas fa-times me-1"></i>Supprimer
+                                        <i class="ph ph-x me-1"></i>Supprimer
                                     </button>
                                 </div>
                                 
@@ -143,7 +143,7 @@
                     <!-- Form Actions -->
                     <div class="d-flex gap-2 justify-content-end">
                         <a href="{{ url_for('admin.guides') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times me-2"></i>Annuler
+                            <i class="ph ph-x me-2"></i>Annuler
                         </a>
                         {{ form.submit(class="btn btn-admin-primary") }}
                     </div>

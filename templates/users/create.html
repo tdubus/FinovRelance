@@ -9,7 +9,7 @@
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
-                        <i class="fas fa-user-plus me-2"></i>Créer un nouvel utilisateur
+                        <i class="ph ph-user-plus me-2"></i>Créer un nouvel utilisateur
                     </h4>
                 </div>
                 <div class="card-body">
@@ -75,13 +75,13 @@
                             <!-- Message d'information dynamique -->
                             <div id="user-status-info" class="mt-2" style="display: none;">
                                 <div id="existing-user-info" class="alert alert-info" style="display: none;">
-                                    <i class="fas fa-info-circle me-2"></i>
+                                    <i class="ph ph-info me-2"></i>
                                     <strong>Utilisateur existant détecté :</strong>
                                     <span id="existing-user-details"></span>
                                     <br><small>Cet utilisateur conservera son mot de passe actuel.</small>
                                 </div>
                                 <div id="already-in-company-warning" class="alert alert-warning" style="display: none;">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <i class="ph ph-warning me-2"></i>
                                     <strong>Attention :</strong> Cet utilisateur fait déjà partie de votre entreprise.
                                 </div>
                             </div>
@@ -101,14 +101,14 @@
                         </div>
 
                         <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
+                            <i class="ph ph-info me-2"></i>
                             <strong>Information:</strong> Cet utilisateur sera ajouté à votre entreprise 
                             <strong>{{ company.name }}</strong> et aura accès aux mêmes données clients et factures.
                         </div>
 
                         <div class="d-flex justify-content-between">
                             <a href="{{ url_for('company.users_list') }}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Retour
+                                <i class="ph ph-arrow-left me-2"></i>Retour
                             </a>
                             {{ form.submit(class="btn btn-primary") }}
                         </div>

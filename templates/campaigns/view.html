@@ -35,18 +35,18 @@
         <div class="col-md-4 text-end">
             {% if campaign.status.value == 'in_progress' %}
             <button type="button" class="btn btn-danger me-2" id="emergencyStopBtn">
-                <i class="fas fa-stop-circle me-2"></i>ARRÊT D'URGENCE
+                <i class="ph ph-stop-circle me-2"></i>ARRÊT D'URGENCE
             </button>
             <button class="btn btn-secondary" disabled>
                 <span class="spinner-border spinner-border-sm me-2"></span>Envoi en cours...
             </button>
             {% elif campaign.status.value in ['ready', 'stopped'] and campaign.has_emails_to_send %}
             <button type="button" class="btn btn-success" id="sendAllBtn">
-                <i class="fas fa-paper-plane me-2"></i>{% if campaign.emails_sent > 0 %}Reprendre l'envoi{% else %}Envoyer tous les courriels{% endif %}
+                <i class="ph ph-paper-plane-tilt me-2"></i>{% if campaign.emails_sent > 0 %}Reprendre l'envoi{% else %}Envoyer tous les courriels{% endif %}
             </button>
             {% elif campaign.status.value == 'draft' %}
             <a href="{{ url_for('campaign.configure_email', campaign_id=campaign.id) }}" class="btn btn-primary">
-                <i class="fas fa-edit me-2"></i>Continuer la configuration
+                <i class="ph ph-pencil-simple me-2"></i>Continuer la configuration
             </a>
             {% elif campaign.status.value == 'processing' %}
             <button class="btn btn-secondary" disabled>
@@ -119,10 +119,10 @@
                     </select>
                     {% if campaign.status.value in ['ready', 'in_progress'] and campaign.has_emails_to_send %}
                     <button type="button" class="btn btn-sm btn-outline-primary" id="sendSelectedBtn" disabled>
-                        <i class="fas fa-paper-plane me-1"></i>Envoyer sélection
+                        <i class="ph ph-paper-plane-tilt me-1"></i>Envoyer sélection
                     </button>
                     <button type="button" class="btn btn-sm btn-outline-warning" id="skipSelectedBtn" disabled>
-                        <i class="fas fa-ban me-1"></i>Ignorer sélection
+                        <i class="ph ph-prohibit me-1"></i>Ignorer sélection
                     </button>
                     {% endif %}
                 </div>
@@ -178,7 +178,7 @@
                             <td>
                                 <span class="badge bg-{{ email.status_class }}">{{ email.status_display }}</span>
                                 {% if email.error_message %}
-                                <i class="fas fa-exclamation-circle text-danger ms-1" 
+                                <i class="ph ph-warning-circle text-danger ms-1"
                                    title="{{ email.error_message }}" data-bs-toggle="tooltip"></i>
                                 {% endif %}
                             </td>
@@ -186,18 +186,18 @@
                                 <div class="btn-group btn-group-sm">
                                     <button type="button" class="btn btn-outline-primary btn-preview" 
                                             data-email-id="{{ email.id }}" title="Prévisualiser">
-                                        <i class="fas fa-eye"></i>
+                                        <i class="ph ph-eye"></i>
                                     </button>
                                     {% if campaign.attach_pdf_statement and email.get_invoice_ids_snapshot_list() %}
                                     <a href="{{ url_for('campaign.download_attachment', campaign_id=campaign.id, email_id=email.id, attachment_type='pdf') }}" 
                                        class="btn btn-outline-danger" title="PDF" target="_blank">
-                                        <i class="fas fa-file-pdf"></i>
+                                        <i class="ph ph-file-pdf"></i>
                                     </a>
                                     {% endif %}
                                     {% if campaign.attach_excel_statement and email.get_invoice_ids_snapshot_list() %}
                                     <a href="{{ url_for('campaign.download_attachment', campaign_id=campaign.id, email_id=email.id, attachment_type='excel') }}" 
                                        class="btn btn-outline-success" title="Excel">
-                                        <i class="fas fa-file-excel"></i>
+                                        <i class="ph ph-file-csv"></i>
                                     </a>
                                     {% endif %}
                                 </div>
@@ -237,7 +237,7 @@
             {% endif %}
             {% else %}
             <div class="text-center py-5">
-                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <i class="ph ph-tray fa-3x text-muted mb-3"></i>
                 <h5 class="text-muted">Aucun courriel</h5>
                 <p class="text-muted mb-0">
                     {% if campaign.status.value == 'processing' %}
@@ -287,7 +287,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                 {% if campaign.status.value in ['ready', 'in_progress'] %}
                 <button type="button" class="btn btn-success" id="sendSingleBtn">
-                    <i class="fas fa-paper-plane me-1"></i>Envoyer ce courriel
+                    <i class="ph ph-paper-plane-tilt me-1"></i>Envoyer ce courriel
                 </button>
                 {% endif %}
             </div>
@@ -299,17 +299,17 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
-                <h5 class="modal-title"><i class="fas fa-paper-plane me-2"></i>Confirmer l'envoi</h5>
+                <h5 class="modal-title"><i class="ph ph-paper-plane-tilt me-2"></i>Confirmer l'envoi</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <p>Vous êtes sur le point d'envoyer <strong id="sendCount">0</strong> courriel(s).</p>
-                <p class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>Cette action est irréversible.</p>
+                <p class="text-danger"><i class="ph ph-warning me-1"></i>Cette action est irréversible.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <button type="button" class="btn btn-success" id="confirmSendBtn">
-                    <i class="fas fa-paper-plane me-1"></i>Confirmer l'envoi
+                    <i class="ph ph-paper-plane-tilt me-1"></i>Confirmer l'envoi
                 </button>
             </div>
         </div>
@@ -320,12 +320,12 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title"><i class="fas fa-stop-circle me-2"></i>ARRÊT D'URGENCE</h5>
+                <h5 class="modal-title"><i class="ph ph-stop-circle me-2"></i>ARRÊT D'URGENCE</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger mb-3">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <i class="ph ph-warning me-2"></i>
                     <strong>Attention :</strong> Cette action va immédiatement arrêter l'envoi des courriels.
                 </div>
                 <p>Les courriels déjà envoyés resteront envoyés.</p>
@@ -335,7 +335,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <button type="button" class="btn btn-danger" id="confirmStopBtn">
-                    <i class="fas fa-stop-circle me-1"></i>Confirmer l'arrêt
+                    <i class="ph ph-stop-circle me-1"></i>Confirmer l'arrêt
                 </button>
             </div>
         </div>
@@ -389,14 +389,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     alert(data.error || 'Erreur lors de l\'arrêt');
                     this.disabled = false;
-                    this.innerHTML = '<i class="fas fa-stop-circle me-1"></i>Confirmer l\'arrêt';
+                    this.innerHTML = '<i class="ph ph-stop-circle me-1"></i>Confirmer l\'arrêt';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('Erreur lors de l\'arrêt d\'urgence');
                 this.disabled = false;
-                this.innerHTML = '<i class="fas fa-stop-circle me-1"></i>Confirmer l\'arrêt';
+                this.innerHTML = '<i class="ph ph-stop-circle me-1"></i>Confirmer l\'arrêt';
             });
         });
     }
@@ -431,8 +431,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     const attachmentsDiv = document.getElementById('previewAttachments');
                     let attachments = [];
-                    if (data.has_pdf) attachments.push('<span class="badge bg-danger"><i class="fas fa-file-pdf me-1"></i>PDF</span>');
-                    if (data.has_excel) attachments.push('<span class="badge bg-success"><i class="fas fa-file-excel me-1"></i>Excel</span>');
+                    if (data.has_pdf) attachments.push('<span class="badge bg-danger"><i class="ph ph-file-pdf me-1"></i>PDF</span>');
+                    if (data.has_excel) attachments.push('<span class="badge bg-success"><i class="ph ph-file-csv me-1"></i>Excel</span>');
                     attachmentsDiv.innerHTML = attachments.length ? attachments.join(' ') : '<span class="text-muted">Aucune</span>';
                     
                     previewModal.show();
@@ -528,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .finally(() => {
             const btn = document.getElementById('confirmSendBtn');
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane me-1"></i>Confirmer l\'envoi';
+            btn.innerHTML = '<i class="ph ph-paper-plane-tilt me-1"></i>Confirmer l\'envoi';
         });
     });
     

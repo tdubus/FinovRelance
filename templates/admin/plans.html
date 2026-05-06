@@ -10,7 +10,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <h5 class="mb-0">{{ plans|length }} forfait(s) configuré(s)</h5>
             <a href="{{ url_for('admin.create_plan') }}" class="btn btn-admin-primary">
-                <i class="fas fa-plus me-2"></i>Créer un forfait
+                <i class="ph ph-plus me-2"></i>Créer un forfait
             </a>
         </div>
     </div>
@@ -57,23 +57,23 @@
                     <h6 class="fw-bold mb-2">Fonctionnalités</h6>
                     <div class="features-list">
                         <div class="feature-item">
-                            <i class="fas fa-{% if plan.allows_email_sending %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                            <i class="ph ph-{% if plan.allows_email_sending %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
                             Envoi d'emails
                         </div>
                         <div class="feature-item">
-                            <i class="fas fa-{% if plan.allows_email_connection %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                            <i class="ph ph-{% if plan.allows_email_connection %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
                             Connexion email
                         </div>
                         <div class="feature-item">
-                            <i class="fas fa-{% if plan.allows_accounting_connection %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                            <i class="ph ph-{% if plan.allows_accounting_connection %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
                             Connexion comptable
                         </div>
                         <div class="feature-item">
-                            <i class="fas fa-{% if plan.allows_team_management %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                            <i class="ph ph-{% if plan.allows_team_management %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
                             Gestion d'équipe
                         </div>
                         <div class="feature-item">
-                            <i class="fas fa-{% if plan.allows_email_templates %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                            <i class="ph ph-{% if plan.allows_email_templates %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
                             Modèles d'emails
                         </div>
                     </div>
@@ -93,10 +93,10 @@
                 
                 <div class="mt-4 d-flex gap-2">
                     <a href="{{ url_for('admin.edit_plan', plan_id=plan.id) }}" class="btn btn-sm btn-outline-primary flex-fill">
-                        <i class="fas fa-edit me-1"></i>Modifier
+                        <i class="ph ph-pencil-simple me-1"></i>Modifier
                     </a>
                     <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete({{ plan.id }}, '{{ plan.display_name }}')">
-                        <i class="fas fa-trash me-1"></i>Supprimer
+                        <i class="ph ph-trash me-1"></i>Supprimer
                     </button>
                 </div>
             </div>
@@ -110,11 +110,11 @@
     <div class="col-12">
         <div class="admin-card">
             <div class="card-body text-center py-5">
-                <i class="fas fa-box-open text-muted mb-3" style="font-size: 3rem;"></i>
+                <i class="ph ph-package text-muted mb-3" style="font-size: 3rem;"></i>
                 <h5 class="text-muted mb-3">Aucun forfait configuré</h5>
                 <p class="text-muted mb-4">Créez votre premier forfait pour commencer à gérer les abonnements.</p>
                 <a href="{{ url_for('admin.create_plan') }}" class="btn btn-admin-primary">
-                    <i class="fas fa-plus me-2"></i>Créer le premier forfait
+                    <i class="ph ph-plus me-2"></i>Créer le premier forfait
                 </a>
             </div>
         </div>

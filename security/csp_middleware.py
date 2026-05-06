@@ -66,6 +66,9 @@ def get_csp_directives(nonce=None):
         'font-src': [
             "'self'",
             "https://cdnjs.cloudflare.com",
+            # jsdelivr removed: Phosphor fonts now self-hosted under
+            # /static/fonts/phosphor/. Keep cdnjs for Font Awesome legacy
+            # fallbacks if any remain.
             "data:",
         ],
 
@@ -78,7 +81,8 @@ def get_csp_directives(nonce=None):
 
         'connect-src': [
             "'self'",
-            "https://cdn.jsdelivr.net",
+            # jsdelivr removed: no application code makes XHR/fetch to it.
+            # Phosphor + Bootstrap are loaded as <link>/<script> (style/script-src).
             "https://cdn.quilljs.com",
             "https://api.stripe.com",
             "https://login.microsoftonline.com",

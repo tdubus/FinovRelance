@@ -14,13 +14,28 @@ services:
         condition: service_healthy
     environment:
       - FLASK_ENV=development
+      - FLASK_DEBUG=1
       - REDIS_URL=redis://redis:6379/0
-    entrypoint: ["python", "-c", "from app import app; app.run(host='0.0.0.0', port=5000, debug=True)"]
+      - DATABASE_URL=postgresql://finovrelance:localdevpassword@db:5432/finovrelance
+      - DEV_BYPASS_2FA_EMAIL=dev@finovrelance.dev
+    # Bind-mount static + templates + security/views so most edits hit the
+    # container immediately (Flask debug reloader picks up Python changes).
+    # Python source dirs are mounted READ-ONLY so a compromise of the running
+    # debug server cannot persist malicious code back to the host. Static and
+    # templates stay RW since user uploads (logos) need write access.
+    volumes:
+      - ./static:/app/static
+      - ./templates:/app/templates
+      - ./marketing_site:/app/marketing_site
+      - ./security:/app/security:ro
+      - ./views:/app/views:ro
+      - ./utils:/app/utils:ro
+    # debug flag honors FLASK_DEBUG env var (1 = on). Lets a prod-ish compose
+    # override unset FLASK_DEBUG without having to rewrite the entrypoint.
+    entrypoint: ["python", "-c", "import os; from app import app; app.run(host='0.0.0.0', port=5000, debug=os.environ.get('FLASK_DEBUG','0')=='1')"]
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -29,8 +44,6 @@ services:
 
   db:
     image: postgres:16
-    ports:
-      - "5434:5432"
     environment:
       POSTGRES_USER: finovrelance
       POSTGRES_PASSWORD: localdevpassword

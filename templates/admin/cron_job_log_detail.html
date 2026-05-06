@@ -14,7 +14,7 @@
                 </ol>
             </nav>
             <h1 class="h3">
-                <i class="fas fa-clock me-2"></i>Exécution: <code>{{ log.job_name }}</code>
+                <i class="ph ph-clock me-2"></i>Exécution: <code>{{ log.job_name }}</code>
             </h1>
         </div>
     </div>
@@ -23,7 +23,7 @@
         <div class="col-md-8">
             <div class="card mb-4">
                 <div class="card-header">
-                    <i class="fas fa-info-circle me-1"></i>Informations générales
+                    <i class="ph ph-info me-1"></i>Informations générales
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -37,13 +37,13 @@
                                     <th>Statut</th>
                                     <td>
                                         {% if log.status == 'success' %}
-                                        <span class="badge bg-success"><i class="fas fa-check"></i> Succès</span>
+                                        <span class="badge bg-success"><i class="ph ph-check"></i> Succès</span>
                                         {% elif log.status == 'warning' %}
-                                        <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle"></i> Avertissement</span>
+                                        <span class="badge bg-warning text-dark"><i class="ph ph-warning"></i> Avertissement</span>
                                         {% elif log.status == 'failed' %}
-                                        <span class="badge bg-danger"><i class="fas fa-times"></i> Échec</span>
+                                        <span class="badge bg-danger"><i class="ph ph-x"></i> Échec</span>
                                         {% elif log.status == 'running' %}
-                                        <span class="badge bg-info"><i class="fas fa-spinner fa-spin"></i> En cours</span>
+                                        <span class="badge bg-info"><i class="ph ph-circle-notch rotating"></i> En cours</span>
                                         {% else %}
                                         <span class="badge bg-secondary">{{ log.status }}</span>
                                         {% endif %}
@@ -94,7 +94,7 @@
             {% if log.error_message %}
             <div class="card mb-4 border-danger">
                 <div class="card-header bg-danger text-white">
-                    <i class="fas fa-exclamation-triangle me-1"></i>Message d'erreur
+                    <i class="ph ph-warning me-1"></i>Message d'erreur
                 </div>
                 <div class="card-body">
                     <pre class="mb-0 text-danger">{{ log.error_message }}</pre>
@@ -105,7 +105,7 @@
             {% if log.details %}
             <div class="card mb-4">
                 <div class="card-header">
-                    <i class="fas fa-code me-1"></i>Détails (JSON)
+                    <i class="ph ph-code me-1"></i>Détails (JSON)
                 </div>
                 <div class="card-body">
                     <pre class="mb-0 bg-light p-3 rounded">{{ log.details | tojson(indent=2) }}</pre>
@@ -117,7 +117,7 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-history me-1"></i>Exécutions récentes
+                    <i class="ph ph-clock-counter-clockwise me-1"></i>Exécutions récentes
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
@@ -149,7 +149,7 @@
     <div class="row mt-3">
         <div class="col-12">
             <a href="{{ url_for('admin.cron_job_logs') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-1"></i>Retour à la liste
+                <i class="ph ph-arrow-left me-1"></i>Retour à la liste
             </a>
         </div>
     </div>

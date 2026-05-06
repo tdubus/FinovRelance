@@ -8,14 +8,14 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="h3 mb-0">
-                    <i class="fas fa-user-clock me-2"></i>Logs d'audit utilisateurs
+                    <i class="ph ph-user me-2"></i>Logs d'audit utilisateurs
                 </h1>
                 <div>
                     <a href="{{ url_for('admin.export_user_audit_logs_csv', user_id=user_filter, company_id=company_filter, action=action_filter, entity_type=entity_filter, date_from=date_from, date_to=date_to) }}" class="btn btn-success me-2">
-                        <i class="fas fa-file-csv me-1"></i>Exporter CSV
+                        <i class="ph ph-file-csv me-1"></i>Exporter CSV
                     </a>
                     <a href="{{ url_for('admin.cron_job_logs') }}" class="btn btn-outline-primary">
-                        <i class="fas fa-clock me-1"></i>Logs Cron Jobs
+                        <i class="ph ph-clock me-1"></i>Logs Cron Jobs
                     </a>
                 </div>
             </div>
@@ -67,7 +67,7 @@
 
     <div class="card mb-4">
         <div class="card-header">
-            <i class="fas fa-filter me-1"></i>Filtres
+            <i class="ph ph-funnel me-1"></i>Filtres
         </div>
         <div class="card-body">
             <form method="get" class="row g-3">
@@ -117,10 +117,10 @@
                 </div>
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary btn-sm">
-                        <i class="fas fa-search me-1"></i>Filtrer
+                        <i class="ph ph-magnifying-glass me-1"></i>Filtrer
                     </button>
                     <a href="{{ url_for('admin.user_audit_logs') }}" class="btn btn-outline-secondary btn-sm">
-                        <i class="fas fa-times me-1"></i>Réinitialiser
+                        <i class="ph ph-x me-1"></i>Réinitialiser
                     </a>
                 </div>
             </form>
@@ -129,7 +129,7 @@
 
     <div class="card">
         <div class="card-header">
-            <i class="fas fa-list me-1"></i>Historique des actions ({{ logs.total }} résultats)
+            <i class="ph ph-list me-1"></i>Historique des actions ({{ logs.total }} résultats)
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -187,7 +187,7 @@
                             <td class="small">
                                 {% if log.details %}
                                 <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#details-{{ log.id }}">
-                                    <i class="fas fa-eye"></i>
+                                    <i class="ph ph-eye"></i>
                                 </button>
                                 <div class="collapse mt-2" id="details-{{ log.id }}">
                                     <pre class="mb-0 p-2 bg-light rounded small">{{ log.details | tojson(indent=2) }}</pre>

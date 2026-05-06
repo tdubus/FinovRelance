@@ -20,7 +20,7 @@
                             <h3 class="mb-0">{{ stats.total_webhooks or 0 }}</h3>
                         </div>
                         <div class="align-self-center">
-                            <i class="fas fa-satellite-dish fa-2x"></i>
+                            <i class="ph ph-broadcast" style="font-size: 2em;"></i>
                         </div>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
                             <h3 class="mb-0">{{ "%.1f"|format(stats.success_rate or 0) }}%</h3>
                         </div>
                         <div class="align-self-center">
-                            <i class="fas fa-check-circle fa-2x"></i>
+                            <i class="ph ph-check-circle" style="font-size: 2em;"></i>
                         </div>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
                             <h3 class="mb-0">{{ stats.failed_webhooks or 0 }}</h3>
                         </div>
                         <div class="align-self-center">
-                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                            <i class="ph ph-warning" style="font-size: 2em;"></i>
                         </div>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                             <h3 class="mb-0">{{ stats.period_days or 30 }} jours</h3>
                         </div>
                         <div class="align-self-center">
-                            <i class="fas fa-calendar fa-2x"></i>
+                            <i class="ph ph-calendar" style="font-size: 2em;"></i>
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header">
-                    <h5><i class="fas fa-chart-bar"></i> Événements par Type</h5>
+                    <h5><i class="ph ph-chart-bar"></i> Événements par Type</h5>
                 </div>
                 <div class="card-body">
                     {% if webhook_types_stats %}
@@ -127,7 +127,7 @@
                     </div>
                     {% else %}
                     <div class="text-center text-muted py-4">
-                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <i class="ph ph-tray fa-3x mb-3"></i>
                         <p>Aucun webhook traité récemment</p>
                     </div>
                     {% endif %}
@@ -139,24 +139,24 @@
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-header">
-                    <h5><i class="fas fa-tools"></i> Actions</h5>
+                    <h5><i class="ph ph-wrench"></i> Actions</h5>
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
                         <a href="{{ url_for('webhook_admin.webhook_events') }}" class="btn btn-primary">
-                            <i class="fas fa-list"></i> Voir Tous les Événements
+                            <i class="ph ph-list"></i> Voir Tous les Événements
                         </a>
                         
                         <a href="{{ url_for('webhook_admin.webhook_events', status='failed') }}" class="btn btn-warning">
-                            <i class="fas fa-exclamation-triangle"></i> Webhooks Échoués
+                            <i class="ph ph-warning"></i> Webhooks Échoués
                         </a>
                         
                         <button class="btn btn-info" onclick="refreshStats()">
-                            <i class="fas fa-sync"></i> Actualiser Stats
+                            <i class="ph ph-arrows-clockwise"></i> Actualiser Stats
                         </button>
                         
                         <button class="btn btn-secondary" onclick="cleanupOldLogs()">
-                            <i class="fas fa-trash"></i> Nettoyer Anciens Logs
+                            <i class="ph ph-trash"></i> Nettoyer Anciens Logs
                         </button>
                     </div>
                 </div>
@@ -165,7 +165,7 @@
             {% if failed_webhooks %}
             <div class="card mt-3">
                 <div class="card-header">
-                    <h6><i class="fas fa-exclamation-circle"></i> Échecs Récents</h6>
+                    <h6><i class="ph ph-warning-circle"></i> Échecs Récents</h6>
                 </div>
                 <div class="card-body">
                     {% for webhook in failed_webhooks[:5] %}
@@ -195,7 +195,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5><i class="fas fa-history"></i> Activité Récente</h5>
+                    <h5><i class="ph ph-clock-counter-clockwise"></i> Activité Récente</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

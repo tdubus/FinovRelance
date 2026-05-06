@@ -9,13 +9,13 @@
             <div class="card shadow">
                 <div class="card-header bg-success text-white">
                     <h4 class="mb-0">
-                        <i class="fas fa-file-excel me-2"></i>Configuration du Connecteur Excel/CSV
+                        <i class="ph ph-file-csv me-2"></i>Configuration du Connecteur Excel/CSV
                     </h4>
                 </div>
                 <div class="card-body">
                     <!-- Instructions -->
                     <div class="alert alert-info">
-                        <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Comment configurer votre import</h5>
+                        <h5 class="alert-heading"><i class="ph ph-info me-2"></i>Comment configurer votre import</h5>
                         <p>Le Connecteur Excel/CSV vous permet d'importer des clients et factures depuis des fichiers Excel (.xlsx) ou CSV (.csv) sans reformater vos fichiers à chaque fois.</p>
                         <hr>
                         <ol class="mb-0">
@@ -29,7 +29,7 @@
                     <!-- Status actuel -->
                     {% if mapping_config.is_configured %}
                     <div class="alert alert-success">
-                        <i class="fas fa-check-circle me-2"></i>
+                        <i class="ph ph-check-circle me-2"></i>
                         <strong>Configuration active</strong>
                         <p class="mb-0 mt-2">
                             Vos mappings sont configurés et prêts à l'emploi.
@@ -38,7 +38,7 @@
                     </div>
                     {% else %}
                     <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <i class="ph ph-warning me-2"></i>
                         <strong>Configuration requise</strong>
                         <p class="mb-0 mt-2">
                             Configurez au moins un mapping (clients OU factures) pour activer le connecteur.
@@ -52,7 +52,7 @@
                     <div class="card mb-4">
                         <div class="card-header bg-light">
                             <h5 class="mb-0">
-                                <i class="fas fa-users text-primary me-2"></i>
+                                <i class="ph ph-users text-primary me-2"></i>
                                 1. Configuration du Mapping Clients
                                 {% if mapping_config.client_column_mappings %}
                                 <span class="badge bg-success ms-2">Configuré</span>
@@ -75,7 +75,7 @@
                             <button type="button" 
                                     class="btn btn-primary mb-3" 
                                     id="detectClientsHeaders">
-                                <i class="fas fa-search me-2"></i>Détecter les colonnes
+                                <i class="ph ph-magnifying-glass me-2"></i>Détecter les colonnes
                             </button>
                             
                             <!-- Zone de mapping clients -->
@@ -111,7 +111,7 @@
                                     </div>
                                     <!-- Champs d'adresse ventilés -->
                                     <div class="col-12 mb-2">
-                                        <label class="form-label text-muted"><i class="fas fa-map-marker-alt me-1"></i>Champs d'adresse (optionnels)</label>
+                                        <label class="form-label text-muted"><i class="ph ph-map-pin me-1"></i>Champs d'adresse (optionnels)</label>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Adresse 1</label>
@@ -179,7 +179,7 @@
                                 <!-- Section Mapping de Langue -->
                                 <div class="card bg-light mb-3">
                                     <div class="card-body">
-                                        <h6 class="card-title"><i class="fas fa-language me-2"></i>Mapping des Codes de Langue</h6>
+                                        <h6 class="card-title"><i class="ph ph-translate me-2"></i>Mapping des Codes de Langue</h6>
                                         <p class="text-muted small">
                                             Définissez comment les valeurs de langue dans votre fichier Excel correspondent aux codes FR et EN utilisés dans FinovRelance.
                                         </p>
@@ -211,7 +211,7 @@
                                 <button type="button" 
                                         class="btn btn-success" 
                                         id="saveClientsMapping">
-                                    <i class="fas fa-save me-2"></i>Sauvegarder le mapping clients
+                                    <i class="ph ph-floppy-disk me-2"></i>Sauvegarder le mapping clients
                                 </button>
                             </div>
                         </div>
@@ -221,7 +221,7 @@
                     <div class="card mb-4">
                         <div class="card-header bg-light">
                             <h5 class="mb-0">
-                                <i class="fas fa-file-invoice text-warning me-2"></i>
+                                <i class="ph ph-receipt text-warning me-2"></i>
                                 2. Configuration du Mapping Factures
                                 {% if mapping_config.invoice_column_mappings %}
                                 <span class="badge bg-success ms-2">Configuré</span>
@@ -244,7 +244,7 @@
                             <button type="button" 
                                     class="btn btn-primary mb-3" 
                                     id="detectInvoicesHeaders">
-                                <i class="fas fa-search me-2"></i>Détecter les colonnes
+                                <i class="ph ph-magnifying-glass me-2"></i>Détecter les colonnes
                             </button>
                             
                             <!-- Zone de mapping factures -->
@@ -305,7 +305,7 @@
                                 <button type="button" 
                                         class="btn btn-success" 
                                         id="saveInvoicesMapping">
-                                    <i class="fas fa-save me-2"></i>Sauvegarder le mapping factures
+                                    <i class="ph ph-floppy-disk me-2"></i>Sauvegarder le mapping factures
                                 </button>
                             </div>
                         </div>
@@ -314,7 +314,7 @@
                     <!-- Retour aux paramètres -->
                     <div class="text-center mt-4">
                         <a href="{{ url_for('company.settings', _anchor='accounting') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Retour aux Paramètres
+                            <i class="ph ph-arrow-left me-2"></i>Retour aux Paramètres
                         </a>
                     </div>
                 </div>

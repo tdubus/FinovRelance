@@ -9,7 +9,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="text-primary">Gestion des utilisateurs</h2>
                 <a href="{{ url_for('company.create_user') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Nouvel utilisateur
+                    <i class="ph ph-plus me-2"></i>Nouvel utilisateur
                 </a>
             </div>
 
@@ -51,7 +51,7 @@
                                     <td class="text-center">
                                         <a href="{{ url_for('users.edit_user', user_id=user_company.user.id) }}" 
                                            class="btn btn-sm btn-outline-primary me-2">
-                                            <i class="fas fa-edit"></i> Modifier
+                                            <i class="ph ph-pencil-simple"></i> Modifier
                                         </a>
                                         
                                         {% if user_company.user.id != current_user.id %}
@@ -60,7 +60,7 @@
                                                       onsubmit="return confirm('Êtes-vous sûr de vouloir retirer {{ user_company.user.first_name }} {{ user_company.user.last_name }} de cette entreprise ?')">
                                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                                     <button type="submit" class="btn btn-sm btn-outline-warning">
-                                                        <i class="fas fa-user-minus"></i> Retirer
+                                                        <i class="ph ph-user-minus"></i> Retirer
                                                     </button>
                                                 </form>
                                             {% endif %}
@@ -73,11 +73,11 @@
                     </div>
                     {% else %}
                     <div class="text-center py-5">
-                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <i class="ph ph-users fa-3x text-muted mb-3"></i>
                         <h5 class="text-muted">Aucun utilisateur trouvé</h5>
                         <p class="text-muted">Créez votre premier utilisateur pour commencer.</p>
                         <a href="{{ url_for('company.create_user') }}" class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i>Créer un utilisateur
+                            <i class="ph ph-plus me-2"></i>Créer un utilisateur
                         </a>
                     </div>
                     {% endif %}
@@ -97,7 +97,7 @@
             </div>
             <div class="modal-body">
                 <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <i class="ph ph-warning me-2"></i>
                     <strong>Attention :</strong> Cette action est irréversible.
                 </div>
                 <p>Êtes-vous certain de vouloir supprimer cet utilisateur de votre équipe ?</p>
@@ -120,7 +120,7 @@
                 <form id="deleteUserForm" method="POST" style="display: inline;">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-2"></i>Supprimer définitivement
+                        <i class="ph ph-trash me-2"></i>Supprimer définitivement
                     </button>
                 </form>
             </div>

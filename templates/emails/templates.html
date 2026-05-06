@@ -10,7 +10,7 @@
     </div>
     <div>
         <a href="{{ url_for('email.new_template') }}" class="btn btn-primary">
-            <i data-feather="plus" class="me-1"></i>
+            <i class="ph ph-plus me-1"></i>
             Nouveau modèle
         </a>
     </div>
@@ -20,10 +20,10 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
-            <i data-feather="mail" class="me-2"></i>
+            <i class="ph ph-envelope me-2"></i>
             Modèles disponibles
             {% if templates %}
-                <span class="badge badge-secondary ms-2">{{ templates|length }}</span>
+                <span class="badge bg-secondary ms-2">{{ templates|length }}</span>
             {% endif %}
         </h5>
     </div>
@@ -94,25 +94,25 @@
                                     data-template-subject="{{ template.subject }}"
                                     data-template-content="{{ template.content }}"
                                     data-tooltip="Aperçu">
-                                <i data-feather="eye"></i>
+                                <i class="ph ph-eye"></i>
                             </button>
                             {% if template.can_duplicate(current_user) %}
                             <a href="{{ url_for('email.new_template', duplicate=template.id) }}" 
                                class="btn btn-outline-secondary" data-tooltip="Dupliquer">
-                                <i data-feather="copy"></i>
+                                <i class="ph ph-copy"></i>
                             </a>
                             {% endif %}
                             {% if template.can_edit(current_user) %}
                             <a href="{{ url_for('email.edit_template', id=template.id) }}" 
                                class="btn btn-outline-primary" data-tooltip="Modifier">
-                                <i data-feather="edit"></i>
+                                <i class="ph ph-pencil-simple"></i>
                             </a>
                             {% endif %}
                             {% if template.can_delete(current_user) %}
                             <button type="button" class="btn btn-outline-danger" 
                                     onclick="confirmDelete({{ template.id }}, '{{ template.name }}')"
                                     data-tooltip="Supprimer">
-                                <i data-feather="trash-2"></i>
+                                <i class="ph ph-trash"></i>
                             </button>
                             {% endif %}
                         </div>
@@ -126,14 +126,14 @@
     <!-- Empty State -->
     <div class="card-body text-center py-5">
         <div class="mb-4">
-            <i data-feather="mail" style="width: 64px; height: 64px; stroke: hsl(var(--text-muted));"></i>
+            <i class="ph ph-envelope" style="font-size: 64px; stroke: hsl(var(--text-muted))"></i>
         </div>
         <h4 class="text-muted">Aucun modèle de courriel</h4>
         <p class="text-muted mb-4">
             Créez votre premier modèle de courriel pour faciliter vos communications avec les clients.
         </p>
         <a href="{{ url_for('email.new_template') }}" class="btn btn-primary">
-            <i data-feather="plus" class="me-1"></i>
+            <i class="ph ph-plus me-1"></i>
             Créer un modèle
         </a>
     </div>
@@ -146,7 +146,7 @@
 <div class="card mt-4">
     <div class="card-header">
         <h6 class="mb-0">
-            <i data-feather="code" class="me-2"></i>
+            <i class="ph ph-code me-2"></i>
             Variables disponibles
         </h6>
     </div>
@@ -191,7 +191,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i data-feather="eye" class="me-2"></i>
+                    <i class="ph ph-eye me-2"></i>
                     Aperçu du modèle
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -213,7 +213,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                 <button type="button" class="btn btn-primary" id="editFromPreview">
-                    <i data-feather="edit" class="me-1"></i>
+                    <i class="ph ph-pencil-simple me-1"></i>
                     Modifier
                 </button>
             </div>

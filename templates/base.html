@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr"{% if g.ui_theme == 'v2' %} data-ui="v2"{% endif %}>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +7,16 @@
 
     <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    {# Phosphor Icons (regular weight) — self-hosted to eliminate CDN supply
+       chain risk. Files under /static/fonts/phosphor/ (woff2 + woff + ttf). #}
+    <link href="{{ 'fonts/phosphor/style.css'|asset_url }}" rel="stylesheet">
     <link href="{{ 'css/style.css'|asset_url }}" rel="stylesheet">
     <link href="{{ 'css/custom.css'|asset_url }}" rel="stylesheet">
+    {% if g.ui_theme == 'v2' %}
+    <link href="{{ 'css/v2/style-v2.css'|asset_url }}" rel="stylesheet">
+    <link rel="preload" as="font" type="font/ttf" href="{{ 'fonts/Onest-Regular.ttf'|asset_url }}" crossorigin>
+    <link rel="preload" as="font" type="font/ttf" href="{{ 'fonts/Onest-SemiBold.ttf'|asset_url }}" crossorigin>
+    {% endif %}
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="{{ 'favicon.ico'|asset_url }}">
@@ -76,6 +83,7 @@
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link visually-hidden-focusable">Aller au contenu principal</a>
     <!-- Navigation -->
     {% if current_user.is_authenticated %}
     <nav class="navbar navbar-expand-lg">
@@ -91,81 +99,81 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" 
+                        <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}"
                            href="{{ url_for('main.dashboard') }}">
-                            <i class="fas fa-home me-1"></i>
+                            <i class="ph ph-house me-1"></i>
                             Tableau de bord
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('client.') %}active{% endif %}" 
+                        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('client.') %}active{% endif %}"
                            href="{{ url_for('client.list_clients') }}">
-                            <i class="fas fa-users me-1"></i>
+                            <i class="ph ph-users me-1"></i>
                             Clients
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('receivable.') %}active{% endif %}" 
+                        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('receivable.') %}active{% endif %}"
                            href="{{ url_for('receivable.overview') }}">
-                            <i class="fas fa-dollar-sign me-1"></i>
+                            <i class="ph ph-currency-circle-dollar me-1"></i>
                             Comptes à recevoir
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.endpoint and request.endpoint.startswith('note.') %}active{% endif %}" href="{{ url_for('note.list_notes') }}">
-                            <i class="fas fa-sticky-note me-1"></i>
+                            <i class="ph ph-note-pencil me-1"></i>
                             Notes
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.endpoint and request.endpoint.startswith('reminder.') %}active{% endif %}" href="{{ url_for('reminder.list_reminders') }}">
-                            <i class="fas fa-bell me-1"></i>
+                            <i class="ph ph-bell me-1"></i>
                             Rappels
                         </a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="toolsDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-tools me-1"></i>
+                            <i class="ph ph-wrench me-1"></i>
                             Outils
                         </a>
                         <ul class="dropdown-menu">
                             {% set email_templates_access = check_feature_access('email_templates_personal') %}
                             {% if email_templates_access.allowed %}
                             <li><a class="dropdown-item" href="{{ url_for('email.templates') }}">
-                                <i class="fas fa-envelope me-1"></i>
+                                <i class="ph ph-envelope me-1"></i>
                                 Modèles de courriel
                             </a></li>
                             {% else %}
                             <li><span class="dropdown-item {{ email_templates_access.css_class }}" title="{{ email_templates_access.message }}">
-                                <i class="{{ email_templates_access.icon }} me-1"></i>
+                                <i class="ph ph-lock me-1"></i>
                                 Modèles de courriel
                             </span></li>
                             {% endif %}
-                            
+
                             {% set campaign_access = check_feature_access('campaigns') %}
                             {% if campaign_access.allowed %}
                             <li><a class="dropdown-item" href="{{ url_for('campaign.list_campaigns') }}">
-                                <i class="fas fa-bullhorn me-1"></i>
+                                <i class="ph ph-megaphone me-1"></i>
                                 Campagnes
                             </a></li>
                             {% else %}
                             <li><span class="dropdown-item {{ campaign_access.css_class }}" title="{{ campaign_access.message }}">
-                                <i class="{{ campaign_access.icon }} me-1"></i>
+                                <i class="ph ph-lock me-1"></i>
                                 Campagnes
                             </span></li>
                             {% endif %}
-                            
+
                             {% set team_access = check_feature_access('team_management') %}
                             {% if team_access.allowed %}
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('company.users_list') }}">
-                                <i class="fas fa-users-cog me-1"></i>
+                                <i class="ph ph-users-three me-1"></i>
                                 Gestion de l'équipe
                             </a></li>
                             {% else %}
                             <li><hr class="dropdown-divider"></li>
                             <li><span class="dropdown-item {{ team_access.css_class }}" title="{{ team_access.message }}">
-                                <i class="{{ team_access.icon }} me-1"></i>
+                                <i class="ph ph-lock me-1"></i>
                                 Gestion de l'équipe
                             </span></li>
                             {% endif %}
@@ -177,7 +185,7 @@
                     <!-- Notification Bell -->
                     <li class="nav-item dropdown me-3">
                         <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-bell" style="font-size: 1.1rem;"></i>
+                            <i class="ph ph-bell"></i>
                             <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
                                 0
                                 <span class="visually-hidden">notifications non lues</span>
@@ -196,7 +204,7 @@
                             <li>
                                 <div id="notification-list" class="px-3">
                                     <div class="text-muted text-center py-3">
-                                        <i class="fas fa-bell-slash mb-2"></i><br>
+                                        <i class="ph ph-bell-slash mb-2"></i><br>
                                         Aucune nouvelle notification
                                     </div>
                                 </div>
@@ -210,7 +218,7 @@
                     {% if active_companies|length > 1 %}
                     <li class="nav-item dropdown me-3">
                         <a class="nav-link dropdown-toggle" href="#" id="companyDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-building me-1"></i>
+                            <i class="ph ph-briefcase me-1"></i>
                             {{ current_user.company.name if current_user.company else "Sélectionnez une entreprise" }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -218,12 +226,12 @@
                             <li>
                                 {% if company.id == current_user.company_id %}
                                 <span class="dropdown-item active">
-                                    <i class="fas fa-check me-1"></i>
+                                    <i class="ph ph-check me-1"></i>
                                     {{ company.name }}
                                 </span>
                                 {% else %}
                                 <a class="dropdown-item" href="{{ url_for('auth.switch_company', company_id=company.id) }}">
-                                    <i class="fas fa-arrow-right me-1"></i>
+                                    <i class="ph ph-arrow-right me-1"></i>
                                     {{ company.name }}
                                 </a>
                                 {% endif %}
@@ -235,12 +243,12 @@
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user me-1"></i>
+                            <i class="ph ph-user-circle me-1"></i>
                             <span class="user-name">{{ current_user.full_name }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{{ url_for('profile.settings') }}">
-                                <i class="fas fa-user-cog me-1"></i>
+                                <i class="ph ph-user-gear me-1"></i>
                                 Mon profil
                                 {% if current_user.is_super_admin() %}
                                     <span class="badge bg-danger ms-2">Super Admin</span>
@@ -250,32 +258,32 @@
                             </a></li>
                             <li>
                                 <a class="dropdown-item" href="{{ url_for('profile.email_configuration') }}">
-                                    <i class="fas fa-envelope-square me-1"></i>
+                                    <i class="ph ph-envelope me-1"></i>
                                     Connexion Courriel
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('main.my_companies') }}">
-                                <i class="fas fa-building me-1"></i>
+                                <i class="ph ph-briefcase me-1"></i>
                                 Mes entreprises
                             </a></li>
                             {% if current_user.can_access_company_settings() %}
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('company.settings') }}">
-                                <i class="fas fa-building me-1"></i>
+                                <i class="ph ph-gear me-1"></i>
                                 Paramètres de l'entreprise
                             </a></li>
                             {% endif %}
                             {% if current_user.is_superuser %}
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">
-                                <i class="fas fa-shield-alt me-1"></i>
+                                <i class="ph ph-shield-check me-1"></i>
                                 Panel Administrateur
                             </a></li>
                             {% endif %}
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
-                                <i class="fas fa-sign-out-alt me-1"></i>
+                                <i class="ph ph-sign-out me-1"></i>
                                 Déconnexion
                             </a></li>
                         </ul>
@@ -287,7 +295,7 @@
     {% endif %}
 
     <!-- Main Content -->
-    <main class="{% if current_user.is_authenticated %}container-fluid mt-4{% else %}container{% endif %}">
+    <main id="main-content" class="{% if current_user.is_authenticated %}container-fluid mt-4{% else %}container{% endif %}">
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -327,28 +335,28 @@
 
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+    <script>
+      // TODO(icon-migration): no-op shim for legacy `feather.replace()` /
+      // `safeFeatherReplace()` calls still present in ~26 template-level
+      // <script> blocks. Grep `feather.replace\|safeFeatherReplace` in
+      // templates/ to locate them. Remove this shim once all callsites are
+      // converted to Phosphor (CSS web font, no JS replacement step needed).
+      window.feather = window.feather || { replace: function () {} };
+      window.safeFeatherReplace = window.safeFeatherReplace || function () {};
+    </script>
 
     <script src="{{ 'js/main.js'|asset_url }}"></script>
 
     <script>
-        // Initialize tooltips and icons
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize tooltips if Bootstrap is available
+            // Initialize Bootstrap tooltips
             if (typeof bootstrap !== 'undefined') {
                 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
-                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
                     return new bootstrap.Tooltip(tooltipTriggerEl);
                 });
             }
-
-            // Safe feather-icons replacement (global helper for all JS files)
-            window.safeFeatherReplace = function() {
-                if (typeof feather !== 'undefined' && feather.replace) {
-                    try { feather.replace(); } catch (e) { /* invalid icon name */ }
-                }
-            };
-            window.safeFeatherReplace();
+            // Phosphor icons are CSS-based (web font) — no JS replacement needed.
         });
     </script>
 

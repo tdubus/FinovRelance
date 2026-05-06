@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-md-12">
             <h2>
-                <i class="fas fa-cube"></i> Mapping des champs Odoo
+                <i class="ph ph-cube"></i> Mapping des champs Odoo
             </h2>
             <p class="text-muted">Configurez la correspondance entre les champs Odoo et votre système</p>
             <hr>
@@ -22,7 +22,7 @@
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i>
+                        <i class="ph ph-info"></i>
                         <strong>Mapping par défaut appliqué</strong><br>
                         Le mapping des champs est configuré automatiquement avec les correspondances standard Odoo.
                         Vous pouvez maintenant lancer votre première synchronisation !
@@ -97,17 +97,17 @@
                     </table>
 
                     <div class="alert alert-success mt-3">
-                        <i class="fas fa-check"></i>
+                        <i class="ph ph-check"></i>
                         <strong>Filtrage automatique :</strong> Seules les factures ayant un montant restant dû supérieur à 0 sont importées. 
                         Les factures entièrement payées sont automatiquement exclues.
                     </div>
 
                     <div class="d-flex gap-2 mt-4">
                         <a href="{{ url_for('company.settings', _anchor='accounting') }}" class="btn btn-primary">
-                            <i class="fas fa-check"></i> Terminer la configuration
+                            <i class="ph ph-check"></i> Terminer la configuration
                         </a>
                         <a href="{{ url_for('company.odoo_setup') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Retour à la configuration
+                            <i class="ph ph-arrow-left"></i> Retour à la configuration
                         </a>
                     </div>
                 </div>

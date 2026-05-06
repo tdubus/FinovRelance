@@ -14,12 +14,12 @@
                     <div class="note-actions">
                         <button type="button" onclick="editNote({{ note.id }})" 
                                 class="btn btn-outline-primary" title="{{ 'Modifier' if can_edit_note else 'Voir le détail' }}">
-                            <i data-feather="{{ 'edit' if can_edit_note else 'eye' }}"></i>
+                            <i class="ph ph-{{ 'pencil-simple' if can_edit_note else 'eye' }}"></i>
                         </button>
                         {% if can_edit_note %}
                         <button type="button" onclick="deleteNoteAjax({{ note.id }}, {{ client.id }})" 
                                 class="btn btn-outline-danger" title="Supprimer">
-                            <i data-feather="trash-2"></i>
+                            <i class="ph ph-trash"></i>
                         </button>
                         {% endif %}
                     </div>
@@ -30,13 +30,13 @@
                 <!-- Icône de type optimisée -->
                 <div class="note-type-indicator note-type-{{ note.note_type }}">
                     {% if note.note_type == 'call' %}
-                        <i data-feather="phone"></i>
+                        <i class="ph ph-phone"></i>
                     {% elif note.note_type == 'email' %}
-                        <i data-feather="mail"></i>
+                        <i class="ph ph-envelope"></i>
                     {% elif note.note_type == 'meeting' %}
-                        <i data-feather="users"></i>
+                        <i class="ph ph-users"></i>
                     {% else %}
-                        <i data-feather="edit-3"></i>
+                        <i class="ph ph-pencil-simple"></i>
                     {% endif %}
                 </div>
 
@@ -48,7 +48,7 @@
                         {# Indicateur de date originale pour les conversations #}
                         {% if is_conversation and group.original_date %}
                         <span class="text-muted ms-2" style="font-size: 0.8em;" title="Date du courriel original">
-                            <i data-feather="clock" style="width: 12px; height: 12px;"></i>
+                            <i class="ph ph-clock" style="font-size: 12px;"></i>
                             Orig: {{ format_local_datetime(group.original_date, '%d/%m/%Y', company.timezone) }}
                         </span>
                         {% endif %}
@@ -61,19 +61,19 @@
                         {% if note.note_type == 'email' and note.email_direction %}
                         <span class="badge email-direction-badge {{ note.get_email_direction_badge_class() }} ms-1" title="Direction du courriel">
                             {% if note.email_direction == 'sent' %}
-                                <span class="badge-icon"><i data-feather="send"></i></span>Envoyé
+                                <span class="badge-icon"><i class="ph ph-paper-plane-tilt"></i></span>Envoyé
                             {% elif note.email_direction == 'received' %}
-                                <span class="badge-icon"><i data-feather="inbox"></i></span>Reçu
+                                <span class="badge-icon"><i class="ph ph-tray"></i></span>Reçu
                             {% elif note.email_direction == 'reply' %}
-                                <span class="badge-icon"><i data-feather="corner-up-left"></i></span>Réponse
+                                <span class="badge-icon"><i class="ph ph-arrow-bend-up-left"></i></span>Réponse
                             {% elif note.email_direction == 'forward' %}
-                                <span class="badge-icon"><i data-feather="corner-up-right"></i></span>Transféré
+                                <span class="badge-icon"><i class="ph ph-arrow-bend-up-right"></i></span>Transféré
                             {% endif %}
                         </span>
                         {% endif %}
                         {% if note.is_from_sync %}
                         <span class="badge bg-secondary ms-1" title="Synchronisé automatiquement depuis Outlook">
-                            <i data-feather="refresh-cw" style="width: 10px; height: 10px;"></i>
+                            <i class="ph ph-arrow-clockwise" style="font-size: 10px;"></i>
                         </span>
                         {% endif %}
                         
@@ -83,9 +83,9 @@
                               onclick="event.stopPropagation(); toggleClientConversation('{{ note.id }}')"
                               style="cursor: pointer;"
                               title="Cliquez pour voir les {{ group.count }} messages de cette conversation">
-                            <i data-feather="message-circle" style="width: 10px; height: 10px;"></i>
+                            <i class="ph ph-chat-circle" style="font-size: 10px;"></i>
                             {{ group.count }} échanges
-                            <i data-feather="chevron-down" class="conv-chevron-{{ note.id }}" style="width: 12px; height: 12px; transition: transform 0.2s;"></i>
+                            <i class="ph ph-caret-down conv-chevron-{{ note.id }}" style="font-size: 12px; transition: transform 0.2s"></i>
                         </span>
                         {% endif %}
                     </div>
@@ -93,10 +93,10 @@
                     <div class="note-reminder-inline mt-1">
                         <span class="reminder-badge-inline {% if note.is_reminder_completed %}reminder-completed{% elif note.is_reminder_overdue() %}reminder-overdue{% elif note.is_reminder_today() %}reminder-today{% else %}reminder-upcoming{% endif %}">
                             {% if note.is_reminder_completed %}
-                            <i data-feather="check-circle" style="width: 12px; height: 12px;"></i>
+                            <i class="ph ph-check-circle" style="font-size: 12px;"></i>
                             <span>Terminé</span>
                             {% else %}
-                            <i data-feather="bell" style="width: 12px; height: 12px;"></i>
+                            <i class="ph ph-bell" style="font-size: 12px;"></i>
                             <span>{{ note.reminder_date.strftime('%d/%m/%Y') }}</span>
                             {% endif %}
                         </span>
@@ -145,7 +145,7 @@
                         {% if note.attachments and note.attachments|length > 0 %}
                             <div class="email-attachments mt-2">
                                 <small class="text-muted">
-                                    <i data-feather="paperclip" style="width: 14px; height: 14px;"></i>
+                                    <i class="ph ph-paperclip" style="font-size: 14px;"></i>
                                     <strong>{{ note.attachments|length }} pièce{% if note.attachments|length > 1 %}s{% endif %} jointe{% if note.attachments|length > 1 %}s{% endif %}:</strong>
                                     {% for attachment in note.attachments %}
                                         <span class="badge bg-light text-dark ms-1">
@@ -178,7 +178,7 @@
                     </div>
                 {% else %}
                     <!-- Note traditionnelle (tout type) -->
-                    <div class="note-text-content">{{ note.note_text | replace('\n', '<br>') | safe }}</div>
+                    <div class="note-text-content">{{ note.note_text | e | replace('\n', '<br>') | safe }}</div>
                 {% endif %}
             </div>
             </div><!-- Fin .note-primary-content -->
@@ -195,12 +195,12 @@
                         <div class="child-note-actions">
                             <button type="button" onclick="editNote({{ child.id }})" 
                                     class="btn btn-sm btn-outline-primary" title="{{ 'Modifier' if can_edit_child else 'Voir le détail' }}">
-                                <i data-feather="{{ 'edit' if can_edit_child else 'eye' }}" style="width: 12px; height: 12px;"></i>
+                                <i class="ph ph-{{ 'pencil-simple' if can_edit_child else 'eye' }}" style="font-size: 12px;"></i>
                             </button>
                             {% if can_edit_child %}
                             <button type="button" onclick="deleteNoteAjax({{ child.id }}, {{ client.id }})" 
                                     class="btn btn-sm btn-outline-danger" title="Supprimer">
-                                <i data-feather="trash-2" style="width: 12px; height: 12px;"></i>
+                                <i class="ph ph-trash" style="font-size: 12px;"></i>
                             </button>
                             {% endif %}
                         </div>
@@ -209,19 +209,19 @@
                         <div class="child-note-header">
                             {% if is_original_child %}
                             <span class="badge bg-warning text-dark me-2" style="font-size: 0.65em;" title="Courriel original">
-                                <span class="badge-icon"><i data-feather="flag"></i></span>Original
+                                <span class="badge-icon"><i class="ph ph-flag"></i></span>Original
                             </span>
                             {% endif %}
                             {% if child.email_direction %}
                             <span class="badge {{ child.get_email_direction_badge_class() }} me-2" style="font-size: 0.7em;">
                                 {% if child.email_direction == 'sent' %}
-                                    <span class="badge-icon"><i data-feather="send"></i></span>Envoyé
+                                    <span class="badge-icon"><i class="ph ph-paper-plane-tilt"></i></span>Envoyé
                                 {% elif child.email_direction == 'received' %}
-                                    <span class="badge-icon"><i data-feather="inbox"></i></span>Reçu
+                                    <span class="badge-icon"><i class="ph ph-tray"></i></span>Reçu
                                 {% elif child.email_direction == 'reply' %}
-                                    <span class="badge-icon"><i data-feather="corner-up-left"></i></span>Réponse
+                                    <span class="badge-icon"><i class="ph ph-arrow-bend-up-left"></i></span>Réponse
                                 {% elif child.email_direction == 'forward' %}
-                                    <span class="badge-icon"><i data-feather="corner-up-right"></i></span>Transféré
+                                    <span class="badge-icon"><i class="ph ph-arrow-bend-up-right"></i></span>Transféré
                                 {% endif %}
                             </span>
                             {% endif %}
@@ -229,15 +229,15 @@
                             <span class="child-note-date text-muted">{{ format_local_datetime(child.created_at, '%d/%m/%Y à %H:%M', company.timezone) }}</span>
                             {% if child.is_from_sync %}
                             <span class="badge bg-secondary ms-1" title="Synchronisé" style="font-size: 0.65em;">
-                                <i data-feather="refresh-cw" style="width: 8px; height: 8px;"></i>
+                                <i class="ph ph-arrow-clockwise" style="font-size: 8px;"></i>
                             </span>
                             {% endif %}
                             {% if child.reminder_date %}
                             <span class="reminder-badge-inline ms-2 {% if child.is_reminder_completed %}reminder-completed{% elif child.is_reminder_overdue() %}reminder-overdue{% elif child.is_reminder_today() %}reminder-today{% else %}reminder-upcoming{% endif %}" style="font-size: 0.7em;">
                                 {% if child.is_reminder_completed %}
-                                <i data-feather="check-circle" style="width: 10px; height: 10px;"></i> Terminé
+                                <i class="ph ph-check-circle" style="font-size: 10px;"></i> Terminé
                                 {% else %}
-                                <i data-feather="bell" style="width: 10px; height: 10px;"></i> {{ child.reminder_date.strftime('%d/%m/%Y') }}
+                                <i class="ph ph-bell" style="font-size: 10px;"></i> {{ child.reminder_date.strftime('%d/%m/%Y') }}
                                 {% endif %}
                             </span>
                             {% endif %}
@@ -260,7 +260,7 @@
                             {% if child.attachments and child.attachments|length > 0 %}
                             <div class="child-email-attachments mt-1">
                                 <small class="text-muted">
-                                    <i data-feather="paperclip" style="width: 12px; height: 12px;"></i>
+                                    <i class="ph ph-paperclip" style="font-size: 12px;"></i>
                                     {{ child.attachments|length }} PJ
                                 </small>
                             </div>
@@ -286,12 +286,12 @@
                     <div class="note-actions">
                         <button type="button" onclick="editNote({{ note.id }})" 
                                 class="btn btn-outline-primary" title="{{ 'Modifier' if can_edit_note else 'Voir le détail' }}">
-                            <i data-feather="{{ 'edit' if can_edit_note else 'eye' }}"></i>
+                            <i class="ph ph-{{ 'pencil-simple' if can_edit_note else 'eye' }}"></i>
                         </button>
                         {% if can_edit_note %}
                         <button type="button" onclick="deleteNoteAjax({{ note.id }}, {{ client.id }})" 
                                 class="btn btn-outline-danger" title="Supprimer">
-                            <i data-feather="trash-2"></i>
+                            <i class="ph ph-trash"></i>
                         </button>
                         {% endif %}
                     </div>
@@ -301,13 +301,13 @@
                 <div class="note-header-wrapper">
                 <div class="note-type-indicator note-type-{{ note.note_type }}">
                     {% if note.note_type == 'call' %}
-                        <i data-feather="phone"></i>
+                        <i class="ph ph-phone"></i>
                     {% elif note.note_type == 'email' %}
-                        <i data-feather="mail"></i>
+                        <i class="ph ph-envelope"></i>
                     {% elif note.note_type == 'meeting' %}
-                        <i data-feather="users"></i>
+                        <i class="ph ph-users"></i>
                     {% else %}
-                        <i data-feather="edit-3"></i>
+                        <i class="ph ph-pencil-simple"></i>
                     {% endif %}
                 </div>
 
@@ -339,7 +339,7 @@
                         {% endif %}
                     </div>
                 {% else %}
-                    <div class="note-text-content">{{ note.note_text | replace('\n', '<br>') | safe }}</div>
+                    <div class="note-text-content">{{ note.note_text | e | replace('\n', '<br>') | safe }}</div>
                 {% endif %}
             </div>
             </div><!-- Fin .note-primary-content -->
@@ -348,11 +348,11 @@
     </div>
 {% else %}
     <div class="notes-empty-state">
-        <i data-feather="message-square"></i>
+        <i class="ph ph-chat"></i>
         <h6>Aucune note</h6>
         <p>Commencez à documenter vos communications avec ce client.</p>
         <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addNoteModal">
-            <i data-feather="plus" class="me-1"></i>
+            <i class="ph ph-plus me-1"></i>
             Première note
         </button>
     </div>

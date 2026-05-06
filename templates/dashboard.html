@@ -19,10 +19,10 @@
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-2">
                     <button id="carBackBtn" class="btn btn-sm btn-outline-secondary" style="display: none;" title="Retour">
-                        <i data-feather="arrow-left" style="width: 16px; height: 16px;"></i>
+                        <i class="ph ph-arrow-left" style="font-size: 16px;"></i>
                     </button>
                     <h5 class="mb-0">
-                        <i data-feather="trending-up" class="me-2"></i>
+                        <i class="ph ph-trend-up me-2"></i>
                         <span id="carChartTitle">Évolution des comptes à recevoir</span>
                     </h5>
                 </div>
@@ -50,7 +50,7 @@
                 <div id="carChartContainer" style="height: 300px; position: relative;">
                     <canvas id="carEvolutionChart"></canvas>
                     <div id="carChartNoData" class="text-center text-muted py-5" style="display: none;">
-                        <i data-feather="bar-chart-2" style="width: 48px; height: 48px; opacity: 0.3;"></i>
+                        <i class="ph ph-chart-bar" style="font-size: 48px; opacity: 0.3;"></i>
                         <p class="mt-3 mb-0">Données insuffisantes</p>
                         <small>Les données seront disponibles après la prochaine synchronisation ou import.</small>
                     </div>
@@ -60,12 +60,12 @@
     </div>
 </div>
 
-<!-- Summary Cards Row -->
+<!-- Summary Cards Row — All Phosphor regular -->
 <div class="row mb-4 g-3">
     <div class="col-6 col-md">
         <div class="card text-center h-100">
             <div class="card-body">
-                <i data-feather="users" class="text-primary mb-2" style="width: 32px; height: 32px;"></i>
+                <i class="ph ph-users text-primary mb-2"></i>
                 <h3 class="card-title">{{ total_clients }}</h3>
                 <p class="card-text text-muted">Clients</p>
             </div>
@@ -74,7 +74,7 @@
     <div class="col-6 col-md">
         <div class="card text-center h-100">
             <div class="card-body">
-                <i data-feather="dollar-sign" class="text-warning mb-2" style="width: 32px; height: 32px;"></i>
+                <i class="ph ph-currency-circle-dollar text-warning mb-2"></i>
                 <h3 class="card-title">{{ format_currency(total_outstanding) }}</h3>
                 <p class="card-text text-muted">À recevoir</p>
             </div>
@@ -83,7 +83,7 @@
     <div class="col-6 col-md">
         <div class="card text-center h-100">
             <div class="card-body">
-                <i data-feather="file-text" class="text-danger mb-2" style="width: 32px; height: 32px;"></i>
+                <i class="ph ph-warning-octagon text-danger mb-2"></i>
                 <h3 class="card-title">{{ overdue_invoices }}</h3>
                 <p class="card-text text-muted">Factures en retard</p>
             </div>
@@ -92,7 +92,7 @@
     <div class="col-6 col-md">
         <div class="card text-center h-100">
             <div class="card-body">
-                <i data-feather="trending-up" class="text-success mb-2" style="width: 32px; height: 32px;"></i>
+                <i class="ph ph-trend-up text-success mb-2"></i>
                 <h3 class="card-title">{{ clients_with_outstanding_count }}</h3>
                 <p class="card-text text-muted">Clients actifs</p>
             </div>
@@ -101,7 +101,7 @@
     <div class="col-6 col-md">
         <div class="card text-center h-100">
             <div class="card-body">
-                <i data-feather="file-text" class="text-info mb-2" style="width: 32px; height: 32px;"></i>
+                <i class="ph ph-receipt text-info mb-2"></i>
                 {% if global_dmp_invoice is not none %}
                     {% if global_dmp_invoice < 0 %}
                         <h3 class="card-title text-success" title="Paiement en moyenne {{ '%.1f'|format(global_dmp_invoice|abs) }} j avant la date de facture">{{ "%.1f"|format(global_dmp_invoice|abs) }} j <small class="fs-6">en avance</small></h3>
@@ -118,7 +118,7 @@
     <div class="col-6 col-md">
         <div class="card text-center h-100">
             <div class="card-body">
-                <i data-feather="clock" class="text-warning mb-2" style="width: 32px; height: 32px;"></i>
+                <i class="ph ph-clock-countdown text-warning mb-2"></i>
                 {% if global_dmp_due is not none %}
                     {% if global_dmp_due < 0 %}
                         <h3 class="card-title text-success" title="Paiement en moyenne {{ '%.1f'|format(global_dmp_due|abs) }} j avant la date d'échéance">{{ "%.1f"|format(global_dmp_due|abs) }} j <small class="fs-6">en avance</small></h3>
@@ -142,7 +142,7 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="pie-chart" class="me-2"></i>
+                    <i class="ph ph-chart-pie-slice me-2"></i>
                     Résumé des comptes à recevoir
                 </h5>
             </div>
@@ -163,13 +163,13 @@
                     <div class="col">
                         <div class="aging-dot bg-warning me-2"></div>
                         <strong>31-60 jours</strong><br>
-                        <span class="h5" style="color: #fd7e14;">{{ format_currency(total_60_days) }}</span><br>
+                        <span class="h5 text-warning">{{ format_currency(total_60_days) }}</span><br>
                         <small class="text-muted">{{ percentage_60_days }}%</small>
                     </div>
                     <div class="col">
                         <div class="aging-dot bg-dark me-2"></div>
                         <strong>61-90 jours</strong><br>
-                        <span class="h5" style="color: #6c757d;">{{ format_currency(total_90_days) }}</span><br>
+                        <span class="h5 text-secondary">{{ format_currency(total_90_days) }}</span><br>
                         <small class="text-muted">{{ percentage_90_days }}%</small>
                     </div>
                     <div class="col">
@@ -192,7 +192,7 @@
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
-                    <i data-feather="activity" class="me-2"></i>
+                    <i class="ph ph-activity me-2"></i>
                     Activité du {{ activity_date.strftime('%d/%m/%Y') }}
                 </h5>
                 <div class="d-flex align-items-center">
@@ -200,13 +200,13 @@
                         <input type="date" class="form-control form-control-sm" 
                                name="activity_date" value="{{ activity_date.isoformat() }}" style="width: auto;">
                         <button type="submit" class="btn btn-outline-primary btn-sm">
-                            <i data-feather="search" class="me-1"></i>
+                            <i class="ph ph-magnifying-glass me-1"></i>
                             Filtrer
                         </button>
                     </form>
                     <a href="{{ url_for('main.export_activity_csv', activity_date=activity_date.isoformat()) }}" 
                        class="btn btn-outline-secondary btn-sm">
-                        <i data-feather="download" class="me-1"></i>
+                        <i class="ph ph-download-simple me-1"></i>
                         CSV
                     </a>
                 </div>
@@ -217,13 +217,13 @@
                     <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
                         <div class="flex-shrink-0 me-3">
                             {% if note.note_type == 'call' %}
-                                <i data-feather="phone" class="text-primary"></i>
+                                <i class="ph ph-phone text-primary"></i>
                             {% elif note.note_type == 'email' %}
-                                <i data-feather="mail" class="text-info"></i>
+                                <i class="ph ph-envelope text-info"></i>
                             {% elif note.note_type == 'meeting' %}
-                                <i data-feather="users" class="text-success"></i>
+                                <i class="ph ph-users text-success"></i>
                             {% else %}
-                                <i data-feather="edit" class="text-secondary"></i>
+                                <i class="ph ph-pencil-simple text-secondary"></i>
                             {% endif %}
                         </div>
                         <div class="flex-grow-1">
@@ -247,7 +247,7 @@
                     {% endfor %}
                 {% else %}
                     <div class="text-center py-4 text-muted">
-                        <i data-feather="calendar" style="width: 32px; height: 32px;" class="mb-2"></i>
+                        <i class="ph ph-calendar mb-2" style="font-size: 32px;"></i>
                         <p class="mb-0">Aucune activité pour cette date</p>
                     </div>
                 {% endif %}
@@ -261,11 +261,11 @@
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h6 class="mb-0">
-                    <i data-feather="bell" class="me-2"></i>
+                    <i class="ph ph-bell me-2"></i>
                     Rappels
                 </h6>
                 <a href="{{ url_for('reminder.list_reminders') }}" class="btn btn-outline-primary btn-sm">
-                    <i data-feather="list" class="me-1"></i>
+                    <i class="ph ph-list me-1"></i>
                     Voir tout
                 </a>
             </div>
@@ -291,19 +291,19 @@
                                     <p class="note-preview mb-1 text-muted small">{{ reminder.note_text[:80] }}{% if reminder.note_text|length > 80 %}...{% endif %}</p>
                                 </div>
                                 <small class="text-muted">
-                                    <i data-feather="calendar" style="width: 12px; height: 12px;"></i>
+                                    <i class="ph ph-calendar" style="font-size: 12px;"></i>
                                     {{ reminder.reminder_date|format_local_date('%d/%m/%Y') }}
                                 </small>
                             </div>
                             <button class="btn btn-outline-success btn-sm complete-reminder-btn" data-reminder-id="{{ reminder.id }}" title="Marquer comme terminé">
-                                <i data-feather="check"></i>
+                                <i class="ph ph-check"></i>
                             </button>
                         </div>
                     </div>
                     {% endfor %}
                 {% else %}
                     <div class="text-center py-4 text-muted">
-                        <i data-feather="bell" style="width: 32px; height: 32px;" class="mb-2"></i>
+                        <i class="ph ph-bell mb-2" style="font-size: 32px;"></i>
                         <p class="mb-0">Aucun rappel</p>
                     </div>
                 {% endif %}
@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Disable button immediately
             btn.disabled = true;
-            btn.innerHTML = '<i data-feather="loader"></i>';
+            btn.innerHTML = '<i class="ph ph-spinner"></i>';
 
             fetch(`/reminders/complete/${reminderId}`, {
                 method: 'POST',
@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     // Re-enable button on error
                     btn.disabled = false;
-                    btn.innerHTML = '<i data-feather="check"></i>';
+                    btn.innerHTML = '<i class="ph ph-check"></i>';
                     feather.replace();
                     alert(data.message || 'Erreur');
                 }
@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error:', error);
                 // Re-enable button on error
                 btn.disabled = false;
-                btn.innerHTML = '<i data-feather="check"></i>';
+                btn.innerHTML = '<i class="ph ph-check"></i>';
                 feather.replace();
                 alert('Erreur de connexion');
             });
@@ -616,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Disable button immediately to prevent double clicks
             this.disabled = true;
-            this.innerHTML = '<i data-feather="loader"></i>';
+            this.innerHTML = '<i class="ph ph-spinner"></i>';
 
             fetch(`/api/note/${noteId}/mark-tag-read`, {
                 method: 'POST',
@@ -637,7 +637,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     // Re-enable button on error
                     this.disabled = false;
-                    this.innerHTML = '<i data-feather="check"></i>';
+                    this.innerHTML = '<i class="ph ph-check"></i>';
                     alert(data.message || 'Erreur lors du marquage');
                 }
             })
@@ -645,7 +645,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error:', error);
                 // Re-enable button on error
                 this.disabled = false;
-                this.innerHTML = '<i data-feather="check"></i>';
+                this.innerHTML = '<i class="ph ph-check"></i>';
                 alert('Erreur lors du marquage');
             });
         });

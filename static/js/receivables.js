@@ -29,12 +29,22 @@ function updateSortIndicators() {
     // Add icon to active sort column
     const activeHeader = document.querySelector(`th[data-sort-column="${currentSort}"] .sort-indicator`);
     if (activeHeader) {
-        const iconName = currentSortOrder === 'asc' ? 'chevron-up' : 'chevron-down';
-        activeHeader.innerHTML = `<i data-feather="${iconName}" class="ms-1"></i>`;
-
-        // Re-initialize feather icons
-        window.safeFeatherReplace ? window.safeFeatherReplace() : feather.replace();
+        const iconName = currentSortOrder === 'asc' ? 'caret-up' : 'caret-down';
+        activeHeader.replaceChildren();
+        const icon = document.createElement('i');
+        icon.className = 'ph ph-' + iconName + ' ms-1';
+        activeHeader.appendChild(icon);
     }
+}
+
+// Helper: swap a Phosphor icon class on an existing element (kills any previous ph-X)
+function setPhosphorIcon(el, iconName) {
+    if (!el) return;
+    Array.from(el.classList).forEach(c => {
+        if (c.startsWith('ph-') && c !== 'ph') el.classList.remove(c);
+    });
+    el.classList.add('ph-' + iconName);
+    if (!el.classList.contains('ph')) el.classList.add('ph');
 }
 
 // Load receivables from API
@@ -190,14 +200,15 @@ function updateReceivablesTable(receivables) {
                         <button class="btn btn-sm btn-outline-secondary"
                                 type="button"
                                 data-bs-toggle="dropdown"
+                                data-bs-boundary="viewport"
                                 aria-expanded="false"
                                 title="Actions">
-                            <i data-feather="more-vertical"></i>
+                            <i class="ph ph-dots-three-vertical"></i>
                         </button>
                         <ul class="dropdown-menu">
                             <li>
                                 <a class="dropdown-item" href="/clients/${client.id}">
-                                    <i data-feather="eye" class="me-2"></i>
+                                    <i class="ph ph-eye me-2"></i>
                                     Voir détails
                                 </a>
                             </li>
@@ -207,7 +218,7 @@ function updateReceivablesTable(receivables) {
                                        class="dropdown-item add-note-btn"
                                        data-client-id="${client.id}"
                                        data-client-name="${clientNameAttr}">
-                                    <i data-feather="plus" class="me-2"></i>
+                                    <i class="ph ph-plus me-2"></i>
                                     Ajouter une note
                                 </button>
                             </li>
@@ -219,7 +230,7 @@ function updateReceivablesTable(receivables) {
                                        class="dropdown-item expand-projects-btn"
                                        data-client-id="${client.id}"
                                        data-client-name="${clientNameAttr}">
-                                    <i data-feather="plus-square" class="me-2"></i>
+                                    <i class="ph ph-plus me-2"></i>
                                     Voir par ${window.projectLabel ? window.projectLabel.toLowerCase() : 'projet'}
                                 </button>
                             </li>
@@ -277,9 +288,6 @@ function updateReceivablesTable(receivables) {
         });
     });
 
-    // Re-initialize feather icons
-    window.safeFeatherReplace ? window.safeFeatherReplace() : feather.replace();
-
     // Initialize project expanders (if feature enabled)
     if (window.projectFeatureEnabled) {
         initializeProjectExpanders();
@@ -326,9 +334,8 @@ function expandClientRow(clientId, button) {
     // Change icon to loading spinner
     const icon = button.querySelector('i');
     if (icon) {
-        icon.setAttribute('data-feather', 'loader');
+        setPhosphorIcon(icon, 'spinner');
         icon.classList.add('rotating');
-        window.safeFeatherReplace ? window.safeFeatherReplace() : feather.replace();
     }
 
     // Load project breakdown
@@ -340,9 +347,8 @@ function expandClientRow(clientId, button) {
 
             // Change icon to minus
             if (icon) {
-                icon.setAttribute('data-feather', 'minus-square');
+                setPhosphorIcon(icon, 'minus');
                 icon.classList.remove('rotating');
-                window.safeFeatherReplace ? window.safeFeatherReplace() : feather.replace();
             }
         })
         .catch(error => {
@@ -351,9 +357,8 @@ function expandClientRow(clientId, button) {
 
             // Reset icon
             if (icon) {
-                icon.setAttribute('data-feather', 'plus-square');
+                setPhosphorIcon(icon, 'plus');
                 icon.classList.remove('rotating');
-                window.safeFeatherReplace ? window.safeFeatherReplace() : feather.replace();
             }
         });
 }
@@ -372,8 +377,7 @@ function collapseClientRow(clientId, button) {
     // Change icon back to plus
     const icon = button.querySelector('i');
     if (icon) {
-        icon.setAttribute('data-feather', 'plus-square');
-        window.safeFeatherReplace ? window.safeFeatherReplace() : feather.replace();
+        setPhosphorIcon(icon, 'plus');
     }
 }
 
@@ -446,8 +450,6 @@ function renderProjectRows(clientId, data, button) {
         clientRow.insertAdjacentHTML('afterend', allRowsHtml);
     }
 
-    // Re-initialize feather icons for new rows
-    window.safeFeatherReplace ? window.safeFeatherReplace() : feather.replace();
 }
 
 /**
@@ -460,7 +462,7 @@ function buildProjectRow(clientId, project, isFirst) {
         <tr class="project-row ${isFirst ? 'project-row-first' : ''}" data-parent-client="${clientId}">
             <td class="ps-5">
                 <div class="d-flex align-items-center">
-                    <i data-feather="corner-down-right" class="text-muted me-2" style="width: 16px; height: 16px;"></i>
+                    <i class="ph ph-arrow-bend-down-right text-muted me-2" style="font-size: 16px;"></i>
                     <span class="text-muted">${projectName}</span>
                 </div>
             </td>
@@ -483,7 +485,7 @@ function buildNoProjectsRow(clientId, projectLabel) {
     return `
         <tr class="project-row project-row-first" data-parent-client="${clientId}">
             <td colspan="9" class="ps-5 text-muted fst-italic">
-                <i data-feather="info" class="me-2" style="width: 16px; height: 16px;"></i>
+                <i class="ph ph-info me-2" style="font-size: 16px;"></i>
                 Aucun ${projectLabel.toLowerCase()} trouvé pour ce client
             </td>
         </tr>

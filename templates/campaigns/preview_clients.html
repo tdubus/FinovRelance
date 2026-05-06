@@ -24,7 +24,7 @@
                 </div>
                 <div class="d-flex gap-2 align-items-center">
                     <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addClientModal">
-                        <i class="fas fa-plus me-1"></i>Ajouter un client
+                        <i class="ph ph-plus me-1"></i>Ajouter un client
                     </button>
                     <span class="badge bg-info fs-6" id="totalClientsCount">{{ (clients|length) + (added_clients|length) }} client(s)</span>
                 </div>
@@ -35,7 +35,7 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 
                 <div class="alert alert-info mb-4">
-                    <i class="fas fa-info-circle me-2"></i>
+                    <i class="ph ph-info me-2"></i>
                     <strong>Comment ça marche :</strong>
                     <ul class="mb-0 mt-2">
                         <li>Cochez/décochez les clients dans la liste pour les inclure/exclure</li>
@@ -51,7 +51,7 @@
 
                 {% if added_clients %}
                 <div class="mb-4">
-                    <h6 class="text-success mb-2"><i class="fas fa-plus-circle me-1"></i>Clients ajoutés manuellement</h6>
+                    <h6 class="text-success mb-2"><i class="ph ph-plus-circle me-1"></i>Clients ajoutés manuellement</h6>
                     <div class="table-responsive">
                         <table class="table table-sm table-hover table-bordered border-success">
                             <thead class="table-success">
@@ -78,7 +78,7 @@
                                     <td class="text-center">
                                         <button type="button" class="btn btn-outline-danger btn-sm btn-remove-added" 
                                                 data-client-id="{{ client.id }}" title="Retirer de la liste">
-                                            <i class="fas fa-trash-alt"></i>
+                                            <i class="ph ph-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -89,7 +89,7 @@
                 </div>
                 {% endif %}
 
-                <h6 class="text-muted mb-2"><i class="fas fa-filter me-1"></i>Clients correspondant aux filtres</h6>
+                <h6 class="text-muted mb-2"><i class="ph ph-funnel me-1"></i>Clients correspondant aux filtres</h6>
                 
                 {% if clients %}
                 <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
@@ -120,7 +120,7 @@
                                 <td class="text-center">
                                     <button type="button" class="btn btn-outline-danger btn-sm btn-exclude-client" 
                                             data-client-id="{{ client.id }}" title="Exclure de la campagne">
-                                        <i class="fas fa-times"></i>
+                                        <i class="ph ph-x"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -130,7 +130,7 @@
                 </div>
                 {% else %}
                 <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <i class="ph ph-warning me-2"></i>
                     Aucun client ne correspond aux filtres définis. Vous pouvez ajouter des clients manuellement.
                 </div>
                 {% endif %}
@@ -152,10 +152,10 @@
                         <div class="col-md-4 text-end">
                             <div class="d-flex justify-content-end gap-2">
                                 <a href="{{ url_for('campaign.create_campaign') }}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-arrow-left me-1"></i>Retour
+                                    <i class="ph ph-arrow-left me-1"></i>Retour
                                 </a>
                                 <button type="submit" class="btn btn-primary" id="continueBtn">
-                                    Continuer<i class="fas fa-arrow-right ms-2"></i>
+                                    Continuer<i class="ph ph-arrow-right ms-2"></i>
                                 </button>
                             </div>
                         </div>
@@ -170,7 +170,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Ajouter un client</h5>
+                <h5 class="modal-title"><i class="ph ph-plus-circle me-2"></i>Ajouter un client</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (checkbox) checkbox.checked = true;
                 row.classList.remove('table-secondary', 'text-decoration-line-through');
                 row.style.opacity = '1';
-                this.innerHTML = '<i class="fas fa-times"></i>';
+                this.innerHTML = '<i class="ph ph-x"></i>';
                 this.title = 'Exclure de la campagne';
                 this.classList.remove('btn-outline-success');
                 this.classList.add('btn-outline-danger');
@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (checkbox) checkbox.checked = false;
                 row.classList.add('table-secondary', 'text-decoration-line-through');
                 row.style.opacity = '0.5';
-                this.innerHTML = '<i class="fas fa-undo"></i>';
+                this.innerHTML = '<i class="ph ph-arrow-counter-clockwise"></i>';
                 this.title = 'Réinclure dans la campagne';
                 this.classList.remove('btn-outline-danger');
                 this.classList.add('btn-outline-success');
@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                    data-code="${client.code_client}" 
                                                    data-name="${client.name}" 
                                                    data-balance="${client.balance}">
-                                               <i class="fas fa-plus me-1"></i>Ajouter
+                                               <i class="ph ph-plus me-1"></i>Ajouter
                                            </button>`
                                     }
                                 </div>
@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
             addedSection = document.createElement('div');
             addedSection.className = 'mb-4';
             addedSection.innerHTML = `
-                <h6 class="text-success mb-2"><i class="fas fa-plus-circle me-1"></i>Clients ajoutés manuellement</h6>
+                <h6 class="text-success mb-2"><i class="ph ph-plus-circle me-1"></i>Clients ajoutés manuellement</h6>
                 <div class="table-responsive">
                     <table class="table table-sm table-hover table-bordered border-success">
                         <thead class="table-success">
@@ -442,7 +442,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <td class="text-center">
                 <button type="button" class="btn btn-outline-danger btn-sm btn-remove-added" 
                         data-client-id="${clientId}" title="Retirer de la liste">
-                    <i class="fas fa-trash-alt"></i>
+                    <i class="ph ph-trash"></i>
                 </button>
             </td>
         `;

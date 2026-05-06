@@ -626,7 +626,7 @@ function updateFilesList() {
         
         // Add file icon
         const icon = document.createElement('i');
-        icon.className = 'fas fa-file me-2';
+        icon.className = 'ph ph-file me-2';
         span.appendChild(icon);
         
         // Add file name as text (safe from XSS)
@@ -645,7 +645,7 @@ function updateFilesList() {
         button.onclick = () => removeFile(index);
         
         const buttonIcon = document.createElement('i');
-        buttonIcon.className = 'fas fa-times';
+        buttonIcon.className = 'ph ph-x';
         button.appendChild(buttonIcon);
         
         // Append elements to li
@@ -677,7 +677,7 @@ function updateFilesList() {
         warningSpan.className = 'text-danger';
         
         const icon = document.createElement('i');
-        icon.className = 'fas fa-exclamation-triangle';
+        icon.className = 'ph ph-warning';
         warningSpan.appendChild(icon);
         
         warningSpan.appendChild(document.createTextNode(' Limite dépassée'));

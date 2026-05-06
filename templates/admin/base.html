@@ -255,7 +255,7 @@
     <!-- Sidebar -->
     <nav class="admin-sidebar">
         <div class="navbar-brand">
-            <i class="fas fa-shield-alt me-2"></i>
+            <i class="ph ph-shield-check me-2"></i>
             Panel Admin
         </div>
         
@@ -263,7 +263,7 @@
             <li class="nav-item">
                 <a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" 
                    href="{{ url_for('admin.dashboard') }}">
-                    <i class="fas fa-tachometer-alt"></i>
+                    <i class="ph ph-gauge"></i>
                     <span>Tableau de bord</span>
                 </a>
             </li>
@@ -271,7 +271,7 @@
             <li class="nav-item">
                 <a class="nav-link {% if 'companies' in request.endpoint %}active{% endif %}" 
                    href="{{ url_for('admin.companies') }}">
-                    <i class="fas fa-building"></i>
+                    <i class="ph ph-buildings"></i>
                     <span>Entreprises</span>
                 </a>
             </li>
@@ -279,7 +279,7 @@
             <li class="nav-item">
                 <a class="nav-link {% if 'subscription' in request.endpoint %}active{% endif %}" 
                    href="{{ url_for('admin.subscription_management') }}">
-                    <i class="fas fa-credit-card"></i>
+                    <i class="ph ph-credit-card"></i>
                     <span>Gestion abonnements</span>
                 </a>
             </li>
@@ -287,37 +287,37 @@
             <li class="nav-item">
                 <a class="nav-link {% if 'audit' in request.endpoint or 'cron_job' in request.endpoint or 'consent' in request.endpoint %}active{% endif %}" 
                    data-bs-toggle="collapse" href="#auditMenu" role="button" aria-expanded="false">
-                    <i class="fas fa-clipboard-list"></i>
+                    <i class="ph ph-clipboard-text"></i>
                     <span>Audit & Logs</span>
-                    <i class="fas fa-chevron-down ms-auto" style="font-size: 0.7rem;"></i>
+                    <i class="ph ph-caret-down ms-auto" style="font-size: 0.7rem;"></i>
                 </a>
                 <div class="collapse {% if 'audit' in request.endpoint or 'cron_job' in request.endpoint or 'consent' in request.endpoint %}show{% endif %}" id="auditMenu">
                     <ul class="nav flex-column ps-4" style="margin-top: 0.25rem;">
                         <li class="nav-item">
                             <a class="nav-link py-2 {% if 'user_audit_logs' in request.endpoint %}active{% endif %}" 
                                href="{{ url_for('admin.user_audit_logs') }}" style="font-size: 0.9rem;">
-                                <i class="fas fa-user-clock"></i>
+                                <i class="ph ph-user"></i>
                                 <span>Actions Utilisateurs</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link py-2 {% if 'cron_job_logs' in request.endpoint %}active{% endif %}" 
                                href="{{ url_for('admin.cron_job_logs') }}" style="font-size: 0.9rem;">
-                                <i class="fas fa-clock"></i>
+                                <i class="ph ph-clock"></i>
                                 <span>Cron Jobs</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link py-2 {% if 'audit_logs' in request.endpoint and 'user_audit' not in request.endpoint %}active{% endif %}" 
                                href="{{ url_for('admin.audit_logs') }}" style="font-size: 0.9rem;">
-                                <i class="fas fa-history"></i>
+                                <i class="ph ph-clock-counter-clockwise"></i>
                                 <span>Logs Stripe</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link py-2 {% if 'consent_logs' in request.endpoint %}active{% endif %}" 
                                href="{{ url_for('admin.consent_logs') }}" style="font-size: 0.9rem;">
-                                <i class="fas fa-file-contract"></i>
+                                <i class="ph ph-file-text"></i>
                                 <span>Consentements</span>
                             </a>
                         </li>
@@ -328,7 +328,7 @@
             <li class="nav-item">
                 <a class="nav-link {% if 'webhooks' in request.endpoint %}active{% endif %}" 
                    href="/admin/webhooks/">
-                    <i class="fas fa-satellite-dish"></i>
+                    <i class="ph ph-broadcast"></i>
                     <span>Webhooks Stripe</span>
                 </a>
             </li>
@@ -336,7 +336,7 @@
             <li class="nav-item">
                 <a class="nav-link {% if 'users' in request.endpoint %}active{% endif %}" 
                    href="{{ url_for('admin.users') }}">
-                    <i class="fas fa-users"></i>
+                    <i class="ph ph-users"></i>
                     <span>Utilisateurs</span>
                 </a>
             </li>
@@ -344,7 +344,7 @@
             <li class="nav-item">
                 <a class="nav-link {% if 'plans' in request.endpoint %}active{% endif %}" 
                    href="{{ url_for('admin.plans') }}">
-                    <i class="fas fa-tags"></i>
+                    <i class="ph ph-tag"></i>
                     <span>Forfaits</span>
                 </a>
             </li>
@@ -352,7 +352,7 @@
             <li class="nav-item">
                 <a class="nav-link {% if 'system_email' in request.endpoint %}active{% endif %}" 
                    href="{{ url_for('admin.system_email_configs') }}">
-                    <i class="fas fa-envelope-open-text"></i>
+                    <i class="ph ph-envelope-open"></i>
                     <span>Email Système</span>
                 </a>
             </li>
@@ -360,7 +360,7 @@
             <li class="nav-item">
                 <a class="nav-link {% if 'guides' in request.endpoint %}active{% endif %}" 
                    href="{{ url_for('admin.guides') }}">
-                    <i class="fas fa-book-open"></i>
+                    <i class="ph ph-book-open"></i>
                     <span>Pages Guide</span>
                 </a>
             </li>
@@ -369,14 +369,14 @@
             
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('main.dashboard') }}">
-                    <i class="fas fa-arrow-left"></i>
+                    <i class="ph ph-arrow-left"></i>
                     <span>Retour à l'app</span>
                 </a>
             </li>
             
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('auth.logout') }}">
-                    <i class="fas fa-sign-out-alt"></i>
+                    <i class="ph ph-sign-out"></i>
                     <span>Déconnexion</span>
                 </a>
             </li>
@@ -406,7 +406,7 @@
             {% if messages %}
                 {% for category, message in messages %}
                     <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
-                        <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }} me-2"></i>
+                        <i class="ph ph-{{ 'warning' if category == 'error' else 'check-circle' if category == 'success' else 'info' }} me-2"></i>
                         {{ message | safe }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>

@@ -86,7 +86,7 @@
                             
                             {% if action == 'Créer' %}
                             <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
+                                <i class="ph ph-info me-2"></i>
                                 <strong>Mot de passe temporaire :</strong> Un mot de passe temporaire sera généré automatiquement et affiché après la création.
                             </div>
                             {% endif %}
@@ -100,7 +100,7 @@
                             <div class="card border-info">
                                 <div class="card-header bg-info text-white">
                                     <h6 class="mb-0">
-                                        <i class="fas fa-building me-2"></i>Association à une entreprise (optionnel)
+                                        <i class="ph ph-buildings me-2"></i>Association à une entreprise (optionnel)
                                     </h6>
                                 </div>
                                 <div class="card-body">
@@ -142,10 +142,10 @@
                     
                     <div class="d-flex justify-content-between pt-4 border-top">
                         <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Retour
+                            <i class="ph ph-arrow-left me-2"></i>Retour
                         </a>
                         <button type="submit" class="btn btn-admin-primary">
-                            <i class="fas fa-save me-2"></i>{{ action }}
+                            <i class="ph ph-floppy-disk me-2"></i>{{ action }}
                         </button>
                     </div>
                 </form>

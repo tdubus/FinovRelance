@@ -187,8 +187,7 @@
         indicator.className = 'alert alert-info d-flex align-items-center mb-3';
 
         const icon = document.createElement('i');
-        icon.setAttribute('data-feather', 'filter');
-        icon.className = 'me-2';
+        icon.className = 'ph ph-funnel me-2';
 
         const textSpan = document.createElement('span');
         const strongElement = document.createElement('strong');

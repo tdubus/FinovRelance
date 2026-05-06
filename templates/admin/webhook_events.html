@@ -7,14 +7,14 @@
     <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">📋 Événements Webhooks</h1>
         <a href="{{ url_for('webhook_admin.webhook_dashboard') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Retour Dashboard
+            <i class="ph ph-arrow-left"></i> Retour Dashboard
         </a>
     </div>
 
     <!-- Filtres -->
     <div class="card mb-4">
         <div class="card-header">
-            <h5><i class="fas fa-filter"></i> Filtres</h5>
+            <h5><i class="ph ph-funnel"></i> Filtres</h5>
         </div>
         <div class="card-body">
             <form method="GET" class="row g-3">
@@ -57,10 +57,10 @@
                 
                 <div class="col-md-4 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary me-2">
-                        <i class="fas fa-search"></i> Filtrer
+                        <i class="ph ph-magnifying-glass"></i> Filtrer
                     </button>
                     <a href="{{ url_for('webhook_admin.webhook_events') }}" class="btn btn-secondary">
-                        <i class="fas fa-times"></i> Reset
+                        <i class="ph ph-x"></i> Reset
                     </a>
                 </div>
             </form>
@@ -71,7 +71,7 @@
     {% if webhooks %}
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5><i class="fas fa-list"></i> Événements ({{ webhooks.total }})</h5>
+            <h5><i class="ph ph-list"></i> Événements ({{ webhooks.total }})</h5>
             <small class="text-muted">Page {{ webhooks.page }} / {{ webhooks.pages }}</small>
         </div>
         <div class="card-body p-0">
@@ -121,13 +121,13 @@
                                 <div class="btn-group btn-group-sm">
                                     <a href="{{ url_for('webhook_admin.webhook_event_detail', event_id=webhook.id) }}" 
                                        class="btn btn-outline-info">
-                                        <i class="fas fa-eye"></i> Voir
+                                        <i class="ph ph-eye"></i> Voir
                                     </a>
                                     
                                     {% if webhook.processing_status == 'failed' and webhook.retry_count < 3 %}
                                         <button onclick="retryWebhook({{ webhook.id }})" 
                                                 class="btn btn-outline-warning">
-                                            <i class="fas fa-redo"></i> Retry
+                                            <i class="ph ph-arrow-clockwise"></i> Retry
                                         </button>
                                     {% endif %}
                                 </div>
@@ -195,7 +195,7 @@
     {% else %}
     <div class="card">
         <div class="card-body text-center py-5">
-            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <i class="ph ph-tray fa-3x text-muted mb-3"></i>
             <h5 class="text-muted">Aucun événement trouvé</h5>
             <p class="text-muted">Modifiez vos filtres ou vérifiez la configuration des webhooks.</p>
         </div>

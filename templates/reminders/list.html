@@ -29,28 +29,28 @@
                 <a href="{{ url_for('reminder.list_reminders', filter='overdue') }}" 
                    class="list-group-item list-group-item-action {{ 'active' if filter_type == 'overdue' else '' }}">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span><i data-feather="alert-circle" class="me-1"></i>En retard</span>
+                        <span><i class="ph ph-warning-circle me-1"></i>En retard</span>
                         <span class="badge bg-danger">{{ overdue_count }}</span>
                     </div>
                 </a>
                 <a href="{{ url_for('reminder.list_reminders', filter='today') }}" 
                    class="list-group-item list-group-item-action {{ 'active' if filter_type == 'today' else '' }}">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span><i data-feather="calendar" class="me-1"></i>Aujourd'hui</span>
+                        <span><i class="ph ph-calendar me-1"></i>Aujourd'hui</span>
                         <span class="badge bg-warning">{{ today_count }}</span>
                     </div>
                 </a>
                 <a href="{{ url_for('reminder.list_reminders', filter='upcoming') }}" 
                    class="list-group-item list-group-item-action {{ 'active' if filter_type == 'upcoming' else '' }}">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span><i data-feather="clock" class="me-1"></i>À venir</span>
+                        <span><i class="ph ph-clock me-1"></i>À venir</span>
                         <span class="badge bg-info">{{ upcoming_count }}</span>
                     </div>
                 </a>
                 <a href="{{ url_for('reminder.list_reminders', filter='completed') }}" 
                    class="list-group-item list-group-item-action {{ 'active' if filter_type == 'completed' else '' }}">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span><i data-feather="check-circle" class="me-1"></i>Terminés</span>
+                        <span><i class="ph ph-check-circle me-1"></i>Terminés</span>
                         <span class="badge bg-success">{{ completed_count }}</span>
                     </div>
                 </a>
@@ -80,7 +80,7 @@
                         <div class="input-group input-group-sm">
                             <input type="text" class="form-control" id="searchInput" placeholder="Rechercher par nom ou code client...">
                             <button class="btn btn-outline-secondary" type="button" id="clearSearch">
-                                <i data-feather="x"></i>
+                                <i class="ph ph-x"></i>
                             </button>
                         </div>
                     </div>
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i data-feather="edit" class="me-2"></i>
+                    <i class="ph ph-pencil-simple me-2"></i>
                     Modifier le rappel
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <label for="editReminderDate" class="form-label">Date de rappel</label>
                         <input type="date" class="form-control" id="editReminderDate" name="reminder_date">
                         <div class="form-text">
-                            <i data-feather="bell" class="icon-sm"></i>
+                            <i class="ph ph-bell icon-sm"></i>
                             Modifiez la date du rappel
                         </div>
                     </div>
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                     <button type="button" class="btn btn-primary" onclick="saveEditedReminder()">
-                        <i data-feather="save" class="me-1"></i>
+                        <i class="ph ph-floppy-disk me-1"></i>
                         Sauvegarder
                     </button>
                 </div>
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i data-feather="mail" class="me-2"></i>
+                    <i class="ph ph-envelope me-2"></i>
                     Courriel envoyé
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <!-- Email Details (Read-only) -->
                 <div class="card mb-3">
                     <div class="card-header bg-light">
-                        <h6 class="mb-0"><i data-feather="info" class="me-2"></i>Détails du courriel</h6>
+                        <h6 class="mb-0"><i class="ph ph-info me-2"></i>Détails du courriel</h6>
                     </div>
                     <div class="card-body">
                         <div class="row mb-2">
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <div class="card">
                         <div class="card-header bg-primary text-white">
-                            <h6 class="mb-0"><i data-feather="edit" class="me-2"></i>Notes et rappel (modifiable)</h6>
+                            <h6 class="mb-0"><i class="ph ph-pencil-simple me-2"></i>Notes et rappel (modifiable)</h6>
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <button type="button" class="btn btn-primary" onclick="saveEditedEmailNote()">
-                    <i data-feather="save" class="me-1"></i>
+                    <i class="ph ph-floppy-disk me-1"></i>
                     Enregistrer
                 </button>
             </div>

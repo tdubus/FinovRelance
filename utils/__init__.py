@@ -111,7 +111,7 @@ def check_feature_access(feature_name):
             'restriction': 'role',
             'message': "Vous n'avez pas accès à cette fonctionnalité",
             'css_class': 'btn-disabled',
-            'icon': 'fas fa-lock'
+            'icon': 'ph ph-lock'
         }
 
     company = current_user.get_selected_company()
@@ -121,7 +121,7 @@ def check_feature_access(feature_name):
             'restriction': 'role',
             'message': "Aucune entreprise sélectionnée",
             'css_class': 'btn-disabled',
-            'icon': 'fas fa-lock'
+            'icon': 'ph ph-lock'
         }
 
     from permissions import PermissionService
@@ -144,7 +144,7 @@ def check_feature_access(feature_name):
             'restriction': restriction_reason,
             'message': message,
             'css_class': 'btn-disabled',
-            'icon': 'fas fa-lock'
+            'icon': 'ph ph-lock'
         }
 
 def get_user_timezone():

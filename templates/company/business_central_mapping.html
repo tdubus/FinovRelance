@@ -13,12 +13,12 @@ window.location.href = "{{ url_for('company.business_central_field_mapping_v2') 
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
-                        <i class="fas fa-exchange-alt me-2"></i>Configuration du Mapping des Champs Business Central
+                        <i class="ph ph-arrows-left-right me-2"></i>Configuration du Mapping des Champs Business Central
                     </h4>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
+                        <i class="ph ph-info me-2"></i>
                         <strong>Interface améliorée:</strong> Sélectionnez les champs Business Central correspondant à chaque champ FinovRelance dans les listes déroulantes.
                         Les champs marqués d'un <span class="text-danger">*</span> sont obligatoires.
                     </div>
@@ -29,7 +29,7 @@ window.location.href = "{{ url_for('company.business_central_field_mapping_v2') 
                         <!-- Section Clients -->
                         <div class="card mb-4">
                             <div class="card-header bg-light">
-                                <h5 class="mb-0"><i class="fas fa-users me-2"></i>Mapping des Clients</h5>
+                                <h5 class="mb-0"><i class="ph ph-users me-2"></i>Mapping des Clients</h5>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -223,7 +223,7 @@ window.location.href = "{{ url_for('company.business_central_field_mapping_v2') 
                                 
                                 <!-- Filtre OData Clients -->
                                 <div class="mt-4 p-3 bg-light rounded">
-                                    <h6><i class="fas fa-filter me-2"></i>Filtrage des Clients</h6>
+                                    <h6><i class="ph ph-funnel me-2"></i>Filtrage des Clients</h6>
                                     <div class="mb-3">
                                         <label class="form-label">Filtre OData pour limiter les clients (optionnel)</label>
                                         <input type="text" class="form-control" name="customers_filter" 
@@ -240,7 +240,7 @@ window.location.href = "{{ url_for('company.business_central_field_mapping_v2') 
                         <!-- Section Factures -->
                         <div class="card mb-4">
                             <div class="card-header bg-light">
-                                <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Mapping des Factures</h5>
+                                <h5 class="mb-0"><i class="ph ph-receipt me-2"></i>Mapping des Factures</h5>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -379,7 +379,7 @@ window.location.href = "{{ url_for('company.business_central_field_mapping_v2') 
                                 
                                 <!-- Filtre OData Factures -->
                                 <div class="mt-4 p-3 bg-light rounded">
-                                    <h6><i class="fas fa-filter me-2"></i>Filtrage des Factures</h6>
+                                    <h6><i class="ph ph-funnel me-2"></i>Filtrage des Factures</h6>
                                     <div class="mb-3">
                                         <label class="form-label">Filtre OData pour limiter les factures (optionnel)</label>
                                         <input type="text" class="form-control" name="invoices_filter" 
@@ -396,7 +396,7 @@ window.location.href = "{{ url_for('company.business_central_field_mapping_v2') 
                         <!-- Exemples de filtres -->
                         <div class="card mb-4">
                             <div class="card-header bg-light">
-                                <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Exemples de Filtres OData V4</h6>
+                                <h6 class="mb-0"><i class="ph ph-lightbulb me-2"></i>Exemples de Filtres OData V4</h6>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -425,10 +425,10 @@ window.location.href = "{{ url_for('company.business_central_field_mapping_v2') 
                         <!-- Boutons d'action -->
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-save me-2"></i>Enregistrer le Mapping
+                                <i class="ph ph-floppy-disk me-2"></i>Enregistrer le Mapping
                             </button>
                             <a href="{{ url_for('company.business_central_config') }}" class="btn btn-secondary btn-lg">
-                                <i class="fas fa-arrow-left me-2"></i>Retour à la Configuration
+                                <i class="ph ph-arrow-left me-2"></i>Retour à la Configuration
                             </a>
                         </div>
                     </form>
