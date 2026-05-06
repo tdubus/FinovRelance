@@ -850,17 +850,39 @@
   margin: 0;
 }
 
-/* Border-left status variants → on neutralise (couleur dans le chiffre, pas le bord) */
-[data-ui="v2"] .stat-card.success,
-[data-ui="v2"] .stat-card.warning,
-[data-ui="v2"] .stat-card.danger,
-[data-ui="v2"] .receivables-stats .stat-card.total,
-[data-ui="v2"] .receivables-stats .stat-card.current,
-[data-ui="v2"] .receivables-stats .stat-card.aging-0-30,
-[data-ui="v2"] .receivables-stats .stat-card.aging-31-60,
-[data-ui="v2"] .receivables-stats .stat-card.aging-61-90,
+/* Border-left colorée par tranche d'âge — code couleur identique aux montants
+   du tableau .receivables-table (.amount-current / .amount-aging-*) afin que
+   l'œil puisse passer instantanément de la carte à la colonne correspondante.
+   Les HSL ci-dessous sont synchronisés avec static/css/style.css lignes 666-689. */
+[data-ui="v2"] .receivables-stats .stat-card.total {
+  border-left: 4px solid hsl(215 16% 75%) !important;
+}
+[data-ui="v2"] .receivables-stats .stat-card.current {
+  border-left: 4px solid hsl(var(--success-fg)) !important;
+}
+[data-ui="v2"] .receivables-stats .stat-card.aging-0-30 {
+  border-left: 4px solid hsl(38 92% 50%) !important;
+}
+[data-ui="v2"] .receivables-stats .stat-card.aging-31-60 {
+  border-left: 4px solid hsl(25 95% 55%) !important;
+}
+[data-ui="v2"] .receivables-stats .stat-card.aging-61-90 {
+  border-left: 4px solid hsl(var(--danger-fg)) !important;
+}
 [data-ui="v2"] .receivables-stats .stat-card.aging-90-plus {
-  border-left: 1px solid hsl(var(--gray-200)) !important;
+  border-left: 4px solid hsl(0 84% 40%) !important;
+}
+
+/* Variants génériques (success/warning/danger) — bord coloré aussi pour
+   cohérence partout où ces classes sont utilisées (dashboard, autres pages). */
+[data-ui="v2"] .stat-card.success {
+  border-left: 4px solid hsl(var(--success-fg)) !important;
+}
+[data-ui="v2"] .stat-card.warning {
+  border-left: 4px solid hsl(var(--warning-fg)) !important;
+}
+[data-ui="v2"] .stat-card.danger {
+  border-left: 4px solid hsl(var(--danger-fg)) !important;
 }
 
 /* Aging dot indicator (pour le résumé compact) */
