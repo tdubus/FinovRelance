@@ -266,12 +266,12 @@
                 </h6>
                 <a href="{{ url_for('reminder.list_reminders') }}" class="btn btn-outline-primary btn-sm">
                     <i class="ph ph-list me-1"></i>
-                    Voir tout
+                    Voir plus
                 </a>
             </div>
             <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
                 {% if reminders %}
-                    {% for reminder in reminders[:5] %}
+                    {% for reminder in reminders[:10] %}
                     <div class="reminder-item border-bottom p-3
                         {% if reminder.is_reminder_overdue() %}bg-light-danger{% endif %}
                         {% if reminder.is_reminder_today() %}bg-light-warning{% endif %}">
@@ -934,17 +934,27 @@ document.addEventListener('DOMContentLoaded', function() {
         feather.replace();
     }
     
-    function loadYears() {
-        fetch('/api/receivables-years')
-            .then(r => r.json())
-            .then(data => {
-                yearSelect.innerHTML = '<option value="">Toutes les années</option>';
-                (data.years || []).forEach(y => {
-                    yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
-                });
-            });
+    let yearsLoaded = false;
+    function populateYearsOnce(years) {
+        // Le premier chargement de l'historique inclut la liste des années
+        // disponibles. On ne les rejoue pas par la suite (sinon on écraserait
+        // la sélection courante de l'utilisateur).
+        if (yearsLoaded) return;
+        yearsLoaded = true;
+        // Construction sûre via createElement (pas d'innerHTML).
+        yearSelect.replaceChildren();
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = '';
+        defaultOpt.textContent = 'Toutes les années';
+        yearSelect.appendChild(defaultOpt);
+        (years || []).forEach(y => {
+            const opt = document.createElement('option');
+            opt.value = String(y);
+            opt.textContent = String(y);
+            yearSelect.appendChild(opt);
+        });
     }
-    
+
     function loadChartData() {
         const period = periodSelect.value;
         const bucket = bucketSelect.value;
@@ -965,7 +975,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(r => r.json())
             .then(data => {
                 chartData = data.data || [];
-                
+                // Première réponse : on récupère aussi la liste des années
+                // (économise un /api/receivables-years séparé).
+                populateYearsOnce(data.years);
+
                 if (chartData.length === 0) {
                     ctx.style.display = 'none';
                     noDataDiv.style.display = 'block';
@@ -1082,8 +1095,9 @@ document.addEventListener('DOMContentLoaded', function() {
         loadChartData();
     });
     backBtn.addEventListener('click', goBack);
-    
-    loadYears();
+
+    // Plus besoin de loadYears() séparé : populateYearsOnce() est appelé
+    // dans la première réponse de loadChartData.
     loadChartData();
 });
 </script>

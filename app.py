@@ -375,14 +375,21 @@ def bootstrap_app(app):
     app.config.update(_cache_config)
     cache.init_app(app)
 
-    # Avertissement critique si Redis n'est pas configure en production
-    # SimpleCache est per-process : avec plusieurs workers Gunicorn, le cache PDF
-    # de factures ne sera PAS partage et les pieces jointes seront perdues
+    # Avertissement critique si Redis n'est pas configure en production.
+    # SimpleCache est per-process : avec plusieurs workers Gunicorn, deux
+    # consequences :
+    #   1. Le cache PDF de factures n'est PAS partage entre workers — les
+    #      pieces jointes de courriels peuvent etre perdues.
+    #   2. Le cache du tableau de bord (dashboard_stats_*) est isole par
+    #      worker — chaque worker doit reconstruire les stats lourdes
+    #      (DMP, aging) au premier hit, ce qui rend la page lente apres
+    #      chaque deploy ou redemarrage.
     if is_production and not _redis_url:
         app.logger.error(
-            "CRITIQUE: REDIS_URL non defini en production. Le cache PDF ne sera pas "
-            "partage entre les workers Gunicorn. Les pieces jointes de factures "
-            "risquent de ne pas suivre dans les courriels. Configurer REDIS_URL."
+            "CRITIQUE: REDIS_URL non defini en production. Cache non partage "
+            "entre workers Gunicorn -> pieces jointes de factures perdues + "
+            "tableau de bord lent au premier hit de chaque worker. "
+            "Configurer REDIS_URL."
         )
 
     # Gestionnaire d'erreur pour Rate Limiting (429)

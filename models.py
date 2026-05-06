@@ -1837,6 +1837,15 @@ class CommunicationNote(db.Model):
         db.Index('idx_cn_conversation', 'conversation_id'),
         db.Index('idx_cn_company_type', 'company_id', 'note_type'),
         db.Index('idx_cn_reminder_date', 'reminder_date'),
+        # Index partiel : ne garde QUE les rappels actifs (non complétés, date renseignée).
+        # Sert la requête du tableau de bord "rappels du user X" — table scan évité.
+        db.Index(
+            'idx_cn_user_reminder_active',
+            'user_id', 'reminder_date',
+            postgresql_where=db.text(
+                'reminder_date IS NOT NULL AND is_reminder_completed = false'
+            ),
+        ),
     )
 
     @validates('note_type')

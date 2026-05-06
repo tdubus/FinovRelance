@@ -129,6 +129,47 @@ def check_user_needs_new_consent(user_id, consent_type):
     return False
 
 
+def check_user_needs_any_new_consent(user_id):
+    """
+    Variante batch de check_user_needs_new_consent : récupère les 3 derniers
+    consentements (terms / privacy / cookies) en UNE seule requête grâce à
+    `DISTINCT ON` (Postgres-spécifique), puis évalue en mémoire.
+
+    Utilisé sur le tableau de bord — gain ~50-100 ms vs 3 appels séparés.
+
+    Returns:
+        bool: True si au moins un consentement doit être renouvelé/donné.
+    """
+    # DISTINCT ON (consent_type) + ORDER BY consent_type, created_at DESC
+    # → garde uniquement la ligne la plus récente par type. Une seule requête.
+    latest_per_type = (
+        ConsentLog.query
+        .filter(
+            ConsentLog.user_id == user_id,
+            ConsentLog.consent_type.in_(['terms', 'privacy', 'cookies']),
+        )
+        .order_by(ConsentLog.consent_type, ConsentLog.created_at.desc())
+        .distinct(ConsentLog.consent_type)
+        .all()
+    )
+    by_type = {c.consent_type: c for c in latest_per_type}
+
+    required = {
+        'terms':   CURRENT_TERMS_VERSION,
+        'privacy': CURRENT_PRIVACY_VERSION,
+        'cookies': CURRENT_COOKIES_VERSION,
+    }
+    for consent_type, current_version in required.items():
+        latest = by_type.get(consent_type)
+        # Pas de consentement enregistré OU consentement refusé → renouveler
+        if not latest or not latest.accepted:
+            return True
+        # Version trop vieille → renouveler
+        if latest.consent_version < current_version:
+            return True
+    return False
+
+
 def get_user_consent_status(user_id):
     """
     Récupère le statut de tous les consentements d'un utilisateur

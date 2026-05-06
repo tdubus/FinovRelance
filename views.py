@@ -362,12 +362,14 @@ def dashboard():
         else:
             percentage_current = percentage_30_days = percentage_60_days = percentage_90_days = percentage_90_plus = 0
 
-        # DMP global — mode configuré + les deux modes explicites
-        from utils.dmp_calculator import calculate_global_dmp, calculate_global_dmp_both
-        global_dmp = calculate_global_dmp(company_id)
+        # DMP global — une seule requête SQL retourne les deux modes ; le mode
+        # configuré est juste un lookup dans le dict.
+        from utils.dmp_calculator import calculate_global_dmp_both
         global_dmp_both = calculate_global_dmp_both(company_id)
         global_dmp_invoice = global_dmp_both['invoice_date']
         global_dmp_due = global_dmp_both['due_date']
+        calc_method = company.aging_calculation_method or 'invoice_date'
+        global_dmp = global_dmp_both[calc_method]
 
         stats = {
             'total_clients': total_clients,
@@ -392,10 +394,16 @@ def dashboard():
     # --- Fin stats cachees ---
 
     # Recent invoices (last 10, seulement les impayées) - non cache car peu couteux et dynamique
+    # selectinload : évite N+1 lors du rendu template (invoice.client.name)
+    from sqlalchemy.orm import selectinload
     today = datetime.now().date()
-    recent_invoices = db.session.query(Invoice).join(Client).filter(
-        Client.company_id == company_id, Invoice.is_paid == False).order_by(
-            Invoice.invoice_date.desc()).limit(10).all()
+    recent_invoices = (db.session.query(Invoice)
+        .join(Client)
+        .options(selectinload(Invoice.client))
+        .filter(Client.company_id == company_id, Invoice.is_paid == False)
+        .order_by(Invoice.invoice_date.desc())
+        .limit(10)
+        .all())
 
     # Get activity for selected date (default to today)
     selected_date = request.args.get('activity_date')
@@ -419,11 +427,17 @@ def dashboard():
     end_utc = convert_local_to_utc(end_local, timezone_str)
 
     # OPTIMISATION: Show only activities for the current user (personal dashboard view)
-    daily_notes = db.session.query(CommunicationNote).join(Client).filter(
-        Client.company_id == company_id,
-        CommunicationNote.user_id == current_user.id,
-        CommunicationNote.created_at >= start_utc, CommunicationNote.created_at
-        <= end_utc).order_by(CommunicationNote.created_at.desc()).all()
+    # selectinload : évite N+1 (note.client.name dans le template)
+    daily_notes = (db.session.query(CommunicationNote)
+        .join(Client)
+        .options(selectinload(CommunicationNote.client))
+        .filter(
+            Client.company_id == company_id,
+            CommunicationNote.user_id == current_user.id,
+            CommunicationNote.created_at >= start_utc,
+            CommunicationNote.created_at <= end_utc)
+        .order_by(CommunicationNote.created_at.desc())
+        .all())
 
     # Clean note text for display
     from utils import clean_note_text
@@ -431,32 +445,34 @@ def dashboard():
         if note.note_text:
             note.note_text = clean_note_text(note.note_text)
 
-    # OPTIMISATION: Show only reminders for the current user (personal dashboard view)
-    all_reminders = db.session.query(CommunicationNote).join(Client).filter(
-        Client.company_id == company_id,
-        CommunicationNote.user_id == current_user.id,
-        CommunicationNote.reminder_date.isnot(None),
-        CommunicationNote.is_reminder_completed == False).order_by(
-            CommunicationNote.reminder_date).all()
-
-    # Filter reminders: overdue + today + upcoming (limited to 10 total)
-    overdue_reminders = [r for r in all_reminders if r.is_reminder_overdue()]
-    today_reminders = [r for r in all_reminders if r.is_reminder_today()]
-    upcoming_reminders = [r for r in all_reminders if r.is_reminder_upcoming()]
-
-    # Combine and limit to 10 most important (overdue first, then today, then upcoming)
-    reminders = (overdue_reminders + today_reminders + upcoming_reminders)[:10]
+    # OPTIMISATION : on borne directement en SQL au lieu de tout charger pour
+    # filtrer en Python.
+    # Tri : reminder_date ASC place en tête les rappels en retard (date <= today),
+    # puis ceux d'aujourd'hui, puis les futurs proches. C'est exactement la
+    # priorité qu'on veut — pas besoin de filtrer en 3 listes côté Python.
+    # Limite SQL à 10 (≡ ce qui est affiché).
+    reminders = (db.session.query(CommunicationNote)
+        .join(Client)
+        .options(selectinload(CommunicationNote.client))
+        .filter(
+            Client.company_id == company_id,
+            CommunicationNote.user_id == current_user.id,
+            CommunicationNote.reminder_date.isnot(None),
+            CommunicationNote.is_reminder_completed == False)
+        # .id.asc() en tie-breaker : ordre déterministe quand 2 rappels
+        # partagent la même date (évite des ordres qui flottent entre 2 hits).
+        .order_by(CommunicationNote.reminder_date.asc(), CommunicationNote.id.asc())
+        .limit(10)
+        .all())
 
     for reminder in reminders:
         if reminder.note_text:
             reminder.note_text = clean_note_text(reminder.note_text)
 
     # Vérifier si l'utilisateur doit donner son consentement RGPD/Loi 25
-    from utils.consent_helper import check_user_needs_new_consent, CURRENT_TERMS_VERSION, CURRENT_PRIVACY_VERSION, CURRENT_COOKIES_VERSION
-    needs_consent = (
-        check_user_needs_new_consent(current_user.id, 'terms')
-        or check_user_needs_new_consent(current_user.id, 'privacy')
-        or check_user_needs_new_consent(current_user.id, 'cookies'))
+    # Une seule requête (DISTINCT ON) au lieu de 3 — voir consent_helper.
+    from utils.consent_helper import check_user_needs_any_new_consent, CURRENT_TERMS_VERSION, CURRENT_PRIVACY_VERSION, CURRENT_COOKIES_VERSION
+    needs_consent = check_user_needs_any_new_consent(current_user.id)
 
     # Avis de migration VPS (une seule fois)
     show_migration_notice = not getattr(current_user, 'migration_notice_dismissed', True)
@@ -506,38 +522,19 @@ def dismiss_migration_notice():
 # This eliminates function conflicts between main views.py and modular architecture
 
 
-@main_bp.route('/api/receivables-years')
-@login_required
-def api_receivables_years():
-    """API endpoint pour récupérer les années disponibles de snapshots"""
-    from flask import jsonify
-    from models import ReceivablesSnapshot
-    from sqlalchemy import func, extract
-    from app import db
-
-    company = current_user.get_selected_company()
-    if not company:
-        return jsonify({'error': 'Aucune entreprise sélectionnée'}), 400
-
-    years = db.session.query(
-        func.distinct(extract('year', ReceivablesSnapshot.snapshot_date))
-    ).filter(
-        ReceivablesSnapshot.company_id == company.id
-    ).order_by(
-        extract('year', ReceivablesSnapshot.snapshot_date).desc()
-    ).all()
-
-    return jsonify({
-        'years': [int(y[0]) for y in years if y[0]]
-    })
-
-
 @main_bp.route('/api/receivables-history')
 @login_required
 def api_receivables_history():
-    """API endpoint pour l'historique des comptes à recevoir (graphique)"""
+    """API endpoint pour l'historique des comptes à recevoir (graphique).
+
+    Inclut aussi la liste des années disponibles dans la réponse pour éviter
+    un second aller-retour HTTP au chargement du tableau de bord (avant :
+    /api/receivables-years + /api/receivables-history → 2× RTT).
+    """
     from flask import jsonify
     from models import ReceivablesSnapshot
+    from sqlalchemy import extract, func
+    from app import db
 
     company = current_user.get_selected_company()
     if not company:
@@ -563,14 +560,30 @@ def api_receivables_history():
         week_start=week_start
     )
 
-    return jsonify({
+    # Années disponibles — incluses uniquement au premier appel (pas de filtre
+    # year/month/week_start = chargement initial du graphique). Évite de
+    # requêter inutilement à chaque drill-down. Index `idx_snapshot_company_year`
+    # accélère le extract() quand il a lieu.
+    years = None
+    if year is None and month is None and week_start is None:
+        years_rows = (db.session.query(
+                func.distinct(extract('year', ReceivablesSnapshot.snapshot_date)))
+            .filter(ReceivablesSnapshot.company_id == company.id)
+            .order_by(extract('year', ReceivablesSnapshot.snapshot_date).desc())
+            .all())
+        years = [int(y[0]) for y in years_rows if y[0]]
+
+    payload = {
         'period': period,
         'bucket': bucket,
         'year': year,
         'month': month,
         'week_start': week_start,
-        'data': history
-    })
+        'data': history,
+    }
+    if years is not None:
+        payload['years'] = years
+    return jsonify(payload)
 
 
 # CRITICAL FIX: Route manquante pour new_client
