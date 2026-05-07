@@ -315,37 +315,30 @@
             </li>
             
             <li class="nav-item">
-                <a class="nav-link {% if 'audit' in request.endpoint or 'cron_job' in request.endpoint or 'consent' in request.endpoint %}active{% endif %}" 
+                <a class="nav-link {% if 'user_audit_logs' in request.endpoint or 'cron_job' in request.endpoint or 'consent' in request.endpoint %}active{% endif %}"
                    data-bs-toggle="collapse" href="#auditMenu" role="button" aria-expanded="false">
                     <i class="ph ph-clipboard-text"></i>
                     <span>Audit & Logs</span>
                     <i class="ph ph-caret-down ms-auto" style="font-size: 0.7rem;"></i>
                 </a>
-                <div class="collapse {% if 'audit' in request.endpoint or 'cron_job' in request.endpoint or 'consent' in request.endpoint %}show{% endif %}" id="auditMenu">
+                <div class="collapse {% if 'user_audit_logs' in request.endpoint or 'cron_job' in request.endpoint or 'consent' in request.endpoint %}show{% endif %}" id="auditMenu">
                     <ul class="nav flex-column ps-4" style="margin-top: 0.25rem;">
                         <li class="nav-item">
-                            <a class="nav-link py-2 {% if 'user_audit_logs' in request.endpoint %}active{% endif %}" 
+                            <a class="nav-link py-2 {% if 'user_audit_logs' in request.endpoint %}active{% endif %}"
                                href="{{ url_for('admin.user_audit_logs') }}" style="font-size: 0.9rem;">
                                 <i class="ph ph-user"></i>
                                 <span>Actions Utilisateurs</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link py-2 {% if 'cron_job_logs' in request.endpoint %}active{% endif %}" 
+                            <a class="nav-link py-2 {% if 'cron_job_logs' in request.endpoint %}active{% endif %}"
                                href="{{ url_for('admin.cron_job_logs') }}" style="font-size: 0.9rem;">
                                 <i class="ph ph-clock"></i>
                                 <span>Cron Jobs</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link py-2 {% if 'audit_logs' in request.endpoint and 'user_audit' not in request.endpoint %}active{% endif %}" 
-                               href="{{ url_for('admin.audit_logs') }}" style="font-size: 0.9rem;">
-                                <i class="ph ph-clock-counter-clockwise"></i>
-                                <span>Logs Stripe</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link py-2 {% if 'consent_logs' in request.endpoint %}active{% endif %}" 
+                            <a class="nav-link py-2 {% if 'consent_logs' in request.endpoint %}active{% endif %}"
                                href="{{ url_for('admin.consent_logs') }}" style="font-size: 0.9rem;">
                                 <i class="ph ph-file-text"></i>
                                 <span>Consentements</span>
