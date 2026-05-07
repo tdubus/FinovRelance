@@ -397,19 +397,20 @@
   padding-bottom: var(--s-12);
 }
 
-/* Transition de navigation — fade au chargement de chaque page.
-   Désactivée si l'utilisateur a configuré prefers-reduced-motion.
-   IMPORTANT : on n'utilise QUE l'opacité, jamais de `transform`. Pourquoi ?
-   Toute valeur de `transform` autre que `none` (même `translateY(0)`) crée un
-   stacking context ET un containing block pour les descendants `position:fixed`.
-   Comme tous les modals Bootstrap vivent à l'intérieur de <main>, ça les piège
-   sous le `.modal-backdrop` (injecté dans <body>) — l'écran devient gris en
-   premier plan, le formulaire reste visible derrière, plus aucun clic ne passe.
-   Le fade-only évite ce piège, y compris pendant les 220ms de l'animation. */
+/* Transition de navigation — fade + léger glissement vers le haut au chargement
+   de chaque page. Désactivée si l'utilisateur a configuré prefers-reduced-motion.
+   IMPORTANT — contrainte sur l'état final :
+   L'état `to` DOIT terminer sur `transform: none` (et non `translateY(0)`).
+   Toute valeur non-none de transform crée un stacking context permanent sur
+   main, qui piège alors tous les descendants en `position: fixed` (modals,
+   table-row dropdowns à z-index 1080, etc.) sous le .modal-backdrop injecté
+   dans <body>. Les modals sont déjà détachés vers <body> par le hook JS
+   show.bs.modal dans main.js, mais les autres position:fixed restent dans
+   main et ont besoin que le stacking context disparaisse en fin d'animation. */
 @media (prefers-reduced-motion: no-preference) {
   @keyframes pageFadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
   }
   [data-ui="v2"] main {
     animation: pageFadeIn 220ms var(--ease-out) both;
