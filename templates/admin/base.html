@@ -356,15 +356,7 @@
             </li>
             
             <li class="nav-item">
-                <a class="nav-link {% if 'webhooks' in request.endpoint %}active{% endif %}" 
-                   href="/admin/webhooks/">
-                    <i class="ph ph-broadcast"></i>
-                    <span>Webhooks Stripe</span>
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a class="nav-link {% if 'users' in request.endpoint %}active{% endif %}" 
+                <a class="nav-link {% if 'users' in request.endpoint %}active{% endif %}"
                    href="{{ url_for('admin.users') }}">
                     <i class="ph ph-users"></i>
                     <span>Utilisateurs</span>

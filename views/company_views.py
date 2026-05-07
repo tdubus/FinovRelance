@@ -3172,10 +3172,6 @@ def delete_company():
         """), {"company_id": company_id})
 
         db.session.execute(db.text("""
-            DELETE FROM webhook_logs WHERE company_id = :company_id
-        """), {"company_id": company_id})
-
-        db.session.execute(db.text("""
             DELETE FROM business_central_sync_logs WHERE company_id = :company_id
         """), {"company_id": company_id})
 

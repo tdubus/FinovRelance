@@ -61,7 +61,6 @@ def cleanup_old_logs():
             # Voir AUDIT_LOG_RETENTION_DAYS dans constants.py.
             tables_to_clean = [
                 ('cron_job_logs', 'created_at', None),
-                ('webhook_logs', 'received_at', None),
                 ('notifications', 'created_at', "is_read = true"),
                 ('sync_logs', 'started_at', None),
             ]

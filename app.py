@@ -773,8 +773,6 @@ def bootstrap_app(app):
     # PHASE 4 - Notifications blueprint déjà enregistré dans views.py
 
     # PHASE 5 - Webhook admin blueprint
-    from admin_webhook_routes import admin_webhooks_bp
-    app.register_blueprint(admin_webhooks_bp)
 
     # REFONTE STRIPE 2.0 - Système V2 unifié - Migration complète
     # L'ancien système est désactivé, tout passe par unified maintenant
