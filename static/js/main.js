@@ -439,6 +439,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Universal modal fix : move every Bootstrap modal to <body> right before it
+// shows. With <body display:flex> + <main> wrapping page content, descendants
+// of <main> end up painted under .modal-backdrop (which Bootstrap injects in
+// <body>) — the screen turns gray, the form is visible behind, and no click
+// gets through. Detaching the modal to <body> makes it a sibling of the
+// backdrop, so Bootstrap's z-index 1055 vs 1050 works as intended.
+document.addEventListener('show.bs.modal', (event) => {
+    const modal = event.target;
+    if (modal && modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+    }
+}, true);
+
 // Global functions accessible from templates
 window.showAlert = showAlert;
 window.loadEmailTemplate = loadEmailTemplate;

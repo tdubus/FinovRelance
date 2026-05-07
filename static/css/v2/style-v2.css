@@ -137,6 +137,11 @@
   display: flex;
   flex-direction: column;
   margin: 0;
+  /* Force body to be its own stacking context. Belt-and-suspenders with the
+     JS hook in main.js that detaches modals to <body> on show — guarantees
+     .modal (z 1055) wins over .modal-backdrop (z 1050) regardless of the
+     flex layout interaction with fixed-positioned descendants of <main>. */
+  isolation: isolate;
 }
 [data-ui="v2"] main { flex: 1 0 auto; }
 [data-ui="v2"] footer { flex-shrink: 0; }
