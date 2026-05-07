@@ -638,6 +638,13 @@ def new_client():
         db.session.add(client)
         db.session.commit()
 
+        try:
+            from utils.audit_service import log_client_action, AuditActions
+            log_client_action(AuditActions.CLIENT_CREATED, client,
+                              new_data={'name': client.name, 'code_client': client.code_client})
+        except Exception as audit_err:
+            current_app.logger.warning(f"Audit log failed (new_client): {audit_err}")
+
         flash(f'Client {client.name} créé avec succès.', 'success')
         return redirect(url_for('client.list_clients'))
 
@@ -1466,6 +1473,9 @@ def edit_client(id):
                                    title='Modifier Client',
                                    client=client)
 
+        old_data = {'name': client.name, 'code_client': client.code_client,
+                    'email': client.email, 'phone': client.phone}
+
         client.code_client = form.code_client.data
         client.name = form.name.data
         client.email = form.email.data
@@ -1478,6 +1488,16 @@ def edit_client(id):
         client.parent_client_id = new_parent_id
 
         db.session.commit()
+
+        try:
+            from utils.audit_service import log_client_action, AuditActions
+            log_client_action(AuditActions.CLIENT_UPDATED, client,
+                              old_data=old_data,
+                              new_data={'name': client.name, 'code_client': client.code_client,
+                                        'email': client.email, 'phone': client.phone})
+        except Exception as audit_err:
+            current_app.logger.warning(f"Audit log failed (edit_client): {audit_err}")
+
         flash(f'Client {client.name} modifié avec succès.', 'success')
         return redirect(url_for('client.detail_client', id=id))
 

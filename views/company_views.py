@@ -7,7 +7,7 @@ from flask_login import login_required, current_user
 import stripe
 import os
 from app import limiter
-from utils.audit_service import log_action, log_user_action, log_sync_action, AuditActions, EntityTypes
+from utils.audit_service import log_action, log_user_action, log_sync_action, log_oauth_action, AuditActions, EntityTypes
 
 # Create company blueprint
 company_bp = Blueprint('company', __name__, url_prefix='/company')
@@ -1352,6 +1352,12 @@ def quickbooks_callback():
 
         db.session.commit()
 
+        try:
+            log_oauth_action(AuditActions.OAUTH_CONNECTED, provider='quickbooks',
+                             details={'company_id': company_id, 'connection_id': connection.id})
+        except Exception as audit_err:
+            current_app.logger.warning(f"Audit log failed (quickbooks_callback): {audit_err}")
+
         # Clean up session
         session.pop('qb_company_id', None)
         session.pop('qb_state', None)
@@ -1474,6 +1480,20 @@ def quickbooks_sync():
                 db.session.add(sync_log)
                 db.session.commit()
 
+                try:
+                    from models import AuditLog as _AL, User as _U, Company as _C
+                    AuditLog.log_with_session(
+                        db.session,
+                        action=AuditActions.SYNC_STARTED,
+                        entity_type=EntityTypes.SYNC,
+                        entity_name='QuickBooks',
+                        details={'sync_type': 'quickbooks'},
+                        user=_U.query.get(user_id),
+                        company=_C.query.get(company_id)
+                    )
+                except Exception as audit_err:
+                    current_app.logger.warning(f"Audit log failed (quickbooks SYNC_STARTED): {audit_err}")
+
                 # Initialiser le connecteur avec validation de sécurité
                 # La vérification manuelle ci-dessus + validation dans le constructeur = double sécurité
                 qb_connector = QuickBooksConnector(thread_connection.id, company_id)
@@ -1572,6 +1592,20 @@ def quickbooks_sync():
 
             except Exception as e:
                 # En cas d'erreur, enregistrer les détails
+                try:
+                    from models import AuditLog as _AL, User as _U, Company as _C
+                    AuditLog.log_with_session(
+                        db.session,
+                        action=AuditActions.SYNC_FAILED,
+                        entity_type=EntityTypes.SYNC,
+                        entity_name='QuickBooks',
+                        details={'sync_type': 'quickbooks', 'error': str(e)[:500]},
+                        user=_U.query.get(user_id),
+                        company=_C.query.get(company_id)
+                    )
+                except Exception as audit_err:
+                    current_app.logger.warning(f"Audit log failed (quickbooks SYNC_FAILED): {audit_err}")
+
                 try:
                     # SÉCURITÉ: Récupérer la connexion avec vérification company_id (version thread-safe)
                     from utils import safe_get_by_id_thread
@@ -1810,6 +1844,12 @@ def business_central_callback():
 
                 db.session.commit()
 
+                try:
+                    log_oauth_action(AuditActions.OAUTH_CONNECTED, provider='business_central',
+                                     details={'company_id': company_id, 'connection_id': existing_connection.id})
+                except Exception as audit_err:
+                    current_app.logger.warning(f"Audit log failed (bc_callback reconnect): {audit_err}")
+
                 # Nettoyer la session
                 session.pop('bc_state', None)
                 session.pop('bc_reconnect_connection_id', None)
@@ -1865,6 +1905,12 @@ def business_central_callback():
                 bc_config.invoices_odata_url = invoices_url
 
         db.session.commit()
+
+        try:
+            log_oauth_action(AuditActions.OAUTH_CONNECTED, provider='business_central',
+                             details={'company_id': company_id, 'connection_id': connection.id})
+        except Exception as audit_err:
+            current_app.logger.warning(f"Audit log failed (bc_callback normal): {audit_err}")
 
         session.pop('bc_company_id', None)
         session.pop('bc_state', None)
@@ -2755,6 +2801,19 @@ def business_central_sync():
                 # Injecter l'ID du sync log pour les mises à jour progressives
                 setattr(bc_connector, 'sync_log_id', sync_log_id)
 
+                try:
+                    from models import AuditLog as _AL, User as _U, Company as _C
+                    AuditLog.log_with_session(
+                        db.session,
+                        action=AuditActions.SYNC_STARTED,
+                        entity_type=EntityTypes.SYNC,
+                        entity_name='Business Central',
+                        details={'sync_type': 'business_central', 'data_type': sync_type},
+                        user=_U.query.get(user_id),
+                        company=_C.query.get(connection.company_id)
+                    )
+                except Exception as audit_err:
+                    current_app.logger.warning(f"Audit log failed (bc SYNC_STARTED): {audit_err}")
 
                 total_stats = {'created': 0, 'updated': 0, 'errors': 0}
 
@@ -2907,6 +2966,21 @@ def business_central_sync():
                 current_app.logger.error(f"❌ Erreur sync asynchrone {sync_type}: {str(e)}")
                 import traceback
                 current_app.logger.error(f"Traceback: {traceback.format_exc()}")
+
+                try:
+                    from models import AuditLog as _AL, User as _U, Company as _C
+                    _bc_conn = AccountingConnection.query.get(connection_id)
+                    AuditLog.log_with_session(
+                        db.session,
+                        action=AuditActions.SYNC_FAILED,
+                        entity_type=EntityTypes.SYNC,
+                        entity_name='Business Central',
+                        details={'sync_type': 'business_central', 'data_type': sync_type, 'error': str(e)[:500]},
+                        user=_U.query.get(user_id),
+                        company=_C.query.get(_bc_conn.company_id) if _bc_conn else None
+                    )
+                except Exception as audit_err:
+                    current_app.logger.warning(f"Audit log failed (bc SYNC_FAILED): {audit_err}")
 
                 # Détecter spécifiquement les erreurs d'authentification
                 is_auth_error = "Authentication failed" in str(e) or "401" in str(e)
@@ -3360,6 +3434,13 @@ def xero_callback():
 
         db.session.commit()
 
+        try:
+            xero_conn = existing_connection if existing_connection else new_connection
+            log_oauth_action(AuditActions.OAUTH_CONNECTED, provider='xero',
+                             details={'company_id': company_id, 'connection_id': xero_conn.id})
+        except Exception as audit_err:
+            current_app.logger.warning(f"Audit log failed (xero_callback): {audit_err}")
+
         # Clean up session
         session.pop('xero_state', None)
         session.pop('xero_company_id', None)
@@ -3473,6 +3554,20 @@ def xero_sync():
                 db.session.add(sync_log)
                 db.session.commit()
 
+                try:
+                    from models import AuditLog as _AL, User as _U, Company as _C
+                    AuditLog.log_with_session(
+                        db.session,
+                        action=AuditActions.SYNC_STARTED,
+                        entity_type=EntityTypes.SYNC,
+                        entity_name='Xero',
+                        details={'sync_type': 'xero'},
+                        user=_U.query.get(user_id),
+                        company=_C.query.get(company_id)
+                    )
+                except Exception as audit_err:
+                    current_app.logger.warning(f"Audit log failed (xero SYNC_STARTED): {audit_err}")
+
                 # Initialiser le connecteur avec validation de sécurité
                 xero_connector = XeroConnector(thread_connection.id, company_id)
                 customers_created, customers_updated = xero_connector.sync_customers(company_id, sync_log_id=sync_log.id)
@@ -3557,6 +3652,20 @@ def xero_sync():
 
             except Exception as e:
                 current_app.logger.error(f"❌ XERO SYNC ERROR: {str(e)}")
+
+                try:
+                    from models import AuditLog as _AL, User as _U, Company as _C
+                    AuditLog.log_with_session(
+                        db.session,
+                        action=AuditActions.SYNC_FAILED,
+                        entity_type=EntityTypes.SYNC,
+                        entity_name='Xero',
+                        details={'sync_type': 'xero', 'error': str(e)[:500]},
+                        user=_U.query.get(user_id),
+                        company=_C.query.get(company_id)
+                    )
+                except Exception as audit_err:
+                    current_app.logger.warning(f"Audit log failed (xero SYNC_FAILED): {audit_err}")
 
                 if sync_log:
                     sync_log.status = 'failed'
@@ -3736,6 +3845,13 @@ def pennylane_callback():
 
         db.session.commit()
 
+        try:
+            pl_conn = existing_connection if existing_connection else new_connection
+            log_oauth_action(AuditActions.OAUTH_CONNECTED, provider='pennylane',
+                             details={'company_id': company_id, 'connection_id': pl_conn.id})
+        except Exception as audit_err:
+            current_app.logger.warning(f"Audit log failed (pennylane_callback): {audit_err}")
+
         # Clean up session
         session.pop('pennylane_state', None)
         session.pop('pennylane_company_id', None)
@@ -3864,6 +3980,20 @@ def pennylane_sync():
                 db.session.add(sync_log)
                 db.session.commit()
 
+                try:
+                    from models import AuditLog as _AL, User as _U, Company as _C
+                    AuditLog.log_with_session(
+                        db.session,
+                        action=AuditActions.SYNC_STARTED,
+                        entity_type=EntityTypes.SYNC,
+                        entity_name='Pennylane',
+                        details={'sync_type': 'pennylane'},
+                        user=_U.query.get(user_id),
+                        company=_C.query.get(company_id)
+                    )
+                except Exception as audit_err:
+                    current_app.logger.warning(f"Audit log failed (pennylane SYNC_STARTED): {audit_err}")
+
                 # Initialiser le connecteur avec validation de securite
                 connector = PennylaneConnector(thread_connection.id, company_id)
                 customers_created, customers_updated = connector.sync_customers(company_id, sync_log_id=sync_log.id)
@@ -3960,6 +4090,20 @@ def pennylane_sync():
 
             except Exception as e:
                 current_app.logger.error(f"PENNYLANE SYNC ERROR: {str(e)}", exc_info=True)
+
+                try:
+                    from models import AuditLog as _AL, User as _U, Company as _C
+                    AuditLog.log_with_session(
+                        db.session,
+                        action=AuditActions.SYNC_FAILED,
+                        entity_type=EntityTypes.SYNC,
+                        entity_name='Pennylane',
+                        details={'sync_type': 'pennylane', 'error': str(e)[:500]},
+                        user=_U.query.get(user_id),
+                        company=_C.query.get(company_id)
+                    )
+                except Exception as audit_err:
+                    current_app.logger.warning(f"Audit log failed (pennylane SYNC_FAILED): {audit_err}")
 
                 if sync_log:
                     sync_log.status = 'failed'

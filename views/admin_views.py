@@ -7,7 +7,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from defusedcsv import csv
 from app import csrf, limiter
-from utils.audit_service import log_action, AuditActions, EntityTypes
+from utils.audit_service import log_action, log_user_action, AuditActions, EntityTypes
 from constants import DEFAULT_PAGE_SIZE
 
 
@@ -1073,6 +1073,13 @@ def toggle_user_company(user_company_id):
         action = "activée" if activate else "désactivée"
         current_app.logger.info(f"Association user_company {user_company_id} {action} par {current_user.email}")
         flash(f'Association avec "{company_name}" {action} avec succès.', 'success')
+
+        try:
+            audit_action = AuditActions.USER_ACTIVATED if activate else AuditActions.USER_DEACTIVATED
+            log_user_action(audit_action, target_user=user_company.user,
+                            details={'company_id': user_company.company_id, 'company_name': company_name})
+        except Exception as audit_err:
+            current_app.logger.warning(f"Audit log failed (toggle_user_company): {audit_err}")
 
     except Exception as e:
         db.session.rollback()

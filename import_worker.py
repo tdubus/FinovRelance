@@ -169,6 +169,29 @@ class ImportWorker:
 
                 logger.info(f"Starting import job {job_id}: {job.import_type} from {job.filename}")
 
+                # Audit log : SYNC_STARTED — non bloquant.
+                try:
+                    from models import AuditLog, User, Company
+                    from utils.audit_service import AuditActions, EntityTypes
+                    company_obj = session.query(Company).get(job.company_id)
+                    user_obj = session.query(User).get(job.user_id) if job.user_id else None
+                    AuditLog.log_with_session(
+                        session=session,
+                        action=AuditActions.SYNC_STARTED,
+                        entity_type=EntityTypes.SYNC,
+                        entity_name=f"Import {job.import_type}",
+                        details={
+                            'sync_type': f'import_{job.import_type}',
+                            'mode': job.import_mode,
+                            'filename': job.filename,
+                        },
+                        user=user_obj,
+                        company=company_obj,
+                    )
+                    session.commit()
+                except Exception as audit_error:
+                    logger.warning(f"Audit log SYNC_STARTED non créé : {audit_error}")
+
                 # Load file mapping configuration
                 from models import FileImportMapping
                 mapping_config = session.query(FileImportMapping).filter_by(company_id=job.company_id).first()
@@ -324,6 +347,28 @@ class ImportWorker:
                     if job:
                         job.mark_as_failed(str(e))
                         session.commit()
+
+                        # Audit log : SYNC_FAILED — non bloquant.
+                        try:
+                            from models import AuditLog, User, Company
+                            from utils.audit_service import AuditActions, EntityTypes
+                            company_obj = session.query(Company).get(job.company_id)
+                            user_obj = session.query(User).get(job.user_id) if job.user_id else None
+                            AuditLog.log_with_session(
+                                session=session,
+                                action=AuditActions.SYNC_FAILED,
+                                entity_type=EntityTypes.SYNC,
+                                entity_name=f"Import {job.import_type}",
+                                details={
+                                    'sync_type': f'import_{job.import_type}',
+                                    'error': str(e)[:500],
+                                },
+                                user=user_obj,
+                                company=company_obj,
+                            )
+                            session.commit()
+                        except Exception as audit_error:
+                            logger.warning(f"Audit log SYNC_FAILED non créé : {audit_error}")
 
                         # Send error notification
                         from models import Notification, User

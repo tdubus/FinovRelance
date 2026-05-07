@@ -140,8 +140,10 @@
                             <th>Utilisateur</th>
                             <th>Action</th>
                             <th>Entité</th>
+                            <th>Changements</th>
                             <th>Détails</th>
-                            <th style="width: 120px;">IP</th>
+                            <th style="width: 110px;">IP</th>
+                            <th style="width: 130px;">Appareil</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -185,12 +187,38 @@
                                 {% endif %}
                             </td>
                             <td class="small">
+                                {# Diff old/new value affiché côte à côte si présent #}
+                                {% if log.old_value or log.new_value %}
+                                <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#diff-{{ log.id }}">
+                                    <i class="ph ph-git-diff"></i> Diff
+                                </button>
+                                <div class="collapse mt-2" id="diff-{{ log.id }}">
+                                    <div class="row g-1">
+                                        <div class="col-6">
+                                            <div class="bg-danger bg-opacity-10 border border-danger-subtle rounded p-2">
+                                                <small class="fw-semibold text-danger">Avant</small>
+                                                <pre class="mb-0 small" style="white-space:pre-wrap; word-break:break-word;">{{ log.old_value | tojson(indent=2) if log.old_value else '—' }}</pre>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="bg-success bg-opacity-10 border border-success-subtle rounded p-2">
+                                                <small class="fw-semibold text-success">Après</small>
+                                                <pre class="mb-0 small" style="white-space:pre-wrap; word-break:break-word;">{{ log.new_value | tojson(indent=2) if log.new_value else '—' }}</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="small">
                                 {% if log.details %}
                                 <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#details-{{ log.id }}">
                                     <i class="ph ph-eye"></i>
                                 </button>
                                 <div class="collapse mt-2" id="details-{{ log.id }}">
-                                    <pre class="mb-0 p-2 bg-light rounded small">{{ log.details | tojson(indent=2) }}</pre>
+                                    <pre class="mb-0 p-2 bg-light rounded small" style="white-space:pre-wrap; word-break:break-word;">{{ log.details | tojson(indent=2) }}</pre>
                                 </div>
                                 {% else %}
                                 -
@@ -199,10 +227,31 @@
                             <td class="small text-muted">
                                 {{ log.ip_address or '-' }}
                             </td>
+                            <td class="small text-muted">
+                                {% if log.user_agent %}
+                                {# Aperçu compacté + tooltip avec User-Agent complet pour debug. #}
+                                <span title="{{ log.user_agent }}" style="cursor:help;">
+                                    {%- if 'Mobile' in log.user_agent or 'iPhone' in log.user_agent or 'Android' in log.user_agent -%}
+                                        <i class="ph ph-device-mobile me-1"></i>
+                                    {%- else -%}
+                                        <i class="ph ph-monitor me-1"></i>
+                                    {%- endif -%}
+                                    {%- if 'Chrome' in log.user_agent and 'Edg' not in log.user_agent -%}Chrome
+                                    {%- elif 'Edg' in log.user_agent -%}Edge
+                                    {%- elif 'Firefox' in log.user_agent -%}Firefox
+                                    {%- elif 'Safari' in log.user_agent -%}Safari
+                                    {%- elif 'curl' in log.user_agent or 'bot' in log.user_agent.lower() -%}Bot/CLI
+                                    {%- else -%}Autre
+                                    {%- endif -%}
+                                </span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
+                            <td colspan="8" class="text-center text-muted py-4">
                                 Aucun log trouvé
                             </td>
                         </tr>
