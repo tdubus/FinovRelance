@@ -11,7 +11,6 @@ from .secure_logging import (
     sanitize_stripe_id_for_logs,
     sanitize_sensitive_data_for_logs,
     create_secure_log_message,
-    secure_log_function_call
 )
 
 from .http_client import (
@@ -405,7 +404,6 @@ __all__ = [
     'sanitize_stripe_id_for_logs',
     'sanitize_sensitive_data_for_logs',
     'create_secure_log_message',
-    'secure_log_function_call',
     # HTTP session functions
     'RobustHTTPSession',
     'get_robust_session',

@@ -183,35 +183,6 @@ def create_secure_log_message(message: str, **sensitive_data) -> str:
 
     return f"{message} - {', '.join(sanitized_parts)}"
 
-# Décorateur pour logging automatique sécurisé
-def secure_log_function_call(logger):
-    """
-    Décorateur pour logger automatiquement les appels de fonction avec données sanitisées
-
-    Args:
-        logger: Logger à utiliser
-    """
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            # Sanitiser les arguments pour le log
-            sanitized_kwargs = {
-                k: sanitize_sensitive_data_for_logs(v, k)
-                for k, v in kwargs.items()
-                if not k.startswith('_')  # Ignorer les paramètres privés
-            }
-
-            logger.info(f"Calling {func.__name__} with args: {sanitized_kwargs}")
-
-            try:
-                result = func(*args, **kwargs)
-                logger.info(f"{func.__name__} completed successfully")
-                return result
-            except Exception as e:
-                logger.error(f"{func.__name__} failed: {str(e)}")
-                raise
-
-        return wrapper
-    return decorator
 
 # Constantes pour les types de logs sécurisés
 LOG_LEVEL_SECURE_INFO = "SECURE_INFO"
