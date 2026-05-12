@@ -5,7 +5,7 @@
         <p class="text-muted">Gestion de vos clients et contacts</p>
     </div>
     <div>
-        <a href="javascript:void(0)" class="btn btn-primary" onclick="event.preventDefault()">
+        <a href="javascript:void(0)" class="btn btn-primary" onclick="showDemoToast('Création d\'un nouveau client (non disponible en démo)')">
             <i class="ph ph-plus me-1"></i>
             Nouveau client
         </a>
@@ -34,19 +34,20 @@
                 <label for="collectorFilter" class="form-label">Collecteur</label>
                 <select id="collectorFilter" class="form-select">
                     <option value="">Tous les collecteurs</option>
-                    <option value="unassigned">Non assign&eacute;</option>
-                    <option value="1">Marie-Claude Tremblay</option>
-                    <option value="2">Jean-Philippe Roy</option>
+                    <option value="unassigned">Non assigné</option>
+                    <option value="1">Marie Lemieux</option>
+                    <option value="2">Jean Beauregard</option>
+                    <option value="3">Sophie Dion</option>
                 </select>
             </div>
             <div class="col-md-3">
                 <label class="form-label">&nbsp;</label>
                 <div class="d-flex gap-2">
-                    <button type="button" id="clearFilters" class="btn btn-outline-secondary flex-grow-1" onclick="event.preventDefault()">
+                    <button type="button" id="clearFilters" class="btn btn-outline-secondary flex-grow-1" onclick="showDemoToast('Filtres effacés (démo)')">
                         <i class="ph ph-x me-1"></i>
                         Effacer
                     </button>
-                    <button type="button" id="exportExcel" class="btn btn-success" title="Exporter en Excel" onclick="event.preventDefault()">
+                    <button type="button" id="exportExcel" class="btn btn-success" title="Exporter en Excel" onclick="showDemoToast('Export Excel téléchargé (démo)')">
                         <i class="ph ph-file-xls"></i>
                     </button>
                 </div>
@@ -63,12 +64,6 @@
             Liste des clients
             <span class="badge bg-secondary ms-2" id="totalCount">10</span>
         </h5>
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-sm btn-outline-danger" id="delete-selected" style="display: none;">
-                <i class="ph ph-trash me-1"></i>
-                Supprimer s&eacute;lectionn&eacute;s
-            </button>
-        </div>
     </div>
 
     <div class="card-body" id="clientsContainer">
@@ -83,8 +78,8 @@
                         <th>Nom du client</th>
                         <th>Contact</th>
                         <th>Collecteur</th>
-                        <th>Repr&eacute;sentant</th>
-                        <th>Solde &agrave; recevoir</th>
+                        <th>Représentant</th>
+                        <th>Solde à recevoir</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -92,150 +87,150 @@
                     <tr>
                         <td><input type="checkbox" name="client_ids" value="1" class="form-check-input"></td>
                         <td>BERG-001</td>
-                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Constructions Bergeron &amp; Fils</a></td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail', 'BERG-001')" class="text-decoration-none fw-bold">Constructions Bergeron &amp; Fils</a></td>
                         <td><a href="javascript:void(0)" class="text-decoration-none">m.bergeron@bergeron.ca</a></td>
-                        <td><span class="badge bg-secondary">Marie-Claude Tremblay</span></td>
-                        <td>Alain Bergeron</td>
+                        <td><span class="badge bg-secondary">Jean Beauregard</span></td>
+                        <td>Michel Bergeron</td>
                         <td class="fw-bold text-danger">42 350,00 $</td>
                         <td class="text-end">
                             <div class="btn-group" role="group">
-                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail', 'BERG-001')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
+                                <a href="javascript:void(0)" onclick="showDemoToast('Modifier le client (démo)')" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td><input type="checkbox" name="client_ids" value="2" class="form-check-input"></td>
-                        <td>LAV-002</td>
-                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Plomberie Lavoie inc.</a></td>
-                        <td><a href="javascript:void(0)" class="text-decoration-none">info@plomberielavoie.ca</a></td>
-                        <td><span class="badge bg-secondary">Jean-Philippe Roy</span></td>
-                        <td>Sylvie Lavoie</td>
-                        <td class="fw-bold text-warning">18 750,00 $</td>
+                        <td>BASL-002</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail', 'BASL-002')" class="text-decoration-none fw-bold">Béton Armé St-Laurent</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">a.tremblay@basl.ca</a></td>
+                        <td><span class="badge bg-secondary">Marie Lemieux</span></td>
+                        <td>Pierre Lavoie</td>
+                        <td class="fw-bold text-danger">67 500,00 $</td>
                         <td class="text-end">
                             <div class="btn-group" role="group">
-                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail', 'BASL-002')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
+                                <a href="javascript:void(0)" onclick="showDemoToast('Modifier le client (démo)')" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td><input type="checkbox" name="client_ids" value="3" class="form-check-input"></td>
-                        <td>TQM-003</td>
-                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">TQM Solutions</a></td>
-                        <td><a href="javascript:void(0)" class="text-decoration-none">comptabilite@tqm.ca</a></td>
-                        <td><span class="badge bg-secondary">Marie-Claude Tremblay</span></td>
-                        <td>Patrick Morin</td>
-                        <td class="fw-bold text-danger">31 200,00 $</td>
+                        <td>SMD-003</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail', 'SMD-003')" class="text-decoration-none fw-bold">Structures Métalliques Desjardins</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">facturation@smd.ca</a></td>
+                        <td><span class="badge bg-secondary">Sophie Dion</span></td>
+                        <td>Marc Desjardins</td>
+                        <td class="fw-bold text-danger">54 800,00 $</td>
                         <td class="text-end">
                             <div class="btn-group" role="group">
-                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail', 'SMD-003')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
+                                <a href="javascript:void(0)" onclick="showDemoToast('Modifier le client (démo)')" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td><input type="checkbox" name="client_ids" value="4" class="form-check-input"></td>
-                        <td>SIM-004</td>
-                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Toitures Simard</a></td>
-                        <td><a href="javascript:void(0)" class="text-decoration-none">p.simard@toituressimard.ca</a></td>
-                        <td><span class="badge bg-secondary">Jean-Philippe Roy</span></td>
-                        <td>Pierre Simard</td>
-                        <td class="fw-bold text-warning">8 900,00 $</td>
+                        <td>UPB-004</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail', 'UPB-004')" class="text-decoration-none fw-bold">Usinages Précision Beauce</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">info@upb.ca</a></td>
+                        <td><span class="badge bg-secondary">Jean Beauregard</span></td>
+                        <td>Caroline Bouchard</td>
+                        <td class="fw-bold text-warning">28 900,00 $</td>
                         <td class="text-end">
                             <div class="btn-group" role="group">
-                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail', 'UPB-004')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
+                                <a href="javascript:void(0)" onclick="showDemoToast('Modifier le client (démo)')" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td><input type="checkbox" name="client_ids" value="5" class="form-check-input"></td>
-                        <td>BASL-005</td>
-                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">BASL &Eacute;lectrique</a></td>
-                        <td><a href="javascript:void(0)" class="text-decoration-none">admin@baslelectrique.com</a></td>
-                        <td><span class="badge bg-secondary">Marie-Claude Tremblay</span></td>
-                        <td>Louis Bherer</td>
-                        <td class="fw-bold text-danger">67 500,00 $</td>
+                        <td>CHS-005</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail', 'CHS-005')" class="text-decoration-none fw-bold">Composantes Hydrauliques SN</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">a.nadeau@chsn.ca</a></td>
+                        <td><span class="badge bg-secondary">Marie Lemieux</span></td>
+                        <td>Alain Nadeau</td>
+                        <td class="fw-bold text-warning">36 200,00 $</td>
                         <td class="text-end">
                             <div class="btn-group" role="group">
-                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail', 'CHS-005')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
+                                <a href="javascript:void(0)" onclick="showDemoToast('Modifier le client (démo)')" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td><input type="checkbox" name="client_ids" value="6" class="form-check-input"></td>
-                        <td>COT-006</td>
-                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Excavation C&ocirc;t&eacute;</a></td>
-                        <td><a href="javascript:void(0)" class="text-decoration-none">j.cote@excavationcote.ca</a></td>
-                        <td><span class="badge bg-secondary">Jean-Philippe Roy</span></td>
-                        <td>Jacques C&ocirc;t&eacute;</td>
-                        <td class="fw-bold text-warning">12 400,00 $</td>
+                        <td>LAV-006</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail', 'LAV-006')" class="text-decoration-none fw-bold">Plomberie Lavoie inc.</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">info@plomberielavoie.ca</a></td>
+                        <td><span class="badge bg-secondary">Sophie Dion</span></td>
+                        <td>Sylvie Lavoie</td>
+                        <td class="fw-bold text-warning">18 750,00 $</td>
                         <td class="text-end">
                             <div class="btn-group" role="group">
-                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail', 'LAV-006')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
+                                <a href="javascript:void(0)" onclick="showDemoToast('Modifier le client (démo)')" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td><input type="checkbox" name="client_ids" value="7" class="form-check-input"></td>
-                        <td>PEL-007</td>
-                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Pelletier M&eacute;canique</a></td>
-                        <td><a href="javascript:void(0)" class="text-decoration-none">info@pelletiermec.ca</a></td>
-                        <td><span class="badge bg-secondary">Marie-Claude Tremblay</span></td>
-                        <td>Ren&eacute; Pelletier</td>
-                        <td class="fw-bold text-warning">22 100,00 $</td>
+                        <td>TQM-007</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail', 'TQM-007')" class="text-decoration-none fw-bold">TQM Solutions</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">comptabilite@tqm.ca</a></td>
+                        <td><span class="badge bg-secondary">Marie Lemieux</span></td>
+                        <td>Patrick Morin</td>
+                        <td class="fw-bold text-warning">31 200,00 $</td>
                         <td class="text-end">
                             <div class="btn-group" role="group">
-                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail', 'TQM-007')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
+                                <a href="javascript:void(0)" onclick="showDemoToast('Modifier le client (démo)')" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td><input type="checkbox" name="client_ids" value="8" class="form-check-input"></td>
-                        <td>SMD-008</td>
-                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">SMD Construction</a></td>
-                        <td><a href="javascript:void(0)" class="text-decoration-none">comptable@smdconstruction.ca</a></td>
-                        <td><span class="badge bg-secondary">Jean-Philippe Roy</span></td>
-                        <td>Marc Desrosiers</td>
-                        <td class="fw-bold text-danger">54 800,00 $</td>
+                        <td>TOIT-008</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail', 'TOIT-008')" class="text-decoration-none fw-bold">Toitures Simard</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">p.simard@toituressimard.ca</a></td>
+                        <td><span class="badge bg-secondary">Jean Beauregard</span></td>
+                        <td>Pierre Simard</td>
+                        <td class="fw-bold text-warning">8 900,00 $</td>
                         <td class="text-end">
                             <div class="btn-group" role="group">
-                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail', 'TOIT-008')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
+                                <a href="javascript:void(0)" onclick="showDemoToast('Modifier le client (démo)')" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td><input type="checkbox" name="client_ids" value="9" class="form-check-input"></td>
-                        <td>FEN-009</td>
-                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Fenestration Qu&eacute;bec</a></td>
-                        <td><a href="javascript:void(0)" class="text-decoration-none">info@fenestrationqc.ca</a></td>
-                        <td><span class="badge bg-secondary">Marie-Claude Tremblay</span></td>
-                        <td>Nathalie Gagnon</td>
-                        <td class="fw-bold text-warning">15 600,00 $</td>
+                        <td>COT-009</td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail', 'COT-009')" class="text-decoration-none fw-bold">Excavation Côté</a></td>
+                        <td><a href="javascript:void(0)" class="text-decoration-none">j.cote@excavationcote.ca</a></td>
+                        <td><span class="badge bg-secondary">Sophie Dion</span></td>
+                        <td>Jacques Côté</td>
+                        <td class="fw-bold text-warning">12 400,00 $</td>
                         <td class="text-end">
                             <div class="btn-group" role="group">
-                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail', 'COT-009')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
+                                <a href="javascript:void(0)" onclick="showDemoToast('Modifier le client (démo)')" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td><input type="checkbox" name="client_ids" value="10" class="form-check-input"></td>
                         <td>ISO-010</td>
-                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail')" class="text-decoration-none fw-bold">Isolation Nord-Sud</a></td>
+                        <td><a href="javascript:void(0)" onclick="demoNav('client-detail', 'ISO-010')" class="text-decoration-none fw-bold">Isolation Nord-Sud</a></td>
                         <td><a href="javascript:void(0)" class="text-decoration-none">facturation@isolationnordsud.ca</a></td>
-                        <td><span class="badge bg-secondary">Jean-Philippe Roy</span></td>
+                        <td><span class="badge bg-secondary">Jean Beauregard</span></td>
                         <td>Caroline Bouchard</td>
-                        <td class="fw-bold text-warning">9 800,00 $</td>
+                        <td class="fw-bold text-warning">15 600,00 $</td>
                         <td class="text-end">
                             <div class="btn-group" role="group">
-                                <a href="javascript:void(0)" onclick="demoNav('client-detail')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
+                                <a href="javascript:void(0)" onclick="demoNav('client-detail', 'ISO-010')" class="btn btn-outline-primary btn-sm" title="Voir"><i class="ph ph-eye small"></i></a>
+                                <a href="javascript:void(0)" onclick="showDemoToast('Modifier le client (démo)')" class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></a>
                             </div>
                         </td>
                     </tr>
@@ -247,7 +242,7 @@
     <!-- Pagination container -->
     <div class="card-footer" id="paginationContainer">
         <div class="d-flex justify-content-between align-items-center">
-            <small class="text-muted">Affichage de 1 &agrave; 10 sur 10 clients</small>
+            <small class="text-muted">Affichage de 1 à 10 sur 10 clients</small>
             <nav>
                 <ul class="pagination pagination-sm mb-0">
                     <li class="page-item active"><a class="page-link" href="javascript:void(0)">1</a></li>

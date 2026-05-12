@@ -72,6 +72,10 @@
                             Outils
                         </a>
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="demoNav('import')">
+                                <i class="ph ph-upload me-1"></i>
+                                Imports
+                            </a></li>
                             <li><a class="dropdown-item" href="javascript:void(0)" onclick="demoNav('email-templates')">
                                 <i class="ph ph-envelope me-1"></i>
                                 Modèles de courriel
@@ -158,23 +162,24 @@
     <!-- Main Content -->
     <main class="container-fluid mt-4">
 
-        <!-- Dashboard page (inline, copied from dashboard.html) -->
+        <!-- Dashboard renders inline (initial page). Other pages are lazy-loaded via fetch on first demoNav(). -->
         {% include 'demo/dashboard_page.html' %}
 
-        <!-- All other pages -->
-        {% include 'demo/clients_list.html' %}
-        {% include 'demo/client_detail.html' %}
-        {% include 'demo/receivables.html' %}
-        {% include 'demo/notes.html' %}
-        {% include 'demo/reminders.html' %}
-        {% include 'demo/email_templates.html' %}
-        {% include 'demo/campaigns_list.html' %}
-        {% include 'demo/campaign_detail.html' %}
-        {% include 'demo/campaign_create.html' %}
-        {% include 'demo/users_list.html' %}
-        {% include 'demo/profile.html' %}
-        {% include 'demo/email_config.html' %}
-        {% include 'demo/company_settings.html' %}
+        <!-- Lazy placeholders — content is fetched from /demo-iframe/page/<id> the first time demoNav() targets them -->
+        <div class="demo-page" id="demo-page-clients" data-lazy-src="/demo-iframe/page/clients"></div>
+        <div class="demo-page" id="demo-page-client-detail" data-lazy-src="/demo-iframe/page/client-detail"></div>
+        <div class="demo-page" id="demo-page-receivables" data-lazy-src="/demo-iframe/page/receivables"></div>
+        <div class="demo-page" id="demo-page-notes" data-lazy-src="/demo-iframe/page/notes"></div>
+        <div class="demo-page" id="demo-page-reminders" data-lazy-src="/demo-iframe/page/reminders"></div>
+        <div class="demo-page" id="demo-page-import" data-lazy-src="/demo-iframe/page/import"></div>
+        <div class="demo-page" id="demo-page-email-templates" data-lazy-src="/demo-iframe/page/email-templates"></div>
+        <div class="demo-page" id="demo-page-campaigns" data-lazy-src="/demo-iframe/page/campaigns"></div>
+        <div class="demo-page" id="demo-page-campaign-detail" data-lazy-src="/demo-iframe/page/campaign-detail"></div>
+        <div class="demo-page" id="demo-page-campaign-create" data-lazy-src="/demo-iframe/page/campaign-create"></div>
+        <div class="demo-page" id="demo-page-users" data-lazy-src="/demo-iframe/page/users"></div>
+        <div class="demo-page" id="demo-page-profile" data-lazy-src="/demo-iframe/page/profile"></div>
+        <div class="demo-page" id="demo-page-email-config" data-lazy-src="/demo-iframe/page/email-config"></div>
+        <div class="demo-page" id="demo-page-company-settings" data-lazy-src="/demo-iframe/page/company-settings"></div>
 
     </main>
 
@@ -188,7 +193,7 @@
 
     <!-- JavaScript - same stack as real app -->
     <script src="/static/vendor/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="/static/vendor/chartjs/chart.umd.min.js"></script>
     <script>
     // Phosphor (web font) replaced Feather. No-op shim for any leftover calls.
     window.feather = window.feather || { replace: function () {} };
@@ -224,6 +229,7 @@
             'receivables':'app.finov-relance.com/receivables',
             'notes':'app.finov-relance.com/notes',
             'reminders':'app.finov-relance.com/reminders',
+            'import':'app.finov-relance.com/import',
             'email-templates':'app.finov-relance.com/emails/templates',
             'campaigns':'app.finov-relance.com/campaigns',
             'campaign-detail':'app.finov-relance.com/campaigns/1',
@@ -236,27 +242,98 @@
         var navMap = {
             'dashboard':'dashboard','clients':'clients','client-detail':'clients',
             'receivables':'receivables','notes':'notes','reminders':'reminders',
-            'email-templates':'tools','campaigns':'tools','campaign-detail':'tools',
+            'import':'tools','email-templates':'tools','campaigns':'tools','campaign-detail':'tools',
             'campaign-create':'tools','users':'tools',
             'profile':'profile','email-config':'profile','company-settings':'tools'
         };
 
-        window.demoNav = function(page) {
+        // Map clientId → friendly name so client-detail page reflects the chosen client
+        var clientNames = {
+            'BERG-001': 'Constructions Bergeron & Fils',
+            'BASL-002': 'Béton Armé St-Laurent',
+            'SMD-003': 'Structures Métalliques Desjardins',
+            'UPB-004': 'Usinages Précision Beauce',
+            'CHS-005': 'Composantes Hydrauliques SN',
+            'LAV-006': 'Plomberie Lavoie inc.',
+            'TQM-007': 'TQM Solutions',
+            'TOIT-008': 'Toitures Simard',
+            'COT-009': 'Excavation Côté',
+            'ISO-010': 'Isolation Nord-Sud'
+        };
+
+        // Lazy-load a placeholder div on first navigation. Returns a Promise resolved
+        // once the markup is in the DOM (or immediately if already loaded / not lazy).
+        // We parse fetched HTML with DOMParser and adopt child nodes directly (never via
+        // innerHTML), which avoids the HTML-parser-on-string XSS vector while preserving
+        // the inline onclick handlers the demo relies on.
+        function lazyLoadPage(target) {
+            if (!target || !target.dataset.lazySrc || target.dataset.lazyLoaded === 'true') {
+                return Promise.resolve();
+            }
+            if (target.dataset.lazyLoaded === 'loading') {
+                return new Promise(function(resolve) {
+                    var check = setInterval(function() {
+                        if (target.dataset.lazyLoaded === 'true') { clearInterval(check); resolve(); }
+                    }, 50);
+                });
+            }
+            target.dataset.lazyLoaded = 'loading';
+            var loader = document.createElement('div');
+            loader.className = 'text-center text-muted py-5';
+            loader.textContent = 'Chargement...';
+            target.replaceChildren(loader);
+            return fetch(target.dataset.lazySrc).then(function(r) { return r.text(); }).then(function(html) {
+                // Parse fetched HTML safely. DOMParser does not execute scripts,
+                // and we adopt child nodes directly (never via innerHTML), so the
+                // demo's inline onclick handlers (showDemoToast / demoNav) are preserved
+                // without invoking the HTML parser on a string under our control.
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(html, 'text/html');
+                var inner = doc.querySelector('.demo-page');
+                if (inner) {
+                    // Strip any <script> tags as a defense-in-depth measure
+                    inner.querySelectorAll('script').forEach(function(s) { s.remove(); });
+                    target.replaceChildren.apply(target, Array.from(inner.childNodes));
+                } else {
+                    target.textContent = 'Section indisponible.';
+                }
+                target.dataset.lazyLoaded = 'true';
+            }).catch(function() {
+                var err = document.createElement('div');
+                err.className = 'alert alert-warning m-3';
+                err.textContent = "Cette section n'a pas pu être chargée.";
+                target.replaceChildren(err);
+                target.dataset.lazyLoaded = 'true';
+            });
+        }
+
+        window.demoNav = function(page, clientId) {
             // Update active nav
             var activeNav = navMap[page] || page;
             document.querySelectorAll('.navbar-nav .nav-link[data-demo-page]').forEach(function(l) {
                 l.classList.remove('active');
                 if (l.getAttribute('data-demo-page') === activeNav) l.classList.add('active');
             });
-            // Show/hide pages
-            document.querySelectorAll('.demo-page').forEach(function(p) { p.classList.remove('active'); });
             var target = document.getElementById('demo-page-' + page);
-            if (target) target.classList.add('active');
-            // Scroll to top
-            window.scrollTo(0, 0);
-            // Notify parent of URL change
+            // Fetch lazy content if needed, then reveal
+            lazyLoadPage(target).then(function() {
+                document.querySelectorAll('.demo-page').forEach(function(p) { p.classList.remove('active'); });
+                if (target) target.classList.add('active');
+                window.scrollTo(0, 0);
+            });
+            // When navigating to client-detail, surface which client was clicked
+            // (the demo only ships one detail page, BERG-001 — be transparent about it)
+            if (page === 'client-detail' && clientId && clientId !== 'BERG-001') {
+                var name = clientNames[clientId] || clientId;
+                showDemoToast('Démo : la fiche détaillée de ' + name + ' aurait le même format. Affichage de Bergeron & Fils.');
+            }
+            // Notify parent of URL change (client-detail gets a per-client URL)
             if (window.parent !== window) {
-                window.parent.postMessage({ type: 'demo-url', url: urls[page] || 'app.finov-relance.com/dashboard' }, window.location.origin);
+                var url = urls[page] || 'app.finov-relance.com/dashboard';
+                if (page === 'client-detail' && clientId) {
+                    url = 'app.finov-relance.com/clients/' + clientId.toLowerCase();
+                }
+                window.parent.postMessage({ type: 'demo-url', url: url }, window.location.origin);
             }
         };
 

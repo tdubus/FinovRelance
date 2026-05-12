@@ -21,18 +21,18 @@
                     <i class="ph ph-arrow-left me-2"></i>
                     Comptes &agrave; recevoir
                 </a></li>
-                <li><a class="dropdown-item" href="javascript:void(0)">
+                <li><a class="dropdown-item" href="javascript:void(0)" onclick="showDemoToast('Modification du client (démo)')">
                     <i class="ph ph-pencil-simple me-2"></i>
                     Modifier
                 </a></li>
-                <li><a class="dropdown-item" href="javascript:void(0)">
+                <li><a class="dropdown-item" href="javascript:void(0)" onclick="showDemoToast('Export PDF généré (démo)')">
                     <i class="ph ph-download-simple me-2"></i>
                     Export PDF
                 </a></li>
             </ul>
         </div>
 
-        <button type="button" class="btn btn-success" onclick="event.preventDefault()">
+        <button type="button" class="btn btn-success" onclick="showDemoToast('Envoi de courriel au client (démo)')">
             <i class="ph ph-envelope me-1"></i>
             Envoyer courriel
         </button>
@@ -111,7 +111,7 @@
                         <div class="mb-3">
                             <label class="text-muted small">Collecteur</label>
                             <div>
-                                <span class="badge bg-secondary">Marie-Claude Tremblay</span>
+                                <span class="badge bg-secondary">Jean Beauregard</span>
                             </div>
                         </div>
                     </div>
@@ -297,6 +297,133 @@
     </div>
 </div>
 
+<!-- Section Hiérarchie des comptes (parent + 2 enfants) -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="ph ph-git-branch me-2"></i>
+                    Hiérarchie des comptes
+                    <span class="badge bg-info ms-2">Compte parent</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">
+                    <i class="ph ph-info me-1"></i>
+                    Ce compte est le parent de 2 succursales. Les relevés peuvent être consolidés ou envoyés séparément.
+                </p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded h-100 d-flex justify-content-between align-items-center">
+                            <div>
+                                <a href="javascript:void(0)" onclick="showDemoToast('Bergeron Construction Lévis aurait sa propre fiche')" class="text-decoration-none">
+                                    <strong>BERG-001-L</strong> &mdash; Bergeron Construction Lévis
+                                </a>
+                                <div class="small text-muted">Succursale Lévis</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold">18 200,00 $</div>
+                                <small class="text-muted">À recevoir</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded h-100 d-flex justify-content-between align-items-center">
+                            <div>
+                                <a href="javascript:void(0)" onclick="showDemoToast('Bergeron Aménagement aurait sa propre fiche')" class="text-decoration-none">
+                                    <strong>BERG-001-A</strong> &mdash; Bergeron Aménagement
+                                </a>
+                                <div class="small text-muted">Division aménagement extérieur</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold">9 850,00 $</div>
+                                <small class="text-muted">À recevoir</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 p-2 bg-light rounded text-center">
+                    <small><strong>Solde consolidé (parent + enfants) :</strong> 70 400,00 $</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section Ventilation par projet -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="ph ph-folder me-2"></i>
+                    Ventilation par projet
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">
+                    <i class="ph ph-info me-1"></i>
+                    Les factures sont regroupées par projet (champ « projet » importé du logiciel comptable).
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Projet</th>
+                                <th class="text-end">Courant</th>
+                                <th class="text-end">0-30 j</th>
+                                <th class="text-end">31-60 j</th>
+                                <th class="text-end">61-90 j</th>
+                                <th class="text-end">90+ j</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>P-2026-014</strong> &mdash; Tour de bureaux Sainte-Foy</td>
+                                <td class="text-end">8 200,00 $</td>
+                                <td class="text-end">9 800,00 $</td>
+                                <td class="text-end">5 200,00 $</td>
+                                <td class="text-end">1 800,00 $</td>
+                                <td class="text-end">1 200,00 $</td>
+                                <td class="text-end fw-bold">26 200,00 $</td>
+                            </tr>
+                            <tr>
+                                <td><strong>P-2025-082</strong> &mdash; Résidence Charlesbourg</td>
+                                <td class="text-end">2 800,00 $</td>
+                                <td class="text-end">3 700,00 $</td>
+                                <td class="text-end">2 100,00 $</td>
+                                <td class="text-end">900,00 $</td>
+                                <td class="text-end">800,00 $</td>
+                                <td class="text-end fw-bold">10 300,00 $</td>
+                            </tr>
+                            <tr>
+                                <td><strong>P-2025-067</strong> &mdash; Entrepôt Lebourgneuf</td>
+                                <td class="text-end">1 500,00 $</td>
+                                <td class="text-end">1 700,00 $</td>
+                                <td class="text-end">1 450,00 $</td>
+                                <td class="text-end">700,00 $</td>
+                                <td class="text-end">500,00 $</td>
+                                <td class="text-end fw-bold">5 850,00 $</td>
+                            </tr>
+                            <tr class="table-light fw-bold">
+                                <td>Total</td>
+                                <td class="text-end">12 500,00 $</td>
+                                <td class="text-end">15 200,00 $</td>
+                                <td class="text-end">8 750,00 $</td>
+                                <td class="text-end">3 400,00 $</td>
+                                <td class="text-end">2 500,00 $</td>
+                                <td class="text-end">42 350,00 $</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Section Contacts -->
 <div class="row mb-4">
     <div class="col-12">
@@ -306,7 +433,7 @@
                     <i class="ph ph-users me-2"></i>
                     Contacts
                 </h5>
-                <button type="button" class="btn btn-primary btn-sm" onclick="event.preventDefault()">
+                <button type="button" class="btn btn-primary btn-sm" onclick="showDemoToast('Action non disponible en démo')">
                     <i class="ph ph-plus me-1"></i>
                     Ajouter un contact
                 </button>
@@ -354,10 +481,10 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="javascript:void(0)" class="btn btn-outline-primary btn-sm" title="Modifier">
+                                        <a href="javascript:void(0)" class="btn btn-outline-primary btn-sm" title="Modifier" onclick="showDemoToast('Modifier le contact (démo)')">
                                             <i class="ph ph-pencil-simple small"></i>
                                         </a>
-                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="event.preventDefault()">
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="showDemoToast('Action non disponible en démo')">
                                             <i class="ph ph-trash small"></i>
                                         </button>
                                     </div>
@@ -388,10 +515,10 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="javascript:void(0)" class="btn btn-outline-primary btn-sm" title="Modifier">
+                                        <a href="javascript:void(0)" class="btn btn-outline-primary btn-sm" title="Modifier" onclick="showDemoToast('Modifier le contact (démo)')">
                                             <i class="ph ph-pencil-simple small"></i>
                                         </a>
-                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="event.preventDefault()">
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="showDemoToast('Action non disponible en démo')">
                                             <i class="ph ph-trash small"></i>
                                         </button>
                                     </div>
@@ -417,7 +544,7 @@
                 </h5>
                 <div class="d-flex gap-2">
                     <!-- Bouton de synchronisation des courriels (Outlook uniquement) -->
-                    <button type="button" class="btn btn-sm btn-outline-info" onclick="event.preventDefault()"
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="showDemoToast('Action non disponible en démo')"
                             title="R&eacute;cup&eacute;rer les r&eacute;ponses et transferts depuis Outlook">
                         <i class="ph ph-arrow-clockwise me-1"></i>
                         <span class="sync-text">Actualiser &eacute;changes</span>
@@ -428,7 +555,7 @@
                         Export Excel
                     </a>
 
-                    <form class="d-flex align-items-center gap-2" onsubmit="event.preventDefault()">
+                    <form class="d-flex align-items-center gap-2" onsubmit="event.preventDefault(); showDemoToast('Filtre par date appliqué (démo)')">
                         <input type="date" class="form-control form-control-sm" name="date_from" value="" placeholder="Date de">
                         <input type="date" class="form-control form-control-sm" name="date_to" value="" placeholder="Date &agrave;">
                         <button type="submit" class="btn btn-sm btn-outline-primary">
@@ -436,7 +563,7 @@
                         </button>
                     </form>
 
-                    <button type="button" class="btn btn-sm btn-primary" onclick="event.preventDefault()">
+                    <button type="button" class="btn btn-sm btn-primary" onclick="showDemoToast('Action non disponible en démo')">
                         Ajouter note
                     </button>
                 </div>
@@ -451,11 +578,11 @@
                                     <span class="badge bg-primary me-2">
                                         <i class="ph ph-envelope me-1" style="font-size: 12px;"></i>Courriel
                                     </span>
-                                    <small class="text-muted">28 mars 2026 - Marie-Claude Tremblay</small>
+                                    <small class="text-muted">Il y a 4 jours - Jean Beauregard</small>
                                 </div>
                                 <div class="btn-group" role="group">
-                                    <button class="btn btn-outline-primary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></button>
-                                    <button class="btn btn-outline-danger btn-sm" title="Supprimer"><i class="ph ph-trash small"></i></button>
+                                    <button class="btn btn-outline-primary btn-sm" title="Modifier" onclick="showDemoToast('Modifier la note (démo)')"><i class="ph ph-pencil-simple small"></i></button>
+                                    <button class="btn btn-outline-danger btn-sm" title="Supprimer" onclick="showDemoToast('Supprimer la note (démo)')"><i class="ph ph-trash small"></i></button>
                                 </div>
                             </div>
                             <p class="mt-2 mb-0">Envoi du relev&eacute; de compte mensuel avec d&eacute;tail des factures en souffrance. Client avis&eacute; que la facture F-2024-0892 est en retard de 67 jours.</p>
@@ -470,16 +597,16 @@
                                     <span class="badge bg-success me-2">
                                         <i class="ph ph-phone me-1" style="font-size: 12px;"></i>Appel
                                     </span>
-                                    <small class="text-muted">25 mars 2026 - Marie-Claude Tremblay</small>
+                                    <small class="text-muted">Il y a 7 jours - Jean Beauregard</small>
                                 </div>
                                 <div class="btn-group" role="group">
-                                    <button class="btn btn-outline-primary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></button>
-                                    <button class="btn btn-outline-danger btn-sm" title="Supprimer"><i class="ph ph-trash small"></i></button>
+                                    <button class="btn btn-outline-primary btn-sm" title="Modifier" onclick="showDemoToast('Modifier la note (démo)')"><i class="ph ph-pencil-simple small"></i></button>
+                                    <button class="btn btn-outline-danger btn-sm" title="Supprimer" onclick="showDemoToast('Supprimer la note (démo)')"><i class="ph ph-trash small"></i></button>
                                 </div>
                             </div>
                             <p class="mt-2 mb-0">Appel avec Michel Bergeron. Il confirme que le paiement de 15 200 $ pour les factures F-2024-0934 et F-2024-0951 sera effectu&eacute; d'ici vendredi prochain. Promesse de paiement not&eacute;e.</p>
                             <div class="mt-2">
-                                <span class="badge bg-warning text-dark"><i class="ph ph-bell me-1" style="font-size: 12px;"></i>Rappel: 4 avril 2026</span>
+                                <span class="badge bg-warning text-dark"><i class="ph ph-bell me-1" style="font-size: 12px;"></i>Rappel : dans 3 jours</span>
                             </div>
                         </div>
                     </div>
@@ -492,11 +619,11 @@
                                     <span class="badge bg-primary me-2">
                                         <i class="ph ph-envelope me-1" style="font-size: 12px;"></i>Courriel
                                     </span>
-                                    <small class="text-muted">18 mars 2026 - Marie-Claude Tremblay</small>
+                                    <small class="text-muted">Il y a 2 semaines - Jean Beauregard</small>
                                 </div>
                                 <div class="btn-group" role="group">
-                                    <button class="btn btn-outline-primary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></button>
-                                    <button class="btn btn-outline-danger btn-sm" title="Supprimer"><i class="ph ph-trash small"></i></button>
+                                    <button class="btn btn-outline-primary btn-sm" title="Modifier" onclick="showDemoToast('Modifier la note (démo)')"><i class="ph ph-pencil-simple small"></i></button>
+                                    <button class="btn btn-outline-danger btn-sm" title="Supprimer" onclick="showDemoToast('Supprimer la note (démo)')"><i class="ph ph-trash small"></i></button>
                                 </div>
                             </div>
                             <p class="mt-2 mb-0">Premier avis de retard envoy&eacute; pour la facture F-2024-0892 (&eacute;chue depuis 58 jours). Copie du relev&eacute; PDF en pi&egrave;ce jointe.</p>
@@ -511,11 +638,11 @@
                                     <span class="badge bg-secondary me-2">
                                         <i class="ph ph-file-text me-1" style="font-size: 12px;"></i>G&eacute;n&eacute;ral
                                     </span>
-                                    <small class="text-muted">10 mars 2026 - Marie-Claude Tremblay</small>
+                                    <small class="text-muted">Il y a 3 semaines - Jean Beauregard</small>
                                 </div>
                                 <div class="btn-group" role="group">
-                                    <button class="btn btn-outline-primary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></button>
-                                    <button class="btn btn-outline-danger btn-sm" title="Supprimer"><i class="ph ph-trash small"></i></button>
+                                    <button class="btn btn-outline-primary btn-sm" title="Modifier" onclick="showDemoToast('Modifier la note (démo)')"><i class="ph ph-pencil-simple small"></i></button>
+                                    <button class="btn btn-outline-danger btn-sm" title="Supprimer" onclick="showDemoToast('Supprimer la note (démo)')"><i class="ph ph-trash small"></i></button>
                                 </div>
                             </div>
                             <p class="mt-2 mb-0">Nouveau projet de construction confirm&eacute; avec le client. Limite de cr&eacute;dit r&eacute;vis&eacute;e &agrave; 75 000 $. Surveiller le solde total en cons&eacute;quence.</p>
@@ -542,7 +669,7 @@
                         <i class="ph ph-download-simple me-1"></i>
                         Export Excel
                     </a>
-                    <button type="button" class="btn btn-sm btn-primary" onclick="event.preventDefault()">
+                    <button type="button" class="btn btn-sm btn-primary" onclick="showDemoToast('Action non disponible en démo')">
                         <i class="ph ph-plus me-1"></i>
                         Ajouter facture
                     </button>
@@ -576,8 +703,8 @@
                                     <td><span class="badge bg-danger">En souffrance</span></td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <button class="btn btn-outline-primary btn-sm" title="D&eacute;tails"><i class="ph ph-eye small"></i></button>
-                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></button>
+                                            <button class="btn btn-outline-primary btn-sm" title="Détails" onclick="showDemoToast('Détail de la facture (démo)')"><i class="ph ph-eye small"></i></button>
+                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier" onclick="showDemoToast('Modifier la facture (démo)')"><i class="ph ph-pencil-simple small"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -591,8 +718,8 @@
                                     <td><span class="badge bg-danger">En souffrance</span></td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <button class="btn btn-outline-primary btn-sm" title="D&eacute;tails"><i class="ph ph-eye small"></i></button>
-                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></button>
+                                            <button class="btn btn-outline-primary btn-sm" title="Détails" onclick="showDemoToast('Détail de la facture (démo)')"><i class="ph ph-eye small"></i></button>
+                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier" onclick="showDemoToast('Modifier la facture (démo)')"><i class="ph ph-pencil-simple small"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -606,8 +733,8 @@
                                     <td><span class="badge bg-warning text-dark">Retard</span></td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <button class="btn btn-outline-primary btn-sm" title="D&eacute;tails"><i class="ph ph-eye small"></i></button>
-                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></button>
+                                            <button class="btn btn-outline-primary btn-sm" title="Détails" onclick="showDemoToast('Détail de la facture (démo)')"><i class="ph ph-eye small"></i></button>
+                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier" onclick="showDemoToast('Modifier la facture (démo)')"><i class="ph ph-pencil-simple small"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -621,8 +748,8 @@
                                     <td><span class="badge bg-warning text-dark">Retard</span></td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <button class="btn btn-outline-primary btn-sm" title="D&eacute;tails"><i class="ph ph-eye small"></i></button>
-                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></button>
+                                            <button class="btn btn-outline-primary btn-sm" title="Détails" onclick="showDemoToast('Détail de la facture (démo)')"><i class="ph ph-eye small"></i></button>
+                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier" onclick="showDemoToast('Modifier la facture (démo)')"><i class="ph ph-pencil-simple small"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -636,8 +763,8 @@
                                     <td><span class="badge bg-success">Courant</span></td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <button class="btn btn-outline-primary btn-sm" title="D&eacute;tails"><i class="ph ph-eye small"></i></button>
-                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></button>
+                                            <button class="btn btn-outline-primary btn-sm" title="Détails" onclick="showDemoToast('Détail de la facture (démo)')"><i class="ph ph-eye small"></i></button>
+                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier" onclick="showDemoToast('Modifier la facture (démo)')"><i class="ph ph-pencil-simple small"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -651,8 +778,8 @@
                                     <td><span class="badge bg-success">Courant</span></td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <button class="btn btn-outline-primary btn-sm" title="D&eacute;tails"><i class="ph ph-eye small"></i></button>
-                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier"><i class="ph ph-pencil-simple small"></i></button>
+                                            <button class="btn btn-outline-primary btn-sm" title="Détails" onclick="showDemoToast('Détail de la facture (démo)')"><i class="ph ph-eye small"></i></button>
+                                            <button class="btn btn-outline-secondary btn-sm" title="Modifier" onclick="showDemoToast('Modifier la facture (démo)')"><i class="ph ph-pencil-simple small"></i></button>
                                         </div>
                                     </td>
                                 </tr>

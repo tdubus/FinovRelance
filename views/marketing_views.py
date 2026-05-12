@@ -29,12 +29,41 @@ def essai():
 @marketing_bp.route('/essai-fr')
 @cache.cached(timeout=3600)
 def essai_fr():
-    return _cached_page('ads_fr.html')
+    return _cached_page('ads_v2.html')
 
 @marketing_bp.route('/demo-iframe')
 @cache.cached(timeout=3600)
 def demo_iframe():
     return _cached_page('demo_iframe.html')
+
+
+# Lazy-loaded sub-pages — only fetched when the user navigates to them
+DEMO_PAGES = {
+    'clients': 'demo/clients_list.html',
+    'client-detail': 'demo/client_detail.html',
+    'receivables': 'demo/receivables.html',
+    'notes': 'demo/notes.html',
+    'reminders': 'demo/reminders.html',
+    'import': 'demo/import_jobs.html',
+    'email-templates': 'demo/email_templates.html',
+    'campaigns': 'demo/campaigns_list.html',
+    'campaign-detail': 'demo/campaign_detail.html',
+    'campaign-create': 'demo/campaign_create.html',
+    'users': 'demo/users_list.html',
+    'profile': 'demo/profile.html',
+    'email-config': 'demo/email_config.html',
+    'company-settings': 'demo/company_settings.html',
+}
+
+
+@marketing_bp.route('/demo-iframe/page/<page_id>')
+@cache.cached(timeout=3600)
+def demo_iframe_page(page_id):
+    from flask import abort
+    template = DEMO_PAGES.get(page_id)
+    if not template:
+        abort(404)
+    return _cached_page(template)
 
 @marketing_bp.route('/fonctionnalites')
 @cache.cached(timeout=3600)

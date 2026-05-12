@@ -19,13 +19,13 @@
                                                 </h5>
                                             </div>
                                             <div class="d-flex gap-2 flex-wrap">
-                                                <select class="form-select form-select-sm" style="width: auto;" disabled>
+                                                <select class="form-select form-select-sm" style="width: auto;" onchange="showDemoToast('Filtres avancés disponibles dans l\'app')">
                                                     <option value="">Toutes les années</option>
                                                 </select>
-                                                <select class="form-select form-select-sm" style="width: auto;" disabled>
+                                                <select class="form-select form-select-sm" style="width: auto;" onchange="showDemoToast('Filtres avancés disponibles dans l\'app')">
                                                     <option value="month" selected>Mois</option>
                                                 </select>
-                                                <select class="form-select form-select-sm" style="width: auto;" disabled>
+                                                <select class="form-select form-select-sm" style="width: auto;" onchange="showDemoToast('Filtres avancés disponibles dans l\'app')">
                                                     <option value="total">Total</option>
                                                     <option value="current">Courant</option>
                                                     <option value="0-30">0-30 jours</option>
@@ -50,7 +50,7 @@
                                     <div class="card text-center h-100">
                                         <div class="card-body">
                                             <i class="ph ph-users text-primary mb-2" style="font-size: 32px;"></i>
-                                            <h3 class="card-title">30</h3>
+                                            <h3 class="card-title">10</h3>
                                             <p class="card-text text-muted">Clients</p>
                                         </div>
                                     </div>
@@ -59,7 +59,7 @@
                                     <div class="card text-center h-100">
                                         <div class="card-body">
                                             <i class="ph ph-currency-circle-dollar text-warning mb-2" style="font-size: 32px;"></i>
-                                            <h3 class="card-title">685 350 $</h3>
+                                            <h3 class="card-title">316 600 $</h3>
                                             <p class="card-text text-muted">À recevoir</p>
                                         </div>
                                     </div>
@@ -68,7 +68,7 @@
                                     <div class="card text-center h-100">
                                         <div class="card-body">
                                             <i class="ph ph-file-text text-danger mb-2" style="font-size: 32px;"></i>
-                                            <h3 class="card-title">23</h3>
+                                            <h3 class="card-title">12</h3>
                                             <p class="card-text text-muted">Factures en retard</p>
                                         </div>
                                     </div>
@@ -77,7 +77,7 @@
                                     <div class="card text-center h-100">
                                         <div class="card-body">
                                             <i class="ph ph-trend-up text-success mb-2" style="font-size: 32px;"></i>
-                                            <h3 class="card-title">28</h3>
+                                            <h3 class="card-title">10</h3>
                                             <p class="card-text text-muted">Clients actifs</p>
                                         </div>
                                     </div>
@@ -117,32 +117,32 @@
                                                 <div class="col">
                                                     <div class="aging-dot bg-success me-2"></div>
                                                     <strong>Courant</strong><br>
-                                                    <span class="h5 text-success">45 200 $</span><br>
-                                                    <small class="text-muted">7%</small>
+                                                    <span class="h5 text-success">88 700 $</span><br>
+                                                    <small class="text-muted">28%</small>
                                                 </div>
                                                 <div class="col">
                                                     <div class="aging-dot bg-info me-2"></div>
                                                     <strong>1-30 jours</strong><br>
-                                                    <span class="h5 text-info">125 800 $</span><br>
-                                                    <small class="text-muted">18%</small>
+                                                    <span class="h5 text-info">109 900 $</span><br>
+                                                    <small class="text-muted">35%</small>
                                                 </div>
                                                 <div class="col">
                                                     <div class="aging-dot bg-warning me-2"></div>
                                                     <strong>31-60 jours</strong><br>
-                                                    <span class="h5" style="color: #fd7e14;">189 400 $</span><br>
-                                                    <small class="text-muted">28%</small>
+                                                    <span class="h5" style="color: #fd7e14;">69 550 $</span><br>
+                                                    <small class="text-muted">22%</small>
                                                 </div>
                                                 <div class="col">
                                                     <div class="aging-dot bg-dark me-2"></div>
                                                     <strong>61-90 jours</strong><br>
-                                                    <span class="h5" style="color: #6c757d;">145 600 $</span><br>
-                                                    <small class="text-muted">21%</small>
+                                                    <span class="h5" style="color: #6c757d;">34 450 $</span><br>
+                                                    <small class="text-muted">11%</small>
                                                 </div>
                                                 <div class="col">
                                                     <div class="aging-dot bg-danger me-2"></div>
                                                     <strong>90+ jours</strong><br>
-                                                    <span class="h5 text-danger">179 350 $</span><br>
-                                                    <small class="text-muted">26%</small>
+                                                    <span class="h5 text-danger">14 000 $</span><br>
+                                                    <small class="text-muted">4%</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -159,17 +159,17 @@
                                         <div class="card-header d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">
                                                 <i class="ph ph-activity me-2"></i>
-                                                Activité du 31/03/2026
+                                                Activité du jour
                                             </h5>
                                             <div class="d-flex align-items-center">
-                                                <form class="d-flex align-items-center gap-2 me-3">
-                                                    <input type="date" class="form-control form-control-sm" value="2026-03-31" style="width: auto;" disabled>
-                                                    <button type="button" class="btn btn-outline-primary btn-sm" disabled>
+                                                <form class="d-flex align-items-center gap-2 me-3" onsubmit="event.preventDefault(); showDemoToast('Filtre appliqué (démo)')">
+                                                    <input type="date" class="form-control form-control-sm" style="width: auto;" onchange="showDemoToast('Date sélectionnée (démo)')">
+                                                    <button type="submit" class="btn btn-outline-primary btn-sm">
                                                         <i class="ph ph-magnifying-glass me-1"></i>
                                                         Filtrer
                                                     </button>
                                                 </form>
-                                                <button class="btn btn-outline-secondary btn-sm" disabled>
+                                                <button class="btn btn-outline-secondary btn-sm" onclick="showDemoToast('Export CSV téléchargé (démo)')">
                                                     <i class="ph ph-download-simple me-1"></i>
                                                     CSV
                                                 </button>
@@ -185,15 +185,15 @@
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex justify-content-between align-items-start mb-1">
                                                         <h6 class="mb-0">
-                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail', 'BERG-001')">
                                                                 Constructions Bergeron &amp; Fils
                                                             </a>
                                                         </h6>
                                                         <small class="text-muted">14:30</small>
                                                     </div>
-                                                    <p class="mb-1 text-muted">Confirmé : paiement de 12 500 $ prévu le 28 mars...</p>
+                                                    <p class="mb-1 text-muted">Confirmé : paiement de 12 500 $ prévu pour la fin de semaine...</p>
                                                     <small class="text-muted">
-                                                        Par Marie Lemieux • Appel
+                                                        Par Jean Beauregard • Appel
                                                     </small>
                                                 </div>
                                             </div>
@@ -206,7 +206,7 @@
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex justify-content-between align-items-start mb-1">
                                                         <h6 class="mb-0">
-                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail', 'BASL-002')">
                                                                 Béton Armé St-Laurent
                                                             </a>
                                                         </h6>
@@ -214,7 +214,7 @@
                                                     </div>
                                                     <p class="mb-1 text-muted">Confirmation paiement partiel de 10 000 $ effectué...</p>
                                                     <small class="text-muted">
-                                                        Par Jean Beauregard • Email
+                                                        Par Marie Lemieux • Courriel
                                                     </small>
                                                 </div>
                                             </div>
@@ -227,7 +227,7 @@
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex justify-content-between align-items-start mb-1">
                                                         <h6 class="mb-0">
-                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail', 'SMD-003')">
                                                                 Structures Métalliques Desjardins
                                                             </a>
                                                         </h6>
@@ -235,7 +235,7 @@
                                                     </div>
                                                     <p class="mb-1 text-muted">Plan de paiement accepté : 20 000 $ cette semaine...</p>
                                                     <small class="text-muted">
-                                                        Par Sophie Dion
+                                                        Par Sophie Dion • Note
                                                     </small>
                                                 </div>
                                             </div>
@@ -248,7 +248,7 @@
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex justify-content-between align-items-start mb-1">
                                                         <h6 class="mb-0">
-                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail', 'UPB-004')">
                                                                 Usinages Précision Beauce
                                                             </a>
                                                         </h6>
@@ -256,7 +256,7 @@
                                                     </div>
                                                     <p class="mb-1 text-muted">Chèque de 14 500 $ reçu et déposé...</p>
                                                     <small class="text-muted">
-                                                        Par Jean Beauregard • Email
+                                                        Par Jean Beauregard • Courriel
                                                     </small>
                                                 </div>
                                             </div>
@@ -269,13 +269,13 @@
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex justify-content-between align-items-start mb-1">
                                                         <h6 class="mb-0">
-                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail', 'CHS-005')">
                                                                 Composantes Hydrauliques SN
                                                             </a>
                                                         </h6>
                                                         <small class="text-muted">09:00</small>
                                                     </div>
-                                                    <p class="mb-1 text-muted">Alain reste sur sa position : paiement le 15 avril...</p>
+                                                    <p class="mb-1 text-muted">Alain Nadeau reste sur sa position : paiement le 15 du mois...</p>
                                                     <small class="text-muted">
                                                         Par Marie Lemieux • Appel
                                                     </small>
@@ -307,7 +307,7 @@
                                                 <div class="d-flex justify-content-between align-items-start">
                                                     <div class="flex-grow-1">
                                                         <h6 class="mb-1">
-                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail', 'BERG-001')">
                                                                 Constructions Bergeron &amp; Fils
                                                             </a>
                                                             <span class="badge bg-danger ms-1">En retard</span>
@@ -317,10 +317,10 @@
                                                         </div>
                                                         <small class="text-muted">
                                                             <i class="ph ph-calendar" style="font-size: 12px;"></i>
-                                                            28/03/2026
+                                                            Il y a 3 jours
                                                         </small>
                                                     </div>
-                                                    <button class="btn btn-outline-success btn-sm" title="Marquer comme terminé">
+                                                    <button class="btn btn-outline-success btn-sm" title="Marquer comme terminé" onclick="showDemoToast('Rappel marqué comme terminé (démo)')">
                                                         <i class="ph ph-check"></i>
                                                     </button>
                                                 </div>
@@ -331,7 +331,7 @@
                                                 <div class="d-flex justify-content-between align-items-start">
                                                     <div class="flex-grow-1">
                                                         <h6 class="mb-1">
-                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail', 'BASL-002')">
                                                                 Béton Armé St-Laurent
                                                             </a>
                                                             <span class="badge bg-danger ms-1">En retard</span>
@@ -341,10 +341,10 @@
                                                         </div>
                                                         <small class="text-muted">
                                                             <i class="ph ph-calendar" style="font-size: 12px;"></i>
-                                                            25/03/2026
+                                                            Il y a 5 jours
                                                         </small>
                                                     </div>
-                                                    <button class="btn btn-outline-success btn-sm" title="Marquer comme terminé">
+                                                    <button class="btn btn-outline-success btn-sm" title="Marquer comme terminé" onclick="showDemoToast('Rappel marqué comme terminé (démo)')">
                                                         <i class="ph ph-check"></i>
                                                     </button>
                                                 </div>
@@ -355,7 +355,7 @@
                                                 <div class="d-flex justify-content-between align-items-start">
                                                     <div class="flex-grow-1">
                                                         <h6 class="mb-1">
-                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail', 'SMD-003')">
                                                                 Structures Métalliques Desjardins
                                                             </a>
                                                             <span class="badge bg-warning ms-1">Aujourd'hui</span>
@@ -365,10 +365,10 @@
                                                         </div>
                                                         <small class="text-muted">
                                                             <i class="ph ph-calendar" style="font-size: 12px;"></i>
-                                                            31/03/2026
+                                                            Aujourd'hui
                                                         </small>
                                                     </div>
-                                                    <button class="btn btn-outline-success btn-sm" title="Marquer comme terminé">
+                                                    <button class="btn btn-outline-success btn-sm" title="Marquer comme terminé" onclick="showDemoToast('Rappel marqué comme terminé (démo)')">
                                                         <i class="ph ph-check"></i>
                                                     </button>
                                                 </div>
@@ -379,7 +379,7 @@
                                                 <div class="d-flex justify-content-between align-items-start">
                                                     <div class="flex-grow-1">
                                                         <h6 class="mb-1">
-                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail')">
+                                                            <a href="javascript:void(0)" class="text-decoration-none" onclick="demoNav('client-detail', 'CHS-005')">
                                                                 Composantes Hydrauliques SN
                                                             </a>
                                                             <span class="badge bg-warning ms-1">Aujourd'hui</span>
@@ -389,10 +389,10 @@
                                                         </div>
                                                         <small class="text-muted">
                                                             <i class="ph ph-calendar" style="font-size: 12px;"></i>
-                                                            31/03/2026
+                                                            Aujourd'hui
                                                         </small>
                                                     </div>
-                                                    <button class="btn btn-outline-success btn-sm" title="Marquer comme terminé">
+                                                    <button class="btn btn-outline-success btn-sm" title="Marquer comme terminé" onclick="showDemoToast('Rappel marqué comme terminé (démo)')">
                                                         <i class="ph ph-check"></i>
                                                     </button>
                                                 </div>
