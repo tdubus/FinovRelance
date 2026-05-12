@@ -267,6 +267,10 @@ def bootstrap_app(app):
             '/android-chrome-512x512.png', '/site.webmanifest'
         ]
 
+        # Helper : matche une route marketing exacte ou ses sous-chemins (ex. /demo-iframe/page/<id>)
+        def _is_marketing_path(p):
+            return any(p == r or p.startswith(r + '/') for r in marketing_routes)
+
         # Si on est sur finov-relance.com (domaine principal sans app. ni test.)
         if 'finov-relance.com' in host and 'app.finov-relance.com' not in host and 'test.finov-relance.com' not in host:
             # Si c'est la racine "/", laisser passer (affichera le site marketing)
@@ -278,11 +282,12 @@ def bootstrap_app(app):
                 return None
             # Si ce n'est PAS une route marketing ni un fichier statique
             # Rediriger vers app.finov-relance.com
-            elif path not in marketing_routes and not path.startswith(
+            elif not _is_marketing_path(path) and not path.startswith(
                     '/marketing-static/') and not path.startswith(
                     '/static/css/') and not path.startswith(
                     '/static/logo') and not path.startswith(
-                    '/static/fonts/'):
+                    '/static/fonts/') and not path.startswith(
+                    '/static/vendor/'):
                 return redirect(
                     f"https://app.finov-relance.com{request.full_path}",
                     code=301)
@@ -297,8 +302,8 @@ def bootstrap_app(app):
                    for route in legal_routes) or path in seo_routes:
                 return redirect(
                     f"https://finov-relance.com{request.full_path}", code=301)
-            # Si c'est une route marketing, rediriger vers finov-relance.com
-            elif path in marketing_routes:
+            # Si c'est une route marketing (ou sous-chemin), rediriger vers finov-relance.com
+            elif _is_marketing_path(path):
                 return redirect(
                     f"https://finov-relance.com{request.full_path}", code=301)
 
