@@ -346,6 +346,13 @@ def _fetch_invoice_pdf_bytes(invoice, connection):
         connector = OdooConnector(connection.id, invoice.company_id)
         pdf_content = connector.download_invoice_pdf(invoice.invoice_id_external)
 
+    elif system_type == 'pennylane':
+        if not invoice.invoice_id_external:
+            raise ValueError('Facture non synchronisée avec Pennylane.')
+        from pennylane_connector import PennylaneConnector
+        connector = PennylaneConnector(connection.id, invoice.company_id)
+        pdf_content = connector.download_invoice_pdf(invoice.invoice_id_external)
+
     elif system_type == 'business_central':
         if not invoice.invoice_number:
             raise ValueError('Aucun numéro de document pour cette facture BC.')
