@@ -46,6 +46,14 @@ def get_csp_directives(nonce=None):
 
         'script-src': [
             "'self'",
+            # Marketing pages run on finov-relance.com but historically some
+            # /static/* assets get 301-redirected to app.finov-relance.com
+            # (Cloudflare may still cache those 301 responses for ~30 days).
+            # Both apex and app subdomain serve the same Flask app, so
+            # whitelisting the sibling subdomain is safe and unblocks the
+            # demo iframe immediately while the edge cache expires.
+            "https://app.finov-relance.com",
+            "https://finov-relance.com",
             "https://cdn.jsdelivr.net",
             "https://cdnjs.cloudflare.com",
             "https://cdn.quilljs.com",
@@ -57,6 +65,8 @@ def get_csp_directives(nonce=None):
 
         'style-src': [
             "'self'",
+            "https://app.finov-relance.com",
+            "https://finov-relance.com",
             "https://cdn.jsdelivr.net",
             "https://cdnjs.cloudflare.com",
             "https://cdn.quilljs.com",
@@ -65,6 +75,8 @@ def get_csp_directives(nonce=None):
 
         'font-src': [
             "'self'",
+            "https://app.finov-relance.com",
+            "https://finov-relance.com",
             "https://cdnjs.cloudflare.com",
             # jsdelivr removed: Phosphor fonts now self-hosted under
             # /static/fonts/phosphor/. Keep cdnjs for Font Awesome legacy
